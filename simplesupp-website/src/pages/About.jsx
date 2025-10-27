@@ -73,7 +73,7 @@ export default function About() {
             Get your personalized supplement stack in 2 minutes.
           </p>
           <Link
-            to="/suppstack-ai"
+            to="/smartstack-ai"
             className="inline-flex items-center px-8 py-3 bg-white text-primary rounded-lg font-bold hover:shadow-2xl hover:scale-105 transition-all"
           >
             Try SmartSupp AI <ArrowRight className="ml-2" size={20} />

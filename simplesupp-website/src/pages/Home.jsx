@@ -35,7 +35,7 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                to="/suppstack-ai"
+                to="/smartstack-ai"
                 className="px-8 py-4 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 flex items-center"
               >
                 Get Your Stack <ArrowRight className="ml-2" size={20} />
@@ -185,7 +185,7 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mb-3">{supp.desc}</p>
                 <p className="text-primary font-bold">{supp.price}</p>
                 <Link
-                  to="/suppstack-ai"
+                  to="/smartstack-ai"
                   className="mt-4 block text-center py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition"
                 >
                   View in SmartSupp AI
@@ -235,7 +235,7 @@ export default function Home() {
             Join thousands who have simplified their supplement routine with SmartSupp.
           </p>
           <Link
-            to="/suppstack-ai"
+            to="/smartstack-ai"
             className="inline-flex items-center px-8 py-4 bg-white text-primary rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all"
           >
             Get Your Stack Now <ArrowRight className="ml-2" size={20} />

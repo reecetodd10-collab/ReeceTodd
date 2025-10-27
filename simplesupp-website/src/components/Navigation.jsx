@@ -9,7 +9,8 @@ export default function Navigation() {
 
   const links = [
     { name: 'Home', path: '/' },
-    { name: 'SuppStack AI', path: '/suppstack-ai' },
+    { name: 'SmartStack AI', path: '/smartstack-ai' },
+    { name: 'SmartFitt', path: '/smartfitt' },
     { name: 'Shop', path: '/shop' },
     { name: 'Learn', path: '/learn' },
     { name: 'Reviews', path: '/reviews' },
@@ -45,7 +46,7 @@ export default function Navigation() {
           </div>
 
           <Link
-            to="/suppstack-ai"
+            to="/smartstack-ai"
             className="hidden lg:block px-6 py-2.5 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent/50 transition-all hover:scale-105"
           >
             Get Your Stack
@@ -76,7 +77,7 @@ export default function Navigation() {
               </Link>
             ))}
             <Link
-              to="/suppstack-ai"
+              to="/smartstack-ai"
               onClick={() => setIsOpen(false)}
               className="block px-4 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold text-center"
             >
