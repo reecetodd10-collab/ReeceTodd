@@ -77,7 +77,7 @@ export default function Reviews() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none"
                   required
                 />
               </div>
@@ -89,7 +89,7 @@ export default function Reviews() {
                   value={formData.goal}
                   onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
                   placeholder="e.g., Muscle Gain, Fat Loss, etc."
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none"
                   required
                 />
               </div>
@@ -100,7 +100,7 @@ export default function Reviews() {
                   value={formData.results}
                   onChange={(e) => setFormData({ ...formData, results: e.target.value })}
                   rows="4"
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none"
                   required
                 />
               </div>
@@ -114,13 +114,13 @@ export default function Reviews() {
                   required
                 />
                 <span className="text-sm text-gray-600">
-                  I consent to SimpleSupp using my review on the website.
+                  I consent to SmartSupp using my review on the website.
                 </span>
               </label>
 
               <button
                 type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
               >
                 Submit Review
               </button>

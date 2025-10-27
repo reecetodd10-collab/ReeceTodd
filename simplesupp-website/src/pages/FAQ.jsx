@@ -7,10 +7,10 @@ export default function FAQ() {
   const faqs = [
     {
       q: "Is this medical advice?",
-      a: "No. SimpleSupp provides educational information only. Always consult your healthcare provider before starting any supplement regimen, especially if you have medical conditions or take medications."
+      a: "No. SmartSupp provides educational information only. Always consult your healthcare provider before starting any supplement regimen, especially if you have medical conditions or take medications."
     },
     {
-      q: "How accurate is the SuppStack AI?",
+      q: "How accurate is the SmartSupp AI?",
       a: "Our recommendations are based on peer-reviewed research and evidence-based guidelines. However, individual responses vary. We provide a strong starting point—adjust based on your results and healthcare provider input."
     },
     {
@@ -47,7 +47,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </h1>
           <p className="text-xl text-gray-600">
-            Everything you need to know about SimpleSupp.
+            Everything you need to know about SmartSupp.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function FAQ() {
           ))}
         </div>
 
-        <div className="mt-12 bg-gradient-to-br from-primary/10 to-purple/10 rounded-2xl p-8 border border-primary/20 text-center">
+        <div className="mt-12 bg-gradient-to-br from-primary/10 via-accent/10 to-violet/10 rounded-2xl p-8 border border-primary/20 text-center">
           <h3 className="text-2xl font-bold text-gray-900 mb-2">
             Still Have Questions?
           </h3>
@@ -87,7 +87,7 @@ export default function FAQ() {
           </p>
           <a
             href="/contact"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
           >
             Contact Us
           </a>

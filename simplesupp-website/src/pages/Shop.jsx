@@ -18,10 +18,10 @@ export default function Shop() {
         <div className="text-center mb-12">
           <Store className="mx-auto mb-6 text-primary" size={64} />
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Shop Coming Soon
+            SmartSupp Store Coming Soon
           </h1>
           <p className="text-xl text-gray-600">
-            We're integrating our Shopify store so you can check out fast.
+            We're integrating with Supliful so you can shop high-quality supplements fast.
           </p>
         </div>
 
@@ -51,14 +51,14 @@ export default function Shop() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-primary/10 to-purple/10 rounded-2xl p-8 border border-primary/20">
+        <div className="bg-gradient-to-br from-primary/10 via-accent/10 to-violet/10 rounded-2xl p-8 border border-primary/20">
           <div className="text-center">
-            <Bell className="mx-auto mb-4 text-primary" size={48} />
+            <Bell className="mx-auto mb-4 text-accent" size={48} />
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               Notify Me When Live
             </h3>
             <p className="text-gray-600 mb-6">
-              Be the first to know when our shop goes live!
+              Be the first to know when the SmartSupp store goes live!
             </p>
 
             <form onSubmit={handleNotify} className="max-w-md mx-auto">
@@ -68,12 +68,12 @@ export default function Shop() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none"
+                  className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none"
                   required
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                  className="px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
                 >
                   Notify Me
                 </button>

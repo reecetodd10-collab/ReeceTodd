@@ -9,7 +9,7 @@ export default function About() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Why I Built SimpleSupp
+            Why I Built SmartSupp
           </h1>
         </div>
 
@@ -17,29 +17,29 @@ export default function About() {
         <div className="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-gray-200 mb-12">
           <div className="prose prose-lg max-w-none">
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              I am <strong>Reece Todd</strong>, a passionate fitness person who learned how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
+              I am <strong>Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Whether you are into fitness or just want to feel better—muscle, strength, energy, overall health, or slimming down—there are a million paths. The problem? <strong>It's confusing to start.</strong>
+              I built <strong>SmartSupp</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — SmartSupp's AI creates your perfect starting stack instantly.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              That's why I built <strong>Supplement Stack Intelligence</strong>. You share your goals and basics, and we generate an optimal starting stack to support you—immediately.
+              The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong>That confusion ends here.</strong>
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
-              What I love most: if you are brand-new and do not know where to begin, this gets you on the right track fast. No confusion, no overwhelm—just a clear plan you can actually follow.
+              What I love most: if you are brand-new and do not know where to begin, SmartSupp gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
             </p>
           </div>
 
           {/* Photo Placeholder */}
-          <div className="mt-8 p-8 bg-gradient-to-br from-primary/10 to-purple/10 rounded-xl text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-primary to-purple rounded-full flex items-center justify-center text-white text-4xl font-bold">
+          <div className="mt-8 p-8 bg-gradient-to-r from-primary/10 via-accent/10 to-violet/10 rounded-xl text-center">
+            <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-r from-primary via-accent to-violet rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg shadow-accent/30">
               RT
             </div>
-            <p className="text-gray-600">Reece Todd</p>
-            <p className="text-sm text-gray-500">Founder, SimpleSupp</p>
+            <p className="text-gray-600 font-semibold">Reece Todd</p>
+            <p className="text-sm text-gray-500">Founder, SmartSupp</p>
           </div>
         </div>
 
@@ -65,18 +65,18 @@ export default function About() {
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-gradient-to-br from-primary to-purple text-white rounded-2xl p-8">
+        <div className="text-center bg-gradient-to-r from-primary via-accent to-violet text-white rounded-2xl p-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
             Ready to Start Your Journey?
           </h2>
-          <p className="text-lg mb-6 text-gray-100">
+          <p className="text-lg mb-6 text-slate-100">
             Get your personalized supplement stack in 2 minutes.
           </p>
           <Link
             to="/suppstack-ai"
-            className="inline-flex items-center px-8 py-3 bg-white text-primary rounded-lg font-bold hover:shadow-2xl transition-all"
+            className="inline-flex items-center px-8 py-3 bg-white text-primary rounded-lg font-bold hover:shadow-2xl hover:scale-105 transition-all"
           >
-            Try SuppStack AI <ArrowRight className="ml-2" size={20} />
+            Try SmartSupp AI <ArrowRight className="ml-2" size={20} />
           </Link>
         </div>
       </div>
