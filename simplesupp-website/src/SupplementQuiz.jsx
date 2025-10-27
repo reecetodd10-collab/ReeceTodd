@@ -1,422 +1,39 @@
 import React, { useState } from 'react';
 import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check } from 'lucide-react';
+import { products, PRODUCT_CATEGORIES } from './data/products';
 
-// EXPANDED SUPPLEMENT DATABASE - 30 Supplements
-const SUPPLEMENT_DATABASE = {
-  // MUSCLE & STRENGTH (8)
-  'Creatine Monohydrate': {
-    category: 'muscle',
-    info: 'Most researched sports supplement. Increases ATP production for explosive strength and power output.',
-    dosage: '5g daily',
-    timing: 'Anytime (consistent daily use)',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_CREATINE_ID', // Replace with actual Supliful product ID
-    price: 24.99,
-    image: 'creatine'
-  },
-  'Whey Protein Isolate': {
-    category: 'muscle',
-    info: 'Fast-digesting protein with all essential amino acids. Optimal for muscle protein synthesis.',
-    dosage: '25-40g',
-    timing: 'Post-workout or between meals',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_WHEY_ID',
-    price: 39.99,
-    image: 'protein'
-  },
-  'Pre-Workout Formula': {
-    category: 'muscle',
-    info: 'Contains caffeine, citrulline, and beta-alanine for energy, pumps, and endurance.',
-    dosage: '1 scoop (varies)',
-    timing: '30 min before workout',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_PREWORKOUT_ID',
-    price: 34.99,
-    image: 'preworkout'
-  },
-  'BCAAs': {
-    category: 'muscle',
-    info: 'Branched-chain amino acids (leucine, isoleucine, valine) that may reduce muscle breakdown.',
-    dosage: '5-10g',
-    timing: 'Intra-workout or between meals',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_BCAA_ID',
-    price: 29.99,
-    image: 'bcaa'
-  },
-  'L-Citrulline': {
-    category: 'muscle',
-    info: 'Boosts nitric oxide production for better pumps, blood flow, and nutrient delivery.',
-    dosage: '6-8g',
-    timing: 'Pre-workout',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_CITRULLINE_ID',
-    price: 27.99,
-    image: 'citrulline'
-  },
-  'Beta-Alanine': {
-    category: 'athletic',
-    info: 'Buffers lactic acid buildup, allowing more reps and training volume.',
-    dosage: '3-5g',
-    timing: 'Pre-workout or split throughout day',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_BETAALANINE_ID',
-    price: 22.99,
-    image: 'betaalanine'
-  },
-  'HMB': {
-    category: 'muscle',
-    info: 'Beta-hydroxy beta-methylbutyrate helps preserve muscle during calorie deficits.',
-    dosage: '3g',
-    timing: 'Daily with meals',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_HMB_ID',
-    price: 32.99,
-    image: 'supplement'
-  },
-  'EAAs': {
-    category: 'muscle',
-    info: 'All 9 essential amino acids for complete muscle recovery and growth support.',
-    dosage: '10-15g',
-    timing: 'Intra-workout or fasted training',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_EAA_ID',
-    price: 34.99,
-    image: 'supplement'
-  },
+// Convert products.js catalog to quiz format
+const createSupplementDatabase = () => {
+  const database = {};
 
-  // FAT LOSS & METABOLISM (6)
-  'Caffeine': {
-    category: 'fatloss',
-    info: 'Increases metabolic rate, fat oxidation, and exercise performance.',
-    dosage: '200-400mg',
-    timing: 'Morning or pre-workout',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_CAFFEINE_ID',
-    price: 14.99,
-    image: 'caffeine'
-  },
-  'Green Tea Extract': {
-    category: 'fatloss',
-    info: 'Contains EGCG catechins that boost metabolism and fat burning.',
-    dosage: '400-500mg EGCG',
-    timing: 'Morning with food',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_GREENTEA_ID',
-    price: 19.99,
-    image: 'greentea'
-  },
-  'L-Carnitine': {
-    category: 'fatloss',
-    info: 'Transports fatty acids into mitochondria for energy production.',
-    dosage: '2-3g',
-    timing: 'Pre-workout or morning',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_CARNITINE_ID',
-    price: 24.99,
-    image: 'supplement'
-  },
-  'CLA': {
-    category: 'fatloss',
-    info: 'Conjugated linoleic acid may support fat loss and lean muscle retention.',
-    dosage: '3-6g',
-    timing: 'With meals',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_CLA_ID',
-    price: 21.99,
-    image: 'supplement'
-  },
-  'Fiber Supplement': {
-    category: 'fatloss',
-    info: 'Promotes satiety, digestive health, and helps control appetite.',
-    dosage: '5-10g',
-    timing: 'Before meals',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_FIBER_ID',
-    price: 16.99,
-    image: 'fiber'
-  },
-  'Apple Cider Vinegar': {
-    category: 'fatloss',
-    info: 'May support blood sugar control and appetite regulation.',
-    dosage: '1-2 gummies or capsules',
-    timing: 'Before meals',
-    priority: 'Low',
-    suplifulId: 'SUPLIFUL_ACV_ID',
-    price: 18.99,
-    image: 'supplement'
-  },
+  // Map categories from products.js to quiz categories
+  const categoryMap = {
+    [PRODUCT_CATEGORIES.PERFORMANCE]: 'muscle',
+    [PRODUCT_CATEGORIES.WEIGHT_LOSS]: 'fatloss',
+    [PRODUCT_CATEGORIES.HEALTH]: 'longevity',
+    [PRODUCT_CATEGORIES.RECOVERY]: 'sleep',
+    [PRODUCT_CATEGORIES.FOCUS]: 'focus',
+    [PRODUCT_CATEGORIES.BEAUTY]: 'beauty'
+  };
 
-  // BEAUTY & ANTI-AGING (5)
-  'Collagen Peptides': {
-    category: 'beauty',
-    info: 'Type I and III collagen for skin elasticity, joint health, and hair strength.',
-    dosage: '10-20g',
-    timing: 'Morning on empty stomach',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_COLLAGEN_ID',
-    price: 34.99,
-    image: 'collagen'
-  },
-  'Biotin': {
-    category: 'beauty',
-    info: 'B-vitamin essential for keratin production, supporting hair, skin, and nail health.',
-    dosage: '5000-10000 mcg',
-    timing: 'Morning with food',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_BIOTIN_ID',
-    price: 15.99,
-    image: 'biotin'
-  },
-  'Hyaluronic Acid': {
-    category: 'beauty',
-    info: 'Promotes skin hydration and reduces fine lines from within.',
-    dosage: '100-200mg',
-    timing: 'Morning',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_HA_ID',
-    price: 26.99,
-    image: 'supplement'
-  },
-  'Vitamin C': {
-    category: 'beauty',
-    info: 'Antioxidant that supports collagen synthesis and skin brightness.',
-    dosage: '1000mg',
-    timing: 'Morning with food',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_VITC_ID',
-    price: 12.99,
-    image: 'vitaminc'
-  },
-  'Keratin': {
-    category: 'beauty',
-    info: 'Protein building block for strong hair and nails.',
-    dosage: '500-1000mg',
-    timing: 'Morning',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_KERATIN_ID',
-    price: 28.99,
-    image: 'supplement'
-  },
+  products.filter(p => p.active).forEach(product => {
+    database[product.name] = {
+      category: categoryMap[product.category] || 'longevity',
+      info: product.description,
+      dosage: product.dosage,
+      timing: product.timing || 'As directed',
+      priority: product.priority === 'essential' ? 'Essential' : product.priority === 'high' ? 'High' : 'Medium',
+      suplifulId: product.id,
+      price: product.price,
+      image: 'supplement'
+    };
+  });
 
-  // SLEEP & RECOVERY (5)
-  'Magnesium Glycinate': {
-    category: 'sleep',
-    info: 'Most absorbable magnesium form. Relaxes muscles, calms nervous system, deepens sleep.',
-    dosage: '300-400mg elemental',
-    timing: '1 hour before bed',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_MAGNESIUM_ID',
-    price: 19.99,
-    image: 'magnesium'
-  },
-  'L-Theanine': {
-    category: 'sleep',
-    info: 'Amino acid from tea that promotes relaxation without drowsiness.',
-    dosage: '200-400mg',
-    timing: 'Before bed or with caffeine',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_THEANINE_ID',
-    price: 22.99,
-    image: 'theanine'
-  },
-  'Melatonin': {
-    category: 'sleep',
-    info: 'Hormone that regulates sleep-wake cycle. Start with low dose.',
-    dosage: '0.5-3mg',
-    timing: '30-60 min before bed',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_MELATONIN_ID',
-    price: 11.99,
-    image: 'melatonin'
-  },
-  'Ashwagandha': {
-    category: 'sleep',
-    info: 'Adaptogen that reduces cortisol, stress, and improves sleep quality.',
-    dosage: '300-600mg',
-    timing: 'Evening or before bed',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_ASHWA_ID',
-    price: 23.99,
-    image: 'supplement'
-  },
-  'ZMA': {
-    category: 'sleep',
-    info: 'Zinc, Magnesium, B6 combo for deeper sleep and testosterone support.',
-    dosage: 'As directed on label',
-    timing: 'Before bed on empty stomach',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_ZMA_ID',
-    price: 18.99,
-    image: 'supplement'
-  },
-
-  // FOCUS & BRAIN (4)
-  'Caffeine + L-Theanine Combo': {
-    category: 'focus',
-    info: 'Synergistic combo for smooth energy, focus, and mental clarity without jitters.',
-    dosage: '100-200mg each',
-    timing: 'Morning or when focus needed',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_CAFTHEANINE_ID',
-    price: 24.99,
-    image: 'supplement'
-  },
-  'Alpha-GPC': {
-    category: 'focus',
-    info: 'Choline compound that boosts acetylcholine for memory and cognitive function.',
-    dosage: '300-600mg',
-    timing: 'Morning with food',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_ALPHAGPC_ID',
-    price: 32.99,
-    image: 'alphagpc'
-  },
-  'Lions Mane Mushroom': {
-    category: 'focus',
-    info: 'Medicinal mushroom that supports nerve growth factor and brain health.',
-    dosage: '500-1000mg',
-    timing: 'Morning',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_LIONSMANE_ID',
-    price: 27.99,
-    image: 'lionsmane'
-  },
-  'Rhodiola Rosea': {
-    category: 'focus',
-    info: 'Adaptogen that reduces mental fatigue and improves focus under stress.',
-    dosage: '200-400mg',
-    timing: 'Morning on empty stomach',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_RHODIOLA_ID',
-    price: 21.99,
-    image: 'supplement'
-  },
-
-  // LONGEVITY & WELLNESS (7)
-  'Omega-3 Fish Oil': {
-    category: 'longevity',
-    info: 'EPA and DHA fatty acids for heart health, brain function, and inflammation reduction.',
-    dosage: '2-3g EPA+DHA',
-    timing: 'With meals',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_OMEGA3_ID',
-    price: 29.99,
-    image: 'omega3'
-  },
-  'Vitamin D3 + K2': {
-    category: 'longevity',
-    info: 'D3 for immunity and bones, K2 directs calcium to bones (not arteries).',
-    dosage: '2000-4000 IU D3 + 100mcg K2',
-    timing: 'With fat-containing meal',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_D3K2_ID',
-    price: 19.99,
-    image: 'vitamind'
-  },
-  'Complete Multivitamin': {
-    category: 'longevity',
-    info: 'Comprehensive micronutrient insurance for daily health optimization.',
-    dosage: 'As directed',
-    timing: 'With breakfast',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_MULTI_ID',
-    price: 24.99,
-    image: 'multivitamin'
-  },
-  'CoQ10': {
-    category: 'longevity',
-    info: 'Antioxidant that supports cellular energy production and heart health.',
-    dosage: '100-200mg',
-    timing: 'With meals',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_COQ10_ID',
-    price: 34.99,
-    image: 'coq10'
-  },
-  'Turmeric Curcumin': {
-    category: 'longevity',
-    info: 'Powerful anti-inflammatory with black pepper extract for absorption.',
-    dosage: '500-1000mg',
-    timing: 'With meals',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_TURMERIC_ID',
-    price: 22.99,
-    image: 'supplement'
-  },
-  'Probiotics': {
-    category: 'longevity',
-    info: 'Beneficial bacteria for gut health, immunity, and digestion.',
-    dosage: '10-50 billion CFU',
-    timing: 'Morning on empty stomach',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_PROBIOTICS_ID',
-    price: 31.99,
-    image: 'supplement'
-  },
-  'Vitamin B12': {
-    category: 'longevity',
-    info: 'Essential for energy production, nerve function, and DNA synthesis. Critical for vegans.',
-    dosage: '1000mcg',
-    timing: 'Morning',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_B12_ID',
-    price: 13.99,
-    image: 'b12'
-  },
-
-  // ATHLETIC PERFORMANCE (5)
-  'Electrolyte Formula': {
-    category: 'athletic',
-    info: 'Sodium, potassium, magnesium for hydration, performance, and cramp prevention.',
-    dosage: 'During training',
-    timing: 'Intra-workout',
-    priority: 'Essential',
-    suplifulId: 'SUPLIFUL_ELECTROLYTE_ID',
-    price: 19.99,
-    image: 'electrolyte'
-  },
-  'Beetroot Powder': {
-    category: 'athletic',
-    info: 'Natural nitrates boost nitric oxide for endurance and blood flow.',
-    dosage: '500mg nitrates',
-    timing: '2-3 hours before activity',
-    priority: 'High',
-    suplifulId: 'SUPLIFUL_BEETROOT_ID',
-    price: 26.99,
-    image: 'supplement'
-  },
-  'Cordyceps Mushroom': {
-    category: 'athletic',
-    info: 'Adaptogenic mushroom that enhances oxygen utilization and stamina.',
-    dosage: '1000-3000mg',
-    timing: 'Pre-workout',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_CORDYCEPS_ID',
-    price: 29.99,
-    image: 'supplement'
-  },
-  'Tart Cherry Extract': {
-    category: 'athletic',
-    info: 'Reduces muscle soreness and inflammation post-exercise.',
-    dosage: '480mg',
-    timing: 'Post-workout or before bed',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_CHERRY_ID',
-    price: 24.99,
-    image: 'supplement'
-  },
-  'Glutamine': {
-    category: 'athletic',
-    info: 'Amino acid for gut health, immune function, and recovery in intense training.',
-    dosage: '5-10g',
-    timing: 'Post-workout or before bed',
-    priority: 'Medium',
-    suplifulId: 'SUPLIFUL_GLUTAMINE_ID',
-    price: 21.99,
-    image: 'supplement'
-  }
+  return database;
 };
+
+const SUPPLEMENT_DATABASE = createSupplementDatabase();
+
 
 export default function SupplementAdvisor() {
   const [showLanding, setShowLanding] = useState(true);
@@ -570,28 +187,28 @@ export default function SupplementAdvisor() {
       }
     };
 
-    // GOAL-BASED RECOMMENDATIONS
+    // GOAL-BASED RECOMMENDATIONS (using actual products from catalog)
     if (primaryGoal === 'muscle') {
       addSupplement('Creatine Monohydrate', 'Gold standard for strength and power gains');
-      addSupplement('Whey Protein Isolate', 'Fast protein for muscle protein synthesis');
+      addSupplement('Whey Protein Isolate (Chocolate)', 'Fast protein for muscle protein synthesis');
       addSupplement('Pre-Workout Formula', 'Intense workouts and better pumps');
-      addSupplement('L-Citrulline', 'Enhanced blood flow and nutrient delivery');
-      if (needsRecovery) addSupplement('BCAAs', 'Extra recovery for frequent training');
-      if (formData.healthGoals.includes('Power Output')) addSupplement('Beta-Alanine', 'Increase training volume');
+      addSupplement('BCAAs', 'Enhanced recovery and muscle preservation');
+      if (needsRecovery) addSupplement('L-Glutamine', 'Extra recovery for frequent training');
+      if (formData.healthGoals.includes('Better Pumps')) addSupplement('Beetroot', 'Enhanced blood flow and pumps');
       insights.push('Progressive overload - increase weight weekly', 'Eat 200-500 calories above maintenance', 'Prioritize 7-9 hours sleep for recovery');
     }
 
     else if (primaryGoal === 'fatloss') {
-      addSupplement('Caffeine', 'Boosts metabolism and fat burning');
+      addSupplement('Fat Burner with MCT', 'Boosts metabolism and fat burning');
       addSupplement('Green Tea Extract', 'Increases fat oxidation');
-      addSupplement('Whey Protein Isolate', 'Preserves muscle, increases satiety');
-      addSupplement('L-Carnitine', 'Helps transport fat for energy');
-      if (formData.biggestChallenge === 'appetite') addSupplement('Fiber Supplement', 'Helps you feel full longer');
+      addSupplement('Whey Protein Isolate (Vanilla)', 'Preserves muscle, increases satiety');
+      addSupplement('Keto BHB', 'Supports fat burning and clean energy');
+      if (formData.biggestChallenge === 'appetite') addSupplement('Fiber Supplement (Gut Health)', 'Helps you feel full longer');
       insights.push('Deficit of 300-500 calories for sustainable fat loss', 'Keep protein high (1g per lb bodyweight)', 'Combine resistance training with cardio');
     }
 
     else if (primaryGoal === 'tone') {
-      addSupplement('Whey Protein Isolate', 'Builds lean muscle for toned look');
+      addSupplement('Whey Protein Isolate (Chocolate)', 'Builds lean muscle for toned look');
       addSupplement('Collagen Peptides', 'Supports skin and lean tone');
       addSupplement('Green Tea Extract', 'Gentle metabolism boost');
       insights.push('Moderate deficit: 200-300 calories', 'Mix resistance with cardio 4-5x weekly', 'Stay consistent for 8-12 weeks');
@@ -599,44 +216,41 @@ export default function SupplementAdvisor() {
 
     else if (primaryGoal === 'athletic') {
       addSupplement('Creatine Monohydrate', 'Explosive power and speed');
-      addSupplement('Beta-Alanine', 'Delays fatigue, improves performance');
-      addSupplement('Electrolyte Formula', 'Prevents dehydration and cramping');
+      addSupplement('Pre-Workout Formula', 'Delays fatigue, improves performance');
+      addSupplement('Electrolyte Formula (Lemonade)', 'Prevents dehydration and cramping');
       addSupplement('Beetroot Powder', 'Boosts endurance and oxygen use');
-      if (needsRecovery) addSupplement('Tart Cherry Extract', 'Reduces muscle soreness');
+      if (needsRecovery) addSupplement('Platinum Turmeric', 'Reduces muscle soreness and inflammation');
       insights.push('Recovery is crucial - 7-9 hours sleep', 'Periodize training for peak performance', 'Stay hydrated: 0.5-1 oz per lb bodyweight');
     }
 
     else if (primaryGoal === 'beauty') {
       addSupplement('Collagen Peptides', 'Improves skin elasticity and hydration');
-      addSupplement('Biotin', 'Strengthens hair growth and nails');
+      addSupplement('Hyaluronic Acid Serum', 'Intense skin hydration from within');
       addSupplement('Omega-3 Fish Oil', 'Reduces inflammation, adds glow');
-      addSupplement('Hyaluronic Acid', 'Skin hydration from within');
-      addSupplement('Vitamin C', 'Collagen synthesis and brightness');
+      addSupplement('Vitamin Glow Serum', 'Brightens and evens skin tone');
       insights.push('Beauty supplements need 8-12 weeks consistency', 'Hydrate: 8+ glasses water daily', 'Protect skin with SPF daily');
     }
 
     else if (primaryGoal === 'sleep') {
       addSupplement('Magnesium Glycinate', 'Relaxes muscles, deepens sleep');
-      addSupplement('L-Theanine', 'Calms racing thoughts');
-      addSupplement('Melatonin', 'Regulates sleep-wake cycle');
+      addSupplement('Sleep Support (Melatonin)', 'Regulates sleep-wake cycle');
       addSupplement('Ashwagandha', 'Reduces stress and cortisol');
       insights.push('No screens 1 hour before bed', 'Keep bedroom cool (65-68°F)', 'Consistent sleep schedule, even weekends');
     }
 
     else if (primaryGoal === 'focus') {
-      addSupplement('Caffeine + L-Theanine Combo', 'Smooth energy without jitters');
-      addSupplement('Alpha-GPC', 'Boosts memory and clarity');
-      addSupplement('Lions Mane Mushroom', 'Supports brain health long-term');
-      addSupplement('Rhodiola Rosea', 'Reduces mental fatigue');
+      addSupplement("Lion's Mane Mushroom", 'Supports brain health and cognitive function');
+      addSupplement('Green Tea Extract', 'Smooth energy and mental clarity');
+      addSupplement('Omega-3 Fish Oil', 'Supports brain function and focus');
       insights.push('Time deep work during peak focus hours', 'Take breaks every 90 minutes', 'Stay hydrated for mental performance');
     }
 
     else if (primaryGoal === 'longevity') {
       addSupplement('Omega-3 Fish Oil', 'Heart health and brain function');
-      addSupplement('Vitamin D3 + K2', 'Bone health and immunity');
-      addSupplement('Complete Multivitamin', 'Micronutrient insurance');
+      addSupplement('Complete MultiVitamin', 'Micronutrient insurance');
       addSupplement('CoQ10', 'Cellular energy and heart support');
-      addSupplement('Turmeric Curcumin', 'Anti-inflammatory powerhouse');
+      addSupplement('Probiotics 40 Billion', 'Gut health and immunity');
+      addSupplement('Platinum Turmeric', 'Anti-inflammatory powerhouse');
       insights.push('Longevity is 80% lifestyle habits', 'Exercise 150+ min per week', 'Prioritize sleep, stress management, nutrition');
     }
 
@@ -646,7 +260,10 @@ export default function SupplementAdvisor() {
     }
 
     if (isVeganVeg) {
-      addSupplement('Vitamin B12', 'Essential for vegans/vegetarians');
+      // Note: No B12 in current catalog, but we can add Multivitamin
+      if (!stack.find(s => s.name.includes('MultiVitamin'))) {
+        addSupplement('Complete MultiVitamin', 'Essential micronutrients for vegans/vegetarians');
+      }
     }
 
     insights.push('Consistency beats perfection', 'Give supplements 8-12 weeks to work', '⚠️ ALWAYS consult healthcare provider first');
@@ -671,7 +288,7 @@ export default function SupplementAdvisor() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800">SimpleSupplement</h1>
+              <h1 className="text-4xl md:text-5xl font-extrabold font-display gradient-text">SmartStack</h1>
             </div>
 
             {/* Cart Button */}
@@ -783,13 +400,13 @@ export default function SupplementAdvisor() {
                     </div>
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-4">SimpleSupplement</h1>
+                <h1 className="text-5xl md:text-7xl font-extrabold font-display gradient-text mb-4">SmartStack AI</h1>
                 <p className="text-2xl text-gray-700 font-semibold">Your Personal Supplement Intelligence</p>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">Get a personalized supplement stack from our database of 30+ premium supplements</p>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">Get a personalized supplement stack from our database of 42+ premium supplements</p>
               </div>
               <div className="text-center space-y-4 max-w-xl mx-auto">
                 <button onClick={() => setShowLanding(false)} className="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xl font-semibold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-blue-500/50 transition-all">Get Your Stack →</button>
-                <p className="text-gray-500 text-sm">Free • 2 minutes • Science-backed • 30+ Supplements</p>
+                <p className="text-gray-500 text-sm">Free • 2 minutes • Science-backed • 42+ Supplements</p>
               </div>
             </div>
           )}
@@ -1025,10 +642,10 @@ export default function SupplementAdvisor() {
 
               <div className="text-center pt-6 border-t border-gray-200">
                 <p className="text-gray-500 text-xs mb-2">
-                  Powered by Supliful • 30+ Premium Supplements
+                  Powered by Supliful • 42 Premium Supplements
                 </p>
                 <p className="text-gray-400 text-xs">
-                  © 2025 SimpleSupplement • For educational purposes only
+                  © 2025 SmartStack • For educational purposes only
                 </p>
               </div>
             </div>

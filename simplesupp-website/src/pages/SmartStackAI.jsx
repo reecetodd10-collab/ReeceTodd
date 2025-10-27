@@ -1,6 +1,6 @@
 import React from 'react';
 import SupplementQuiz from '../SupplementQuiz';
-import { Sparkles, Brain, Target } from 'lucide-react';
+import { Pill, Brain, Target } from 'lucide-react';
 
 export default function SmartStackAI() {
   return (
@@ -13,18 +13,21 @@ export default function SmartStackAI() {
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Icon */}
+          {/* Pill Icon - matching home page style */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-white/20 rounded-2xl blur-xl"></div>
-              <div className="relative bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/20">
-                <Sparkles className="text-white" size={40} />
+              <div className="absolute inset-0 bg-white/30 rounded-2xl blur-xl animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-slate-900 via-gray-800 to-black p-4 rounded-2xl shadow-2xl border border-white/20">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-violet rounded-full blur-md opacity-50"></div>
+                  <Pill className="relative text-white fill-current glow-effect" size={40} />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display">
+          {/* Title - matching home page gradient */}
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display gradient-text bg-white bg-clip-text">
             SmartStack AI
           </h1>
 
