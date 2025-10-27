@@ -9,7 +9,8 @@ export default function Navigation() {
 
   const links = [
     { name: 'Home', path: '/' },
-    { name: 'SuppStack AI', path: '/suppstack-ai' },
+    { name: 'SmartStack AI', path: '/smartstack-ai' },
+    { name: 'SmartFitt', path: '/smartfitt' },
     { name: 'Shop', path: '/shop' },
     { name: 'Learn', path: '/learn' },
     { name: 'Reviews', path: '/reviews' },
@@ -35,7 +36,7 @@ export default function Navigation() {
                 to={link.path}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive(link.path)
-                    ? 'bg-gradient-to-r from-primary to-purple text-white'
+                    ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -45,8 +46,8 @@ export default function Navigation() {
           </div>
 
           <Link
-            to="/suppstack-ai"
-            className="hidden lg:block px-6 py-2.5 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/50 transition-all"
+            to="/smartstack-ai"
+            className="hidden lg:block px-6 py-2.5 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent/50 transition-all hover:scale-105"
           >
             Get Your Stack
           </Link>
@@ -68,7 +69,7 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-3 rounded-lg font-medium transition-all ${
                   isActive(link.path)
-                    ? 'bg-gradient-to-r from-primary to-purple text-white'
+                    ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -76,9 +77,9 @@ export default function Navigation() {
               </Link>
             ))}
             <Link
-              to="/suppstack-ai"
+              to="/smartstack-ai"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-3 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold text-center"
+              className="block px-4 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold text-center"
             >
               Get Your Stack
             </Link>

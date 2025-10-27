@@ -49,7 +49,7 @@ export default function Contact() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none transition"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none transition"
                     required
                   />
                 </div>
@@ -60,7 +60,7 @@ export default function Contact() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none transition"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none transition"
                     required
                   />
                 </div>
@@ -71,14 +71,14 @@ export default function Contact() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows="6"
-                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:outline-none transition"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-accent focus:outline-none transition"
                     required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center"
+                  className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center"
                 >
                   <Send size={20} className="mr-2" />
                   Send Message
@@ -94,17 +94,17 @@ export default function Contact() {
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <Mail className="text-primary mt-1 mr-4 flex-shrink-0" size={24} />
+                  <Mail className="text-accent mt-1 mr-4 flex-shrink-0" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <a href="mailto:hello@simplesupp.com" className="text-primary hover:underline">
-                      hello@simplesupp.com
+                    <a href="mailto:hello@smartsupp.com" className="text-accent hover:underline">
+                      hello@smartsupp.com
                     </a>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <Phone className="text-primary mt-1 mr-4 flex-shrink-0" size={24} />
+                  <Phone className="text-accent mt-1 mr-4 flex-shrink-0" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                     <p className="text-gray-600">Available via email only</p>
@@ -112,7 +112,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start">
-                  <MapPin className="text-primary mt-1 mr-4 flex-shrink-0" size={24} />
+                  <MapPin className="text-accent mt-1 mr-4 flex-shrink-0" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
                     <p className="text-gray-600">United States</p>
@@ -121,12 +121,12 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-primary to-purple text-white rounded-2xl p-8">
+            <div className="bg-gradient-to-r from-primary via-accent to-violet text-white rounded-2xl p-8">
               <h3 className="text-2xl font-bold mb-3">Response Time</h3>
-              <p className="text-gray-100 mb-4">
+              <p className="text-slate-100 mb-4">
                 We typically respond within 24 hours during business days.
               </p>
-              <p className="text-sm text-gray-200">
+              <p className="text-sm text-slate-200">
                 For urgent supplement questions, please consult your healthcare provider.
               </p>
             </div>

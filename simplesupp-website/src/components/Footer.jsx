@@ -12,9 +12,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><Link to="/suppstack-ai" className="hover:text-white transition">SuppStack AI</Link></li>
-              <li><Link to="/learn" className="hover:text-white transition">Learn</Link></li>
-              <li><Link to="/reviews" className="hover:text-white transition">Reviews</Link></li>
+              <li><Link to="/smartstack-ai" className="hover:text-accent transition">SmartSupp AI</Link></li>
+              <li><Link to="/learn" className="hover:text-accent transition">Learn</Link></li>
+              <li><Link to="/reviews" className="hover:text-accent transition">Reviews</Link></li>
             </ul>
           </div>
 
@@ -22,8 +22,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><Link to="/about" className="hover:text-white transition">About</Link></li>
-              <li><Link to="/contact" className="hover:text-white transition">Contact</Link></li>
+              <li><Link to="/about" className="hover:text-accent transition">About</Link></li>
+              <li><Link to="/contact" className="hover:text-accent transition">Contact</Link></li>
             </ul>
           </div>
 
@@ -31,8 +31,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Legal</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-white transition">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-accent transition">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-accent transition">Terms of Service</a></li>
             </ul>
           </div>
 
@@ -44,13 +44,16 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm">&copy; 2025 SimpleSupp. All rights reserved.</p>
+          <div className="text-center md:text-left">
+            <p className="text-sm">&copy; 2025 SmartSupp. All rights reserved.</p>
+            <p className="text-xs text-gray-500 mt-1">Smart supplements for smart goals.</p>
+          </div>
 
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white transition"><Facebook size={20} /></a>
-            <a href="#" className="hover:text-white transition"><Twitter size={20} /></a>
-            <a href="#" className="hover:text-white transition"><Instagram size={20} /></a>
-            <a href="#" className="hover:text-white transition"><Youtube size={20} /></a>
+            <a href="#" className="hover:text-accent transition"><Facebook size={20} /></a>
+            <a href="#" className="hover:text-accent transition"><Twitter size={20} /></a>
+            <a href="#" className="hover:text-accent transition"><Instagram size={20} /></a>
+            <a href="#" className="hover:text-accent transition"><Youtube size={20} /></a>
           </div>
         </div>
       </div>

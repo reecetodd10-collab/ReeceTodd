@@ -15,28 +15,28 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-900 via-primary to-slate-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
           <motion.div className="text-center space-y-8" {...fadeInUp}>
             <div className="flex justify-center">
-              <PillLogo size="large" />
+              <PillLogo size="large" shimmer={true} />
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-              Personalized Supplement Stacks<br />
-              <span className="text-accent">Made Simple.</span>
+              Meet SmartSupp<br />
+              <span className="text-accent">Your AI-powered supplement advisor</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-              Tell us your goals and basics, and our Supplement Stack Intelligence builds a clear starting plan you can actually follow.
+            <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mx-auto">
+              Smart supplements for smart goals. Get the perfect stack for your goals — built in minutes by AI.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                to="/suppstack-ai"
-                className="px-8 py-4 bg-gradient-to-r from-primary to-purple text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:shadow-primary/50 transition-all flex items-center"
+                to="/smartstack-ai"
+                className="px-8 py-4 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 flex items-center"
               >
                 Get Your Stack <ArrowRight className="ml-2" size={20} />
               </Link>
@@ -60,11 +60,11 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle size={20} className="text-accent" />
-                <span>30+ supplements analyzed</span>
+                <span>40+ supplements analyzed</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle size={20} className="text-accent" />
-                <span>No spam</span>
+                <span>No spam, ever</span>
               </div>
             </div>
           </motion.div>
@@ -83,10 +83,10 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 border border-primary/10"
+              className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-primary/10"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-purple rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-primary/30">
                 1
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Share Goals & Basics</h3>
@@ -96,28 +96,28 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple/10"
+              className="text-center p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-violet-50 border border-accent/10"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-purple to-pink-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-accent to-violet rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-accent/30">
                 2
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">We Generate Your Stack</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">AI Builds Your Stack</h3>
               <p className="text-gray-600">
-                Our SuppStack Intelligence analyzes 30+ supplements and builds your optimal plan.
+                SmartSupp Intelligence analyzes 40+ supplements and builds your optimal plan.
               </p>
             </motion.div>
 
             <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-50 border border-accent/10"
+              className="text-center p-8 rounded-2xl bg-gradient-to-br from-violet-50 to-blue-50 border border-violet/10"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-accent to-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-violet to-primary rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-violet/30">
                 3
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Track & Refine</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Follow & Optimize</h3>
               <p className="text-gray-600">
-                Follow your plan, track progress, and adjust as you learn what works for you.
+                Get your personalized stack, track progress, and refine as you learn what works.
               </p>
             </motion.div>
           </div>
@@ -136,17 +136,17 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Dumbbell, title: 'Build Muscle & Strength', color: 'from-purple-500 to-pink-600' },
-              { icon: Brain, title: 'Improve Focus & Energy', color: 'from-cyan-500 to-blue-600' },
+              { icon: Dumbbell, title: 'Build Muscle & Strength', color: 'from-primary to-accent' },
+              { icon: Brain, title: 'Improve Focus & Energy', color: 'from-accent to-violet' },
               { icon: Heart, title: 'Overall Health & Longevity', color: 'from-green-500 to-emerald-600' },
-              { icon: Zap, title: 'Slim & Recomp', color: 'from-orange-500 to-red-600' }
+              { icon: Zap, title: 'Slim & Recomp', color: 'from-violet to-primary' }
             ].map((benefit, i) => (
               <motion.div
                 key={i}
                 className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all border border-gray-100"
                 whileHover={{ scale: 1.02 }}
               >
-                <div className={`w-12 h-12 mb-4 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center`}>
+                <div className={`w-12 h-12 mb-4 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center shadow-lg`}>
                   <benefit.icon className="text-white" size={24} />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">{benefit.title}</h3>
@@ -185,10 +185,10 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mb-3">{supp.desc}</p>
                 <p className="text-primary font-bold">{supp.price}</p>
                 <Link
-                  to="/suppstack-ai"
+                  to="/smartstack-ai"
                   className="mt-4 block text-center py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition"
                 >
-                  View in SuppStack AI
+                  View in SmartSupp AI
                 </Link>
               </div>
             ))}
@@ -226,17 +226,17 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-br from-primary to-purple text-white">
+      <section className="py-20 bg-gradient-to-r from-primary via-accent to-violet text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Ready for Your Personalized Stack?
           </h2>
-          <p className="text-xl mb-8 text-gray-100">
-            Join thousands who've simplified their supplement routine.
+          <p className="text-xl mb-8 text-slate-100">
+            Join thousands who have simplified their supplement routine with SmartSupp.
           </p>
           <Link
-            to="/suppstack-ai"
-            className="inline-flex items-center px-8 py-4 bg-white text-primary rounded-lg font-bold text-lg hover:shadow-2xl transition-all"
+            to="/smartstack-ai"
+            className="inline-flex items-center px-8 py-4 bg-white text-primary rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all"
           >
             Get Your Stack Now <ArrowRight className="ml-2" size={20} />
           </Link>
