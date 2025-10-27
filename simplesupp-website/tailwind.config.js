@@ -8,17 +8,15 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#4f46e5',
-          dark: '#4338ca',
-          light: '#6366f1',
+          DEFAULT: '#3b82f6', // blue-500
+          dark: '#2563eb',    // blue-600
+          light: '#60a5fa',   // blue-400
         },
         accent: {
-          DEFAULT: '#22d3ee',
-          dark: '#06b6d4',
+          DEFAULT: '#22d3ee', // cyan-400
+          dark: '#06b6d4',    // cyan-500
+          light: '#67e8f9',   // cyan-300
         },
-        purple: {
-          DEFAULT: '#7c3aed',
-        }
       },
       fontFamily: {
         sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
