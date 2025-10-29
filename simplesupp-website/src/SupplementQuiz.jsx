@@ -4,32 +4,45 @@ import { products, PRODUCT_CATEGORIES } from './data/products';
 
 // Convert products.js catalog to quiz format
 const createSupplementDatabase = () => {
-  const database = {};
+  try {
+    const database = {};
 
-  // Map categories from products.js to quiz categories
-  const categoryMap = {
-    [PRODUCT_CATEGORIES.PERFORMANCE]: 'muscle',
-    [PRODUCT_CATEGORIES.WEIGHT_LOSS]: 'fatloss',
-    [PRODUCT_CATEGORIES.HEALTH]: 'longevity',
-    [PRODUCT_CATEGORIES.RECOVERY]: 'sleep',
-    [PRODUCT_CATEGORIES.FOCUS]: 'focus',
-    [PRODUCT_CATEGORIES.BEAUTY]: 'beauty'
-  };
-
-  products.filter(p => p.active).forEach(product => {
-    database[product.name] = {
-      category: categoryMap[product.category] || 'longevity',
-      info: product.description,
-      dosage: product.dosage,
-      timing: product.timing || 'As directed',
-      priority: product.priority === 'essential' ? 'Essential' : product.priority === 'high' ? 'High' : 'Medium',
-      suplifulId: product.id,
-      price: product.price,
-      image: 'supplement'
+    // Map categories from products.js to quiz categories
+    const categoryMap = {
+      [PRODUCT_CATEGORIES.PERFORMANCE]: 'muscle',
+      [PRODUCT_CATEGORIES.WEIGHT_LOSS]: 'fatloss',
+      [PRODUCT_CATEGORIES.HEALTH]: 'longevity',
+      [PRODUCT_CATEGORIES.RECOVERY]: 'sleep',
+      [PRODUCT_CATEGORIES.FOCUS]: 'focus',
+      [PRODUCT_CATEGORIES.BEAUTY]: 'beauty'
     };
-  });
 
-  return database;
+    if (!products || !Array.isArray(products)) {
+      console.error('[SupplementQuiz] Products not loaded correctly');
+      return {};
+    }
+
+    products.filter(p => p && p.active).forEach(product => {
+      if (product && product.name) {
+        database[product.name] = {
+          category: categoryMap[product.category] || 'longevity',
+          info: product.description || 'Premium supplement',
+          dosage: product.dosage || 'As directed',
+          timing: product.timing || 'As directed',
+          priority: product.priority === 'essential' ? 'Essential' : product.priority === 'high' ? 'High' : 'Medium',
+          suplifulId: product.id,
+          price: product.price || 0,
+          image: 'supplement'
+        };
+      }
+    });
+
+    console.log('[SupplementQuiz] Database initialized with', Object.keys(database).length, 'products');
+    return database;
+  } catch (error) {
+    console.error('[SupplementQuiz] Error creating database:', error);
+    return {};
+  }
 };
 
 const SUPPLEMENT_DATABASE = createSupplementDatabase();
@@ -184,6 +197,8 @@ export default function SupplementAdvisor() {
           reason,
           priority: supp.priority
         });
+      } else {
+        console.warn('[SupplementQuiz] Product not found in database:', name);
       }
     };
 
