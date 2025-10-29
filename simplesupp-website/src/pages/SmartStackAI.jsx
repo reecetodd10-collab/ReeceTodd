@@ -1,6 +1,6 @@
 import React from 'react';
 import SupplementQuiz from '../SupplementQuiz';
-import { Pill, Brain, Target } from 'lucide-react';
+import { Pill, Brain, Target, Sparkles } from 'lucide-react';
 
 export default function SmartStackAI() {
   return (
@@ -27,7 +27,7 @@ export default function SmartStackAI() {
           </div>
 
           {/* Title - matching home page gradient */}
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display gradient-text bg-white bg-clip-text">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display text-white">
             SmartStack AI
           </h1>
 

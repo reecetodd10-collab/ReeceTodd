@@ -26,7 +26,7 @@ export default function SmartFitt() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display gradient-text">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display text-white">
             SmartFitt
           </h1>
 
