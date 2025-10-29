@@ -81,7 +81,7 @@ export default function Home() {
             <p className="text-xl text-gray-600">Simple. Smart. Personalized.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <motion.div
               className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-primary/10"
               whileHover={{ y: -5 }}
@@ -104,20 +104,33 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">AI Builds Your Stack</h3>
               <p className="text-gray-600">
-                SmartSupp Intelligence analyzes 40+ supplements and builds your optimal plan.
+                SmartSupp Intelligence analyzes 42+ supplements and builds your optimal plan.
               </p>
             </motion.div>
 
             <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-violet-50 to-blue-50 border border-violet/10"
+              className="text-center p-8 rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 border border-violet/10"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-violet to-primary rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-violet/30">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-violet to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-violet/30">
                 3
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Follow & Optimize</h3>
               <p className="text-gray-600">
                 Get your personalized stack, track progress, and refine as you learn what works.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="text-center p-8 rounded-2xl bg-gradient-to-br from-pink-50 to-blue-50 border border-pink-500/10"
+              whileHover={{ y: -5 }}
+            >
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-pink-500 to-primary rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-pink-500/30">
+                4
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Shop Seamlessly</h3>
+              <p className="text-gray-600">
+                Order premium supplements directly through our Supliful integration with fast shipping.
               </p>
             </motion.div>
           </div>
@@ -134,22 +147,47 @@ export default function Home() {
             <p className="text-xl text-gray-600">We've got you covered.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 gap-8">
             {[
-              { icon: Dumbbell, title: 'Build Muscle & Strength', color: 'from-primary to-accent' },
-              { icon: Brain, title: 'Improve Focus & Energy', color: 'from-accent to-violet' },
-              { icon: Heart, title: 'Overall Health & Longevity', color: 'from-green-500 to-emerald-600' },
-              { icon: Zap, title: 'Slim & Recomp', color: 'from-violet to-primary' }
+              {
+                icon: Dumbbell,
+                title: 'Build Muscle & Strength',
+                desc: 'Optimized stacks for size, power, and performance',
+                color: 'from-primary to-accent',
+                bgGradient: 'from-blue-500/10 via-cyan-500/10 to-blue-500/5'
+              },
+              {
+                icon: Brain,
+                title: 'Improve Focus & Energy',
+                desc: 'Mental clarity and sustained energy throughout the day',
+                color: 'from-accent to-violet',
+                bgGradient: 'from-cyan-500/10 via-violet-500/10 to-cyan-500/5'
+              },
+              {
+                icon: Heart,
+                title: 'Overall Health & Longevity',
+                desc: 'Foundation for disease prevention and vitality',
+                color: 'from-green-500 to-emerald-600',
+                bgGradient: 'from-green-500/10 via-emerald-500/10 to-green-500/5'
+              },
+              {
+                icon: Zap,
+                title: 'Slim & Recomp',
+                desc: 'Lean definition while maintaining muscle mass',
+                color: 'from-violet to-primary',
+                bgGradient: 'from-violet-500/10 via-primary/10 to-violet-500/5'
+              }
             ].map((benefit, i) => (
               <motion.div
                 key={i}
-                className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all border border-gray-100"
-                whileHover={{ scale: 1.02 }}
+                className={`p-8 bg-gradient-to-br ${benefit.bgGradient} rounded-2xl shadow-sm hover:shadow-xl transition-all border-2 border-white backdrop-blur-sm`}
+                whileHover={{ scale: 1.03, y: -5 }}
               >
-                <div className={`w-12 h-12 mb-4 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center shadow-lg`}>
-                  <benefit.icon className="text-white" size={24} />
+                <div className={`w-16 h-16 mb-6 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center shadow-lg shadow-${benefit.color}/30`}>
+                  <benefit.icon className="text-white" size={28} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">{benefit.title}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -168,29 +206,63 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Popular Supplements
+              Featured Supplements
             </h2>
             <p className="text-xl text-gray-600">Science-backed essentials in every stack</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: 'Creatine Monohydrate', desc: 'Most researched supplement for strength & power', price: '$24.99' },
-              { name: 'Whey Protein Isolate', desc: 'Fast protein for muscle recovery & growth', price: '$39.99' },
-              { name: 'Magnesium Glycinate', desc: 'Better sleep, recovery, and calm', price: '$19.99' },
-              { name: 'Omega-3 Fish Oil', desc: 'Heart health, brain function, inflammation', price: '$29.99' }
+              {
+                name: 'Creatine Monohydrate',
+                desc: 'Most researched supplement for strength & power',
+                price: '$33.90',
+                gradient: 'from-blue-500 via-cyan-500 to-blue-600',
+                icon: '💪'
+              },
+              {
+                name: 'Whey Protein Isolate',
+                desc: 'Fast protein for muscle recovery & growth',
+                price: '$44.49',
+                gradient: 'from-cyan-500 via-violet-500 to-cyan-600',
+                icon: '🥤'
+              },
+              {
+                name: 'Magnesium Glycinate',
+                desc: 'Better sleep, recovery, and calm',
+                price: '$24.90',
+                gradient: 'from-violet-500 via-purple-500 to-violet-600',
+                icon: '😴'
+              },
+              {
+                name: 'Omega-3 Fish Oil',
+                desc: 'Heart health, brain function, inflammation',
+                price: '$23.90',
+                gradient: 'from-emerald-500 via-green-500 to-emerald-600',
+                icon: '❤️'
+              }
             ].map((supp, i) => (
-              <div key={i} className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-gray-900 mb-2">{supp.name}</h3>
-                <p className="text-sm text-gray-600 mb-3">{supp.desc}</p>
-                <p className="text-primary font-bold">{supp.price}</p>
-                <Link
-                  to="/smartstack-ai"
-                  className="mt-4 block text-center py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition"
-                >
-                  View in SmartSupp AI
-                </Link>
-              </div>
+              <motion.div
+                key={i}
+                className="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all border-2 border-gray-100 hover:border-transparent overflow-hidden relative"
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${supp.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+                <div className="relative z-10">
+                  <div className="text-4xl mb-4">{supp.icon}</div>
+                  <h3 className="font-bold text-gray-900 mb-2 text-lg">{supp.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{supp.desc}</p>
+                  <p className={`text-2xl font-bold mb-4 bg-gradient-to-r ${supp.gradient} bg-clip-text text-transparent`}>
+                    {supp.price}
+                  </p>
+                  <Link
+                    to="/shop"
+                    className={`block text-center py-3 px-4 bg-gradient-to-r ${supp.gradient} text-white rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-${supp.gradient}/30 transition-all transform hover:scale-105`}
+                  >
+                    Add to Cart
+                  </Link>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
