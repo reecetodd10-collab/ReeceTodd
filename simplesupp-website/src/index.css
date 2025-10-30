@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -216,4 +216,78 @@ body {
     transform: none !important;
     transition: none !important;
   }
+}
+
+/* ========================================
+   PREMIUM GLASS-MORPHISM & EFFECTS
+   ======================================== */
+
+/* Glass-morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Premium shadows */
+.shadow-premium {
+  box-shadow: 0 20px 60px -12px rgba(37, 99, 235, 0.15),
+              0 8px 16px -8px rgba(37, 99, 235, 0.1);
+}
+
+.shadow-premium-lg {
+  box-shadow: 0 30px 80px -20px rgba(37, 99, 235, 0.2),
+              0 12px 24px -12px rgba(37, 99, 235, 0.15);
+}
+
+/* Modern serif heading utility */
+.font-display-serif {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Premium gradient text */
+.text-gradient-premium {
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Icon container premium style */
+.icon-premium {
+  position: relative;
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px -10px rgba(37, 99, 235, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -10px rgba(37, 99, 235, 0.4);
+}
+
+/* Premium card hover effect */
+.card-premium {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 30px 80px -20px rgba(37, 99, 235, 0.25);
+}
+
+/* Smooth elastic transition */
+.transition-elastic {
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
