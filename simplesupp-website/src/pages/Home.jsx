@@ -1,62 +1,95 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, Pill, ShoppingCart, Award } from 'lucide-react';
 import PillLogo from '../components/PillLogo';
-import EmailCapture from '../components/EmailCapture';
 import ParallaxLayer from '../components/ParallaxLayer';
+import PromoBanner from '../components/PromoBanner';
+import SectionIndicators from '../components/SectionIndicators';
+import { useActiveSection } from '../hooks/useScrollAnimation';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 export default function Home() {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  };
+  // Define all sections for navigation
+  const sections = [
+    { id: 'hero', label: 'Home' },
+    { id: 'how-it-works', label: 'How It Works' },
+    { id: 'smartstack-ai', label: 'SmartStack AI' },
+    { id: 'smartfitt', label: 'SmartFitt' },
+    { id: 'shop', label: 'Shop' },
+    { id: 'benefits', label: 'Benefits' },
+  ];
+
+  // Track active section for indicators
+  const activeSection = useActiveSection(sections.map(s => s.id));
+
+  // Scroll animation hooks
+  const heroAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const howItWorksAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const smartstackAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const smartfittAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const shopAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const benefitsAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const ctaAnimation = useScrollAnimation({ threshold: 0.2, once: true });
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-primary to-slate-900 text-white overflow-hidden parallax-container">
-        {/* Parallax Background Layer - Very Subtle */}
-        <ParallaxLayer depth={10} speed={0.2} className="absolute inset-0">
-          <div className="w-full h-full bg-gradient-to-br from-slate-900 via-primary to-slate-900"></div>
-        </ParallaxLayer>
+    <>
+      {/* Promotional Banner */}
+      <PromoBanner />
 
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+      {/* Section Indicators */}
+      <SectionIndicators sections={sections} activeSection={activeSection} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          <motion.div className="text-center space-y-8" {...fadeInUp}>
-            {/* Parallax PillLogo - More Visible Float Effect */}
-            <ParallaxLayer depth={30} speed={0.8} className="flex justify-center">
+      <div className="scroll-snap-container">
+        {/* ========================================
+            HERO SECTION
+            ======================================== */}
+        <section
+          id="hero"
+          className="scroll-snap-section relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-primary to-slate-900 text-white overflow-hidden parallax-container"
+        >
+          <ParallaxLayer depth={10} speed={0.2} className="absolute inset-0">
+            <div className="w-full h-full bg-gradient-to-br from-slate-900 via-primary to-slate-900"></div>
+          </ParallaxLayer>
+
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+
+          <div
+            ref={heroAnimation.ref}
+            className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center slide-up ${heroAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <ParallaxLayer depth={30} speed={0.8} className="flex justify-center mb-8">
               <PillLogo size="large" shimmer={true} />
             </ParallaxLayer>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
               Meet SmartSupp<br />
-              <span className="text-accent">Your AI-powered supplement advisor</span>
+              <span className="text-accent">Your AI-Powered</span><br />
+              <span className="text-accent">Supplement Advisor</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mx-auto">
-              Smart supplements for smart goals. Get the perfect stack for your goals — built in minutes by AI.
+            <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mx-auto mb-10">
+              Smart supplements for smart goals. Get the perfect stack for your fitness journey —
+              built in minutes by AI. Science-backed, personalized, simple.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                to="/smartstack-ai"
-                className="px-8 py-4 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 flex items-center"
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <button
+                onClick={() => document.getElementById('smartstack-ai').scrollIntoView({ behavior: 'smooth' })}
+                className="group px-10 py-5 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 flex items-center gap-2"
               >
-                Get Your Stack <ArrowRight className="ml-2" size={20} />
-              </Link>
-              <a
-                href="#how-it-works"
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg font-semibold hover:bg-white/20 transition-all"
+                Get Your Stack
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={24} />
+              </button>
+              <button
+                onClick={() => document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })}
+                className="px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white rounded-xl font-semibold hover:bg-white/20 transition-all"
               >
-                Learn How It Works
-              </a>
+                See How It Works
+              </button>
             </div>
 
-            {/* Trust Row */}
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-sm md:text-base opacity-90">
+            <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-sm md:text-base">
               <div className="flex items-center gap-2">
                 <CheckCircle size={20} className="text-accent" />
                 <span>Science-backed</span>
@@ -67,260 +100,569 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle size={20} className="text-accent" />
-                <span>40+ supplements analyzed</span>
+                <span>42+ supplements analyzed</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle size={20} className="text-accent" />
-                <span>No spam, ever</span>
+                <span>AI-powered recommendations</span>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              How It Works
-            </h2>
-            <p className="text-xl text-gray-600">Simple. Smart. Personalized.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-primary/10"
-              whileHover={{ y: -5 }}
-            >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-primary/30">
-                1
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Share Goals & Basics</h3>
-              <p className="text-gray-600">
-                Tell us about your fitness goals, lifestyle, and what you want to achieve.
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
+              <div className="w-1 h-3 bg-white/50 rounded-full"></div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            HOW IT WORKS SECTION
+            ======================================== */}
+        <section
+          id="how-it-works"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-white py-20"
+        >
+          <div
+            ref={howItWorksAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                How It Works
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Simple. Smart. Personalized. Get your perfect stack in three easy steps.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-violet-50 border border-accent/10"
-              whileHover={{ y: -5 }}
-            >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-accent to-violet rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-accent/30">
-                2
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">AI Builds Your Stack</h3>
-              <p className="text-gray-600">
-                SmartSupp Intelligence analyzes 42+ supplements and builds your optimal plan.
-              </p>
-            </motion.div>
+            <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+              {[
+                {
+                  step: '1',
+                  title: 'Share Your Goals',
+                  description: 'Tell us about your fitness goals, lifestyle, diet, and what you want to achieve.',
+                  icon: Target,
+                  gradient: 'from-primary to-accent',
+                  bg: 'from-blue-50 to-cyan-50'
+                },
+                {
+                  step: '2',
+                  title: 'AI Builds Your Stack',
+                  description: 'Our AI analyzes 42+ supplements and creates your personalized recommendation.',
+                  icon: Brain,
+                  gradient: 'from-accent to-violet',
+                  bg: 'from-cyan-50 to-violet-50'
+                },
+                {
+                  step: '3',
+                  title: 'Shop & Optimize',
+                  description: 'Order premium supplements with fast shipping. Track progress and refine your stack.',
+                  icon: ShoppingCart,
+                  gradient: 'from-violet to-purple-600',
+                  bg: 'from-violet-50 to-purple-50'
+                }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: i * 0.15 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  {/* Matching icon style - Rounded square with gradient */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-20 rounded-2xl blur-xl`}></div>
+                      <div className={`relative w-24 h-24 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-xl`}>
+                        <item.icon className="text-white" size={40} />
+                      </div>
+                    </div>
+                  </div>
 
-            <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 border border-violet/10"
-              whileHover={{ y: -5 }}
-            >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-violet to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-violet/30">
-                3
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Follow & Optimize</h3>
-              <p className="text-gray-600">
-                Get your personalized stack, track progress, and refine as you learn what works.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="text-center p-8 rounded-2xl bg-gradient-to-br from-pink-50 to-blue-50 border border-pink-500/10"
-              whileHover={{ y: -5 }}
-            >
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-pink-500 to-primary rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-pink-500/30">
-                4
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Shop Seamlessly</h3>
-              <p className="text-gray-600">
-                Order premium supplements directly through our Supliful integration with fast shipping.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Grid */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Whatever Your Goal
-            </h2>
-            <p className="text-xl text-gray-600">We've got you covered.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              {
-                icon: Dumbbell,
-                title: 'Build Muscle & Strength',
-                desc: 'Optimized stacks for size, power, and performance',
-                color: 'from-primary to-accent',
-                bgGradient: 'from-blue-500/10 via-cyan-500/10 to-blue-500/5'
-              },
-              {
-                icon: Brain,
-                title: 'Improve Focus & Energy',
-                desc: 'Mental clarity and sustained energy throughout the day',
-                color: 'from-accent to-violet',
-                bgGradient: 'from-cyan-500/10 via-violet-500/10 to-cyan-500/5'
-              },
-              {
-                icon: Heart,
-                title: 'Overall Health & Longevity',
-                desc: 'Foundation for disease prevention and vitality',
-                color: 'from-green-500 to-emerald-600',
-                bgGradient: 'from-green-500/10 via-emerald-500/10 to-green-500/5'
-              },
-              {
-                icon: Zap,
-                title: 'Slim & Recomp',
-                desc: 'Lean definition while maintaining muscle mass',
-                color: 'from-violet to-primary',
-                bgGradient: 'from-violet-500/10 via-primary/10 to-violet-500/5'
-              }
-            ].map((benefit, i) => (
-              <motion.div
-                key={i}
-                className={`p-8 bg-gradient-to-br ${benefit.bgGradient} rounded-2xl shadow-sm hover:shadow-xl transition-all border-2 border-white backdrop-blur-sm`}
-                whileHover={{ scale: 1.03, y: -5 }}
-              >
-                <div className={`w-16 h-16 mb-6 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center shadow-lg shadow-${benefit.color}/30`}>
-                  <benefit.icon className="text-white" size={28} />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{benefit.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Email Capture */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <EmailCapture />
-        </div>
-      </section>
-
-      {/* Featured Stacks */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Featured Supplements
-            </h2>
-            <p className="text-xl text-gray-600">Science-backed essentials in every stack</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                name: 'Creatine Monohydrate',
-                desc: 'Most researched supplement for strength & power',
-                price: '$33.90',
-                gradient: 'from-blue-500 via-cyan-500 to-blue-600',
-                icon: '💪'
-              },
-              {
-                name: 'Whey Protein Isolate',
-                desc: 'Fast protein for muscle recovery & growth',
-                price: '$44.49',
-                gradient: 'from-cyan-500 via-violet-500 to-cyan-600',
-                icon: '🥤'
-              },
-              {
-                name: 'Magnesium Glycinate',
-                desc: 'Better sleep, recovery, and calm',
-                price: '$24.90',
-                gradient: 'from-violet-500 via-purple-500 to-violet-600',
-                icon: '😴'
-              },
-              {
-                name: 'Omega-3 Fish Oil',
-                desc: 'Heart health, brain function, inflammation',
-                price: '$23.90',
-                gradient: 'from-emerald-500 via-green-500 to-emerald-600',
-                icon: '❤️'
-              }
-            ].map((supp, i) => (
-              <motion.div
-                key={i}
-                className="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all border-2 border-gray-100 hover:border-transparent overflow-hidden relative"
-                whileHover={{ y: -8, scale: 1.02 }}
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${supp.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-                <div className="relative z-10">
-                  <div className="text-4xl mb-4">{supp.icon}</div>
-                  <h3 className="font-bold text-gray-900 mb-2 text-lg">{supp.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{supp.desc}</p>
-                  <p className={`text-2xl font-bold mb-4 bg-gradient-to-r ${supp.gradient} bg-clip-text text-transparent`}>
-                    {supp.price}
+                  <div className={`inline-block px-4 py-2 bg-gradient-to-r ${item.gradient} rounded-full text-white font-bold text-sm mb-4`}>
+                    Step {item.step}
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                  <p className="text-gray-600 leading-relaxed text-lg">
+                    {item.description}
                   </p>
-                  <Link
-                    to="/shop"
-                    className={`block text-center py-3 px-4 bg-gradient-to-r ${supp.gradient} text-white rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-${supp.gradient}/30 transition-all transform hover:scale-105`}
-                  >
-                    Add to Cart
-                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            SMARTSTACK AI SECTION
+            ======================================== */}
+        <section
+          id="smartstack-ai"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-blue-50 py-20"
+        >
+          <div
+            ref={smartstackAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartstackAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Icon and Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+              >
+                {/* Matching icon style - Rounded square with gradient */}
+                <div className="flex lg:justify-start justify-center mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-20 rounded-3xl blur-2xl"></div>
+                    <div className="relative w-32 h-32 bg-gradient-to-br from-primary to-accent rounded-3xl flex items-center justify-center shadow-2xl">
+                      <Sparkles className="text-white" size={56} />
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Social Proof */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              What People Are Saying
-            </h2>
-          </div>
+                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                  SmartStack AI
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Answer a quick 2-minute quiz and get an AI-generated supplement stack tailored to your exact
+                  goals, lifestyle, and experience level. Our intelligence engine analyzes 42+ premium supplements
+                  to build your perfect combination.
+                </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: 'Sarah M.', quote: 'Finally understand what supplements I actually need. Lost 15lbs and feeling amazing!', rating: 5 },
-              { name: 'Mike T.', quote: 'The quiz made it so easy. My strength is up 20% in 8 weeks.', rating: 5 },
-              { name: 'Jessica L.', quote: 'No more confusion. Simple stack, clear results. Love it!', rating: 5 }
-            ].map((review, i) => (
-              <div key={i} className="p-6 bg-gray-50 rounded-2xl">
-                <div className="flex mb-3">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="text-yellow-400 fill-current" size={20} />
+                <div className="space-y-4 mb-8">
+                  {[
+                    'Personalized to your fitness goals',
+                    'Science-backed supplement combinations',
+                    'Dosage and timing recommendations',
+                    'Beginner to advanced stacks'
+                  ].map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckCircle size={16} className="text-white" />
+                      </div>
+                      <span className="text-gray-700 text-lg">{feature}</span>
+                    </div>
                   ))}
                 </div>
-                <p className="text-gray-700 mb-4 italic">"{review.quote}"</p>
-                <p className="font-semibold text-gray-900">— {review.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-r from-primary via-accent to-violet text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready for Your Personalized Stack?
-          </h2>
-          <p className="text-xl mb-8 text-slate-100">
-            Join thousands who have simplified their supplement routine with SmartSupp.
-          </p>
-          <Link
-            to="/smartstack-ai"
-            className="inline-flex items-center px-8 py-4 bg-white text-primary rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all"
+                <Link
+                  to="/smartstack-ai"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 gap-2"
+                >
+                  Build Your Stack
+                  <ArrowRight size={20} />
+                </Link>
+              </motion.div>
+
+              {/* Visual/Image */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="relative p-8 bg-white rounded-3xl shadow-2xl border border-gray-200">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
+                        <Target className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-2 bg-gray-100 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
+                      <div className="w-12 h-12 bg-gradient-to-br from-violet to-purple-600 rounded-xl flex items-center justify-center">
+                        <Pill className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-200 rounded w-2/3 mb-2"></div>
+                        <div className="h-2 bg-gray-100 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-teal-50 rounded-xl">
+                      <div className="w-12 h-12 bg-gradient-to-br from-accent to-cyan-600 rounded-xl flex items-center justify-center">
+                        <Award className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-200 rounded w-4/5 mb-2"></div>
+                        <div className="h-2 bg-gray-100 rounded w-2/5"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-primary/20 to-violet/20 rounded-3xl -z-10 blur-2xl"></div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            SMARTFITT SECTION
+            ======================================== */}
+        <section
+          id="smartfitt"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-white py-20"
+        >
+          <div
+            ref={smartfittAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartfittAnimation.isVisible ? 'visible' : ''}`}
           >
-            Get Your Stack Now <ArrowRight className="ml-2" size={20} />
-          </Link>
-        </div>
-      </section>
-    </div>
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Visual/Image - Left side */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative order-2 lg:order-1"
+              >
+                <div className="relative p-8 bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl shadow-2xl border border-violet-200">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <div className="inline-block px-6 py-3 bg-gradient-to-r from-violet to-purple-600 rounded-full text-white font-bold mb-4">
+                        Your Workout Plan
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-white rounded-xl">
+                          <div className="text-3xl font-bold text-violet mb-1">4</div>
+                          <div className="text-sm text-gray-600">Days/Week</div>
+                        </div>
+                        <div className="p-4 bg-white rounded-xl">
+                          <div className="text-3xl font-bold text-violet mb-1">60</div>
+                          <div className="text-sm text-gray-600">Min/Session</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-violet/20 to-purple/20 rounded-3xl -z-10 blur-2xl"></div>
+              </motion.div>
+
+              {/* Icon and Content - Right side */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="order-1 lg:order-2"
+              >
+                {/* Matching icon style - Rounded square with gradient */}
+                <div className="flex lg:justify-start justify-center mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-violet to-purple-600 opacity-20 rounded-3xl blur-2xl"></div>
+                    <div className="relative w-32 h-32 bg-gradient-to-br from-violet to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                      <Dumbbell className="text-white" size={56} />
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                  SmartFitt
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Get AI-powered workout recommendations tailored to your goals and experience level.
+                  Match your training plan with the perfect supplement stack for maximum results.
+                </p>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    'Personalized training programs',
+                    'Exercise form guides and videos',
+                    'Progressive overload tracking',
+                    'Supplement-workout synchronization'
+                  ].map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-r from-violet to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckCircle size={16} className="text-white" />
+                      </div>
+                      <span className="text-gray-700 text-lg">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  to="/smartfitt"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-violet via-purple-600 to-violet text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-violet/50 transition-all hover:scale-105 gap-2"
+                >
+                  Get Workout Plan
+                  <ArrowRight size={20} />
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            SHOP SECTION
+            ======================================== */}
+        <section
+          id="shop"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-cyan-50 py-20"
+        >
+          <div
+            ref={shopAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${shopAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Icon and Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+              >
+                {/* Matching icon style - Rounded square with gradient */}
+                <div className="flex lg:justify-start justify-center mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent to-cyan-600 opacity-20 rounded-3xl blur-2xl"></div>
+                    <div className="relative w-32 h-32 bg-gradient-to-br from-accent to-cyan-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                      <ShoppingCart className="text-white" size={56} />
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                  Shop Seamlessly
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Order premium supplements directly through our Supliful integration.
+                  Quality guaranteed, fast shipping, hassle-free returns. Your perfect stack,
+                  delivered to your door.
+                </p>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    'Premium quality supplements',
+                    'Fast, reliable shipping',
+                    'Secure checkout process',
+                    'Money-back guarantee'
+                  ].map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-r from-accent to-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckCircle size={16} className="text-white" />
+                      </div>
+                      <span className="text-gray-700 text-lg">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  to="/shop"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent via-cyan-600 to-accent text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-accent/50 transition-all hover:scale-105 gap-2"
+                >
+                  Browse Products
+                  <ArrowRight size={20} />
+                </Link>
+              </motion.div>
+
+              {/* Visual */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { name: 'Creatine', price: '$33.90', gradient: 'from-blue-500 to-cyan-500' },
+                    { name: 'Protein', price: '$44.49', gradient: 'from-cyan-500 to-teal-500' },
+                    { name: 'Magnesium', price: '$24.90', gradient: 'from-violet-500 to-purple-500' },
+                    { name: 'Omega-3', price: '$23.90', gradient: 'from-emerald-500 to-green-500' }
+                  ].map((product, i) => (
+                    <div key={i} className="p-6 bg-white rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+                      <div className={`w-full h-24 bg-gradient-to-br ${product.gradient} rounded-xl mb-4`}></div>
+                      <h4 className="font-bold text-gray-900 mb-2">{product.name}</h4>
+                      <p className="text-2xl font-bold text-primary">{product.price}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-accent/20 to-cyan/20 rounded-3xl -z-10 blur-2xl"></div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            BENEFITS SECTION
+            ======================================== */}
+        <section
+          id="benefits"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-white py-20"
+        >
+          <div
+            ref={benefitsAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${benefitsAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                Whatever Your Goal
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Personalized supplement stacks for every fitness journey.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-16">
+              {[
+                {
+                  icon: Dumbbell,
+                  title: 'Build Muscle & Strength',
+                  desc: 'Optimized stacks for size, power, and performance.',
+                  gradient: 'from-primary via-accent to-violet'
+                },
+                {
+                  icon: Brain,
+                  title: 'Improve Focus & Energy',
+                  desc: 'Mental clarity and sustained energy throughout the day.',
+                  gradient: 'from-accent via-violet to-primary'
+                },
+                {
+                  icon: Heart,
+                  title: 'Overall Health & Longevity',
+                  desc: 'Foundation for disease prevention and vitality.',
+                  gradient: 'from-violet via-primary to-accent'
+                },
+                {
+                  icon: Zap,
+                  title: 'Slim & Recomp',
+                  desc: 'Lean definition while maintaining muscle mass.',
+                  gradient: 'from-primary via-violet to-accent'
+                }
+              ].map((benefit, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="group p-8 bg-gray-50 rounded-2xl hover:shadow-xl transition-all"
+                >
+                  <div className={`w-16 h-16 mb-6 bg-gradient-to-br ${benefit.gradient} rounded-2xl flex items-center justify-center shadow-lg`}>
+                    <benefit.icon className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                  <p className="text-gray-600 leading-relaxed text-lg">{benefit.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Testimonials */}
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  name: 'Sarah M.',
+                  role: 'Fitness Enthusiast',
+                  quote: 'Finally understand what supplements I actually need. The AI recommendations were spot-on!',
+                  rating: 5
+                },
+                {
+                  name: 'Mike T.',
+                  role: 'Competitive Lifter',
+                  quote: 'The quiz made it so easy. My strength is up 20% in 8 weeks.',
+                  rating: 5
+                },
+                {
+                  name: 'Jessica L.',
+                  role: 'Busy Professional',
+                  quote: 'No more confusion. Simple stack, clear results. Perfect for my hectic lifestyle.',
+                  rating: 5
+                }
+              ].map((review, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-200"
+                >
+                  <div className="flex mb-3">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="text-yellow-400 fill-current" size={18} />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 leading-relaxed italic mb-4">"{review.quote}"</p>
+                  <div className="font-semibold text-gray-900">{review.name}</div>
+                  <div className="text-sm text-gray-600">{review.role}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            FINAL CTA SECTION
+            ======================================== */}
+        <section
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-gradient-to-r from-primary via-accent to-violet text-white py-20"
+        >
+          <div
+            ref={ctaAnimation.ref}
+            className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center slide-up ${ctaAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <div className="mb-8">
+                <Sparkles className="mx-auto mb-6" size={64} />
+              </div>
+
+              <h2 className="text-5xl md:text-7xl font-bold mb-8">
+                Ready to Get Started?
+              </h2>
+
+              <p className="text-xl md:text-2xl text-slate-100 mb-12 leading-relaxed max-w-3xl mx-auto">
+                Simplify your supplement routine with SmartSupp. Get AI-powered recommendations
+                in 2 minutes. Free to use, no credit card required.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+                <Link
+                  to="/smartstack-ai"
+                  className="group px-12 py-6 bg-white text-primary rounded-xl font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3"
+                >
+                  <Sparkles size={24} />
+                  Build Your Stack
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" size={24} />
+                </Link>
+
+                <Link
+                  to="/smartfitt"
+                  className="px-12 py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl font-bold text-xl hover:bg-white/20 transition-all flex items-center gap-3"
+                >
+                  <Dumbbell size={24} />
+                  Get Workout Plan
+                </Link>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-8 text-sm md:text-base opacity-90">
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={20} />
+                  <span>100% Free to Use</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={20} />
+                  <span>No Credit Card Required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={20} />
+                  <span>Instant Results</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
