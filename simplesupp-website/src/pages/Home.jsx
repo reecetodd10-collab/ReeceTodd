@@ -6,6 +6,10 @@ import PillLogo from '../components/PillLogo';
 import ParallaxLayer from '../components/ParallaxLayer';
 import PromoBanner from '../components/PromoBanner';
 import SectionIndicators from '../components/SectionIndicators';
+import StackedBlocks from '../components/StackedBlocks';
+import GoalCards from '../components/GoalCards';
+import FAQAccordion from '../components/FAQAccordion';
+import ContactForm from '../components/ContactForm';
 import { useActiveSection } from '../hooks/useScrollAnimation';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
@@ -17,7 +21,10 @@ export default function Home() {
     { id: 'smartstack-ai', label: 'SmartStack AI' },
     { id: 'smartfitt', label: 'SmartFitt' },
     { id: 'shop', label: 'Shop' },
-    { id: 'benefits', label: 'Benefits' },
+    { id: 'goals', label: 'Your Goals' },
+    { id: 'reviews', label: 'Reviews' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'contact', label: 'Contact' },
   ];
 
   // Track active section for indicators
@@ -29,8 +36,11 @@ export default function Home() {
   const smartstackAnimation = useScrollAnimation({ threshold: 0.2, once: true });
   const smartfittAnimation = useScrollAnimation({ threshold: 0.2, once: true });
   const shopAnimation = useScrollAnimation({ threshold: 0.2, once: true });
-  const benefitsAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const goalsAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const reviewsAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const faqAnimation = useScrollAnimation({ threshold: 0.2, once: true });
   const ctaAnimation = useScrollAnimation({ threshold: 0.2, once: true });
+  const contactAnimation = useScrollAnimation({ threshold: 0.2, once: true });
 
   return (
     <>
@@ -62,7 +72,7 @@ export default function Home() {
               <PillLogo size="large" shimmer={true} />
             </ParallaxLayer>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-serif leading-tight mb-6">
               Meet SmartSupp<br />
               <span className="text-accent">Your AI-Powered</span><br />
               <span className="text-accent">Supplement Advisor</span>
@@ -128,7 +138,7 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
                 How It Works
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -223,7 +233,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
                   SmartStack AI
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -257,46 +267,15 @@ export default function Home() {
                 </Link>
               </motion.div>
 
-              {/* Visual/Image */}
+              {/* 3D Stacked Blocks Visualization */}
               <motion.div
                 initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative"
+                className="relative flex items-center justify-center"
               >
-                <div className="relative p-8 bg-white rounded-3xl shadow-2xl border border-gray-200">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-                        <Target className="text-white" size={24} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-2 bg-gray-100 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl">
-                      <div className="w-12 h-12 bg-gradient-to-br from-violet to-purple-600 rounded-xl flex items-center justify-center">
-                        <Pill className="text-white" size={24} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-200 rounded w-2/3 mb-2"></div>
-                        <div className="h-2 bg-gray-100 rounded w-1/3"></div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-teal-50 rounded-xl">
-                      <div className="w-12 h-12 bg-gradient-to-br from-accent to-cyan-600 rounded-xl flex items-center justify-center">
-                        <Award className="text-white" size={24} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-200 rounded w-4/5 mb-2"></div>
-                        <div className="h-2 bg-gray-100 rounded w-2/5"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-primary/20 to-violet/20 rounded-3xl -z-10 blur-2xl"></div>
+                <StackedBlocks />
               </motion.div>
             </div>
           </div>
@@ -362,7 +341,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
                   SmartFitt
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -427,7 +406,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
                   Shop Seamlessly
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -490,18 +469,18 @@ export default function Home() {
         </section>
 
         {/* ========================================
-            BENEFITS SECTION
+            GOALS SECTION (4 Goal Cards)
             ======================================== */}
         <section
-          id="benefits"
+          id="goals"
           className="scroll-snap-section relative min-h-screen flex items-center bg-white py-20"
         >
           <div
-            ref={benefitsAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${benefitsAnimation.isVisible ? 'visible' : ''}`}
+            ref={goalsAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${goalsAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
                 Whatever Your Goal
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -509,51 +488,30 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              {[
-                {
-                  icon: Dumbbell,
-                  title: 'Build Muscle & Strength',
-                  desc: 'Optimized stacks for size, power, and performance.',
-                  gradient: 'from-primary via-accent to-violet'
-                },
-                {
-                  icon: Brain,
-                  title: 'Improve Focus & Energy',
-                  desc: 'Mental clarity and sustained energy throughout the day.',
-                  gradient: 'from-accent via-violet to-primary'
-                },
-                {
-                  icon: Heart,
-                  title: 'Overall Health & Longevity',
-                  desc: 'Foundation for disease prevention and vitality.',
-                  gradient: 'from-violet via-primary to-accent'
-                },
-                {
-                  icon: Zap,
-                  title: 'Slim & Recomp',
-                  desc: 'Lean definition while maintaining muscle mass.',
-                  gradient: 'from-primary via-violet to-accent'
-                }
-              ].map((benefit, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                  className="group p-8 bg-gray-50 rounded-2xl hover:shadow-xl transition-all"
-                >
-                  <div className={`w-16 h-16 mb-6 bg-gradient-to-br ${benefit.gradient} rounded-2xl flex items-center justify-center shadow-lg`}>
-                    <benefit.icon className="text-white" size={32} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
-                  <p className="text-gray-600 leading-relaxed text-lg">{benefit.desc}</p>
-                </motion.div>
-              ))}
+            <GoalCards />
+          </div>
+        </section>
+
+        {/* ========================================
+            REVIEWS / TESTIMONIALS SECTION
+            ======================================== */}
+        <section
+          id="reviews"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-blue-50 py-20"
+        >
+          <div
+            ref={reviewsAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${reviewsAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
+                What Our Users Say
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Real results from real people transforming their fitness journey with SmartSupp.
+              </p>
             </div>
 
-            {/* Testimonials */}
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
@@ -579,21 +537,45 @@ export default function Home() {
                   key={i}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
                   viewport={{ once: true }}
-                  className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-200"
+                  className="glass rounded-3xl p-8 shadow-premium hover:shadow-premium-lg transition-all duration-300"
                 >
-                  <div className="flex mb-3">
+                  <div className="flex mb-4">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="text-yellow-400 fill-current" size={18} />
+                      <Star key={i} className="text-yellow-400 fill-current" size={20} />
                     ))}
                   </div>
-                  <p className="text-gray-700 leading-relaxed italic mb-4">"{review.quote}"</p>
-                  <div className="font-semibold text-gray-900">{review.name}</div>
+                  <p className="text-gray-700 leading-relaxed text-lg italic mb-6">"{review.quote}"</p>
+                  <div className="font-semibold text-gray-900 text-lg">{review.name}</div>
                   <div className="text-sm text-gray-600">{review.role}</div>
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ========================================
+            FAQ SECTION
+            ======================================== */}
+        <section
+          id="faq"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-white py-20"
+        >
+          <div
+            ref={faqAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${faqAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Everything you need to know about SmartSupp and our AI-powered recommendations.
+              </p>
+            </div>
+
+            <FAQAccordion />
           </div>
         </section>
 
@@ -617,7 +599,7 @@ export default function Home() {
                 <Sparkles className="mx-auto mb-6" size={64} />
               </div>
 
-              <h2 className="text-5xl md:text-7xl font-bold mb-8">
+              <h2 className="text-5xl md:text-7xl font-bold font-serif mb-8">
                 Ready to Get Started?
               </h2>
 
@@ -660,6 +642,30 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* ========================================
+            CONTACT SECTION
+            ======================================== */}
+        <section
+          id="contact"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-violet-50 py-20"
+        >
+          <div
+            ref={contactAnimation.ref}
+            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${contactAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold font-serif text-gray-900 mb-6">
+                Get In Touch
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Have questions? We're here to help. Send us a message and we'll get back to you as soon as possible.
+              </p>
+            </div>
+
+            <ContactForm />
           </div>
         </section>
       </div>
