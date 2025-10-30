@@ -65,14 +65,14 @@ export default function SupplementAdvisor() {
   const [showCart, setShowCart] = useState(false);
 
   const goalCategories = [
-    { id: 'muscle', title: 'Build Muscle & Strength', icon: Dumbbell, description: 'Pack on size, max strength, get powerful', color: 'from-purple-500 to-pink-600', emoji: '💪' },
-    { id: 'fatloss', title: 'Lose Fat & Get Lean', icon: Flame, description: 'Shed pounds, reveal definition, beach ready', color: 'from-orange-500 to-red-600', emoji: '🔥' },
-    { id: 'tone', title: 'Tone & Sculpt', icon: Activity, description: 'Lean, toned, fit physique without bulk', color: 'from-pink-400 to-rose-500', emoji: '✨' },
-    { id: 'athletic', title: 'Athletic Performance', icon: Zap, description: 'Speed, endurance, explosiveness, sports', color: 'from-blue-500 to-cyan-600', emoji: '⚡' },
-    { id: 'beauty', title: 'Beauty & Anti-Aging', icon: Sparkles, description: 'Glowing skin, strong hair nails, youthful', color: 'from-rose-400 to-pink-500', emoji: '💅' },
-    { id: 'sleep', title: 'Sleep & Recovery', icon: Moon, description: 'Deep rest, repair, recharge, destress', color: 'from-indigo-500 to-purple-600', emoji: '😴' },
-    { id: 'focus', title: 'Focus & Productivity', icon: Brain, description: 'Mental clarity, energy, crush work', color: 'from-cyan-500 to-blue-600', emoji: '🧠' },
-    { id: 'longevity', title: 'Longevity & Wellness', icon: Heart, description: 'Disease prevention, anti-aging, feel great', color: 'from-green-500 to-emerald-600', emoji: '❤️' }
+    { id: 'muscle', title: 'Build Muscle & Strength', icon: Dumbbell, description: 'Pack on size, max strength, get powerful', color: 'from-primary via-accent to-violet', emoji: '💪' },
+    { id: 'fatloss', title: 'Lose Fat & Get Lean', icon: Flame, description: 'Shed pounds, reveal definition, beach ready', color: 'from-accent via-violet to-primary', emoji: '🔥' },
+    { id: 'tone', title: 'Tone & Sculpt', icon: Activity, description: 'Lean, toned, fit physique without bulk', color: 'from-violet via-primary to-accent', emoji: '✨' },
+    { id: 'athletic', title: 'Athletic Performance', icon: Zap, description: 'Speed, endurance, explosiveness, sports', color: 'from-primary via-accent to-violet', emoji: '⚡' },
+    { id: 'beauty', title: 'Beauty & Anti-Aging', icon: Sparkles, description: 'Glowing skin, strong hair nails, youthful', color: 'from-accent via-violet to-primary', emoji: '💅' },
+    { id: 'sleep', title: 'Sleep & Recovery', icon: Moon, description: 'Deep rest, repair, recharge, destress', color: 'from-violet via-primary to-accent', emoji: '😴' },
+    { id: 'focus', title: 'Focus & Productivity', icon: Brain, description: 'Mental clarity, energy, crush work', color: 'from-primary via-accent to-violet', emoji: '🧠' },
+    { id: 'longevity', title: 'Longevity & Wellness', icon: Heart, description: 'Disease prevention, anti-aging, feel great', color: 'from-accent via-violet to-primary', emoji: '❤️' }
   ];
 
   const healthGoalsByCategory = {
@@ -384,9 +384,9 @@ export default function SupplementAdvisor() {
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xl font-bold text-gray-900">Total:</span>
-                    <span className="text-3xl font-bold text-blue-600">${getCartTotal()}</span>
+                    <span className="text-3xl font-bold text-primary">${getCartTotal()}</span>
                   </div>
-                  <button className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white text-lg font-bold hover:from-green-600 hover:to-emerald-600 shadow-lg hover:shadow-green-500/50 transition-all flex items-center justify-center gap-2">
+                  <button className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-primary via-accent to-violet text-white text-lg font-bold hover:shadow-2xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 hover:scale-105">
                     <Check size={24} />
                     Checkout with Supliful
                   </button>
@@ -541,7 +541,7 @@ export default function SupplementAdvisor() {
                 <label className="block text-sm font-medium text-gray-700 mb-3">Specific Goals (select all that apply)</label>
                 <div className="grid grid-cols-2 gap-3">
                   {healthGoalsByCategory[primaryGoal].map(goal => (
-                    <button key={goal} onClick={() => toggleArrayField('healthGoals', goal)} className={`p-3 rounded-xl border-2 text-sm transition-all font-medium ${formData.healthGoals.includes(goal) ? 'border-blue-500 bg-blue-500/10 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>{goal}</button>
+                    <button key={goal} onClick={() => toggleArrayField('healthGoals', goal)} className={`p-3 rounded-xl border-2 text-sm transition-all font-medium ${formData.healthGoals.includes(goal) ? 'border-primary bg-primary/10 text-primary-dark' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>{goal}</button>
                   ))}
                 </div>
               </div>
@@ -569,9 +569,9 @@ export default function SupplementAdvisor() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-3xl font-bold text-gray-900 mb-1">Your Personalized Stack</h3>
-                    <p className="text-gray-600">Optimized for: <span className="text-blue-600 font-semibold">{goalCategories.find(g => g.id === primaryGoal)?.title}</span></p>
+                    <p className="text-gray-600">Optimized for: <span className="text-primary font-semibold">{goalCategories.find(g => g.id === primaryGoal)?.title}</span></p>
                   </div>
-                  <button onClick={addAllToCart} className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold hover:from-green-600 hover:to-emerald-600 shadow-lg hover:shadow-green-500/50 transition-all flex items-center gap-2">
+                  <button onClick={addAllToCart} className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary via-accent to-violet text-white font-bold hover:shadow-2xl hover:shadow-accent/50 transition-all flex items-center gap-2 hover:scale-105">
                     <ShoppingCart size={20} />
                     Add All to Cart
                   </button>
@@ -591,9 +591,9 @@ export default function SupplementAdvisor() {
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex-1">
                                 <h4 className="text-lg font-bold text-gray-900">{supp.name}</h4>
-                                <p className="text-blue-600 font-semibold text-sm">${supplement?.price.toFixed(2)}</p>
+                                <p className="text-primary font-semibold text-sm">${supplement?.price.toFixed(2)}</p>
                               </div>
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${supp.priority === 'Essential' ? 'bg-orange-100 text-orange-700 border border-orange-200' : supp.priority === 'High' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}>
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${supp.priority === 'Essential' ? 'bg-accent/10 text-accent-dark border border-accent/30' : supp.priority === 'High' ? 'bg-primary/10 text-primary-dark border border-primary/30' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}>
                                 {supp.priority}
                               </span>
                             </div>
@@ -601,13 +601,13 @@ export default function SupplementAdvisor() {
                             <p className="text-sm text-gray-700 mb-2"><strong className="text-gray-900">Timing:</strong> {supp.timing}</p>
                             <p className="text-sm text-gray-600 mb-3">{supp.reason}</p>
 
-                            <button onClick={() => setExpandedSupplement(isExpanded ? null : idx)} className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mb-3">
+                            <button onClick={() => setExpandedSupplement(isExpanded ? null : idx)} className="text-sm text-primary hover:text-primary-dark font-medium flex items-center gap-1 mb-3">
                               <Info size={14} />
                               {isExpanded ? 'Hide details' : 'Learn more'}
                             </button>
 
                             {isExpanded && (
-                              <div className="bg-blue-50 p-4 rounded-xl mb-3 border border-blue-100">
+                              <div className="bg-primary/5 p-4 rounded-xl mb-3 border border-primary/20">
                                 <p className="text-sm text-gray-700">{supplement?.info}</p>
                               </div>
                             )}
