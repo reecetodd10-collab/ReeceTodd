@@ -30,6 +30,7 @@ export default {
       fontFamily: {
         sans: ['Sora', 'Outfit', 'Inter', 'system-ui', 'sans-serif'],
         display: ['Sora', 'Outfit', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
     },
   },

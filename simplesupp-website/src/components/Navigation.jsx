@@ -68,9 +68,9 @@ export default function Navigation() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-0 z-50 glass shadow-premium transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center">
             <PillLogo size="small" />
           </Link>
