@@ -1,23 +1,49 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import PillLogo from './PillLogo';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const isHomePage = location.pathname === '/';
 
-  const links = [
-    { name: 'Home', path: '/' },
+  // Homepage section navigation (smooth scroll)
+  const homeSections = [
+    { name: 'Features', sectionId: 'features' },
+    { name: 'How It Works', sectionId: 'how-it-works' },
+    { name: 'Testimonials', sectionId: 'testimonials' },
+    { name: 'Pricing', sectionId: 'pricing' },
+  ];
+
+  // Other page links
+  const pageLinks = [
     { name: 'SmartStack AI', path: '/smartstack-ai' },
     { name: 'SmartFitt', path: '/smartfitt' },
     { name: 'Shop', path: '/shop' },
-    { name: 'Learn', path: '/learn' },
-    { name: 'Reviews', path: '/reviews' },
     { name: 'About', path: '/about' },
-    { name: 'FAQ', path: '/faq' },
-    { name: 'Contact', path: '/contact' },
   ];
+
+  const scrollToSection = (sectionId) => {
+    if (isHomePage) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setIsOpen(false);
+      }
+    } else {
+      // Navigate to homepage then scroll
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      setIsOpen(false);
+    }
+  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -30,7 +56,19 @@ export default function Navigation() {
           </Link>
 
           <div className="hidden lg:flex items-center space-x-1">
-            {links.map((link) => (
+            {/* Homepage: Show section navigation */}
+            {isHomePage && homeSections.map((section) => (
+              <button
+                key={section.sectionId}
+                onClick={() => scrollToSection(section.sectionId)}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 hover:text-primary"
+              >
+                {section.name}
+              </button>
+            ))}
+
+            {/* Always show page links */}
+            {pageLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -62,7 +100,19 @@ export default function Navigation() {
 
         {isOpen && (
           <div className="lg:hidden py-4 space-y-2 border-t border-gray-200">
-            {links.map((link) => (
+            {/* Homepage sections */}
+            {isHomePage && homeSections.map((section) => (
+              <button
+                key={section.sectionId}
+                onClick={() => scrollToSection(section.sectionId)}
+                className="block w-full text-left px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-all"
+              >
+                {section.name}
+              </button>
+            ))}
+
+            {/* Page links */}
+            {pageLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
