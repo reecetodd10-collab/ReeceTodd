@@ -4,6 +4,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   CENTRALIZED COLOR PALETTE
+   ======================================== */
+:root {
+  /* Brand Gradient Colors */
+  --brand-primary: #2563eb;
+  --brand-primary-dark: #1e40af;
+  --brand-primary-light: #3b82f6;
+
+  --brand-accent: #06b6d4;
+  --brand-accent-dark: #0891b2;
+  --brand-accent-light: #22d3ee;
+
+  --brand-violet: #7c3aed;
+  --brand-violet-dark: #6d28d9;
+  --brand-violet-light: #8b5cf6;
+
+  /* Gradient Strings */
+  --brand-gradient: linear-gradient(90deg, #2563eb 0%, #06b6d4 50%, #7c3aed 100%);
+  --brand-gradient-br: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #7c3aed 100%);
+
+  /* Backgrounds */
+  --bg-slate-900: #0F172A;
+  --bg-slate-200: #E2E8F0;
+
+  /* Parallax Settings */
+  --parallax-enabled: 1;
+}
+
+/* Disable parallax on mobile and for reduced motion */
+@media (max-width: 768px) {
+  :root {
+    --parallax-enabled: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --parallax-enabled: 0;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -56,4 +104,30 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ========================================
+   3D PARALLAX UTILITIES
+   ======================================== */
+
+/* Parallax container with perspective */
+.parallax-container {
+  perspective: 1000px;
+  perspective-origin: center;
+  transform-style: preserve-3d;
+}
+
+/* Parallax layer base */
+.parallax-layer {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Disable parallax on mobile and reduced motion */
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .parallax-layer {
+    transform: none !important;
+    transition: none !important;
+  }
 }
