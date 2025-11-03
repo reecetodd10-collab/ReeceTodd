@@ -13,47 +13,44 @@ export default function SmartFitt() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-primary via-accent to-violet text-white py-16">
+      <div className="bg-[var(--bg)] text-[var(--txt)] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
             <div className="relative">
-              <div className="absolute inset-0 bg-white/30 rounded-2xl blur-xl animate-pulse"></div>
-              <div className="relative bg-gradient-to-br from-slate-900 via-gray-800 to-black p-4 rounded-2xl shadow-2xl border border-white/20">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-violet rounded-full blur-md opacity-50"></div>
-                  <Dumbbell className="relative text-white fill-current glow-effect" size={40} />
-                </div>
+              <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
+              <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium-lg border border-[var(--border)] icon-aivra">
+                <Dumbbell className="text-white" size={40} />
               </div>
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 font-display gradient-shimmer">
-            SmartFitt
+          <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
+            Aivra Fit
           </h1>
 
-          <p className="text-xl md:text-2xl text-slate-100 mb-3 font-medium">
+          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
             Your AI-Powered Workout Advisor
           </p>
 
-          <p className="text-lg text-slate-200 mb-6 max-w-3xl mx-auto">
+          <p className="text-lg text-[var(--txt-muted)] mb-8 max-w-3xl mx-auto">
             Click any muscle group to get 3 coach-approved exercises with sets, reps, and form cues tailored to your goal.
           </p>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
               <Zap size={16} />
-              <span>Instant Recommendations</span>
+              <span className="text-[var(--txt)]">Instant Recommendations</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
               <Users size={16} />
-              <span>Coach-Approved</span>
+              <span className="text-[var(--txt)]">Coach-Approved</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
               <Star size={16} />
-              <span>Goal-Specific</span>
+              <span className="text-[var(--txt)]">Goal-Specific</span>
             </div>
           </div>
         </div>
@@ -69,7 +66,7 @@ export default function SmartFitt() {
               onClick={() => setBodyType('male')}
               className={`px-4 py-2 rounded-md font-medium transition-all ${
                 bodyType === 'male'
-                  ? 'bg-gradient-to-r from-primary to-accent text-white'
+                  ? 'bg-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
@@ -139,7 +136,7 @@ export default function SmartFitt() {
                   onClick={() => setSelectedMuscle(value)}
                   className={`p-4 rounded-xl font-semibold text-sm transition-all ${
                     selectedMuscle === value
-                      ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg transform scale-105'
+                      ? 'bg-accent text-white shadow-accent transform scale-105'
                       : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
@@ -193,24 +190,24 @@ export default function SmartFitt() {
 
         {/* Cross-sell to SmartStack */}
         {exercises.length > 0 && (
-          <div className="mt-12 bg-gradient-to-r from-primary/10 via-accent/10 to-violet/10 rounded-2xl p-8 border border-primary/20">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Pair with SmartStack AI
-                </h3>
-                <p className="text-gray-700">
-                  Get personalized supplement recommendations to support your training. Recovery, performance, and muscle growth supplements tailored to your goals.
-                </p>
+              <div className="mt-12 bg-accent/10 rounded-2xl p-8 border border-accent/20">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      Pair with Aivra Stack
+                    </h3>
+                    <p className="text-gray-700">
+                      Get personalized supplement recommendations to support your training. Recovery, performance, and muscle growth supplements tailored to your goals.
+                    </p>
+                  </div>
+                  <a
+                    href="/smartstack-ai"
+                    className="px-6 py-3 bg-accent text-white rounded-lg font-semibold hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
+                  >
+                    Build Your Stack <ChevronRight size={20} />
+                  </a>
+                </div>
               </div>
-              <a
-                href="/smartstack-ai"
-                className="px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2 whitespace-nowrap"
-              >
-                Build Your Stack <ChevronRight size={20} />
-              </a>
-            </div>
-          </div>
         )}
       </div>
     </div>
@@ -235,7 +232,7 @@ function ExerciseCard({ exercise }) {
             </h4>
             <div className="flex flex-wrap gap-2">
               {exercise.isTopPick && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-primary to-accent text-white text-xs font-semibold rounded-full">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-accent text-white text-xs font-semibold rounded-full">
                   <Star size={12} fill="currentColor" /> Top Pick
                 </span>
               )}

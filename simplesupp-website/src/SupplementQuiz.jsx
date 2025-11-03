@@ -288,28 +288,27 @@ export default function SupplementAdvisor() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-white p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 py-12">
       <div className="max-w-6xl mx-auto">
         {/* HEADER WITH CART */}
         {!showLanding && (
           <div className="text-center mb-8 relative">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-2xl blur-xl opacity-60"></div>
-                <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black p-3 rounded-2xl shadow-2xl border border-gray-700">
+                <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl"></div>
+                <div className="relative bg-charcoal-light p-3 rounded-2xl shadow-premium-lg border border-white/10 icon-aivra">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-md opacity-50"></div>
                     <Pill className="relative text-white fill-current" size={44} style={{ filter: 'drop-shadow(0 0 8px rgba(96, 165, 250, 0.8))' }} />
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold font-display gradient-text">SmartStack</h1>
+              <h1 className="text-4xl md:text-5xl font-extrabold font-display text-charcoal">Aivra Stack</h1>
             </div>
 
             {/* Cart Button */}
             <button
               onClick={() => setShowCart(!showCart)}
-              className="fixed top-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-full shadow-lg hover:shadow-blue-500/50 transition-all flex items-center gap-2"
+              className="fixed top-6 right-6 z-50 bg-accent text-white p-4 rounded-full shadow-accent hover:bg-blue-600 transition-all duration-300 flex items-center gap-2"
             >
               <ShoppingCart size={24} />
               {getCartCount() > 0 && (
@@ -325,7 +324,7 @@ export default function SupplementAdvisor() {
         {showCart && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowCart(false)}>
             <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500">
+              <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-accent">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <ShoppingCart size={28} />
                   Your Stack ({getCartCount()} items)
@@ -347,8 +346,8 @@ export default function SupplementAdvisor() {
                     {cart.map(item => (
                       <div key={item.name} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div className="flex-1">
-                          <h3 className="font-bold text-gray-900">{item.name}</h3>
-                          <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+                          <h3 className="font-bold text-[#1a1a1a]">{item.name}</h3>
+                          <p className="text-sm text-[#a0a0a0]">${item.price.toFixed(2)} each</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -357,7 +356,7 @@ export default function SupplementAdvisor() {
                           >
                             <Minus size={16} />
                           </button>
-                          <span className="font-bold text-gray-900 w-8 text-center">{item.quantity}</span>
+                          <span className="font-bold text-[#1a1a1a] w-8 text-center">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.name, 1)}
                             className="p-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors"
@@ -366,7 +365,7 @@ export default function SupplementAdvisor() {
                           </button>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-[#1a1a1a]">${(item.price * item.quantity).toFixed(2)}</p>
                           <button
                             onClick={() => removeFromCart(item.name)}
                             className="text-xs text-red-600 hover:text-red-700 mt-1"
@@ -383,14 +382,14 @@ export default function SupplementAdvisor() {
               {cart.length > 0 && (
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xl font-bold text-gray-900">Total:</span>
-                    <span className="text-3xl font-bold text-primary">${getCartTotal()}</span>
+                    <span className="text-xl font-bold text-[#1a1a1a]">Total:</span>
+                    <span className="text-3xl font-bold text-accent">${getCartTotal()}</span>
                   </div>
-                  <button className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-primary via-accent to-violet text-white text-lg font-bold hover:shadow-2xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 hover:scale-105">
+                  <button className="w-full py-4 px-6 rounded-lg bg-accent text-white text-lg font-semibold hover:bg-blue-600 hover:shadow-accent transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-0.5">
                     <Check size={24} />
                     Checkout with Supliful
                   </button>
-                  <p className="text-xs text-gray-500 text-center mt-3">
+                  <p className="text-xs text-[#a0a0a0] text-center mt-3">
                     Secure checkout • Free shipping over $50
                   </p>
                 </div>
@@ -399,29 +398,51 @@ export default function SupplementAdvisor() {
           </div>
         )}
 
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-blue-100">
+        <div className="glass-card max-w-4xl mx-auto p-8 md:p-12">
+          {/* Progress Bar */}
+          {!showLanding && step < 4 && (
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-[#a0a0a0]">
+                  Step {step + 1} of 4
+                </span>
+                <span className="text-sm font-medium text-[#a0a0a0]">
+                  {Math.round(((step + 1) / 4) * 100)}%
+                </span>
+              </div>
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-accent transition-all duration-300 ease-out rounded-full"
+                  style={{
+                    width: `${((step + 1) / 4) * 100}%`,
+                    boxShadow: '0 0 12px rgba(59, 130, 246, 0.5)'
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* LANDING PAGE */}
           {showLanding && (
             <div className="space-y-8">
               <div className="text-center space-y-6">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-3xl blur-2xl opacity-50"></div>
-                    <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black p-6 rounded-3xl shadow-2xl border-2 border-gray-700">
+                    <div className="absolute inset-0 bg-accent/20 rounded-3xl blur-2xl"></div>
+                    <div className="relative bg-charcoal-light p-6 rounded-3xl shadow-premium-lg border border-white/10 icon-aivra">
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-60 animate-pulse"></div>
-                        <Pill className="relative text-white fill-current" size={64} style={{ filter: 'drop-shadow(0 0 12px rgba(96, 165, 250, 1))' }} />
+                        <Pill className="relative text-white fill-current" size={64} />
                       </div>
                     </div>
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-extrabold font-display gradient-text mb-4">SmartStack AI</h1>
-                <p className="text-2xl text-gray-700 font-semibold">Your Personal Supplement Intelligence</p>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">Get a personalized supplement stack from our database of 42+ premium supplements</p>
+                <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a1a] mb-4">Aivra Stack</h1>
+                <p className="text-2xl text-[#1a1a1a] font-semibold">Your Personal Supplement Intelligence</p>
+                <p className="text-lg text-[#a0a0a0] max-w-2xl mx-auto">Get a personalized supplement stack from our database of 42+ premium supplements</p>
               </div>
               <div className="text-center space-y-4 max-w-xl mx-auto">
-                <button onClick={() => setShowLanding(false)} className="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xl font-semibold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-blue-500/50 transition-all">Get Your Stack →</button>
-                <p className="text-gray-500 text-sm">Free • 2 minutes • Science-backed • 42+ Supplements</p>
+                <button onClick={() => setShowLanding(false)} className="w-full py-4 px-8 rounded-lg bg-accent text-white text-xl font-semibold hover:bg-blue-600 hover:shadow-accent transition-all duration-300">Get Your Stack →</button>
+                <p className="text-[#a0a0a0] text-sm">Free • 2 minutes • Science-backed • 42+ Supplements</p>
               </div>
             </div>
           )}
@@ -430,19 +451,24 @@ export default function SupplementAdvisor() {
           {!showLanding && step === 0 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 mb-3">What is Your Main Goal?</h2>
-                <p className="text-gray-600">Choose the one that resonates most</p>
+                <h2 className="text-3xl font-bold text-[#1a1a1a] mb-3">What is Your Main Goal?</h2>
+                <p className="text-[#a0a0a0]">Choose the one that resonates most</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {goalCategories.map(goal => {
                   const Icon = goal.icon;
                   return (
-                    <button key={goal.id} onClick={() => { setPrimaryGoal(goal.id); setStep(1); }} className="group p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 transition-all">
+                    <button key={goal.id} onClick={() => { setPrimaryGoal(goal.id); setStep(1); }} className="group p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-accent hover:shadow-accent transition-all duration-300 hover:-translate-y-1">
                       <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${goal.color} shadow-lg flex-shrink-0`}><Icon size={28} className="text-white" /></div>
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-accent/20 rounded-xl blur-xl"></div>
+                          <div className={`relative p-3 rounded-xl bg-charcoal-light shadow-premium flex-shrink-0 icon-aivra`}>
+                            <Icon size={28} className="text-white" />
+                          </div>
+                        </div>
                         <div className="flex-1 text-left">
-                          <h3 className="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2"><span>{goal.emoji}</span>{goal.title}</h3>
-                          <p className="text-gray-600 text-sm">{goal.description}</p>
+                          <h3 className="text-lg font-bold text-[#1a1a1a] mb-1 flex items-center gap-2"><span>{goal.emoji}</span>{goal.title}</h3>
+                          <p className="text-[#a0a0a0] text-sm">{goal.description}</p>
                         </div>
                       </div>
                     </button>
@@ -455,23 +481,23 @@ export default function SupplementAdvisor() {
           {/* STEP 1: USER INFO */}
           {!showLanding && step === 1 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Tell Us About You</h2>
+              <h2 className="text-2xl font-bold text-[#1a1a1a] mb-6">Tell Us About You</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                  <input type="number" value={formData.age} onChange={(e) => handleInputChange('age', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors" placeholder="30" />
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Age</label>
+                  <input type="number" value={formData.age} onChange={(e) => handleInputChange('age', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] placeholder-[#a0a0a0] focus:border-accent focus:outline-none transition-all duration-300" placeholder="30" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                  <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Gender</label>
+                  <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                     <option value="">Select</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Activity Level</label>
-                  <select value={formData.activityLevel} onChange={(e) => handleInputChange('activityLevel', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Activity Level</label>
+                  <select value={formData.activityLevel} onChange={(e) => handleInputChange('activityLevel', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                     <option value="">Select</option>
                     <option value="sedentary">Sedentary</option>
                     <option value="light">Lightly Active</option>
@@ -481,8 +507,8 @@ export default function SupplementAdvisor() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Workout Frequency</label>
-                  <select value={formData.workoutFrequency} onChange={(e) => handleInputChange('workoutFrequency', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Workout Frequency</label>
+                  <select value={formData.workoutFrequency} onChange={(e) => handleInputChange('workoutFrequency', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                     <option value="">Select</option>
                     <option value="0">0 days/week</option>
                     <option value="1-2">1-2 days/week</option>
@@ -492,12 +518,12 @@ export default function SupplementAdvisor() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sleep (hours)</label>
-                  <input type="number" value={formData.sleepHours} onChange={(e) => handleInputChange('sleepHours', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors" placeholder="7" />
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Sleep (hours)</label>
+                  <input type="number" value={formData.sleepHours} onChange={(e) => handleInputChange('sleepHours', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] placeholder-[#a0a0a0] focus:border-accent focus:outline-none transition-all duration-300" placeholder="7" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Stress Level</label>
-                  <select value={formData.stressLevel} onChange={(e) => handleInputChange('stressLevel', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                  <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Stress Level</label>
+                  <select value={formData.stressLevel} onChange={(e) => handleInputChange('stressLevel', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                     <option value="">Select</option>
                     <option value="low">Low</option>
                     <option value="moderate">Moderate</option>
@@ -506,8 +532,8 @@ export default function SupplementAdvisor() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Biggest Challenge</label>
-                <select value={formData.biggestChallenge} onChange={(e) => handleInputChange('biggestChallenge', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Biggest Challenge</label>
+                <select value={formData.biggestChallenge} onChange={(e) => handleInputChange('biggestChallenge', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                   <option value="">Select</option>
                   <option value="energy">Low energy</option>
                   <option value="motivation">Lack of motivation</option>
@@ -517,8 +543,8 @@ export default function SupplementAdvisor() {
                 </select>
               </div>
               <div className="flex gap-3 pt-4">
-                <button onClick={() => setStep(0)} className="flex-1 px-6 py-3 rounded-xl bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-colors">Back</button>
-                <button onClick={() => setStep(2)} disabled={!formData.age || !formData.gender || !formData.activityLevel} className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium hover:from-blue-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-500/30">Continue</button>
+                <button onClick={() => setStep(0)} className="flex-1 px-6 py-3 rounded-lg bg-gray-200 text-[#1a1a1a] font-medium hover:bg-gray-300 transition-all duration-300">Back</button>
+                <button onClick={() => setStep(2)} disabled={!formData.age || !formData.gender || !formData.activityLevel} className="flex-1 px-6 py-3 rounded-lg bg-accent text-white font-semibold hover:bg-blue-600 hover:shadow-accent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300">Continue</button>
               </div>
             </div>
           )}
@@ -526,10 +552,10 @@ export default function SupplementAdvisor() {
           {/* STEP 2: PERSONALIZATION */}
           {!showLanding && step === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Personalize Your Stack</h2>
+              <h2 className="text-2xl font-bold text-[#1a1a1a] mb-6">Personalize Your Stack</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Diet Type</label>
-                <select value={formData.dietType} onChange={(e) => handleInputChange('dietType', e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border-2 border-gray-200 text-gray-800 focus:border-blue-500 focus:outline-none transition-colors">
+                <label className="block text-sm font-medium text-[#1a1a1a] mb-2">Diet Type</label>
+                <select value={formData.dietType} onChange={(e) => handleInputChange('dietType', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-white border-2 border-gray-200 text-[#1a1a1a] focus:border-accent focus:outline-none transition-all duration-300">
                   <option value="">Select</option>
                   <option value="omnivore">Omnivore</option>
                   <option value="vegetarian">Vegetarian</option>
@@ -538,16 +564,16 @@ export default function SupplementAdvisor() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Specific Goals (select all that apply)</label>
+                <label className="block text-sm font-medium text-[#1a1a1a] mb-3">Specific Goals (select all that apply)</label>
                 <div className="grid grid-cols-2 gap-3">
                   {healthGoalsByCategory[primaryGoal].map(goal => (
-                    <button key={goal} onClick={() => toggleArrayField('healthGoals', goal)} className={`p-3 rounded-xl border-2 text-sm transition-all font-medium ${formData.healthGoals.includes(goal) ? 'border-primary bg-primary/10 text-primary-dark' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>{goal}</button>
+                    <button key={goal} onClick={() => toggleArrayField('healthGoals', goal)} className={`p-3 rounded-lg border-2 text-sm transition-all duration-300 font-medium ${formData.healthGoals.includes(goal) ? 'border-accent bg-accent/10 text-[#1a1a1a]' : 'border-gray-200 bg-white text-[#1a1a1a] hover:border-accent/50'}`}>{goal}</button>
                   ))}
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
-                <button onClick={() => setStep(1)} className="flex-1 px-6 py-3 rounded-xl bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-colors">Back</button>
-                <button onClick={generateRecommendations} disabled={!formData.healthGoals.length || !formData.dietType} className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium hover:from-blue-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-500/30">
+                <button onClick={() => setStep(1)} className="flex-1 px-6 py-3 rounded-lg bg-gray-200 text-[#1a1a1a] font-medium hover:bg-gray-300 transition-all duration-300">Back</button>
+                <button onClick={generateRecommendations} disabled={!formData.healthGoals.length || !formData.dietType} className="flex-1 px-6 py-3 rounded-lg bg-accent text-white font-semibold hover:bg-blue-600 hover:shadow-accent disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-300">
                   Generate Stack <Sparkles size={20} />
                 </button>
               </div>
@@ -558,20 +584,20 @@ export default function SupplementAdvisor() {
           {!showLanding && step === 4 && recommendations && (
             <div className="space-y-6">
               <div className="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-[#1a1a1a] mb-2 flex items-center gap-2">
                   <Info size={24} className="text-amber-600" />
                   Disclaimer
                 </h3>
-                <p className="text-gray-700 text-sm">Educational purposes only. Consult healthcare provider before starting supplements.</p>
+                <p className="text-[#1a1a1a] text-sm">Educational purposes only. Consult healthcare provider before starting supplements.</p>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-1">Your Personalized Stack</h3>
-                    <p className="text-gray-600">Optimized for: <span className="text-primary font-semibold">{goalCategories.find(g => g.id === primaryGoal)?.title}</span></p>
+                    <h3 className="text-3xl font-bold text-[#1a1a1a] mb-1">Your Personalized Stack</h3>
+                    <p className="text-[#a0a0a0]">Optimized for: <span className="text-accent font-semibold">{goalCategories.find(g => g.id === primaryGoal)?.title}</span></p>
                   </div>
-                  <button onClick={addAllToCart} className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary via-accent to-violet text-white font-bold hover:shadow-2xl hover:shadow-accent/50 transition-all flex items-center gap-2 hover:scale-105">
+                  <button onClick={addAllToCart} className="px-6 py-3 rounded-lg bg-accent text-white font-semibold hover:bg-blue-600 hover:shadow-accent transition-all duration-300 flex items-center gap-2 hover:-translate-y-0.5">
                     <ShoppingCart size={20} />
                     Add All to Cart
                   </button>
@@ -584,41 +610,41 @@ export default function SupplementAdvisor() {
                     const inCart = cart.some(item => item.name === supp.name);
 
                     return (
-                      <div key={idx} className="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden hover:border-gray-300 transition-colors">
+                      <div key={idx} className="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-premium">
                         <div className="flex gap-4 p-5">
                           <img src={getSupplementImage(supp.name)} alt={supp.name} className="w-24 h-24 object-cover rounded-xl flex-shrink-0 shadow-md" />
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex-1">
-                                <h4 className="text-lg font-bold text-gray-900">{supp.name}</h4>
-                                <p className="text-primary font-semibold text-sm">${supplement?.price.toFixed(2)}</p>
+                                <h4 className="text-lg font-bold text-[#1a1a1a]">{supp.name}</h4>
+                                <p className="text-accent font-semibold text-sm">${supplement?.price.toFixed(2)}</p>
                               </div>
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${supp.priority === 'Essential' ? 'bg-accent/10 text-accent-dark border border-accent/30' : supp.priority === 'High' ? 'bg-primary/10 text-primary-dark border border-primary/30' : 'bg-gray-100 text-gray-700 border border-gray-200'}`}>
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${supp.priority === 'Essential' ? 'bg-accent/10 text-accent border border-accent/30' : supp.priority === 'High' ? 'bg-accent/10 text-accent border border-accent/30' : 'bg-gray-100 text-[#1a1a1a] border border-gray-200'}`}>
                                 {supp.priority}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-700 mb-2"><strong className="text-gray-900">Dosage:</strong> {supp.dosage}</p>
-                            <p className="text-sm text-gray-700 mb-2"><strong className="text-gray-900">Timing:</strong> {supp.timing}</p>
-                            <p className="text-sm text-gray-600 mb-3">{supp.reason}</p>
+                                <p className="text-sm text-[#1a1a1a] mb-2"><strong className="text-[#1a1a1a]">Dosage:</strong> {supp.dosage}</p>
+                            <p className="text-sm text-[#1a1a1a] mb-2"><strong className="text-[#1a1a1a]">Timing:</strong> {supp.timing}</p>
+                            <p className="text-sm text-[#a0a0a0] mb-3">{supp.reason}</p>
 
-                            <button onClick={() => setExpandedSupplement(isExpanded ? null : idx)} className="text-sm text-primary hover:text-primary-dark font-medium flex items-center gap-1 mb-3">
+                            <button onClick={() => setExpandedSupplement(isExpanded ? null : idx)} className="text-sm text-accent hover:text-blue-600 font-medium flex items-center gap-1 mb-3 transition-colors duration-300">
                               <Info size={14} />
                               {isExpanded ? 'Hide details' : 'Learn more'}
                             </button>
 
                             {isExpanded && (
-                              <div className="bg-primary/5 p-4 rounded-xl mb-3 border border-primary/20">
-                                <p className="text-sm text-gray-700">{supplement?.info}</p>
+                              <div className="bg-accent/5 p-4 rounded-lg mb-3 border border-accent/20">
+                                <p className="text-sm text-[#1a1a1a]">{supplement?.info}</p>
                               </div>
                             )}
 
                             <div className="flex gap-3">
                               <button
                                 onClick={() => addToCart(supp.name)}
-                                className={`flex-1 px-4 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                                   inCart
                                     ? 'bg-green-100 text-green-700 border-2 border-green-200'
-                                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg shadow-blue-500/30'
+                                    : 'bg-accent text-white hover:bg-blue-600 hover:shadow-accent'
                                 }`}
                               >
                                 {inCart ? (
@@ -637,13 +663,13 @@ export default function SupplementAdvisor() {
               </div>
 
               <div className="bg-green-50 p-5 rounded-2xl border-2 border-green-200">
-                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <h4 className="font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
                   <Target size={20} className="text-green-600" />
                   Key Insights for Your Goal
                 </h4>
                 <ul className="space-y-2">
                   {recommendations.insights.map((insight, idx) => (
-                    <li key={idx} className="text-sm text-gray-700 flex gap-2">
+                    <li key={idx} className="text-sm text-[#1a1a1a] flex gap-2">
                       <span className="text-green-600 font-bold">•</span>
                       <span>{insight}</span>
                     </li>
@@ -651,16 +677,16 @@ export default function SupplementAdvisor() {
                 </ul>
               </div>
 
-              <button onClick={() => { setStep(0); setPrimaryGoal(''); setRecommendations(null); setShowLanding(false); }} className="w-full bg-gray-100 border-2 border-gray-200 text-gray-900 py-3 rounded-xl font-medium hover:bg-gray-200 hover:border-gray-300 transition-all">
+              <button onClick={() => { setStep(0); setPrimaryGoal(''); setRecommendations(null); setShowLanding(false); }} className="w-full bg-gray-100 border-2 border-gray-200 text-[#1a1a1a] py-3 rounded-lg font-medium hover:bg-gray-200 hover:border-gray-300 transition-all duration-300">
                 Start New Assessment
               </button>
 
               <div className="text-center pt-6 border-t border-gray-200">
-                <p className="text-gray-500 text-xs mb-2">
+                <p className="text-[#a0a0a0] text-xs mb-2">
                   Powered by Supliful • 42 Premium Supplements
                 </p>
-                <p className="text-gray-400 text-xs">
-                  © 2025 SmartStack • For educational purposes only
+                <p className="text-[#a0a0a0] text-xs">
+                  © 2025 Aivra • For educational purposes only
                 </p>
               </div>
             </div>

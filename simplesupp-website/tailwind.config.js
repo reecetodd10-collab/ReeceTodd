@@ -7,30 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: '#2563eb', // blue-600 - electric blue
-          dark: '#1e40af',    // blue-700
-          light: '#3b82f6',   // blue-500
+        // Aivra Primary Palette - Charcoal & Grays
+        charcoal: {
+          DEFAULT: '#0a0a0a',
+          light: '#1a1a1a',
         },
+        gray: {
+          50: '#f5f5f5',
+          100: '#e5e5e5',
+          200: '#a0a0a0',
+        },
+        // Accent Colors - Three Options (Default: Blue)
         accent: {
-          DEFAULT: '#06b6d4', // cyan-500
-          dark: '#0891b2',    // cyan-600
-          light: '#22d3ee',   // cyan-400
+          DEFAULT: '#3b82f6', // blue-500 (OPTION A - Default)
+          glow: '#60a5fa',    // blue-400
+          // Alternative options for preview:
+          red: '#ef4444',      // red-500 (OPTION B)
+          redGlow: '#f87171',  // red-400
+          green: '#10b981',    // emerald-500 (OPTION C)
+          greenGlow: '#34d399', // emerald-400
         },
-        violet: {
-          DEFAULT: '#7c3aed', // purple-600 - soft violet
-          dark: '#6d28d9',    // purple-700
-          light: '#8b5cf6',   // purple-500
-        },
-        slate: {
-          900: '#0F172A',     // dark background
-          200: '#E2E8F0',     // text on dark
+        // Keep for compatibility but will be phased out
+        primary: {
+          DEFAULT: '#3b82f6', // maps to accent blue
         },
       },
       fontFamily: {
-        sans: ['Sora', 'Outfit', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Sora', 'Outfit', 'sans-serif'],
-        serif: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

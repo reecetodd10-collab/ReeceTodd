@@ -12,7 +12,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><Link to="/smartstack-ai" className="hover:text-accent transition">SmartSupp AI</Link></li>
+              <li><Link to="/smartstack-ai" className="hover:text-accent transition">Aivra Stack</Link></li>
               <li><Link to="/learn" className="hover:text-accent transition">Learn</Link></li>
               <li><Link to="/reviews" className="hover:text-accent transition">Reviews</Link></li>
             </ul>
@@ -45,8 +45,8 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-center md:text-left">
-            <p className="text-sm">&copy; 2025 SmartSupp. All rights reserved.</p>
-            <p className="text-xs text-gray-500 mt-1">Smart supplements for smart goals.</p>
+            <p className="text-sm">&copy; 2025 Aivra. All rights reserved.</p>
+            <p className="text-xs text-gray-500 mt-1">Your AI-Powered Supplement & Fitness Advisor.</p>
           </div>
 
           <div className="flex space-x-4 mt-4 md:mt-0">

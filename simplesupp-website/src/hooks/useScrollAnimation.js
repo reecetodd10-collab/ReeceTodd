@@ -61,32 +61,35 @@ export function useActiveSection(sectionIds) {
   const [activeSection, setActiveSection] = useState(sectionIds[0] || '');
 
   useEffect(() => {
-    const observers = [];
+    if (sectionIds.length === 0) return;
 
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px',
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      // Find the section that's currently in the center of the viewport
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe all sections
     sectionIds.forEach((sectionId) => {
       const element = document.getElementById(sectionId);
       if (element) {
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (entry.isIntersecting) {
-              setActiveSection(sectionId);
-            }
-          },
-          {
-            threshold: 0.5, // Section is active when 50% visible
-            rootMargin: '-10% 0px -50% 0px' // Offset to trigger earlier
-          }
-        );
-
         observer.observe(element);
-        observers.push({ observer, element });
       }
     });
 
     return () => {
-      observers.forEach(({ observer, element }) => {
-        observer.unobserve(element);
-      });
+      observer.disconnect();
     };
   }, [sectionIds]);
 

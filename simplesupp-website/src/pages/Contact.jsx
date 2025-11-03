@@ -78,7 +78,7 @@ export default function Contact() {
 
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center"
+                  className="w-full px-6 py-3 bg-accent text-white rounded-lg font-semibold hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5 flex items-center justify-center"
                 >
                   <Send size={20} className="mr-2" />
                   Send Message
@@ -97,8 +97,8 @@ export default function Contact() {
                   <Mail className="text-accent mt-1 mr-4 flex-shrink-0" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <a href="mailto:hello@smartsupp.com" className="text-accent hover:underline">
-                      hello@smartsupp.com
+                    <a href="mailto:hello@aivra.com" className="text-accent hover:underline">
+                      hello@aivra.com
                     </a>
                   </div>
                 </div>
@@ -121,7 +121,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-primary via-accent to-violet text-white rounded-2xl p-8">
+            <div className="bg-charcoal text-white rounded-2xl p-8">
               <h3 className="text-2xl font-bold mb-3">Response Time</h3>
               <p className="text-slate-100 mb-4">
                 We typically respond within 24 hours during business days.

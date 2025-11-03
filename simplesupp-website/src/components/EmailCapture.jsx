@@ -33,7 +33,7 @@ export default function EmailCapture({ compact = false, title, description }) {
         <button
           type="submit"
           disabled={!consent}
-          className="w-full px-4 py-2 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+            className="w-full px-4 py-2 bg-accent text-white rounded-lg font-medium hover:shadow-accent hover:bg-blue-600 transition-all disabled:opacity-50"
         >
           {submitted ? <><Check size={16} className="inline mr-1" /> Subscribed!</> : 'Join Now'}
         </button>
@@ -51,11 +51,11 @@ export default function EmailCapture({ compact = false, title, description }) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-primary/10 via-accent/10 to-violet/10 rounded-2xl p-8 border border-primary/20">
+    <div className="bg-accent/10 rounded-2xl p-8 border border-accent/20">
       <div className="max-w-md mx-auto text-center">
         <Mail className="mx-auto mb-4 text-accent" size={48} />
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
-          {title || 'Join the SmartSupp Community'}
+          {title || 'Join the Aivra Community'}
         </h3>
         <p className="text-gray-600 mb-6">
           {description || 'Get early access, exclusive drops, and AI-backed supplement insights straight to your inbox.'}
@@ -87,7 +87,7 @@ export default function EmailCapture({ compact = false, title, description }) {
           <button
             type="submit"
             disabled={!consent || !email}
-            className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent/50 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-6 py-3 bg-accent text-white rounded-lg font-semibold hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitted ? (
               <span className="flex items-center justify-center">

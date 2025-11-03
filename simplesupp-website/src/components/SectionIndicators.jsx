@@ -30,19 +30,22 @@ export default function SectionIndicators({ sections, activeSection }) {
               aria-label={`Go to ${section.label}`}
             >
               {/* Dot */}
-              <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              <div className={`rounded-full transition-all duration-300 ${
                 isActive
-                  ? 'bg-primary scale-125'
-                  : 'bg-gray-300 hover:bg-gray-400 hover:scale-110'
-              }`} />
+                  ? 'w-3 h-3 bg-[var(--acc)] scale-125'
+                  : 'w-2 h-2 bg-[var(--txt-muted)]/40 hover:bg-[var(--txt-muted)]/60 hover:scale-110'
+              }`} 
+              style={isActive ? {
+                boxShadow: '0 0 12px rgba(24, 182, 222, 0.6), 0 0 24px rgba(24, 182, 222, 0.3)'
+              } : {}} />
 
               {/* Label tooltip */}
               <motion.span
                 initial={{ opacity: 0, x: 10 }}
                 whileHover={{ opacity: 1, x: 0 }}
-                className={`absolute right-full mr-3 px-3 py-1 bg-gray-900 text-white text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none ${
+                className={`absolute right-full mr-3 px-3 py-1 bg-[var(--bg)] border border-[var(--border)] text-[var(--txt)] text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none ${
                   isActive ? 'opacity-100' : 'opacity-0'
-                } group-hover:opacity-100 transition-opacity`}
+                } group-hover:opacity-100 transition-opacity glass`}
               >
                 {section.label}
               </motion.span>

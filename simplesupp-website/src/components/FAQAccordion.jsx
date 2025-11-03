@@ -13,20 +13,20 @@ export default function FAQAccordion() {
 
   const faqs = [
     {
-      question: "How does SmartStack AI work?",
-      answer: "SmartStack AI uses advanced algorithms to analyze your fitness goals, lifestyle, diet, and experience level. It cross-references this information with our database of 42+ premium supplements to build a personalized stack tailored specifically to you. The entire process takes about 2 minutes and provides dosage recommendations, timing, and scientific reasoning for each supplement."
+      question: "How does Aivra Stack work?",
+      answer: "Aivra Stack uses advanced algorithms to analyze your fitness goals, lifestyle, diet, and experience level. It cross-references this information with our database of 42+ premium supplements to build a personalized stack tailored specifically to you. The entire process takes about 2 minutes and provides dosage recommendations, timing, and scientific reasoning for each supplement."
     },
     {
-      question: "Is SmartSupp free to use?",
-      answer: "Yes! Our AI-powered recommendation tools (SmartStack AI and SmartFitt) are completely free to use. There's no credit card required, no subscription, and no hidden fees. You only pay if you decide to purchase supplements through our Supliful integration."
+      question: "Is Aivra free to use?",
+      answer: "Yes! Our AI-powered recommendation tools (Aivra Stack and Aivra Fit) are completely free to use. There's no credit card required, no subscription, and no hidden fees. You only pay if you decide to purchase supplements through our Supliful integration."
     },
     {
       question: "What makes your supplements different?",
       answer: "We partner with premium supplement brands through Supliful to ensure you receive high-quality, third-party tested products. Every supplement in our catalog is science-backed and selected based on research efficacy. We focus on essential supplements with proven benefits rather than trendy, unproven ingredients."
     },
     {
-      question: "Can I use SmartSupp if I'm a beginner?",
-      answer: "Absolutely! SmartStack AI is designed for all experience levels, from complete beginners to advanced athletes. Our AI adjusts recommendations based on your experience level, ensuring you start with foundational supplements and can progress as you advance in your fitness journey."
+      question: "Can I use Aivra if I'm a beginner?",
+      answer: "Absolutely! Aivra Stack is designed for all experience levels, from complete beginners to advanced athletes. Our AI adjusts recommendations based on your experience level, ensuring you start with foundational supplements and can progress as you advance in your fitness journey."
     },
     {
       question: "How long does shipping take?",
@@ -34,7 +34,7 @@ export default function FAQAccordion() {
     },
     {
       question: "Can I adjust my supplement stack over time?",
-      answer: "Yes! We recommend retaking the SmartStack AI quiz every 8-12 weeks or whenever your goals change significantly. As you progress in your fitness journey, your supplement needs may evolve. Our AI will adjust recommendations based on your updated information."
+      answer: "Yes! We recommend retaking the Aivra Stack quiz every 8-12 weeks or whenever your goals change significantly. As you progress in your fitness journey, your supplement needs may evolve. Our AI will adjust recommendations based on your updated information."
     },
     {
       question: "Are the supplements safe?",
@@ -59,13 +59,13 @@ export default function FAQAccordion() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.05 }}
           viewport={{ once: true }}
-          className="glass rounded-2xl overflow-hidden shadow-premium hover:shadow-premium-lg transition-all duration-300"
+          className="glass-card rounded-2xl overflow-hidden shadow-premium hover:shadow-premium-lg transition-all duration-300"
         >
           <button
             onClick={() => toggleFAQ(index)}
             className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between text-left hover:bg-white/30 transition-colors duration-200"
           >
-            <span className="text-lg md:text-xl font-semibold text-gray-900 pr-4">
+            <span className="text-lg md:text-xl font-semibold text-[#1a1a1a] pr-4">
               {faq.question}
             </span>
             <motion.div
@@ -74,8 +74,8 @@ export default function FAQAccordion() {
               className="flex-shrink-0"
             >
               <ChevronDown
-                className={`w-6 h-6 transition-colors duration-200 ${
-                  openIndex === index ? 'text-primary' : 'text-gray-500'
+                className={`w-6 h-6 transition-colors duration-300 ${
+                  openIndex === index ? 'text-accent' : 'text-[#a0a0a0]'
                 }`}
               />
             </motion.div>
@@ -91,7 +91,7 @@ export default function FAQAccordion() {
                 className="overflow-hidden"
               >
                 <div className="px-6 md:px-8 pb-5 md:pb-6 pt-2">
-                  <p className="text-gray-700 leading-relaxed text-base md:text-lg">
+                  <p className="text-[#1a1a1a] leading-relaxed text-base md:text-lg">
                     {faq.answer}
                   </p>
                 </div>

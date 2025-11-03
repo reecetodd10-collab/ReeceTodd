@@ -114,7 +114,7 @@ export default function Reviews() {
                   required
                 />
                 <span className="text-sm text-gray-600">
-                  I consent to SmartSupp using my review on the website.
+                  I consent to Aivra using my review on the website.
                 </span>
               </label>
 

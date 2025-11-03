@@ -60,38 +60,34 @@ export default function GoalCards() {
           whileHover={{ y: -8, transition: { duration: 0.3 } }}
           className="card-premium"
         >
-          <div className="glass rounded-3xl p-6 md:p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
-            {/* Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                {/* Glow effect */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${goal.gradient} opacity-30 rounded-2xl blur-2xl`}
-                />
-                {/* Icon container */}
-                <div
-                  className={`relative w-20 h-20 bg-gradient-to-br ${goal.gradient} rounded-2xl flex items-center justify-center shadow-xl icon-premium`}
-                >
-                  <goal.icon className="text-white" size={goal.iconSize} strokeWidth={2} />
+          <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+              {/* Icon - Charcoal rounded square with accent glow */}
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  {/* Subtle glow effect */}
+                  <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
+                  {/* Icon container */}
+                  <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
+                    <goal.icon className="text-white" size={goal.iconSize} strokeWidth={2} />
+                  </div>
                 </div>
               </div>
-            </div>
 
             {/* Title */}
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
               {goal.title}
             </h3>
 
             {/* Description */}
-            <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+            <p className="text-[var(--txt-muted)] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
               {goal.description}
             </p>
 
             {/* Features */}
             <ul className="space-y-2">
               {goal.features.map((feature, featureIndex) => (
-                <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                  <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${goal.gradient} mr-2`} />
+                <li key={featureIndex} className="flex items-center text-sm text-[var(--txt)]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--acc)] mr-2" />
                   {feature}
                 </li>
               ))}

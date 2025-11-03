@@ -3,8 +3,8 @@ import { Pill } from 'lucide-react';
 
 export default function PillLogo({ size = 'large', shimmer = false }) {
   const sizes = {
-    small: { pill: 32, text: 'text-xl' },
-    large: { pill: 64, text: 'text-5xl md:text-7xl' }
+    small: { pill: 24, text: 'text-xl', container: 'w-10 h-10 p-2' },
+    large: { pill: 48, text: 'text-5xl md:text-7xl', container: 'w-20 h-20 p-4' }
   };
 
   const config = sizes[size];
@@ -12,25 +12,22 @@ export default function PillLogo({ size = 'large', shimmer = false }) {
   return (
     <div className="flex items-center gap-3 md:gap-4">
       <div className="relative">
-        {/* Glow effect - SmartSupp gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-violet rounded-2xl blur-xl opacity-60 animate-pulse"></div>
+                {/* Subtle glow effect - accent color */}
+                <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
 
-        {/* Pill container */}
-        <div className="relative bg-gradient-to-br from-slate-900 via-gray-800 to-black p-3 rounded-2xl shadow-2xl border border-slate-700/50">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-violet rounded-full blur-md opacity-50"></div>
-            <Pill
-              className="relative text-white fill-current glow-effect"
-              size={config.pill}
-            />
-          </div>
-        </div>
-      </div>
+                {/* Pill container - Charcoal rounded square */}
+                <div className={`relative bg-[var(--charcoal-light)] ${config.container} rounded-2xl shadow-premium border border-[var(--border)] icon-aivra`}>
+                  <Pill
+                    className="relative text-white fill-current"
+                    size={config.pill}
+                  />
+                </div>
+              </div>
 
-      {/* Wordmark with SmartSupp branding */}
-      <h1 className={`${config.text} font-extrabold ${shimmer ? 'gradient-shimmer' : 'gradient-text'}`}>
-        SmartSupp
-      </h1>
+              {/* Wordmark - Clean Aivra branding */}
+              <h1 className={`${config.text} font-bold text-[var(--txt)]`}>
+                Aivra
+              </h1>
     </div>
   );
 }

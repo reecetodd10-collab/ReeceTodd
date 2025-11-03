@@ -9,7 +9,7 @@ export default function About() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Why I Built SmartSupp
+            Why I Built Aivra
           </h1>
         </div>
 
@@ -21,7 +21,7 @@ export default function About() {
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              I built <strong>SmartSupp</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — SmartSupp's AI creates your perfect starting stack instantly.
+              I built <strong>Aivra</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aivra's AI creates your perfect starting stack instantly.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -29,17 +29,17 @@ export default function About() {
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
-              What I love most: if you are brand-new and do not know where to begin, SmartSupp gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
+              What I love most: if you are brand-new and do not know where to begin, Aivra gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
             </p>
           </div>
 
           {/* Photo Placeholder */}
-          <div className="mt-8 p-8 bg-gradient-to-r from-primary/10 via-accent/10 to-violet/10 rounded-xl text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-r from-primary via-accent to-violet rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg shadow-accent/30">
+          <div className="mt-8 p-8 bg-accent/10 rounded-xl text-center border border-accent/20">
+            <div className="w-32 h-32 mx-auto mb-4 bg-accent rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-accent">
               RT
             </div>
             <p className="text-gray-600 font-semibold">Reece Todd</p>
-            <p className="text-sm text-gray-500">Founder, SmartSupp</p>
+            <p className="text-sm text-gray-500">Founder, Aivra</p>
           </div>
         </div>
 
@@ -65,18 +65,18 @@ export default function About() {
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-gradient-to-r from-primary via-accent to-violet text-white rounded-2xl p-8">
+        <div className="text-center bg-charcoal text-white rounded-2xl p-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
             Ready to Start Your Journey?
           </h2>
-          <p className="text-lg mb-6 text-slate-100">
+          <p className="text-lg mb-6 text-gray-200">
             Get your personalized supplement stack in 2 minutes.
           </p>
           <Link
             to="/smartstack-ai"
-            className="inline-flex items-center px-8 py-3 bg-white text-primary rounded-lg font-bold hover:shadow-2xl hover:scale-105 transition-all"
+            className="inline-flex items-center px-8 py-3 bg-accent text-white rounded-lg font-semibold hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5"
           >
-            Try SmartSupp AI <ArrowRight className="ml-2" size={20} />
+            Try Aivra Stack <ArrowRight className="ml-2" size={20} />
           </Link>
         </div>
       </div>

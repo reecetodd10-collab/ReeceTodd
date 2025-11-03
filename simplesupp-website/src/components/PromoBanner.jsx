@@ -44,7 +44,7 @@ export default function PromoBanner() {
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-gradient-to-r from-primary via-accent to-violet text-white overflow-hidden"
+          className="glass-dark text-[var(--txt)] overflow-hidden border-b border-[var(--border)]"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between gap-4">
@@ -66,11 +66,11 @@ export default function PromoBanner() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         required
-                        className="flex-1 px-4 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                        className="flex-1 px-4 py-2 rounded-lg text-[#001018] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
                       />
                       <button
                         type="submit"
-                        className="px-6 py-2 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                        className="btn-primary text-sm whitespace-nowrap"
                       >
                         Get Discount
                       </button>
@@ -92,11 +92,11 @@ export default function PromoBanner() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         required
-                        className="flex-1 px-3 py-1.5 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                        className="flex-1 px-3 py-1.5 rounded-lg text-[#001018] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
                       />
                       <button
                         type="submit"
-                        className="px-4 py-1.5 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                        className="btn-primary text-sm"
                       >
                         Get Code
                       </button>

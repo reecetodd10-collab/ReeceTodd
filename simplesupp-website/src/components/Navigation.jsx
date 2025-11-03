@@ -12,37 +12,48 @@ export default function Navigation() {
 
   // Homepage section navigation (smooth scroll)
   const homeSections = [
-    { name: 'SmartStack AI', sectionId: 'smartstack-ai' },
-    { name: 'SmartFitt', sectionId: 'smartfitt' },
-    { name: 'Shop', sectionId: 'shop' },
+    { name: 'Aivra Stack', sectionId: 'aivra-stack' },
+    { name: 'Aivra Fit', sectionId: 'aivra-fit' },
+    { name: 'Aivra Shop', sectionId: 'aivra-shop' },
+    { name: 'About', sectionId: 'about' },
   ];
 
-  // Other page links
-  const pageLinks = [
-    { name: 'About', path: '/about' },
-  ];
+  // Other page links (only show if not on homepage)
+  const pageLinks = [];
 
-  // Scroll spy for active section highlighting
+  // Scroll spy for active section highlighting using Intersection Observer
   useEffect(() => {
     if (!isHomePage) return;
 
-    const handleScroll = () => {
-      const sections = ['hero', 'how-it-works', 'smartstack-ai', 'smartfitt', 'shop', 'benefits'];
-      const scrollPosition = window.scrollY + 100; // Offset for fixed nav
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sections[i]);
-        if (section && section.offsetTop <= scrollPosition) {
-          setActiveSection(sections[i]);
-          break;
-        }
-      }
+    const sections = ['hero', 'how-it-works', 'aivra-stack', 'aivra-fit', 'aivra-shop', 'goals', 'reviews', 'faq', 'contact', 'about'];
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
     };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    const observers = sections.map(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        observer.observe(element);
+        return observer;
+      }
+      return null;
+    }).filter(Boolean);
+
+    return () => {
+      observers.forEach(observer => observer.disconnect());
+    };
   }, [isHomePage]);
 
   const scrollToSection = (sectionId) => {
@@ -68,38 +79,38 @@ export default function Navigation() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 glass shadow-premium transition-all duration-300">
+    <nav className="sticky top-0 z-50 glass-dark shadow-premium transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center">
             <PillLogo size="small" />
           </Link>
 
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-2">
             {/* Homepage: Show section navigation with scroll spy */}
             {isHomePage && homeSections.map((section) => (
               <button
                 key={section.sectionId}
                 onClick={() => scrollToSection(section.sectionId)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                   activeSection === section.sectionId
-                    ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-primary'
+                    ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
+                    : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
                 }`}
               >
                 {section.name}
               </button>
             ))}
 
-            {/* Always show page links */}
-            {pageLinks.map((link) => (
+            {/* Other page links (only if not on homepage) */}
+            {!isHomePage && pageLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                   isActive(link.path)
-                    ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-accent text-white shadow-accent'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-accent'
                 }`}
               >
                 {link.name}
@@ -109,7 +120,7 @@ export default function Navigation() {
 
           <Link
             to="/smartstack-ai"
-            className="hidden lg:block px-6 py-2.5 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent/50 transition-all hover:scale-105"
+            className="hidden lg:block btn-primary"
           >
             Get Your Stack
           </Link>
@@ -129,21 +140,25 @@ export default function Navigation() {
               <button
                 key={section.sectionId}
                 onClick={() => scrollToSection(section.sectionId)}
-                className="block w-full text-left px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-all"
+                className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeSection === section.sectionId
+                    ? 'bg-accent text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 {section.name}
               </button>
             ))}
 
-            {/* Page links */}
-            {pageLinks.map((link) => (
+            {/* Other page links */}
+            {!isHomePage && pageLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-3 rounded-lg font-medium transition-all ${
                   isActive(link.path)
-                    ? 'bg-gradient-to-r from-primary via-accent to-violet text-white shadow-lg'
+                    ? 'bg-accent text-white'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -153,7 +168,7 @@ export default function Navigation() {
             <Link
               to="/smartstack-ai"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold text-center"
+              className="block px-4 py-3 bg-accent text-white rounded-lg font-semibold text-center"
             >
               Get Your Stack
             </Link>
