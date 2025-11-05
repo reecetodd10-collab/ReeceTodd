@@ -10,19 +10,22 @@ import {
   X,
   Crown,
   User,
-  FlaskConical
+  FlaskConical,
+  Target
 } from 'lucide-react';
 import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
 import SettingsPage from './Settings';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
 import AIChat from '../components/premium/AIChat';
+import Reassessment from '../components/premium/Reassessment';
 import PillLogo from '../components/PillLogo';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showReassessment, setShowReassessment] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -157,6 +160,37 @@ export default function Dashboard() {
           </button>
         </div>
 
+        {/* Top Navigation Bar - Desktop */}
+        <div className="hidden lg:flex sticky top-0 z-30 bg-[var(--bg-elev-1)]/80 backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] px-8 py-4 items-center justify-end gap-4">
+          <button
+            onClick={() => setShowReassessment(true)}
+            className="flex items-center gap-2 px-4 py-2 glass-card rounded-lg text-sm font-medium text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
+          >
+            <Target size={16} />
+            🎯 Update Goals
+          </button>
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="w-8 h-8 rounded-full bg-[var(--acc)]/20 flex items-center justify-center">
+              <User size={16} className="text-[var(--acc)]" />
+            </div>
+            <div className="text-sm">
+              <p className="font-medium text-[var(--txt)]">User Name</p>
+              <p className="text-xs text-[var(--txt-muted)]">user@example.com</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Top Bar with Update Goals */}
+        <div className="lg:hidden sticky top-[73px] z-30 bg-[var(--bg-elev-1)]/80 backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
+          <button
+            onClick={() => setShowReassessment(true)}
+            className="flex items-center gap-2 px-3 py-2 glass-card rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
+          >
+            <Target size={14} />
+            🎯 Update Goals
+          </button>
+        </div>
+
         {/* Content */}
         <div className="p-6 lg:p-8">
           {location.pathname === '/dashboard' && <DashboardOverview isPremium={isPremium} />}
@@ -202,6 +236,9 @@ export default function Dashboard() {
 
       {/* AI Chat Widget - Available on all dashboard pages */}
       <AIChat userIsPremium={userIsPremium} />
+
+      {/* Reassessment Modal */}
+      <Reassessment isOpen={showReassessment} onClose={() => setShowReassessment(false)} />
     </div>
   );
 }
