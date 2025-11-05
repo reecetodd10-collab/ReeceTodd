@@ -12,7 +12,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><Link to="/smartstack-ai" className="hover:text-accent transition">Aivra Stack</Link></li>
+              <li><Link to="/smartstack-ai" className="hover:text-accent transition">Aviera Stack</Link></li>
               <li><Link to="/learn" className="hover:text-accent transition">Learn</Link></li>
               <li><Link to="/reviews" className="hover:text-accent transition">Reviews</Link></li>
             </ul>

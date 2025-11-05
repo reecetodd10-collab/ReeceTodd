@@ -25,7 +25,7 @@ export default function SmartStackAI() {
 
           {/* Title */}
           <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
-            Aivra Stack
+            Aviera Stack
           </h1>
 
           <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
@@ -53,7 +53,7 @@ export default function SmartStackAI() {
           </div>
 
           <p className="mt-6 text-sm text-[var(--txt-muted)] italic">
-            Powered by Aivra's curated catalog of 42 premium supplements
+            Powered by Aviera's curated catalog of 42 premium supplements
           </p>
         </div>
       </div>

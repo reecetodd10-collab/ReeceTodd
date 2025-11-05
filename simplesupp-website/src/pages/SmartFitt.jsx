@@ -27,7 +27,7 @@ export default function SmartFitt() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
-            Aivra Fit
+            Aviera Fit
           </h1>
 
           <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
@@ -194,7 +194,7 @@ export default function SmartFitt() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      Pair with Aivra Stack
+                      Pair with Aviera Stack
                     </h3>
                     <p className="text-gray-700">
                       Get personalized supplement recommendations to support your training. Recovery, performance, and muscle growth supplements tailored to your goals.

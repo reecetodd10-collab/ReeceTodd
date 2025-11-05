@@ -18,9 +18,9 @@ export default function Home() {
   const sections = [
     { id: 'hero', label: 'Home' },
     { id: 'how-it-works', label: 'How It Works' },
-    { id: 'aivra-stack', label: 'Aivra Stack' },
-    { id: 'aivra-fit', label: 'Aivra Fit' },
-    { id: 'aivra-shop', label: 'Aivra Shop' },
+    { id: 'aviera-stack', label: 'Aviera Stack' },
+    { id: 'aviera-fit', label: 'Aviera Fit' },
+    { id: 'aviera-shop', label: 'Aviera Shop' },
     { id: 'goals', label: 'Your Goals' },
     { id: 'reviews', label: 'Reviews' },
     { id: 'faq', label: 'FAQ' },
@@ -82,8 +82,8 @@ export default function Home() {
                 H1: #F0F6FF on scrim (avg rgba(0,0,0,0.4)) = ~9.5:1 (exceeds 7:1 requirement)
                 Body: #B8C2D9 on scrim = ~6.2:1 (exceeds 4.5:1 requirement)
               */}
-              <h1 className="text-6xl md:text-7xl lg:text-[96px] font-extrabold leading-tight mb-6 text-[#F0F6FF] text-shadow">
-                Aivra
+                              <h1 className="text-6xl md:text-7xl lg:text-[96px] font-extrabold leading-tight mb-6 text-[#F0F6FF] text-shadow">
+                Aviera
               </h1>
 
               <p className="text-xl md:text-2xl text-[24px] text-[var(--txt-muted)] max-w-3xl mx-auto mb-4 font-medium">
@@ -97,7 +97,7 @@ export default function Home() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
                 <button
-                  onClick={() => document.getElementById('aivra-stack').scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('aviera-stack').scrollIntoView({ behavior: 'smooth' })}
                   className="btn-primary group"
                 >
                   Get Your Stack
@@ -212,10 +212,10 @@ export default function Home() {
         </section>
 
         {/* ========================================
-            AIVRA STACK SECTION
+            AVIERA STACK SECTION
             ======================================== */}
         <section
-          id="aivra-stack"
+          id="aviera-stack"
           className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
         >
           <div
@@ -241,7 +241,7 @@ export default function Home() {
                 </div>
 
                 <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-                  Aivra Stack
+                  Aviera Stack
                 </h2>
                 <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
                   Answer a quick 2-minute quiz and get an AI-generated supplement stack tailored to your exact
@@ -289,10 +289,10 @@ export default function Home() {
         </section>
 
         {/* ========================================
-            AIVRA FIT SECTION
+            AVIERA FIT SECTION
             ======================================== */}
         <section
-          id="aivra-fit"
+          id="aviera-fit"
           className="scroll-snap-section relative min-h-screen flex items-center bg-white py-32 px-4"
         >
           <div
@@ -348,7 +348,7 @@ export default function Home() {
                 </div>
 
                 <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
-                  Aivra Fit
+                  Aviera Fit
                 </h2>
                 <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
                   Get AI-powered workout recommendations tailored to your goals and experience level.
@@ -384,10 +384,10 @@ export default function Home() {
         </section>
 
         {/* ========================================
-            AIVRA SHOP SECTION
+            AVIERA SHOP SECTION
             ======================================== */}
         <section
-          id="aivra-shop"
+          id="aviera-shop"
           className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
         >
           <div
@@ -413,7 +413,7 @@ export default function Home() {
                 </div>
 
                 <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
-                  Aivra Shop
+                  Aviera Shop
                 </h2>
                 <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
                   Order premium supplements directly through our Supliful integration.
@@ -612,7 +612,7 @@ export default function Home() {
               </h2>
 
               <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-12 leading-relaxed max-w-3xl mx-auto">
-                Simplify your supplement routine with Aivra. Get AI-powered recommendations
+                Simplify your supplement routine with Aviera. Get AI-powered recommendations
                 in 2 minutes. Free to use, no credit card required.
               </p>
 
@@ -664,7 +664,7 @@ export default function Home() {
             {/* Section Title */}
             <div className="text-center mb-16">
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
-                About Aivra
+                About Aviera
               </h2>
               <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-3xl mx-auto">
                 Built by fitness enthusiasts, for everyone on a fitness journey.
@@ -695,20 +695,20 @@ export default function Home() {
               <div className="lg:col-span-3">
                 <div className="glass-card p-8 md:p-12">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                    Why I Built Aivra
+                    Why I Built Aviera
                   </h3>
                   <div className="space-y-6">
                     <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
                       I am <strong className="text-white">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
                     </p>
                     <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      I built <strong className="text-white">Aivra</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aivra's AI creates your perfect starting stack instantly.
+                      I built <strong className="text-white">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
                     </p>
                     <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
                       The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-white">That confusion ends here.</strong>
                     </p>
                     <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      What I love most: if you are brand-new and do not know where to begin, Aivra gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
+                      What I love most: if you are brand-new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
                     </p>
                   </div>
                   <div className="mt-8 pt-8 border-t border-white/10">

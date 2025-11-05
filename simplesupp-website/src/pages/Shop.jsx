@@ -59,7 +59,7 @@ export default function Shop() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
-            Aivra Shop
+            Aviera Shop
           </h1>
           <p className="text-xl text-[var(--txt-muted)] mb-2">
             Premium supplements powered by Supliful

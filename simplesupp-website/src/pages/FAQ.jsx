@@ -7,10 +7,10 @@ export default function FAQ() {
   const faqs = [
     {
       q: "Is this medical advice?",
-      a: "No. Aivra provides educational information only. Always consult your healthcare provider before starting any supplement regimen, especially if you have medical conditions or take medications."
+      a: "No. Aviera provides educational information only. Always consult your healthcare provider before starting any supplement regimen, especially if you have medical conditions or take medications."
     },
     {
-      q: "How accurate is the Aivra AI?",
+      q: "How accurate is the Aviera AI?",
       a: "Our recommendations are based on peer-reviewed research and evidence-based guidelines. However, individual responses vary. We provide a strong starting point—adjust based on your results and healthcare provider input."
     },
     {

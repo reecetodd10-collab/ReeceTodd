@@ -302,7 +302,7 @@ export default function SupplementAdvisor() {
                   </div>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold font-display text-charcoal">Aivra Stack</h1>
+              <h1 className="text-4xl md:text-5xl font-extrabold font-display text-charcoal">Aviera Stack</h1>
             </div>
 
             {/* Cart Button */}
@@ -436,7 +436,7 @@ export default function SupplementAdvisor() {
                     </div>
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a1a] mb-4">Aivra Stack</h1>
+                <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a1a] mb-4">Aviera Stack</h1>
                 <p className="text-2xl text-[#1a1a1a] font-semibold">Your Personal Supplement Intelligence</p>
                 <p className="text-lg text-[#a0a0a0] max-w-2xl mx-auto">Get a personalized supplement stack from our database of 42+ premium supplements</p>
               </div>

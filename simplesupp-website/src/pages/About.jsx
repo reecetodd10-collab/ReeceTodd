@@ -9,7 +9,7 @@ export default function About() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Why I Built Aivra
+            Why I Built Aviera
           </h1>
         </div>
 
@@ -21,7 +21,7 @@ export default function About() {
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              I built <strong>Aivra</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aivra's AI creates your perfect starting stack instantly.
+              I built <strong>Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -29,7 +29,7 @@ export default function About() {
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
-              What I love most: if you are brand-new and do not know where to begin, Aivra gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
+              What I love most: if you are brand-new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
             </p>
           </div>
 

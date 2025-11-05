@@ -12,9 +12,9 @@ export default function Navigation() {
 
   // Homepage section navigation (smooth scroll)
   const homeSections = [
-    { name: 'Aivra Stack', sectionId: 'aivra-stack' },
-    { name: 'Aivra Fit', sectionId: 'aivra-fit' },
-    { name: 'Aivra Shop', sectionId: 'aivra-shop' },
+    { name: 'Aviera Stack', sectionId: 'aviera-stack' },
+    { name: 'Aviera Fit', sectionId: 'aviera-fit' },
+    { name: 'Aviera Shop', sectionId: 'aviera-shop' },
     { name: 'About', sectionId: 'about' },
   ];
 
@@ -25,7 +25,7 @@ export default function Navigation() {
   useEffect(() => {
     if (!isHomePage) return;
 
-    const sections = ['hero', 'how-it-works', 'aivra-stack', 'aivra-fit', 'aivra-shop', 'goals', 'reviews', 'faq', 'contact', 'about'];
+    const sections = ['hero', 'how-it-works', 'aviera-stack', 'aviera-fit', 'aviera-shop', 'goals', 'reviews', 'faq', 'contact', 'about'];
     
     const observerOptions = {
       root: null,
