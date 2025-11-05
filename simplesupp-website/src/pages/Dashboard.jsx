@@ -9,13 +9,15 @@ import {
   Menu,
   X,
   Crown,
-  User
+  User,
+  FlaskConical
 } from 'lucide-react';
 import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
 import SettingsPage from './Settings';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
 import PillLogo from '../components/PillLogo';
+import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +26,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   
   // TODO: Replace with actual user subscription check from backend
-  const isPremium = false; // Set to false to test premium gate
+  const userIsPremium = false; // User's actual premium status from backend
+  const isPremium = hasPremiumAccess(userIsPremium); // Respects testing mode
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
@@ -34,7 +37,8 @@ export default function Dashboard() {
   ];
 
   const handleNavClick = (path) => {
-    if (!isPremium && (path === '/dashboard/stack' || path === '/dashboard/fit')) {
+    // Only show upgrade modal if not in testing mode and user doesn't have premium
+    if (!TESTING_MODE && !isPremium && (path === '/dashboard/stack' || path === '/dashboard/fit')) {
       setShowUpgradeModal(true);
       return;
     }
@@ -66,13 +70,21 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-[var(--txt)]">Aviera Premium</h1>
-            {isPremium && (
+            {isPremium && !TESTING_MODE && (
               <Crown size={18} className="text-[var(--acc)]" />
             )}
           </div>
-          {!isPremium && (
+          {!isPremium && !TESTING_MODE && (
             <div className="mt-3 px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
               <span className="text-xs font-semibold text-[var(--acc)]">Free Tier</span>
+            </div>
+          )}
+          {TESTING_MODE && (
+            <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-center">
+              <span className="text-xs font-semibold text-yellow-400 flex items-center justify-center gap-1">
+                <FlaskConical size={12} />
+                Testing Mode
+              </span>
             </div>
           )}
         </div>
@@ -98,7 +110,7 @@ export default function Dashboard() {
               >
                 <Icon size={20} />
                 <span className="font-medium">{item.label}</span>
-                {isPremiumFeature && !isPremium && (
+                {isPremiumFeature && !isPremium && !TESTING_MODE && (
                   <Crown size={14} className="ml-auto text-[var(--acc)] opacity-60" />
                 )}
               </button>
@@ -126,6 +138,14 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
+        {/* Testing Mode Indicator - Top Right */}
+        {TESTING_MODE && (
+          <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+            <FlaskConical size={14} />
+            Testing Mode
+          </div>
+        )}
+        
         {/* Mobile Header */}
         <div className="lg:hidden sticky top-0 z-30 bg-[var(--bg-elev-1)] backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] p-4">
           <button
@@ -144,7 +164,7 @@ export default function Dashboard() {
           {location.pathname === '/dashboard/settings' && <SettingsPage />}
           
           {/* Premium Gate Message */}
-          {!isPremium && (location.pathname === '/dashboard/stack' || location.pathname === '/dashboard/fit') && (
+          {!TESTING_MODE && !isPremium && (location.pathname === '/dashboard/stack' || location.pathname === '/dashboard/fit') && (
             <div className="max-w-2xl mx-auto mt-12">
               <div className="glass-card p-8 text-center">
                 <Crown size={48} className="mx-auto mb-4 text-[var(--acc)]" />
@@ -174,8 +194,10 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Premium Upgrade Modal */}
-      <UpgradePrompt isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+      {/* Premium Upgrade Modal - Only show if not in testing mode */}
+      {!TESTING_MODE && (
+        <UpgradePrompt isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+      )}
     </div>
   );
 }

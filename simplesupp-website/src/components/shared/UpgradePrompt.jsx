@@ -3,8 +3,13 @@ import { Link } from 'react-router-dom';
 import { Crown, Zap, Sparkles, Download, MessageCircle } from 'lucide-react';
 import Modal from './Modal';
 import Button from './Button';
+import { TESTING_MODE } from '../../lib/config';
 
 export default function UpgradePrompt({ isOpen, onClose }) {
+  // Don't render upgrade prompt in testing mode
+  if (TESTING_MODE) {
+    return null;
+  }
   const features = [
     { icon: Sparkles, text: 'AI-Powered Supplement Stack' },
     { icon: Zap, text: 'Custom Workout Plans' },
