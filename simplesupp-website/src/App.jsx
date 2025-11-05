@@ -11,27 +11,36 @@ import Reviews from './pages/Reviews';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
+import Dashboard from './pages/Dashboard';
 
-export default function App() {
+function MarketingLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/smartstack-ai" element={<SmartStackAI />} />
-          <Route path="/smartfitt" element={<SmartFitt />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          {/* Redirect old route */}
-          <Route path="/suppstack-ai" element={<Navigate to="/smartstack-ai" replace />} />
-        </Routes>
-      </main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      {/* Dashboard routes - no nav/footer */}
+      <Route path="/dashboard/*" element={<Dashboard />} />
+
+      {/* Marketing routes - with nav/footer */}
+      <Route path="/" element={<MarketingLayout><Home /></MarketingLayout>} />
+      <Route path="/smartstack-ai" element={<MarketingLayout><SmartStackAI /></MarketingLayout>} />
+      <Route path="/smartfitt" element={<MarketingLayout><SmartFitt /></MarketingLayout>} />
+      <Route path="/shop" element={<MarketingLayout><Shop /></MarketingLayout>} />
+      <Route path="/learn" element={<MarketingLayout><Learn /></MarketingLayout>} />
+      <Route path="/reviews" element={<MarketingLayout><Reviews /></MarketingLayout>} />
+      <Route path="/about" element={<MarketingLayout><About /></MarketingLayout>} />
+      <Route path="/faq" element={<MarketingLayout><FAQ /></MarketingLayout>} />
+      <Route path="/contact" element={<MarketingLayout><Contact /></MarketingLayout>} />
+      {/* Redirect old route */}
+      <Route path="/suppstack-ai" element={<Navigate to="/smartstack-ai" replace />} />
+    </Routes>
   );
 }

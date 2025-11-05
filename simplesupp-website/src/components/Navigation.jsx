@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LayoutDashboard } from 'lucide-react';
 import PillLogo from './PillLogo';
 
 export default function Navigation() {
@@ -116,6 +116,19 @@ export default function Navigation() {
                 {link.name}
               </Link>
             ))}
+
+            {/* Dashboard link - always visible */}
+            <Link
+              to="/dashboard"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                isActive('/dashboard') || location.pathname.startsWith('/dashboard')
+                  ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
+                  : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
+              }`}
+            >
+              <LayoutDashboard size={16} />
+              Dashboard
+            </Link>
           </div>
 
           <Link
@@ -165,6 +178,21 @@ export default function Navigation() {
                 {link.name}
               </Link>
             ))}
+
+            {/* Dashboard link - always visible in mobile */}
+            <Link
+              to="/dashboard"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
+                isActive('/dashboard') || location.pathname.startsWith('/dashboard')
+                  ? 'bg-accent text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <LayoutDashboard size={18} />
+              Dashboard
+            </Link>
+
             <Link
               to="/smartstack-ai"
               onClick={() => setIsOpen(false)}
