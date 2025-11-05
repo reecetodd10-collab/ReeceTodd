@@ -16,6 +16,7 @@ import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
 import SettingsPage from './Settings';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
+import AIChat from '../components/premium/AIChat';
 import PillLogo from '../components/PillLogo';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 
@@ -198,6 +199,9 @@ export default function Dashboard() {
       {!TESTING_MODE && (
         <UpgradePrompt isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
       )}
+
+      {/* AI Chat Widget - Available on all dashboard pages */}
+      <AIChat userIsPremium={userIsPremium} />
     </div>
   );
 }
