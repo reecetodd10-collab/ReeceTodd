@@ -11,6 +11,7 @@ import Reviews from './pages/Reviews';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
 import Dashboard from './pages/Dashboard';
 
 function MarketingLayout({ children }) {
@@ -39,6 +40,7 @@ export default function App() {
       <Route path="/about" element={<MarketingLayout><About /></MarketingLayout>} />
       <Route path="/faq" element={<MarketingLayout><FAQ /></MarketingLayout>} />
       <Route path="/contact" element={<MarketingLayout><Contact /></MarketingLayout>} />
+      <Route path="/pricing" element={<MarketingLayout><Pricing /></MarketingLayout>} />
       {/* Redirect old route */}
       <Route path="/suppstack-ai" element={<Navigate to="/smartstack-ai" replace />} />
     </Routes>

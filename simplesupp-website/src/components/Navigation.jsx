@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Crown } from 'lucide-react';
 import PillLogo from './PillLogo';
 
 export default function Navigation() {
@@ -132,8 +132,15 @@ export default function Navigation() {
           </div>
 
           <Link
+            to="/pricing"
+            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition shadow-accent"
+          >
+            <Crown size={16} />
+            Get Premium
+          </Link>
+          <Link
             to="/smartstack-ai"
-            className="hidden lg:block btn-primary"
+            className="hidden lg:block btn-primary ml-2"
           >
             Get Your Stack
           </Link>
@@ -191,6 +198,16 @@ export default function Navigation() {
             >
               <LayoutDashboard size={18} />
               Dashboard
+            </Link>
+
+            {/* Premium link - mobile */}
+            <Link
+              to="/pricing"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition"
+            >
+              <Crown size={18} />
+              Get Premium
             </Link>
 
             <Link

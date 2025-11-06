@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Dumbbell, Users, Zap, ChevronRight } from 'lucide-react';
+import { Star, Dumbbell, Users, Zap, ChevronRight, Crown, Sparkles } from 'lucide-react';
 import { MUSCLE_GROUPS, getExercisesForMuscle } from '../data/exercises';
 
 export default function SmartFitt() {
@@ -34,9 +35,25 @@ export default function SmartFitt() {
             Your AI-Powered Workout Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-8 max-w-3xl mx-auto">
+          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-3xl mx-auto">
             Click any muscle group to get 3 coach-approved exercises with sets, reps, and form cues tailored to your goal.
           </p>
+
+          {/* Premium Upgrade Banner */}
+          <div className="max-w-md mx-auto mb-8">
+            <Link to="/pricing">
+              <div className="glass-card p-4 border border-[var(--acc)]/30 hover:border-[var(--acc)]/50 transition cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Crown className="text-[var(--acc)]" size={24} />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Premium</p>
+                    <p className="text-xs text-[var(--txt-muted)]">Get custom AI workout plans with progressive overload</p>
+                  </div>
+                  <Sparkles className="text-[var(--acc)]" size={20} />
+                </div>
+              </div>
+            </Link>
+          </div>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">

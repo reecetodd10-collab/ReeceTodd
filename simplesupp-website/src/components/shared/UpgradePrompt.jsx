@@ -48,13 +48,18 @@ export default function UpgradePrompt({ isOpen, onClose }) {
         <div className="flex gap-3">
           <Link to="/pricing" className="flex-1">
             <Button variant="primary" className="w-full">
-              View Pricing
+              Upgrade Now
             </Button>
           </Link>
-          <Button variant="secondary" onClick={onClose} className="flex-1">
-            Maybe Later
-          </Button>
+          <Link to="/pricing" className="flex-1">
+            <Button variant="secondary" className="w-full">
+              Learn More
+            </Button>
+          </Link>
         </div>
+        <p className="text-xs text-center text-[var(--txt-muted)] mt-4">
+          Already premium? <Link to="/dashboard" className="text-[var(--acc)] hover:underline">Sign in</Link>
+        </p>
       </div>
     </Modal>
   );

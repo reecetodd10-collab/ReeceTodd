@@ -11,11 +11,13 @@ import {
   Crown,
   User,
   FlaskConical,
-  Target
+  Target,
+  CreditCard
 } from 'lucide-react';
 import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
 import SettingsPage from './Settings';
+import BillingPage from './Billing';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
 import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
@@ -38,6 +40,7 @@ export default function Dashboard() {
     { icon: Pill, label: 'Stack Builder', path: '/dashboard/stack' },
     { icon: Dumbbell, label: 'Workout Planner', path: '/dashboard/fit' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
+    { icon: CreditCard, label: 'Billing', path: '/dashboard/billing' },
   ];
 
   const handleNavClick = (path) => {
@@ -79,8 +82,30 @@ export default function Dashboard() {
             )}
           </div>
           {!isPremium && !TESTING_MODE && (
-            <div className="mt-3 px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
-              <span className="text-xs font-semibold text-[var(--acc)]">Free Tier</span>
+            <div className="mt-3 space-y-2">
+              <div className="px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
+                <span className="text-xs font-semibold text-[var(--acc)]">Free Tier</span>
+              </div>
+              <Link to="/pricing" className="block">
+                <Button variant="primary" className="w-full text-xs py-2">
+                  Upgrade to Premium
+                </Button>
+              </Link>
+            </div>
+          )}
+          {isPremium && !TESTING_MODE && (
+            <div className="mt-3 space-y-2">
+              <div className="px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
+                <div className="flex items-center justify-center gap-1.5">
+                  <Crown size={12} className="text-[var(--acc)]" />
+                  <span className="text-xs font-semibold text-[var(--acc)]">Premium Member</span>
+                </div>
+              </div>
+              <Link to="/dashboard/billing" className="block">
+                <button className="w-full px-3 py-2 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition">
+                  Manage Subscription
+                </button>
+              </Link>
             </div>
           )}
           {TESTING_MODE && (
@@ -194,9 +219,11 @@ export default function Dashboard() {
         {/* Content */}
         <div className="p-6 lg:p-8">
           {location.pathname === '/dashboard' && <DashboardOverview isPremium={isPremium} />}
+          {location.pathname === '/dashboard/welcome' && <WelcomePage />}
           {location.pathname === '/dashboard/stack' && isPremium && <StackBuilder />}
           {location.pathname === '/dashboard/fit' && isPremium && <WorkoutPlanner />}
           {location.pathname === '/dashboard/settings' && <SettingsPage />}
+          {location.pathname === '/dashboard/billing' && <BillingPage />}
           
           {/* Premium Gate Message */}
           {!TESTING_MODE && !isPremium && (location.pathname === '/dashboard/stack' || location.pathname === '/dashboard/fit') && (

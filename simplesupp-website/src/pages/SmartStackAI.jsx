@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import SupplementQuiz from '../SupplementQuiz';
-import { Pill, Brain, Target, Sparkles } from 'lucide-react';
+import { Pill, Brain, Target, Sparkles, Crown } from 'lucide-react';
 
 export default function SmartStackAI() {
   return (
@@ -32,9 +33,25 @@ export default function SmartStackAI() {
             Your AI-Powered Supplement Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-2xl mx-auto">
             Answer a few questions and get your personalized supplement stack in 2 minutes — built from our premium catalog.
           </p>
+
+          {/* Premium Upgrade Banner */}
+          <div className="max-w-md mx-auto mb-8">
+            <Link to="/pricing">
+              <div className="glass-card p-4 border border-[var(--acc)]/30 hover:border-[var(--acc)]/50 transition cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Crown className="text-[var(--acc)]" size={24} />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Premium</p>
+                    <p className="text-xs text-[var(--txt-muted)]">Get AI-powered stack builder with tracking</p>
+                  </div>
+                  <Sparkles className="text-[var(--acc)]" size={20} />
+                </div>
+              </div>
+            </Link>
+          </div>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">

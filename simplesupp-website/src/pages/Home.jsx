@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, ShoppingCart, Award } from 'lucide-react';
+import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, ShoppingCart, Award, Crown } from 'lucide-react';
 import PillLogo from '../components/PillLogo';
 import ParallaxLayer from '../components/ParallaxLayer';
 import PromoBanner from '../components/PromoBanner';
@@ -10,6 +10,7 @@ import StackedBlocks from '../components/StackedBlocks';
 import GoalCards from '../components/GoalCards';
 import FAQAccordion from '../components/FAQAccordion';
 import ContactForm from '../components/ContactForm';
+import GlassCard from '../components/shared/GlassCard';
 import { useActiveSection } from '../hooks/useScrollAnimation';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
@@ -584,6 +585,60 @@ export default function Home() {
             </div>
 
             <FAQAccordion />
+          </div>
+        </section>
+
+        {/* ========================================
+            PREMIUM FEATURES SECTION
+            ======================================== */}
+        <section
+          className="scroll-snap-section relative min-h-[60vh] flex items-center bg-gradient-to-b from-[var(--bg)] to-[var(--bg-elev-1)] text-[var(--txt)] py-32"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-full mb-6">
+                <Crown className="text-[var(--acc)]" size={20} />
+                <span className="text-sm font-semibold text-[var(--acc)]">Premium Features</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
+                Take Your Fitness to the Next Level
+              </h2>
+              <p className="text-lg text-[var(--txt-muted)] max-w-2xl mx-auto">
+                Unlock AI-powered personalization, advanced tracking, and custom workout plans
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {[
+                { icon: Sparkles, title: 'AI Stack Builder', desc: 'Personalized supplement tracking with notifications' },
+                { icon: Zap, title: 'Custom Workouts', desc: 'AI-generated plans with progressive overload' },
+                { icon: Crown, title: '10% Shop Discount', desc: 'Save on all supplement purchases' },
+              ].map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <GlassCard key={index} className="p-6 text-center">
+                    <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Icon className="text-[var(--acc)]" size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-[var(--txt)] mb-2">{feature.title}</h3>
+                    <p className="text-sm text-[var(--txt-muted)]">{feature.desc}</p>
+                  </GlassCard>
+                );
+              })}
+            </div>
+
+            <div className="text-center">
+              <Link to="/pricing">
+                <button className="btn-primary group text-lg">
+                  <Crown size={24} />
+                  Get Premium
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" size={24} />
+                </button>
+              </Link>
+              <p className="text-sm text-[var(--txt-muted)] mt-4">
+                7-day free trial • Cancel anytime • $9.99/month
+              </p>
+            </div>
           </div>
         </section>
 
