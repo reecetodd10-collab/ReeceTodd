@@ -12,6 +12,9 @@ export const XP_VALUES = {
   WEEKLY_GOALS_COMPLETE: 150,
   WATER_GOAL: 10,
   GOOD_SLEEP: 5,
+  ALL_MACROS_HIT: 20,
+  ALL_MEALS_COMPLETE: 15,
+  MACRO_STREAK_7_DAYS: 100,
 };
 
 // Level thresholds
@@ -186,6 +189,44 @@ export const ACHIEVEMENTS = {
       return goodSleepDays.length >= 100;
     },
   },
+  macro_master: {
+    id: 'macro_master',
+    name: 'Macro Master',
+    emoji: '🍗',
+    description: 'Hit all macros 7 days straight',
+    xpReward: 100,
+    check: (data) => {
+      if (!data.nutrition?.history || !data.nutrition?.goals) return false;
+      const last7Days = data.nutrition.history.slice(-7);
+      if (last7Days.length !== 7) return false;
+      // Use inline check to avoid circular dependency
+      return last7Days.every(day => {
+        const goals = data.nutrition.goals;
+        return (day.protein || 0) >= goals.protein && 
+               (day.carbs || 0) >= goals.carbs && 
+               (day.fats || 0) >= goals.fats;
+      });
+    },
+  },
+  nutrition_ninja: {
+    id: 'nutrition_ninja',
+    name: 'Nutrition Ninja',
+    emoji: '🎯',
+    description: 'Hit macros 30 days straight',
+    xpReward: 300,
+    check: (data) => {
+      if (!data.nutrition?.history || !data.nutrition?.goals) return false;
+      const last30Days = data.nutrition.history.slice(-30);
+      if (last30Days.length !== 30) return false;
+      // Use inline check to avoid circular dependency
+      return last30Days.every(day => {
+        const goals = data.nutrition.goals;
+        return (day.protein || 0) >= goals.protein && 
+               (day.carbs || 0) >= goals.carbs && 
+               (day.fats || 0) >= goals.fats;
+      });
+    },
+  },
 };
 
 // Calculate level from total XP
@@ -278,7 +319,37 @@ export function loadGamificationData() {
       lastNight: null,
       history: [],
     },
+    nutrition: {
+      goals: {
+        protein: 150,
+        carbs: 250,
+        fats: 70,
+        calories: 2100,
+        goalType: 'maintenance',
+      },
+      today: {
+        date: new Date().toISOString().split('T')[0],
+        protein: 0,
+        carbs: 0,
+        fats: 0,
+        calories: 0,
+        meals: {
+          breakfast: false,
+          lunch: false,
+          dinner: false,
+          preWorkout: false,
+          postWorkout: false,
+        },
+      },
+      history: [],
+    },
   };
+}
+
+// Helper function to check if all macros are hit (exported for achievements)
+export function allMacrosHit(protein, carbs, fats, goals) {
+  if (!goals) return false;
+  return protein >= goals.protein && carbs >= goals.carbs && fats >= goals.fats;
 }
 
 // Save gamification data to localStorage

@@ -54,6 +54,26 @@ export default function Achievements() {
         if (!data.sleep?.history) return 0;
         const goodSleepTotal = data.sleep.history.filter(day => day.quality === true).length;
         return Math.min(100, (goodSleepTotal / 100) * 100);
+      case 'macro_master':
+        if (!data.nutrition?.history || !data.nutrition?.goals) return 0;
+        const last7Nutrition = data.nutrition.history.slice(-7);
+        const macroDays = last7Nutrition.filter(day => {
+          const goals = data.nutrition.goals;
+          return (day.protein || 0) >= goals.protein && 
+                 (day.carbs || 0) >= goals.carbs && 
+                 (day.fats || 0) >= goals.fats;
+        }).length;
+        return Math.min(100, (macroDays / 7) * 100);
+      case 'nutrition_ninja':
+        if (!data.nutrition?.history || !data.nutrition?.goals) return 0;
+        const last30Nutrition = data.nutrition.history.slice(-30);
+        const macroDays30 = last30Nutrition.filter(day => {
+          const goals = data.nutrition.goals;
+          return (day.protein || 0) >= goals.protein && 
+                 (day.carbs || 0) >= goals.carbs && 
+                 (day.fats || 0) >= goals.fats;
+        }).length;
+        return Math.min(100, (macroDays30 / 30) * 100);
       default:
         return 0;
     }
@@ -67,7 +87,7 @@ export default function Achievements() {
   const starterBadges = ['first_steps', 'supplement_scholar', 'week_warrior', 'month_master', 'progress_tracker'];
   const workoutBadges = ['iron_will', 'century_club', 'pr_breaker', 'strength_seeker'];
   const supplementBadges = ['stack_master', 'consistency_king'];
-  const healthBadges = ['hydration_hero', 'water_warrior', 'rest_master', 'dream_keeper'];
+  const healthBadges = ['hydration_hero', 'water_warrior', 'rest_master', 'dream_keeper', 'macro_master', 'nutrition_ninja'];
 
   return (
     <div>

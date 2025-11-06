@@ -14,7 +14,8 @@ import {
   Target,
   CreditCard,
   Trophy,
-  TrendingUp
+  TrendingUp,
+  UtensilsCrossed
 } from 'lucide-react';
 import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
@@ -23,6 +24,7 @@ import BillingPage from './Billing';
 import WelcomePage from './Welcome';
 import AchievementsPage from './dashboard/Achievements';
 import ProgressPage from './dashboard/Progress';
+import NutritionPage from './dashboard/Nutrition';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
 import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
@@ -52,6 +54,7 @@ export default function Dashboard() {
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
     { icon: Pill, label: 'Stack Builder', path: '/dashboard/stack' },
     { icon: Dumbbell, label: 'Workout Planner', path: '/dashboard/fit' },
+    { icon: UtensilsCrossed, label: 'Nutrition', path: '/dashboard/nutrition' },
     { icon: TrendingUp, label: 'Progress', path: '/dashboard/progress' },
     { icon: Trophy, label: 'Achievements', path: '/dashboard/achievements' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
@@ -237,6 +240,7 @@ export default function Dashboard() {
           {location.pathname === '/dashboard/welcome' && <WelcomePage />}
           {location.pathname === '/dashboard/stack' && isPremium && <StackBuilder />}
           {location.pathname === '/dashboard/fit' && isPremium && <WorkoutPlanner />}
+          {location.pathname === '/dashboard/nutrition' && <NutritionPage />}
           {location.pathname === '/dashboard/progress' && <ProgressPage />}
           {location.pathname === '/dashboard/achievements' && <AchievementsPage />}
           {location.pathname === '/dashboard/settings' && <SettingsPage />}
