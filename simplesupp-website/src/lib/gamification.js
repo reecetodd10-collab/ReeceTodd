@@ -10,6 +10,8 @@ export const XP_VALUES = {
   STREAK_7_DAYS: 200,
   STREAK_30_DAYS: 500,
   WEEKLY_GOALS_COMPLETE: 150,
+  WATER_GOAL: 10,
+  GOOD_SLEEP: 5,
 };
 
 // Level thresholds
@@ -136,6 +138,54 @@ export const ACHIEVEMENTS = {
     xpReward: 1000,
     check: (data) => data.supplementStreak >= 100,
   },
+  hydration_hero: {
+    id: 'hydration_hero',
+    name: 'Hydration Hero',
+    emoji: '💧',
+    description: 'Hit water goal 7 days straight',
+    xpReward: 50,
+    check: (data) => {
+      if (!data.water?.history) return false;
+      const last7Days = data.water.history.slice(-7);
+      return last7Days.length === 7 && last7Days.every(day => day.glasses >= (data.water.dailyGoal || 8));
+    },
+  },
+  water_warrior: {
+    id: 'water_warrior',
+    name: 'Water Warrior',
+    emoji: '🌊',
+    description: 'Hit water goal 30 days straight',
+    xpReward: 200,
+    check: (data) => {
+      if (!data.water?.history) return false;
+      const last30Days = data.water.history.slice(-30);
+      return last30Days.length === 30 && last30Days.every(day => day.glasses >= (data.water.dailyGoal || 8));
+    },
+  },
+  rest_master: {
+    id: 'rest_master',
+    name: 'Rest Master',
+    emoji: '😴',
+    description: 'Good sleep 30 days straight',
+    xpReward: 75,
+    check: (data) => {
+      if (!data.sleep?.history) return false;
+      const last30Days = data.sleep.history.slice(-30);
+      return last30Days.length === 30 && last30Days.every(day => day.quality === true);
+    },
+  },
+  dream_keeper: {
+    id: 'dream_keeper',
+    name: 'Dream Keeper',
+    emoji: '🌙',
+    description: 'Good sleep 100 days',
+    xpReward: 300,
+    check: (data) => {
+      if (!data.sleep?.history) return false;
+      const goodSleepDays = data.sleep.history.filter(day => day.quality === true);
+      return goodSleepDays.length >= 100;
+    },
+  },
 };
 
 // Calculate level from total XP
@@ -218,6 +268,16 @@ export function loadGamificationData() {
     weightIncreases: 0,
     perfectSupplementDays: 0,
     xpHistory: [],
+    water: {
+      dailyGoal: 8,
+      today: 0,
+      lastUpdated: null,
+      history: [],
+    },
+    sleep: {
+      lastNight: null,
+      history: [],
+    },
   };
 }
 

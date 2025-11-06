@@ -30,6 +30,8 @@ import HabitRings from '../components/gamification/HabitRings';
 import WeeklySummary from '../components/gamification/WeeklySummary';
 import XPDisplay from '../components/gamification/XPDisplay';
 import StreakCounter from '../components/gamification/StreakCounter';
+import WaterTracker from '../components/tracking/WaterTracker';
+import SleepTracker from '../components/tracking/SleepTracker';
 import PillLogo from '../components/PillLogo';
 import Button from '../components/shared/Button';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
@@ -343,6 +345,12 @@ function DashboardOverview({ isPremium }) {
         supplementsTotal={supplementsTotal}
         workoutComplete={workoutComplete}
       />
+
+      {/* Water & Sleep Tracking */}
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <WaterTracker />
+        <SleepTracker />
+      </div>
 
       {/* Weekly Summary */}
       <div className="mb-8">
