@@ -227,6 +227,54 @@ export const ACHIEVEMENTS = {
       });
     },
   },
+  perfect_day: {
+    id: 'perfect_day',
+    name: 'Perfect Day',
+    emoji: '⭐',
+    description: '100% all goals in one day',
+    xpReward: 50,
+    check: (data) => {
+      // Check if today's goals are 100% complete
+      // This would be checked when daily goals are saved
+      return data.dailyGoals?.today?.completionPercentage === 100 || false;
+    },
+  },
+  perfect_week: {
+    id: 'perfect_week',
+    name: 'Perfect Week',
+    emoji: '🌟',
+    description: '100% all goals 7 days straight',
+    xpReward: 200,
+    check: (data) => {
+      if (!data.dailyGoals?.history) return false;
+      const last7Days = data.dailyGoals.history.slice(-7);
+      return last7Days.length === 7 && last7Days.every(day => day.completionPercentage === 100);
+    },
+  },
+  consistency_king_lifestyle: {
+    id: 'consistency_king_lifestyle',
+    name: 'Consistency King',
+    emoji: '🏆',
+    description: '30-day perfect streak',
+    xpReward: 500,
+    check: (data) => {
+      if (!data.dailyGoals?.history) return false;
+      const last30Days = data.dailyGoals.history.slice(-30);
+      return last30Days.length === 30 && last30Days.every(day => day.completionPercentage === 100);
+    },
+  },
+  lifestyle_legend: {
+    id: 'lifestyle_legend',
+    name: 'Lifestyle Legend',
+    emoji: '👑',
+    description: '100-day perfect streak',
+    xpReward: 1000,
+    check: (data) => {
+      if (!data.dailyGoals?.history) return false;
+      const last100Days = data.dailyGoals.history.slice(-100);
+      return last100Days.length === 100 && last100Days.every(day => day.completionPercentage === 100);
+    },
+  },
 };
 
 // Calculate level from total XP
@@ -342,6 +390,32 @@ export function loadGamificationData() {
         },
       },
       history: [],
+    },
+    dailyGoals: {
+      today: {
+        date: new Date().toISOString().split('T')[0],
+        core: {
+          supplements: { complete: false, progress: '0/0' },
+          workout: { complete: false },
+        },
+        bonus: {
+          water: { complete: false, progress: '0/8' },
+          meals: { complete: false, progress: '0/5' },
+          sleep: { complete: false },
+          macros: { complete: false, progress: '0/3' },
+        },
+        completionPercentage: 0,
+        xpEarned: 0,
+      },
+      history: [],
+    },
+    dailyGoalsSettings: {
+      trackWater: true,
+      trackSleep: true,
+      trackMeals: true,
+      trackMacros: true,
+      waterGoal: 8,
+      sleepTarget: 8,
     },
   };
 }

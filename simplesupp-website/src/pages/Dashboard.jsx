@@ -30,6 +30,8 @@ import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
 import HabitRings from '../components/gamification/HabitRings';
 import WeeklySummary from '../components/gamification/WeeklySummary';
+import WeeklyInsightsExpanded from '../components/gamification/WeeklyInsightsExpanded';
+import EnhancedGoalsChecklist from '../components/gamification/EnhancedGoalsChecklist';
 import XPDisplay from '../components/gamification/XPDisplay';
 import StreakCounter from '../components/gamification/StreakCounter';
 import WaterTracker from '../components/tracking/WaterTracker';
@@ -350,15 +352,18 @@ function DashboardOverview({ isPremium }) {
         workoutComplete={workoutComplete}
       />
 
+      {/* Enhanced Daily Goals Checklist */}
+      <EnhancedGoalsChecklist />
+
       {/* Water & Sleep Tracking */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <WaterTracker />
         <SleepTracker />
       </div>
 
-      {/* Weekly Summary */}
+      {/* Enhanced Weekly Insights */}
       <div className="mb-8">
-        <WeeklySummary />
+        <WeeklyInsightsExpanded />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">

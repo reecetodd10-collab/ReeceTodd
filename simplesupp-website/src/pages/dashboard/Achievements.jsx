@@ -74,6 +74,23 @@ export default function Achievements() {
                  (day.fats || 0) >= goals.fats;
         }).length;
         return Math.min(100, (macroDays30 / 30) * 100);
+      case 'perfect_day':
+        return data.dailyGoals?.today?.completionPercentage || 0;
+      case 'perfect_week':
+        if (!data.dailyGoals?.history) return 0;
+        const last7DaysGoals = data.dailyGoals.history.slice(-7);
+        const perfectDays = last7DaysGoals.filter(day => day.completionPercentage === 100).length;
+        return Math.min(100, (perfectDays / 7) * 100);
+      case 'consistency_king_lifestyle':
+        if (!data.dailyGoals?.history) return 0;
+        const last30DaysGoals = data.dailyGoals.history.slice(-30);
+        const perfectDays30 = last30DaysGoals.filter(day => day.completionPercentage === 100).length;
+        return Math.min(100, (perfectDays30 / 30) * 100);
+      case 'lifestyle_legend':
+        if (!data.dailyGoals?.history) return 0;
+        const last100DaysGoals = data.dailyGoals.history.slice(-100);
+        const perfectDays100 = last100DaysGoals.filter(day => day.completionPercentage === 100).length;
+        return Math.min(100, (perfectDays100 / 100) * 100);
       default:
         return 0;
     }
@@ -88,6 +105,7 @@ export default function Achievements() {
   const workoutBadges = ['iron_will', 'century_club', 'pr_breaker', 'strength_seeker'];
   const supplementBadges = ['stack_master', 'consistency_king'];
   const healthBadges = ['hydration_hero', 'water_warrior', 'rest_master', 'dream_keeper', 'macro_master', 'nutrition_ninja'];
+  const lifestyleBadges = ['perfect_day', 'perfect_week', 'consistency_king_lifestyle', 'lifestyle_legend'];
 
   return (
     <div>
@@ -194,6 +212,29 @@ export default function Achievements() {
         <h2 className="text-xl font-bold text-[var(--txt)] mb-4">Health Badges</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {healthBadges.map(id => {
+            const unlocked = unlockedIds.includes(id);
+            const unlockedBadge = data.unlockedBadges?.find(b => b.id === id);
+            return (
+              <AchievementCard
+                key={id}
+                achievementId={id}
+                unlocked={unlocked}
+                unlockedDate={unlockedBadge?.unlockedDate}
+                progress={getAchievementProgress(id)}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Lifestyle Badges */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+          <Sparkles size={20} />
+          Lifestyle Badges
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {lifestyleBadges.map(id => {
             const unlocked = unlockedIds.includes(id);
             const unlockedBadge = data.unlockedBadges?.find(b => b.id === id);
             return (

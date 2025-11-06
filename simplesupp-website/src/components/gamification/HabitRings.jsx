@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Pill, Dumbbell, Target } from 'lucide-react';
 import GlassCard from '../shared/GlassCard';
 import { loadGamificationData } from '../../lib/gamification';
+import { allMacrosHit } from '../../lib/nutrition';
 
 export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0, workoutComplete = false }) {
   const [data, setData] = useState(loadGamificationData());
@@ -15,13 +16,57 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
     return () => clearInterval(interval);
   }, []);
 
+  // Calculate percentages
   const supplementPercentage = supplementsTotal > 0 
     ? Math.min(100, Math.round((supplementsTaken / supplementsTotal) * 100))
     : 0;
   const workoutPercentage = workoutComplete ? 100 : 0;
-  const consistencyPercentage = Math.round((supplementPercentage + workoutPercentage) / 2);
+  
+  // Core goals (70% weight)
+  const supplementsComplete = supplementPercentage >= 80;
+  const coreComplete = (supplementsComplete + (workoutComplete ? 1 : 0)) / 2;
+
+  // Bonus goals (30% weight)
+  const waterData = data.water || { today: 0, dailyGoal: 8 };
+  const waterComplete = waterData.today >= waterData.dailyGoal;
+
+  const nutritionData = data.nutrition || { today: { meals: {} } };
+  const meals = nutritionData.today.meals || {};
+  const requiredMeals = ['breakfast', 'lunch', 'dinner'];
+  const mealsComplete = requiredMeals.every(meal => meals[meal] === true);
+
+  const sleepData = data.sleep || { lastNight: null };
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const sleepComplete = sleepData.lastNight?.date === yesterdayStr && sleepData.lastNight?.quality === true;
+
+  const nutritionToday = nutritionData.today || {};
+  const nutritionGoals = nutritionData.goals || {};
+  const macrosComplete = nutritionGoals.protein && nutritionGoals.carbs && nutritionGoals.fats
+    ? allMacrosHit(
+        nutritionToday.protein || 0,
+        nutritionToday.carbs || 0,
+        nutritionToday.fats || 0,
+        nutritionGoals
+      )
+    : false;
+
+  const bonusGoals = [waterComplete, mealsComplete, sleepComplete, macrosComplete];
+  const bonusComplete = bonusGoals.filter(x => x).length / bonusGoals.length;
+
+  // Weighted consistency score: Core (70%) + Bonus (30%)
+  const consistencyPercentage = Math.round((coreComplete * 0.7 + bonusComplete * 0.3) * 100);
 
   const overallCompletion = Math.round((supplementPercentage + workoutPercentage + consistencyPercentage) / 3);
+  
+  // Bonus goal indicators
+  const bonusGoalStatus = {
+    water: waterComplete,
+    meals: mealsComplete,
+    sleep: sleepComplete,
+    macros: macrosComplete,
+  };
 
   // SVG circle parameters
   const centerX = 120;
@@ -194,6 +239,33 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
           <span className="text-sm font-semibold text-[var(--txt)]">
             {consistencyPercentage}%
           </span>
+        </div>
+
+        {/* Bonus Goals Indicators */}
+        <div className="mt-3 pt-3 border-t border-[var(--border)]">
+          <div className="flex items-center justify-center gap-2">
+            {[
+              { icon: '💧', complete: bonusGoalStatus.water, label: 'Water' },
+              { icon: '🍽️', complete: bonusGoalStatus.meals, label: 'Meals' },
+              { icon: '😴', complete: bonusGoalStatus.sleep, label: 'Sleep' },
+              { icon: '📊', complete: bonusGoalStatus.macros, label: 'Macros' },
+            ].map((goal, index) => (
+              <div
+                key={index}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-lg transition ${
+                  goal.complete
+                    ? 'bg-blue-500/20 border border-blue-500/30'
+                    : 'bg-[var(--bg-elev-2)] border border-[var(--border)] opacity-50'
+                }`}
+                title={goal.label}
+              >
+                {goal.icon}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-center text-[var(--txt-muted)] mt-2">
+            Bonus goals: {Object.values(bonusGoalStatus).filter(Boolean).length}/4
+          </p>
         </div>
 
         {/* Streak */}
