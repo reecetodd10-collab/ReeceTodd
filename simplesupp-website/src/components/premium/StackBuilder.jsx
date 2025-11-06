@@ -25,6 +25,9 @@ import { products, PRODUCT_CATEGORIES } from '../../data/products';
 import GlassCard from '../shared/GlassCard';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
+import { useGamification } from '../../hooks/useGamification';
+import { awardXP, updateTodayProgress, XP_VALUES, checkAchievements } from '../../lib/gamification';
+import { XPToast } from '../gamification/XPDisplay';
 
 export default function StackBuilder() {
   const [supplements, setSupplements] = useState([]);
@@ -39,6 +42,7 @@ export default function StackBuilder() {
   const [saved, setSaved] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [xpToast, setXpToast] = useState({ visible: false, xp: 0, action: '' });
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -90,10 +94,34 @@ export default function StackBuilder() {
   }, [supplements]);
 
   const handleCheck = (id) => {
-    setCheckedToday(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    const wasChecked = checkedToday[id];
+    const newChecked = {
+      ...checkedToday,
+      [id]: !wasChecked
+    };
+    setCheckedToday(newChecked);
+    
+    // Save to localStorage
+    localStorage.setItem('aviera_checked_today', JSON.stringify(newChecked));
+    
+    // Award XP only when checking (not unchecking)
+    if (!wasChecked) {
+      const data = require('../../lib/gamification').loadGamificationData();
+      const result = awardXP(data, XP_VALUES.SUPPLEMENT_TAKEN, 'supplement_taken');
+      
+      // Show XP toast
+      setXpToast({ visible: true, xp: XP_VALUES.SUPPLEMENT_TAKEN, action: 'Supplement Taken' });
+      setTimeout(() => setXpToast({ visible: false, xp: 0, action: '' }), 3000);
+      
+      // Update progress
+      const supplementsTaken = Object.values(newChecked).filter(Boolean).length;
+      const supplementsTotal = supplements.length;
+      const workoutComplete = false; // Would need to check workout data
+      updateTodayProgress(supplementsTaken, supplementsTotal, workoutComplete);
+      
+      // Check achievements
+      checkAchievements(result.data);
+    }
   };
 
   const handleAddSupplement = (supplementData) => {
@@ -596,6 +624,14 @@ export default function StackBuilder() {
       <OptimizeStackModal
         isOpen={showOptimizeModal}
         onClose={() => setShowOptimizeModal(false)}
+      />
+
+      {/* XP Toast */}
+      <XPToast 
+        xp={xpToast.xp} 
+        action={xpToast.action} 
+        isVisible={xpToast.visible}
+        onClose={() => setXpToast({ visible: false, xp: 0, action: '' })}
       />
     </div>
   );

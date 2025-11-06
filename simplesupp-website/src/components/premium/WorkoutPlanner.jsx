@@ -29,6 +29,8 @@ import GlassCard from '../shared/GlassCard';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
 import { TESTING_MODE, hasPremiumAccess } from '../../lib/config';
+import { awardXP, updateTodayProgress, XP_VALUES, checkAchievements } from '../../lib/gamification';
+import { XPToast } from '../gamification/XPDisplay';
 
 export default function WorkoutPlanner() {
   const [weeks, setWeeks] = useState([]);
@@ -52,6 +54,7 @@ export default function WorkoutPlanner() {
   const [saved, setSaved] = useState(false);
   const [draggedExercise, setDraggedExercise] = useState(null);
   const [draggedOverExercise, setDraggedOverExercise] = useState(null);
+  const [xpToast, setXpToast] = useState({ visible: false, xp: 0, action: '' });
 
   const userIsPremium = false;
   const isPremium = hasPremiumAccess(userIsPremium);
@@ -298,6 +301,24 @@ export default function WorkoutPlanner() {
       return newWeeks;
     });
     setShowCompleteWorkoutModal(null);
+    
+    // Award XP for completing workout
+    const data = require('../../lib/gamification').loadGamificationData();
+    const result = awardXP(data, XP_VALUES.WORKOUT_COMPLETE, 'workout_complete');
+    
+    // Show XP toast
+    setXpToast({ visible: true, xp: XP_VALUES.WORKOUT_COMPLETE, action: 'Workout Complete!' });
+    setTimeout(() => setXpToast({ visible: false, xp: 0, action: '' }), 3000);
+    
+    // Update progress
+    const checkedToday = JSON.parse(localStorage.getItem('aviera_checked_today') || '{}');
+    const userStack = JSON.parse(localStorage.getItem('aviera_user_stack') || '{}');
+    const supplementsTaken = Object.values(checkedToday).filter(Boolean).length;
+    const supplementsTotal = userStack.supplements?.length || 0;
+    updateTodayProgress(supplementsTaken, supplementsTotal, true);
+    
+    // Check achievements
+    checkAchievements(result.data);
   };
 
   const handleGenerateNextWeek = () => {
@@ -755,6 +776,14 @@ export default function WorkoutPlanner() {
         onClose={() => setShowRegenerateModal(false)}
         onConfirm={handleGenerateNextWeek}
         currentWeek={currentWeek}
+      />
+
+      {/* XP Toast */}
+      <XPToast 
+        xp={xpToast.xp} 
+        action={xpToast.action} 
+        isVisible={xpToast.visible}
+        onClose={() => setXpToast({ visible: false, xp: 0, action: '' })}
       />
 
       <OptimizeWeekModal

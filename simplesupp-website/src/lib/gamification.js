@@ -1,0 +1,403 @@
+// ============================================
+// GAMIFICATION SYSTEM - XP, Levels, Achievements
+// ============================================
+
+// XP Values for different actions
+export const XP_VALUES = {
+  SUPPLEMENT_TAKEN: 5,
+  WORKOUT_COMPLETE: 50,
+  PERSONAL_RECORD: 100,
+  STREAK_7_DAYS: 200,
+  STREAK_30_DAYS: 500,
+  WEEKLY_GOALS_COMPLETE: 150,
+};
+
+// Level thresholds
+export const LEVEL_THRESHOLDS = [
+  { level: 1, xp: 0, tier: 'Beginner', badge: '🥉' },
+  { level: 2, xp: 100, tier: 'Beginner', badge: '🥉' },
+  { level: 3, xp: 250, tier: 'Beginner', badge: '🥉' },
+  { level: 4, xp: 400, tier: 'Beginner', badge: '🥉' },
+  { level: 5, xp: 500, tier: 'Beginner', badge: '🥉' },
+  { level: 6, xp: 750, tier: 'Novice', badge: '🥈' },
+  { level: 7, xp: 1000, tier: 'Novice', badge: '🥈' },
+  { level: 8, xp: 1250, tier: 'Novice', badge: '🥈' },
+  { level: 9, xp: 1500, tier: 'Novice', badge: '🥈' },
+  { level: 10, xp: 1750, tier: 'Novice', badge: '🥈' },
+  { level: 11, xp: 2000, tier: 'Intermediate', badge: '🥇' },
+  { level: 12, xp: 2400, tier: 'Intermediate', badge: '🥇' },
+  { level: 13, xp: 2800, tier: 'Intermediate', badge: '🥇' },
+  { level: 14, xp: 3200, tier: 'Intermediate', badge: '🥇' },
+  { level: 15, xp: 3600, tier: 'Intermediate', badge: '🥇' },
+  { level: 16, xp: 4000, tier: 'Intermediate', badge: '🥇' },
+  { level: 17, xp: 4500, tier: 'Advanced', badge: '💎' },
+  { level: 18, xp: 5000, tier: 'Advanced', badge: '💎' },
+  { level: 19, xp: 5500, tier: 'Advanced', badge: '💎' },
+  { level: 20, xp: 6000, tier: 'Advanced', badge: '💎' },
+  { level: 21, xp: 6500, tier: 'Advanced', badge: '💎' },
+  { level: 22, xp: 7000, tier: 'Advanced', badge: '💎' },
+  { level: 23, xp: 7500, tier: 'Advanced', badge: '💎' },
+  { level: 24, xp: 8000, tier: 'Advanced', badge: '💎' },
+  { level: 25, xp: 9000, tier: 'Elite', badge: '👑' },
+  { level: 26, xp: 10000, tier: 'Elite', badge: '👑' },
+  { level: 27, xp: 11500, tier: 'Elite', badge: '👑' },
+  { level: 28, xp: 13000, tier: 'Elite', badge: '👑' },
+  { level: 29, xp: 15000, tier: 'Elite', badge: '👑' },
+  { level: 30, xp: 17500, tier: 'Elite', badge: '👑' },
+];
+
+// Achievement definitions
+export const ACHIEVEMENTS = {
+  first_steps: {
+    id: 'first_steps',
+    name: 'First Steps',
+    emoji: '🎯',
+    description: 'Complete your first workout',
+    xpReward: 50,
+    check: (data) => data.totalWorkoutsCompleted >= 1,
+  },
+  supplement_scholar: {
+    id: 'supplement_scholar',
+    name: 'Supplement Scholar',
+    emoji: '💊',
+    description: 'Take supplements 7 days straight',
+    xpReward: 100,
+    check: (data) => data.currentStreak >= 7 && data.supplementStreak >= 7,
+  },
+  week_warrior: {
+    id: 'week_warrior',
+    name: 'Week Warrior',
+    emoji: '🔥',
+    description: 'Maintain a 7-day streak',
+    xpReward: 200,
+    check: (data) => data.currentStreak >= 7,
+  },
+  month_master: {
+    id: 'month_master',
+    name: 'Month Master',
+    emoji: '💪',
+    description: 'Achieve a 30-day streak',
+    xpReward: 500,
+    check: (data) => data.currentStreak >= 30,
+  },
+  progress_tracker: {
+    id: 'progress_tracker',
+    name: 'Progress Tracker',
+    emoji: '📈',
+    description: 'Log weight 10 times',
+    xpReward: 75,
+    check: (data) => data.weightLogs >= 10,
+  },
+  iron_will: {
+    id: 'iron_will',
+    name: 'Iron Will',
+    emoji: '🏋️',
+    description: 'Complete 50 workouts',
+    xpReward: 250,
+    check: (data) => data.totalWorkoutsCompleted >= 50,
+  },
+  century_club: {
+    id: 'century_club',
+    name: 'Century Club',
+    emoji: '💯',
+    description: 'Complete 100 workouts',
+    xpReward: 500,
+    check: (data) => data.totalWorkoutsCompleted >= 100,
+  },
+  pr_breaker: {
+    id: 'pr_breaker',
+    name: 'PR Breaker',
+    emoji: '🎖️',
+    description: 'Hit 10 personal records',
+    xpReward: 300,
+    check: (data) => data.personalRecords >= 10,
+  },
+  strength_seeker: {
+    id: 'strength_seeker',
+    name: 'Strength Seeker',
+    emoji: '🦾',
+    description: 'Increase weight 25 times',
+    xpReward: 400,
+    check: (data) => data.weightIncreases >= 25,
+  },
+  stack_master: {
+    id: 'stack_master',
+    name: 'Stack Master',
+    emoji: '🧪',
+    description: 'Take all supplements 30 days',
+    xpReward: 300,
+    check: (data) => data.perfectSupplementDays >= 30,
+  },
+  consistency_king: {
+    id: 'consistency_king',
+    name: 'Consistency King',
+    emoji: '🌟',
+    description: '100-day supplement streak',
+    xpReward: 1000,
+    check: (data) => data.supplementStreak >= 100,
+  },
+};
+
+// Calculate level from total XP
+export function calculateLevel(totalXP) {
+  let level = 1;
+  for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (totalXP >= LEVEL_THRESHOLDS[i].xp) {
+      level = LEVEL_THRESHOLDS[i].level;
+      break;
+    }
+  }
+  return level;
+}
+
+// Get level info
+export function getLevelInfo(level) {
+  const levelData = LEVEL_THRESHOLDS.find(l => l.level === level);
+  return levelData || LEVEL_THRESHOLDS[0];
+}
+
+// Calculate XP needed for next level
+export function getXPToNextLevel(totalXP, currentLevel) {
+  const nextLevel = LEVEL_THRESHOLDS.find(l => l.level > currentLevel);
+  if (!nextLevel) return 0; // Max level
+  return nextLevel.xp - totalXP;
+}
+
+// Calculate XP progress percentage for current level
+export function getLevelProgress(totalXP, currentLevel) {
+  const currentLevelData = LEVEL_THRESHOLDS.find(l => l.level === currentLevel);
+  const nextLevelData = LEVEL_THRESHOLDS.find(l => l.level > currentLevel);
+  
+  if (!nextLevelData) return 100; // Max level
+  
+  const xpInCurrentLevel = totalXP - currentLevelData.xp;
+  const xpNeededForNext = nextLevelData.xp - currentLevelData.xp;
+  
+  return Math.min(100, Math.round((xpInCurrentLevel / xpNeededForNext) * 100));
+}
+
+// Check if day is complete (80%+ supplements + workout or rest day)
+export function isDayComplete(supplementsTaken, supplementsTotal, workoutComplete) {
+  const supplementPercentage = supplementsTotal > 0 
+    ? (supplementsTaken / supplementsTotal) * 100 
+    : 100;
+  return supplementPercentage >= 80 && workoutComplete;
+}
+
+// Load gamification data from localStorage
+export function loadGamificationData() {
+  try {
+    const saved = localStorage.getItem('aviera_gamification');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (e) {
+    console.error('Failed to load gamification data:', e);
+  }
+  
+  // Return default structure
+  return {
+    totalXP: 0,
+    currentLevel: 1,
+    currentStreak: 0,
+    longestStreak: 0,
+    lastCompletionDate: null,
+    supplementStreak: 0,
+    today: {
+      date: new Date().toISOString().split('T')[0],
+      supplementsTaken: 0,
+      supplementsTotal: 0,
+      workoutComplete: false,
+      xpEarned: 0,
+    },
+    history: [],
+    unlockedBadges: [],
+    personalRecords: 0,
+    totalWorkoutsCompleted: 0,
+    weightLogs: 0,
+    weightIncreases: 0,
+    perfectSupplementDays: 0,
+    xpHistory: [],
+  };
+}
+
+// Save gamification data to localStorage
+export function saveGamificationData(data) {
+  try {
+    localStorage.setItem('aviera_gamification', JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save gamification data:', e);
+  }
+}
+
+// Award XP and update level
+export function awardXP(data, xpAmount, action, details = {}) {
+  const newData = {
+    ...data,
+    totalXP: data.totalXP + xpAmount,
+    today: {
+      ...data.today,
+      xpEarned: data.today.xpEarned + xpAmount,
+    },
+    xpHistory: [
+      ...(data.xpHistory || []),
+      {
+        date: new Date().toISOString().split('T')[0],
+        action,
+        xp: xpAmount,
+        ...details,
+      },
+    ],
+  };
+  
+  const oldLevel = data.currentLevel;
+  newData.currentLevel = calculateLevel(newData.totalXP);
+  
+  // Check for level up
+  const leveledUp = newData.currentLevel > oldLevel;
+  
+  saveGamificationData(newData);
+  
+  return {
+    data: newData,
+    leveledUp,
+    newLevel: newData.currentLevel,
+  };
+}
+
+// Update streak
+export function updateStreak(data, supplementsTaken, supplementsTotal, workoutComplete) {
+  const today = new Date().toISOString().split('T')[0];
+  const dayComplete = isDayComplete(supplementsTaken, supplementsTotal, workoutComplete);
+  
+  let newStreak = data.currentStreak || 0;
+  let supplementStreak = data.supplementStreak || 0;
+  
+  // Check if we need to update streak
+  if (data.lastCompletionDate !== today) {
+    if (dayComplete) {
+      // Check if yesterday was completed (continuous streak)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      if (data.lastCompletionDate === yesterdayStr) {
+        // Continue streak
+        newStreak += 1;
+        supplementStreak += 1;
+      } else if (!data.lastCompletionDate || data.lastCompletionDate < yesterdayStr) {
+        // New streak (break was more than 1 day)
+        newStreak = 1;
+        supplementStreak = 1;
+      }
+      // If lastCompletionDate is today, don't change streak
+      
+      // Update longest streak
+      const longestStreak = Math.max(data.longestStreak || 0, newStreak);
+      
+      const newData = {
+        ...data,
+        currentStreak: newStreak,
+        supplementStreak,
+        longestStreak,
+        lastCompletionDate: today,
+      };
+      
+      // Check for streak achievements
+      if (newStreak === 7) {
+        // Award 7-day streak XP
+        return awardXP(newData, XP_VALUES.STREAK_7_DAYS, 'streak_7_days');
+      } else if (newStreak === 30) {
+        // Award 30-day streak XP
+        return awardXP(newData, XP_VALUES.STREAK_30_DAYS, 'streak_30_days');
+      }
+      
+      saveGamificationData(newData);
+      return { data: newData, leveledUp: false };
+    } else {
+      // Day not complete - don't update streak
+      return { data, leveledUp: false };
+    }
+  }
+  
+  return { data, leveledUp: false };
+}
+
+// Check and unlock achievements
+export function checkAchievements(data) {
+  const newlyUnlocked = [];
+  
+  Object.values(ACHIEVEMENTS).forEach(achievement => {
+    // Skip if already unlocked
+    if (data.unlockedBadges?.some(b => b.id === achievement.id)) {
+      return;
+    }
+    
+    // Check if achievement is met
+    if (achievement.check(data)) {
+      newlyUnlocked.push(achievement);
+      
+      // Award XP for achievement
+      const result = awardXP(data, achievement.xpReward, `achievement_${achievement.id}`, {
+        achievement: achievement.id,
+      });
+      data = result.data;
+      
+      // Add to unlocked badges
+      data.unlockedBadges = [
+        ...(data.unlockedBadges || []),
+        {
+          id: achievement.id,
+          unlockedDate: new Date().toISOString().split('T')[0],
+        },
+      ];
+    }
+  });
+  
+  if (newlyUnlocked.length > 0) {
+    saveGamificationData(data);
+  }
+  
+  return {
+    data,
+    newlyUnlocked,
+  };
+}
+
+// Update today's progress
+export function updateTodayProgress(supplementsTaken, supplementsTotal, workoutComplete) {
+  const data = loadGamificationData();
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Reset today's data if it's a new day
+  if (data.today.date !== today) {
+    data.today = {
+      date: today,
+      supplementsTaken: 0,
+      supplementsTotal: 0,
+      workoutComplete: false,
+      xpEarned: 0,
+    };
+  }
+  
+  data.today.supplementsTaken = supplementsTaken;
+  data.today.supplementsTotal = supplementsTotal;
+  data.today.workoutComplete = workoutComplete;
+  
+  // Update streak
+  const streakResult = updateStreak(data, supplementsTaken, supplementsTotal, workoutComplete);
+  data = streakResult.data;
+  
+  // Check achievements
+  const achievementResult = checkAchievements(data);
+  data = achievementResult.data;
+  
+  saveGamificationData(data);
+  
+  return {
+    data,
+    leveledUp: streakResult.leveledUp,
+    newlyUnlockedAchievements: achievementResult.newlyUnlocked,
+  };
+}
+

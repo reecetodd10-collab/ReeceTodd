@@ -12,17 +12,28 @@ import {
   User,
   FlaskConical,
   Target,
-  CreditCard
+  CreditCard,
+  Trophy,
+  TrendingUp
 } from 'lucide-react';
 import StackBuilder from '../components/premium/StackBuilder';
 import WorkoutPlanner from '../components/premium/WorkoutPlanner';
 import SettingsPage from './Settings';
 import BillingPage from './Billing';
+import WelcomePage from './Welcome';
+import AchievementsPage from './dashboard/Achievements';
+import ProgressPage from './dashboard/Progress';
 import UpgradePrompt from '../components/shared/UpgradePrompt';
 import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
+import HabitRings from '../components/gamification/HabitRings';
+import WeeklySummary from '../components/gamification/WeeklySummary';
+import XPDisplay from '../components/gamification/XPDisplay';
+import StreakCounter from '../components/gamification/StreakCounter';
 import PillLogo from '../components/PillLogo';
+import Button from '../components/shared/Button';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
+import { loadGamificationData } from '../lib/gamification';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,6 +50,8 @@ export default function Dashboard() {
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
     { icon: Pill, label: 'Stack Builder', path: '/dashboard/stack' },
     { icon: Dumbbell, label: 'Workout Planner', path: '/dashboard/fit' },
+    { icon: TrendingUp, label: 'Progress', path: '/dashboard/progress' },
+    { icon: Trophy, label: 'Achievements', path: '/dashboard/achievements' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
     { icon: CreditCard, label: 'Billing', path: '/dashboard/billing' },
   ];
@@ -222,6 +235,8 @@ export default function Dashboard() {
           {location.pathname === '/dashboard/welcome' && <WelcomePage />}
           {location.pathname === '/dashboard/stack' && isPremium && <StackBuilder />}
           {location.pathname === '/dashboard/fit' && isPremium && <WorkoutPlanner />}
+          {location.pathname === '/dashboard/progress' && <ProgressPage />}
+          {location.pathname === '/dashboard/achievements' && <AchievementsPage />}
           {location.pathname === '/dashboard/settings' && <SettingsPage />}
           {location.pathname === '/dashboard/billing' && <BillingPage />}
           
@@ -272,11 +287,66 @@ export default function Dashboard() {
 
 // Dashboard Overview Component
 function DashboardOverview({ isPremium }) {
+  const [gamificationData, setGamificationData] = React.useState(loadGamificationData());
+  const [supplementsTaken, setSupplementsTaken] = React.useState(0);
+  const [supplementsTotal, setSupplementsTotal] = React.useState(0);
+  const [workoutComplete, setWorkoutComplete] = React.useState(false);
+
+  React.useEffect(() => {
+    // Load supplement data from stack
+    const userStack = localStorage.getItem('aviera_user_stack');
+    if (userStack) {
+      try {
+        const stack = JSON.parse(userStack);
+        const checkedToday = JSON.parse(localStorage.getItem('aviera_checked_today') || '{}');
+        const taken = Object.values(checkedToday).filter(Boolean).length;
+        setSupplementsTotal(stack.supplements?.length || 0);
+        setSupplementsTaken(taken);
+      } catch (e) {
+        console.error('Failed to load stack data:', e);
+      }
+    }
+
+    // Load workout completion
+    const workoutData = localStorage.getItem('aviera_workout_plan');
+    if (workoutData) {
+      try {
+        const plan = JSON.parse(workoutData);
+        const today = new Date().getDay();
+        const dayMapping = { 0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday' };
+        const currentDayName = dayMapping[today];
+        const currentWeek = plan.weeks?.[plan.currentWeekIndex];
+        const todayWorkout = currentWeek?.days?.find(d => d.day === currentDayName);
+        setWorkoutComplete(todayWorkout?.completed || false);
+      } catch (e) {
+        console.error('Failed to load workout data:', e);
+      }
+    }
+
+    // Reload gamification data
+    const interval = setInterval(() => {
+      setGamificationData(loadGamificationData());
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 text-[var(--txt)]">Welcome back!</h1>
         <p className="text-[var(--txt-muted)]">Here's your fitness overview.</p>
+      </div>
+
+      {/* Habit Rings - Prominent Display */}
+      <HabitRings 
+        supplementsTaken={supplementsTaken}
+        supplementsTotal={supplementsTotal}
+        workoutComplete={workoutComplete}
+      />
+
+      {/* Weekly Summary */}
+      <div className="mb-8">
+        <WeeklySummary />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -325,36 +395,36 @@ function DashboardOverview({ isPremium }) {
         </div>
       </div>
 
-      {isPremium && (
+      {/* Gamification Stats */}
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="glass-card p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-[var(--acc)]/20 flex items-center justify-center">
-              <span className="text-lg">🔥</span>
-            </div>
-            <h2 className="text-xl font-bold text-[var(--txt)]">Progress</h2>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-[var(--txt-muted)]">Streak</span>
-                <span className="font-bold text-[var(--txt)]">🔥 7 days</span>
-              </div>
-              <div className="w-full bg-[var(--bg-elev-2)] rounded-full h-2">
-                <div className="bg-[var(--acc)] h-2 rounded-full" style={{ width: '58%' }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-[var(--txt-muted)]">Weekly Completion</span>
-                <span className="font-bold text-[var(--txt)]">85%</span>
-              </div>
-              <div className="w-full bg-[var(--bg-elev-2)] rounded-full h-2">
-                <div className="bg-[var(--acc)] h-2 rounded-full" style={{ width: '85%' }} />
-              </div>
-            </div>
-          </div>
+          <XPDisplay compact={false} />
         </div>
-      )}
+        <div className="glass-card p-6">
+          <StreakCounter compact={false} />
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <Link to="/dashboard/progress" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
+          <TrendingUp className="text-[var(--acc)] mb-2" size={24} />
+          <h3 className="font-semibold text-[var(--txt)] mb-1">View Progress</h3>
+          <p className="text-sm text-[var(--txt-muted)]">See detailed stats</p>
+        </Link>
+        <Link to="/dashboard/achievements" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
+          <Trophy className="text-[var(--acc)] mb-2" size={24} />
+          <h3 className="font-semibold text-[var(--txt)] mb-1">Achievements</h3>
+          <p className="text-sm text-[var(--txt-muted)]">Unlock badges</p>
+        </Link>
+        {isPremium && (
+          <Link to="/dashboard/stack" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
+            <Pill className="text-[var(--acc)] mb-2" size={24} />
+            <h3 className="font-semibold text-[var(--txt)] mb-1">Manage Stack</h3>
+            <p className="text-sm text-[var(--txt-muted)]">Track supplements</p>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
