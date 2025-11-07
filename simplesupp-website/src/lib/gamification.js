@@ -417,6 +417,7 @@ export function loadGamificationData() {
       waterGoal: 8,
       sleepTarget: 8,
     },
+    workoutFeedback: [],
   };
 }
 

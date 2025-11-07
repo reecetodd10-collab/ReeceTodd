@@ -25,9 +25,11 @@ import { products, PRODUCT_CATEGORIES } from '../../data/products';
 import GlassCard from '../shared/GlassCard';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
+import Tooltip from '../shared/Tooltip';
 import { useGamification } from '../../hooks/useGamification';
 import { awardXP, updateTodayProgress, XP_VALUES, checkAchievements } from '../../lib/gamification';
 import { XPToast } from '../gamification/XPDisplay';
+import { getSupplementTooltip } from '../../lib/supplement-data';
 
 export default function StackBuilder() {
   const [supplements, setSupplements] = useState([]);
@@ -388,9 +390,18 @@ export default function StackBuilder() {
                         {/* Name and AI Button */}
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-[var(--txt)] mb-2">
-                              {supplement.name}
-                            </h3>
+                            <Tooltip
+                              content={(() => {
+                                const tooltipData = getSupplementTooltip(supplement.name);
+                                return `${supplement.name}\n━━━━━━━━━━━━━━━━━━\n${tooltipData.benefits.join('\n')}\n\n💊 Dosage: ${tooltipData.dosage}\n🔬 Research: ${tooltipData.research}\n💰 ${tooltipData.cost}\n\n${tooltipData.note}`;
+                              })()}
+                              position="top"
+                              delay={200}
+                            >
+                              <h3 className="text-lg font-bold text-[var(--txt)] mb-2 cursor-help hover:text-[var(--acc)] transition">
+                                {supplement.name}
+                              </h3>
+                            </Tooltip>
                             {showStreakBadge && (
                               <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 rounded-full text-xs font-semibold text-orange-400 mb-2">
                                 <Flame size={12} />

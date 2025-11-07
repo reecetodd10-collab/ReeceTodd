@@ -32,6 +32,7 @@ import HabitRings from '../components/gamification/HabitRings';
 import WeeklySummary from '../components/gamification/WeeklySummary';
 import WeeklyInsightsExpanded from '../components/gamification/WeeklyInsightsExpanded';
 import EnhancedGoalsChecklist from '../components/gamification/EnhancedGoalsChecklist';
+import NotesWidget from '../components/dashboard/NotesWidget';
 import XPDisplay from '../components/gamification/XPDisplay';
 import StreakCounter from '../components/gamification/StreakCounter';
 import WaterTracker from '../components/tracking/WaterTracker';
@@ -365,6 +366,9 @@ function DashboardOverview({ isPremium }) {
       <div className="mb-8">
         <WeeklyInsightsExpanded />
       </div>
+
+      {/* Notes Widget */}
+      <NotesWidget />
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="glass-card p-6">
