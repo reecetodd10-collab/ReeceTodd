@@ -81,10 +81,10 @@ export default function ContactForm() {
                 <CheckCircle className="text-white" size={40} />
               </div>
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+            <h3 className="text-2xl md:text-3xl font-bold text-[var(--txt)] mb-3">
               Message Sent!
             </h3>
-            <p className="text-gray-600 text-lg">
+            <p className="text-[#d1d5db] text-lg">
               We'll get back to you as soon as possible.
             </p>
           </motion.div>
@@ -92,7 +92,7 @@ export default function ContactForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-[var(--txt)] mb-2">
                 Name
               </label>
               <input
@@ -101,21 +101,21 @@ export default function ContactForm() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-white/50 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:bg-white focus:shadow-lg ${
+                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.name
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-gray-200 focus:border-primary'
+                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
                 }`}
                 placeholder="Your name"
               />
               {errors.name && (
-                <p className="mt-2 text-sm text-red-600">{errors.name}</p>
+                <p className="mt-2 text-sm text-red-400">{errors.name}</p>
               )}
             </div>
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-[var(--txt)] mb-2">
                 Email
               </label>
               <input
@@ -124,21 +124,21 @@ export default function ContactForm() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-white/50 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:bg-white focus:shadow-lg ${
+                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.email
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-gray-200 focus:border-primary'
+                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
                 }`}
                 placeholder="your.email@example.com"
               />
               {errors.email && (
-                <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-2 text-sm text-red-400">{errors.email}</p>
               )}
             </div>
 
             {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label htmlFor="message" className="block text-sm font-semibold text-[var(--txt)] mb-2">
                 Message
               </label>
               <textarea
@@ -147,15 +147,15 @@ export default function ContactForm() {
                 value={formData.message}
                 onChange={handleChange}
                 rows="5"
-                className={`w-full px-4 py-3 bg-white/50 border-2 rounded-xl transition-all duration-200 focus:outline-none focus:bg-white focus:shadow-lg resize-none ${
+                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none resize-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.message
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-gray-200 focus:border-primary'
+                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
                 }`}
                 placeholder="How can we help you?"
               />
               {errors.message && (
-                <p className="mt-2 text-sm text-red-600">{errors.message}</p>
+                <p className="mt-2 text-sm text-red-400">{errors.message}</p>
               )}
             </div>
 
@@ -164,7 +164,7 @@ export default function ContactForm() {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full px-8 py-4 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-xl font-semibold text-lg shadow-premium hover:shadow-premium-lg transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full px-8 py-4 bg-gradient-to-r from-[var(--acc)] to-[var(--acc-2)] text-white rounded-xl font-semibold text-lg shadow-premium hover:shadow-premium-lg transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>Send Message</span>
               <Send size={20} />

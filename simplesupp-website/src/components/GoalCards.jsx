@@ -79,15 +79,15 @@ export default function GoalCards() {
             </h3>
 
             {/* Description */}
-            <p className="text-[var(--txt-muted)] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+            <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
               {goal.description}
             </p>
 
             {/* Features */}
             <ul className="space-y-2">
               {goal.features.map((feature, featureIndex) => (
-                <li key={featureIndex} className="flex items-center text-sm text-[var(--txt)]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--acc)] mr-2" />
+                <li key={featureIndex} className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
                   {feature}
                 </li>
               ))}

@@ -155,7 +155,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 How It Works
               </h2>
-              <p className="text-xl text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
                 Simple. Smart. Personalized. Get your perfect stack in three easy steps.
               </p>
             </div>
@@ -203,7 +203,7 @@ export default function Home() {
                     Step {item.step}
                   </div>
                   <h3 className="text-2xl font-bold text-[var(--txt)] mb-4">{item.title}</h3>
-                  <p className="text-[var(--txt-muted)] leading-relaxed text-lg">
+                  <p className="text-[#d1d5db] leading-relaxed text-lg">
                     {item.description}
                   </p>
                 </motion.div>
@@ -244,7 +244,7 @@ export default function Home() {
                 <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
                   Aviera Stack
                 </h2>
-                <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
                   Answer a quick 2-minute quiz and get an AI-generated supplement stack tailored to your exact
                   goals, lifestyle, and experience level. Our intelligence engine analyzes 42+ premium supplements
                   to build your perfect combination.
@@ -261,7 +261,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[var(--txt-muted)] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -351,7 +351,7 @@ export default function Home() {
                 <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                   Aviera Fit
                 </h2>
-                <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
                   Get AI-powered workout recommendations tailored to your goals and experience level.
                   Match your training plan with the perfect supplement stack for maximum results.
                 </p>
@@ -367,7 +367,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[var(--txt-muted)] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -416,7 +416,7 @@ export default function Home() {
                 <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                   Aviera Shop
                 </h2>
-                <p className="text-xl text-[var(--txt-muted)] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
                   Order premium supplements directly through our Supliful integration.
                   Quality guaranteed, fast shipping, hassle-free returns. Your perfect stack,
                   delivered to your door.
@@ -433,7 +433,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[var(--txt-muted)] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -464,7 +464,7 @@ export default function Home() {
                   ].map((product, i) => (
                     <div key={i} className="glass-card p-6 hover:shadow-premium-lg transition-all duration-300">
                       <div className="w-full h-24 bg-[var(--acc)]/20 rounded-xl mb-4 flex items-center justify-center">
-                        <div className="w-12 h-12 bg-[var(--acc)] rounded-lg opacity-60"></div>
+                        <div className="w-12 h-12 bg-[var(--acc)] rounded-lg opacity-100"></div>
                       </div>
                       <h4 className="font-bold text-[var(--txt)] mb-2">{product.name}</h4>
                       <p className="text-2xl font-bold text-[var(--acc)]">{product.price}</p>
@@ -492,7 +492,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 Whatever Your Goal
               </h2>
-              <p className="text-xl text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
                 Personalized supplement stacks for every fitness journey.
               </p>
             </div>
@@ -506,17 +506,17 @@ export default function Home() {
             ======================================== */}
         <section
           id="reviews"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-gray-50 py-32 px-4"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
         >
           <div
             ref={reviewsAnimation.ref}
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${reviewsAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-bold text-[#ffffff] mb-6">
                 What Our Users Say
               </h2>
-              <p className="text-xl text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
                 Real results from real people transforming their fitness journey with Aivra.
               </p>
             </div>
@@ -579,7 +579,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
                 Everything you need to know about Aivra and our AI-powered recommendations.
               </p>
             </div>
@@ -603,7 +603,7 @@ export default function Home() {
               <h2 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
                 Take Your Fitness to the Next Level
               </h2>
-              <p className="text-lg text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-lg text-[#d1d5db] max-w-2xl mx-auto">
                 Unlock AI-powered personalization, advanced tracking, and custom workout plans
               </p>
             </div>
@@ -666,7 +666,7 @@ export default function Home() {
                 Ready to Get Started?
               </h2>
 
-              <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-12 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl text-[#d1d5db] mb-12 leading-relaxed max-w-3xl mx-auto">
                 Simplify your supplement routine with Aviera. Get AI-powered recommendations
                 in 2 minutes. Free to use, no credit card required.
               </p>
@@ -721,7 +721,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 About Aviera
               </h2>
-              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[#d1d5db] max-w-3xl mx-auto">
                 Built by fitness enthusiasts, for everyone on a fitness journey.
               </p>
             </div>
@@ -791,7 +791,7 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 Get In Touch
               </h2>
-              <p className="text-xl text-[var(--txt-muted)] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
                 Have questions? We're here to help. Send us a message and we'll get back to you as soon as possible.
               </p>
             </div>
