@@ -340,7 +340,11 @@ export function loadGamificationData() {
 }
 
 // Get default gamification data structure
+// Uses a static date string for SSR consistency (will be updated client-side if needed)
 function getDefaultGamificationData() {
+  // Use a static date for SSR - will be updated client-side in useEffect
+  const staticDate = typeof window === 'undefined' ? '1970-01-01' : new Date().toISOString().split('T')[0];
+  
   return {
     totalXP: 0,
     currentLevel: 1,
@@ -349,7 +353,7 @@ function getDefaultGamificationData() {
     lastCompletionDate: null,
     supplementStreak: 0,
     today: {
-      date: new Date().toISOString().split('T')[0],
+      date: staticDate,
       supplementsTaken: 0,
       supplementsTotal: 0,
       workoutComplete: false,
@@ -382,7 +386,7 @@ function getDefaultGamificationData() {
         goalType: 'maintenance',
       },
       today: {
-        date: new Date().toISOString().split('T')[0],
+        date: staticDate,
         protein: 0,
         carbs: 0,
         fats: 0,
@@ -399,7 +403,7 @@ function getDefaultGamificationData() {
     },
     dailyGoals: {
       today: {
-        date: new Date().toISOString().split('T')[0],
+        date: staticDate,
         core: {
           supplements: { complete: false, progress: '0/0' },
           workout: { complete: false },

@@ -9,11 +9,15 @@ import { loadGamificationData } from '../../lib/gamification';
 import { allMacrosHit } from '../../lib/nutrition';
 
 export default function WeeklyInsightsExpanded() {
-  const [data, setData] = useState(loadGamificationData());
+  const [data, setData] = useState(null);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Load initial data
+    setData(loadGamificationData());
+    
     const interval = setInterval(() => {
       setData(loadGamificationData());
     }, 2000);
@@ -22,7 +26,7 @@ export default function WeeklyInsightsExpanded() {
 
   // Calculate weekly stats
   const getWeeklyStats = () => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !data) {
       return {
         workoutsCompleted: 0,
         totalWorkouts: 0,
@@ -139,7 +143,19 @@ export default function WeeklyInsightsExpanded() {
     };
   };
 
-  const stats = getWeeklyStats();
+  const stats = data ? getWeeklyStats() : {
+    workoutsCompleted: 0,
+    totalWorkouts: 0,
+    supplementAdherence: 0,
+    waterDays: 0,
+    sleepDays: 0,
+    nutritionDays: 0,
+    mealsConsistency: 0,
+    weeklyXP: 0,
+    weekGrade: 'F',
+    xpChange: 0,
+    currentStreak: 0,
+  };
 
   const getScoreColor = (percentage) => {
     if (percentage >= 80) return 'text-green-400';

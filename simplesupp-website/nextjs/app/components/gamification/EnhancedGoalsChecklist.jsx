@@ -8,12 +8,16 @@ import { loadGamificationData, saveGamificationData, awardXP, checkAchievements 
 import { allMacrosHit } from '../../lib/nutrition';
 
 export default function EnhancedGoalsChecklist() {
-  const [data, setData] = useState(loadGamificationData());
+  const [data, setData] = useState(null);
   const [expanded, setExpanded] = useState(true);
   const [showXPAnimation, setShowXPAnimation] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Load initial data
+    setData(loadGamificationData());
+    
     const interval = setInterval(() => {
       setData(loadGamificationData());
     }, 2000);
@@ -22,7 +26,7 @@ export default function EnhancedGoalsChecklist() {
 
   // Calculate today's goals completion
   const calculateGoals = () => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !data) {
       return {
         coreGoals: [],
         bonusGoals: [],
@@ -127,7 +131,18 @@ export default function EnhancedGoalsChecklist() {
     };
   };
 
-  const goals = calculateGoals();
+  const goals = data ? calculateGoals() : {
+    coreGoals: [],
+    bonusGoals: [],
+    allGoals: [],
+    completedCount: 0,
+    totalCount: 0,
+    completionPercentage: 0,
+    coreCompleted: 0,
+    bonusCompleted: 0,
+    supplementsProgress: 0,
+    waterProgress: 0,
+  };
   const remainingGoals = goals.totalCount - goals.completedCount;
 
   // Calculate consistency score for habit rings
@@ -137,7 +152,7 @@ export default function EnhancedGoalsChecklist() {
 
   // Save daily goals data and check for 100% completion bonus XP
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !data || !goals) return;
     const gamificationData = loadGamificationData();
     const today = new Date().toISOString().split('T')[0];
     
@@ -184,7 +199,7 @@ export default function EnhancedGoalsChecklist() {
     } else {
       saveGamificationData(gamificationData);
     }
-  }, [goals.completionPercentage]);
+  }, [goals.completionPercentage, data]);
 
   return (
     <GlassCard className="p-6 mb-6">

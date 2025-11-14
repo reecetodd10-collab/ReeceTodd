@@ -21,7 +21,7 @@ import SleepTracker from '../components/tracking/SleepTracker';
 import NotesWidget from '../components/dashboard/NotesWidget';
 
 export default function DashboardPage() {
-  const [gamificationData, setGamificationData] = useState(loadGamificationData());
+  const [gamificationData, setGamificationData] = useState(null);
   const [supplementsTaken, setSupplementsTaken] = useState(0);
   const [supplementsTotal, setSupplementsTotal] = useState(0);
   const [workoutComplete, setWorkoutComplete] = useState(false);
@@ -31,6 +31,11 @@ export default function DashboardPage() {
   const isPremium = hasPremiumAccess(userIsPremium);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Load gamification data
+    setGamificationData(loadGamificationData());
+    
     // Load supplement data from stack
     const userStack = localStorage.getItem('aviera_user_stack');
     if (userStack) {
@@ -63,7 +68,9 @@ export default function DashboardPage() {
 
     // Reload gamification data
     const interval = setInterval(() => {
-      setGamificationData(loadGamificationData());
+      if (typeof window !== 'undefined') {
+        setGamificationData(loadGamificationData());
+      }
     }, 2000);
     return () => clearInterval(interval);
   }, []);

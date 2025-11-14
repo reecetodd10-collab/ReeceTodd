@@ -54,6 +54,8 @@ export default function NotesWidget() {
   };
 
   const formatDate = (dateString) => {
+    if (typeof window === 'undefined') return dateString; // SSR safety
+    
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now - date;

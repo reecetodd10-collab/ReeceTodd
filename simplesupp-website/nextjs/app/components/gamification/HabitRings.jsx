@@ -8,10 +8,14 @@ import { loadGamificationData } from '../../lib/gamification';
 import { allMacrosHit } from '../../lib/nutrition';
 
 export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0, workoutComplete = false }) {
-  const [data, setData] = useState(loadGamificationData());
+  const [data, setData] = useState(null);
   
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Load initial data
+    setData(loadGamificationData());
+    
     // Reload data periodically to sync with other components
     const interval = setInterval(() => {
       setData(loadGamificationData());
@@ -29,19 +33,22 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
   const supplementsComplete = supplementPercentage >= 80;
   const coreComplete = (supplementsComplete + (workoutComplete ? 1 : 0)) / 2;
 
-  // Bonus goals (30% weight)
-  const waterData = data.water || { today: 0, dailyGoal: 8 };
+  // Bonus goals (30% weight) - use safe defaults if data not loaded
+  const waterData = data?.water || { today: 0, dailyGoal: 8 };
   const waterComplete = waterData.today >= waterData.dailyGoal;
 
-  const nutritionData = data.nutrition || { today: { meals: {} } };
+  const nutritionData = data?.nutrition || { today: { meals: {} } };
   const meals = nutritionData.today.meals || {};
   const requiredMeals = ['breakfast', 'lunch', 'dinner'];
   const mealsComplete = requiredMeals.every(meal => meals[meal] === true);
 
-  const sleepData = data.sleep || { lastNight: null };
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const sleepData = data?.sleep || { lastNight: null };
+  let yesterdayStr = '';
+  if (typeof window !== 'undefined') {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterdayStr = yesterday.toISOString().split('T')[0];
+  }
   const sleepComplete = sleepData.lastNight?.date === yesterdayStr && sleepData.lastNight?.quality === true;
 
   const nutritionToday = nutritionData.today || {};
@@ -90,7 +97,13 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
     return circ - (circ * percentage) / 100;
   };
 
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  // SSR-safe date formatting
+  const getTodayString = () => {
+    if (typeof window === 'undefined') return 'Today';
+    return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  };
+
+  const today = getTodayString();
 
   return (
     <GlassCard className="p-6 mb-6">
@@ -272,7 +285,7 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
         </div>
 
         {/* Streak */}
-        {data.currentStreak > 0 && (
+        {data && data.currentStreak > 0 && (
           <div className="mt-4 pt-4 border-t border-[var(--border)] text-center">
             <div className="flex items-center justify-center gap-2">
               <span className="text-2xl">🔥</span>

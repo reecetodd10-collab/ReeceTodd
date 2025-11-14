@@ -16,6 +16,9 @@ export function useScrollAnimation(options = {}) {
   const ref = useRef(null);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!ref.current) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -63,6 +66,7 @@ export function useActiveSection(sectionIds) {
   const [activeSection, setActiveSection] = useState(sectionIds[0] || '');
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (sectionIds.length === 0) return;
 
     const observerOptions = {
