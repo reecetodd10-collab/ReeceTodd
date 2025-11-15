@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 
 /**
  * useScrollAnimation Hook
@@ -63,11 +63,16 @@ export function useScrollAnimation(options = {}) {
  * @returns {string} - Currently active section ID
  */
 export function useActiveSection(sectionIds) {
-  const [activeSection, setActiveSection] = useState(sectionIds[0] || '');
+  const [activeSection, setActiveSection] = useState(sectionIds?.[0] || '');
+
+  // Memoize the section IDs string to avoid unnecessary effect re-runs
+  const sectionIdsKey = useMemo(() => {
+    return Array.isArray(sectionIds) ? sectionIds.join(',') : '';
+  }, [sectionIds]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (sectionIds.length === 0) return;
+    if (!sectionIds || sectionIds.length === 0) return;
 
     const observerOptions = {
       root: null,
@@ -86,18 +91,22 @@ export function useActiveSection(sectionIds) {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    // Observe all sections
-    sectionIds.forEach((sectionId) => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        observer.observe(element);
-      }
-    });
+    // Use a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      // Observe all sections
+      sectionIds.forEach((sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          observer.observe(element);
+        }
+      });
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [sectionIds]);
+  }, [sectionIdsKey, sectionIds]); // Use memoized key and original array
 
   return activeSection;
 }

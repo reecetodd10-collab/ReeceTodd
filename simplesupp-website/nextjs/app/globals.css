@@ -223,6 +223,41 @@ small {
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
 }
 
+.text-shadow-xl {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   IMAGE CENTERING UTILITIES
+   ======================================== */
+
+/* Center image subject using object-position - adjust as needed */
+.image-center-subject {
+  object-position: center center !important;
+}
+
+.image-center-subject-left {
+  object-position: 45% center !important;
+}
+
+.image-center-subject-right {
+  object-position: 55% center !important;
+}
+
+.image-center-subject-top {
+  object-position: center 40% !important;
+}
+
+.image-center-subject-bottom {
+  object-position: center 60% !important;
+}
+
+/* Force center positioning for founder photo */
+.founder-photo-container img {
+  object-position: center center !important;
+  object-fit: cover !important;
+}
+
 /* ========================================
    GLASS MORPHISM SYSTEM
    ======================================== */
@@ -765,12 +800,16 @@ input:checked + .toggle-slider:before {
    ======================================== */
 
 @media (max-width: 640px) {
-  /* Larger touch targets on mobile */
+  /* Larger touch targets on mobile - minimum 44px for accessibility */
   button,
   a.btn-primary,
-  a.btn-secondary {
+  a.btn-secondary,
+  .btn-primary,
+  .btn-secondary {
     min-height: 48px;
+    min-width: 48px;
     padding: var(--space-2) var(--space-4);
+    font-size: 16px; /* Prevents zoom on iOS */
   }
   
   /* Full-width modals on mobile */
@@ -793,6 +832,34 @@ input:checked + .toggle-slider:before {
   .toast {
     min-width: auto;
     width: 100%;
+  }
+
+  /* Improved text readability on mobile */
+  h1 {
+    font-size: 36px;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  /* Better spacing on mobile */
+  section {
+    padding: var(--space-4) var(--space-2);
+  }
+
+  /* Ensure inputs are readable on mobile */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
   }
 }
 

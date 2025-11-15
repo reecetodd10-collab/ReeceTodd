@@ -152,7 +152,7 @@ export default function Navigation() {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-[var(--bg-elev-1)] transition"
+            className="lg:hidden p-3 rounded-lg hover:bg-[var(--bg-elev-1)] transition min-w-[48px] min-h-[48px] flex items-center justify-center"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} className="text-[var(--txt)]" /> : <Menu size={24} className="text-[var(--txt)]" />}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, ShoppingCart, Award, Crown } from 'lucide-react';
 import PillLogo from './components/PillLogo';
@@ -13,6 +14,7 @@ import GoalCards from './components/GoalCards';
 import FAQAccordion from './components/FAQAccordion';
 import ContactForm from './components/ContactForm';
 import GlassCard from './components/shared/GlassCard';
+import OptimizedImage from './components/OptimizedImage';
 import { useActiveSection } from './hooks/useScrollAnimation';
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 
@@ -70,15 +72,34 @@ export default function Home() {
           id="hero"
           className="scroll-snap-section relative min-h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--txt)] overflow-hidden parallax-container"
         >
-          <ParallaxLayer depth={10} speed={0.2} className="absolute inset-0">
-            <div className="w-full h-full bg-[var(--bg)]"></div>
+          {/* Hero Background Image */}
+          <div className="absolute inset-0 z-0">
+            <OptimizedImage
+              src="/images/hero/hero-background.jpg"
+              alt="Fitness and wellness background"
+              width={1920}
+              height={1080}
+              className="w-full h-full"
+              priority
+              objectFit="cover"
+              objectPosition="center center"
+              fallbackText="Hero Background"
+            />
+            {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+            <div className="absolute inset-0 bg-black/50"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
+
+          <ParallaxLayer depth={10} speed={0.2} className="absolute inset-0 z-0">
+            <div className="w-full h-full bg-[var(--bg)]/40"></div>
           </ParallaxLayer>
 
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-10"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-10 z-0"></div>
 
           <div
             ref={heroAnimation.ref}
-            className={`relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center slide-up ${heroAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center slide-up ${heroAnimation.isVisible ? 'visible' : ''}`}
           >
             {/* Hero Scrim - ensures text readability */}
             <div className="absolute inset-0 hero-scrim rounded-2xl pointer-events-none" />
@@ -88,17 +109,17 @@ export default function Home() {
                 <PillLogo size="large" shimmer={true} />
               </ParallaxLayer>
 
-              <h1 className="text-6xl md:text-7xl lg:text-[96px] font-extrabold leading-tight mb-6 text-[#F0F6FF] text-shadow">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight mb-6 text-white text-shadow-lg drop-shadow-2xl">
                 Aviera
               </h1>
 
-              <p className="text-xl md:text-2xl text-[24px] text-[var(--txt-muted)] max-w-3xl mx-auto mb-4 font-medium">
+              <p className="text-lg sm:text-xl md:text-2xl text-white/95 max-w-3xl mx-auto mb-4 font-medium text-shadow drop-shadow-lg">
                 Your AI-Powered Supplement & Fitness Advisor
               </p>
 
-              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-2xl mx-auto mb-12 leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-12 leading-relaxed px-4 text-shadow drop-shadow-md">
                 Get personalized supplement recommendations and workout plans tailored to your goals — 
-                built in minutes by AI. Science-backed, personalized, results-driven.
+                built in minutes by AI.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -118,27 +139,23 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-sm md:text-base text-[var(--txt-muted)]">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={18} className="text-[var(--acc)]" />
+            <div className="hidden md:flex flex-wrap justify-center gap-6 md:gap-8 text-sm md:text-base text-white/90">
+              <div className="flex items-center gap-2 text-shadow drop-shadow-md">
+                <CheckCircle size={18} className="text-[var(--acc)] drop-shadow-lg" />
                 <span>Science-backed</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle size={18} className="text-[var(--acc)]" />
+              <div className="flex items-center gap-2 text-shadow drop-shadow-md">
+                <CheckCircle size={18} className="text-[var(--acc)] drop-shadow-lg" />
                 <span>Takes 2 minutes</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle size={18} className="text-[var(--acc)]" />
-                <span>42+ supplements analyzed</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle size={18} className="text-[var(--acc)]" />
-                <span>AI-powered recommendations</span>
+              <div className="flex items-center gap-2 text-shadow drop-shadow-md">
+                <CheckCircle size={18} className="text-[var(--acc)] drop-shadow-lg" />
+                <span>AI-powered</span>
               </div>
             </div>
           </div>
 
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="hidden md:block absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
               <div className="w-1 h-3 bg-white/30 rounded-full"></div>
             </div>
@@ -150,7 +167,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="how-it-works"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div
             ref={howItWorksAnimation.ref}
@@ -225,11 +242,29 @@ export default function Home() {
             ======================================== */}
         <section
           id="aviera-stack"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <OptimizedImage
+              src="/images/stack/stack-background.jpg"
+              alt="Fitness and supplements background"
+              width={1920}
+              height={1080}
+              className="w-full h-full"
+              objectFit="cover"
+              objectPosition="center 45%"
+              fallbackText="Background"
+            />
+            {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+            <div className="absolute inset-0 bg-black/50"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
+          
           <div
             ref={smartstackAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartstackAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartstackAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Icon and Content */}
@@ -249,10 +284,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 text-shadow-lg drop-shadow-2xl">
                   Aviera Stack
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-white/95 mb-8 leading-relaxed text-shadow drop-shadow-lg">
                   Answer a quick 2-minute quiz and get an AI-generated supplement stack tailored to your exact
                   goals, lifestyle, and experience level. Our intelligence engine analyzes 42+ premium supplements
                   to build your perfect combination.
@@ -269,7 +304,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-white/90 text-lg text-shadow drop-shadow-md">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -302,11 +337,29 @@ export default function Home() {
             ======================================== */}
         <section
           id="aviera-fit"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <OptimizedImage
+              src="/images/fit/fit-background.jpg"
+              alt="Workout and gym background"
+              width={1920}
+              height={1080}
+              className="w-full h-full"
+              objectFit="cover"
+              objectPosition="center 80%"
+              fallbackText="Background"
+            />
+            {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+            <div className="absolute inset-0 bg-black/50"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
+          
           <div
             ref={smartfittAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartfittAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${smartfittAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Visual/Image - Left side */}
@@ -356,10 +409,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 text-shadow-lg drop-shadow-2xl">
                   Aviera Fit
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-white/95 mb-8 leading-relaxed text-shadow drop-shadow-lg">
                   Get AI-powered workout recommendations tailored to your goals and experience level.
                   Match your training plan with the perfect supplement stack for maximum results.
                 </p>
@@ -375,7 +428,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-white/90 text-lg text-shadow drop-shadow-md">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -397,11 +450,29 @@ export default function Home() {
             ======================================== */}
         <section
           id="aviera-shop"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <OptimizedImage
+              src="/images/shop/shop-background.jpg"
+              alt="Shop and products background"
+              width={1920}
+              height={1080}
+              className="w-full h-full"
+              objectFit="cover"
+              objectPosition="center center"
+              fallbackText="Background"
+            />
+            {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+            <div className="absolute inset-0 bg-black/50"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
+          
           <div
             ref={shopAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${shopAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${shopAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Icon and Content */}
@@ -421,10 +492,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 text-shadow-lg drop-shadow-2xl">
                   Aviera Shop
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-white/95 mb-8 leading-relaxed text-shadow drop-shadow-lg">
                   Order premium supplements directly through our Supliful integration.
                   Quality guaranteed, fast shipping, hassle-free returns. Your perfect stack,
                   delivered to your door.
@@ -441,7 +512,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-white/90 text-lg text-shadow drop-shadow-md">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -490,7 +561,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="goals"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div
             ref={goalsAnimation.ref}
@@ -514,7 +585,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="reviews"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div
             ref={reviewsAnimation.ref}
@@ -577,7 +648,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="faq"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div
             ref={faqAnimation.ref}
@@ -721,7 +792,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="about"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             {/* Section Title */}
@@ -729,26 +800,36 @@ export default function Home() {
               <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
                 About Aviera
               </h2>
-              <p className="text-lg md:text-xl text-[#d1d5db] max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-3xl mx-auto">
                 Built by fitness enthusiasts, for everyone on a fitness journey.
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-12 items-center">
+            <div className="grid lg:grid-cols-5 gap-12 items-start lg:items-center">
               {/* Photo Column (40%) */}
-              <div className="lg:col-span-2">
-                <div className="relative">
-                    <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
+              <div className="lg:col-span-2 flex justify-center lg:justify-start">
+                <div className="relative w-full max-w-md mx-auto lg:mx-0">
+                  <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
                   <div className="relative rounded-2xl overflow-hidden shadow-premium-lg">
-                    {/* Placeholder for founder photo - user will upload separately */}
-                    <div className="aspect-[3/4] bg-gradient-to-br from-[var(--charcoal-light)] to-[var(--bg)] flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-24 h-24 mx-auto mb-4 bg-[var(--acc)] rounded-full flex items-center justify-center text-[#001018] text-3xl font-bold shadow-accent">
-                          RT
-                        </div>
-                        <p className="text-[var(--txt)] text-sm">Founder Photo</p>
-                        <p className="text-[var(--txt-muted)] text-xs mt-1">Upload Coming Soon</p>
-                      </div>
+                    <div className="relative w-full aspect-[3/4] overflow-hidden founder-photo-container">
+                      {/* 
+                        If person is off-center, adjust objectPosition:
+                        - Person too far LEFT in frame: try "55% center" or "60% center"
+                        - Person too far RIGHT in frame: try "45% center" or "40% center"  
+                        - Person too HIGH in frame: try "center 60%"
+                        - Person too LOW in frame: try "center 40%"
+                      */}
+                      <OptimizedImage
+                        src="/images/about/founder-photo.jpg"
+                        alt="Reece Todd, Founder of Aviera"
+                        width={600}
+                        height={800}
+                        className="w-full h-full"
+                        objectFit="cover"
+                        objectPosition="center center"
+                        fallbackText="Founder Photo"
+                        priority
+                      />
                     </div>
                   </div>
                 </div>
@@ -789,7 +870,7 @@ export default function Home() {
             ======================================== */}
         <section
           id="contact"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
         >
           <div
             ref={contactAnimation.ref}

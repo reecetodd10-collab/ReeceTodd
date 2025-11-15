@@ -3,19 +3,34 @@
 import React from 'react';
 import Link from 'next/link';
 import SupplementQuiz from '../components/SupplementQuiz';
+import OptimizedImage from '../components/OptimizedImage';
 import { Pill, Brain, Target, Sparkles, Crown } from 'lucide-react';
 
 export default function SmartStackAI() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       {/* Hero Header */}
-      <div className="relative bg-[var(--bg)] text-[var(--txt)] py-24 overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')]"></div>
+      <div className="relative text-[var(--txt)] py-20 md:py-32 overflow-hidden min-h-[60vh]">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <OptimizedImage
+            src="/images/stack/stack-background.jpg"
+            alt="Fitness and supplements background"
+            width={1920}
+            height={1080}
+            className="w-full h-full"
+            priority
+            objectFit="cover"
+            objectPosition="center center"
+            fallbackText="Background"
+          />
+          {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+          <div className="absolute inset-0 bg-black/50"></div>
+          {/* Additional gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
         </div>
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Icon - Charcoal rounded square with Sparkles */}
           <div className="flex justify-center mb-8">
             <div className="relative">
@@ -27,15 +42,15 @@ export default function SmartStackAI() {
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 text-shadow-lg drop-shadow-2xl">
             Aviera Stack
           </h1>
 
-          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
+          <p className="text-xl md:text-2xl text-white/95 mb-3 font-medium text-shadow drop-shadow-lg">
             Your AI-Powered Supplement Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-2xl mx-auto">
+          <p className="text-lg text-white/90 mb-6 max-w-2xl mx-auto text-shadow drop-shadow-md">
             Answer a few questions and get your personalized supplement stack in 2 minutes — built from our premium catalog.
           </p>
 
@@ -57,21 +72,21 @@ export default function SmartStackAI() {
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Brain size={16} />
-              <span className="text-[var(--txt)]">AI-Powered</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Brain size={16} className="text-white" />
+              <span className="text-white">AI-Powered</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Target size={16} />
-              <span className="text-[var(--txt)]">Goal-Specific</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Target size={16} className="text-white" />
+              <span className="text-white">Goal-Specific</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Sparkles size={16} />
-              <span className="text-[var(--txt)]">Beginner-Friendly</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Sparkles size={16} className="text-white" />
+              <span className="text-white">Beginner-Friendly</span>
             </div>
           </div>
 
-          <p className="mt-6 text-sm text-[var(--txt-muted)] italic">
+          <p className="mt-6 text-sm text-white/80 italic text-shadow drop-shadow-md">
             Powered by Aviera's curated catalog of 42 premium supplements
           </p>
         </div>

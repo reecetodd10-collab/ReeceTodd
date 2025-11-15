@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Dumbbell, Users, Zap, ChevronRight, Crown, Sparkles } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 import { MUSCLE_GROUPS, getExercisesForMuscle } from '../data/exercises';
 
 export default function SmartFitt() {
@@ -18,8 +19,27 @@ export default function SmartFitt() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       {/* Hero Header */}
-      <div className="bg-[var(--bg)] text-[var(--txt)] py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative text-[var(--txt)] py-20 md:py-32 overflow-hidden min-h-[60vh]">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <OptimizedImage
+            src="/images/fit/fit-background.jpg"
+            alt="Workout and gym background"
+            width={1920}
+            height={1080}
+            className="w-full h-full"
+            priority
+            objectFit="cover"
+            objectPosition="center 80%"
+            fallbackText="Background"
+          />
+          {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
+          <div className="absolute inset-0 bg-black/50"></div>
+          {/* Additional gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-8">
             <div className="relative">
               <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
@@ -29,15 +49,15 @@ export default function SmartFitt() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 text-shadow-lg drop-shadow-2xl">
             Aviera Fit
           </h1>
 
-          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
+          <p className="text-xl md:text-2xl text-white/95 mb-3 font-medium text-shadow drop-shadow-lg">
             Your AI-Powered Workout Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-3xl mx-auto">
+          <p className="text-lg text-white/90 mb-6 max-w-3xl mx-auto text-shadow drop-shadow-md">
             Click any muscle group to get 3 coach-approved exercises with sets, reps, and form cues tailored to your goal.
           </p>
 
@@ -59,17 +79,17 @@ export default function SmartFitt() {
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 text-sm">
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Zap size={16} />
-              <span className="text-[var(--txt)]">Instant Recommendations</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Zap size={16} className="text-white" />
+              <span className="text-white">Instant Recommendations</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Users size={16} />
-              <span className="text-[var(--txt)]">Coach-Approved</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Users size={16} className="text-white" />
+              <span className="text-white">Coach-Approved</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-[var(--border)]">
-              <Star size={16} />
-              <span className="text-[var(--txt)]">Goal-Specific</span>
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full border border-white/20 backdrop-blur-sm">
+              <Star size={16} className="text-white" />
+              <span className="text-white">Goal-Specific</span>
             </div>
           </div>
         </div>

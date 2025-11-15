@@ -6,7 +6,9 @@ import {
   Pill, 
   Dumbbell, 
   TrendingUp,
-  Trophy
+  Trophy,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 import { loadGamificationData } from '../lib/gamification';
@@ -25,6 +27,9 @@ export default function DashboardPage() {
   const [supplementsTaken, setSupplementsTaken] = useState(0);
   const [supplementsTotal, setSupplementsTotal] = useState(0);
   const [workoutComplete, setWorkoutComplete] = useState(false);
+  const [showTracking, setShowTracking] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   
   // TODO: Replace with actual user subscription check from Clerk/backend
   const userIsPremium = false;
@@ -76,111 +81,135 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-[var(--txt)]">Welcome back!</h1>
-        <p className="text-[var(--txt-muted)]">Here's your fitness overview.</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="mb-12">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)]">Welcome back!</h1>
+        <p className="text-lg text-[var(--txt-muted)]">Here's your fitness overview.</p>
       </div>
 
-      {/* Habit Rings - Prominent Display */}
-      <HabitRings 
-        supplementsTaken={supplementsTaken}
-        supplementsTotal={supplementsTotal}
-        workoutComplete={workoutComplete}
-      />
-
-      {/* Enhanced Daily Goals Checklist */}
-      <EnhancedGoalsChecklist />
-
-      {/* Water & Sleep Tracking */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <WaterTracker />
-        <SleepTracker />
+      {/* Primary Actions - Always Visible */}
+      <div className="mb-12">
+        <HabitRings 
+          supplementsTaken={supplementsTaken}
+          supplementsTotal={supplementsTotal}
+          workoutComplete={workoutComplete}
+        />
       </div>
 
-      {/* Enhanced Weekly Insights */}
-      <div className="mb-8">
-        <WeeklyInsightsExpanded />
+      {/* Daily Goals - Always Visible */}
+      <div className="mb-12">
+        <EnhancedGoalsChecklist />
       </div>
 
-      {/* Notes Widget */}
-      <NotesWidget />
-
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-3 mb-4">
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+        <Link href={isPremium ? "/dashboard/stack" : "/smartstack-ai"} className="glass-card p-6 hover:shadow-premium-lg transition-all">
+          <div className="flex items-center gap-3 mb-3">
             <Pill className="text-[var(--acc)]" size={24} />
             <h2 className="text-xl font-bold text-[var(--txt)]">Your Stack</h2>
           </div>
-          {isPremium ? (
-            <>
-              <p className="text-[var(--txt-muted)] mb-4">{supplementsTotal} supplements in your daily routine</p>
-              <Link href="/dashboard/stack" className="text-[var(--acc)] hover:underline inline-flex items-center gap-1">
-                Manage Stack →
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="text-[var(--txt-muted)] mb-4">Upgrade to unlock stack tracking</p>
-              <Link href="/smartstack-ai" className="text-[var(--acc)] hover:underline inline-flex items-center gap-1">
-                Get Started →
-              </Link>
-            </>
-          )}
-        </div>
+          <p className="text-[var(--txt-muted)] mb-4">
+            {isPremium ? `${supplementsTotal} supplements in your daily routine` : 'Upgrade to unlock stack tracking'}
+          </p>
+          <span className="text-[var(--acc)] font-medium inline-flex items-center gap-1">
+            {isPremium ? 'Manage Stack' : 'Get Started'} →
+          </span>
+        </Link>
 
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-3 mb-4">
+        <Link href={isPremium ? "/dashboard/fit" : "/smartfitt"} className="glass-card p-6 hover:shadow-premium-lg transition-all">
+          <div className="flex items-center gap-3 mb-3">
             <Dumbbell className="text-[var(--acc)]" size={24} />
-            <h2 className="text-xl font-bold text-[var(--txt)]">This Week's Workouts</h2>
+            <h2 className="text-xl font-bold text-[var(--txt)]">Workouts</h2>
           </div>
-          {isPremium ? (
-            <>
-              <p className="text-[var(--txt-muted)] mb-4">4 of 7 workouts completed</p>
-              <Link href="/dashboard/fit" className="text-[var(--acc)] hover:underline inline-flex items-center gap-1">
-                View Plan →
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="text-[var(--txt-muted)] mb-4">Upgrade to unlock workout planner</p>
-              <Link href="/smartfitt" className="text-[var(--acc)] hover:underline inline-flex items-center gap-1">
-                Get Started →
-              </Link>
-            </>
+          <p className="text-[var(--txt-muted)] mb-4">
+            {isPremium ? '4 of 7 workouts completed this week' : 'Upgrade to unlock workout planner'}
+          </p>
+          <span className="text-[var(--acc)] font-medium inline-flex items-center gap-1">
+            {isPremium ? 'View Plan' : 'Get Started'} →
+          </span>
+        </Link>
+      </div>
+
+      {/* Collapsible Sections */}
+      <div className="space-y-6">
+        {/* Tracking Section */}
+        <div className="glass-card">
+          <button
+            onClick={() => setShowTracking(!showTracking)}
+            className="w-full flex items-center justify-between p-6 text-left"
+          >
+            <h2 className="text-xl font-bold text-[var(--txt)]">Water & Sleep Tracking</h2>
+            {showTracking ? <ChevronUp size={24} className="text-[var(--txt-muted)]" /> : <ChevronDown size={24} className="text-[var(--txt-muted)]" />}
+          </button>
+          {showTracking && (
+            <div className="px-6 pb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <WaterTracker />
+                <SleepTracker />
+              </div>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Gamification Stats */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="glass-card p-6">
-          <XPDisplay compact={false} />
+        {/* Weekly Insights */}
+        <div className="glass-card">
+          <button
+            onClick={() => setShowInsights(!showInsights)}
+            className="w-full flex items-center justify-between p-6 text-left"
+          >
+            <h2 className="text-xl font-bold text-[var(--txt)]">Weekly Insights</h2>
+            {showInsights ? <ChevronUp size={24} className="text-[var(--txt-muted)]" /> : <ChevronDown size={24} className="text-[var(--txt-muted)]" />}
+          </button>
+          {showInsights && (
+            <div className="px-6 pb-6">
+              <WeeklyInsightsExpanded />
+            </div>
+          )}
         </div>
-        <div className="glass-card p-6">
-          <StreakCounter compact={false} />
-        </div>
-      </div>
 
-      {/* Quick Links */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <Link href="/dashboard/progress" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
-          <TrendingUp className="text-[var(--acc)] mb-2" size={24} />
-          <h3 className="font-semibold text-[var(--txt)] mb-1">View Progress</h3>
-          <p className="text-sm text-[var(--txt-muted)]">See detailed stats</p>
-        </Link>
-        <Link href="/dashboard/achievements" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
-          <Trophy className="text-[var(--acc)] mb-2" size={24} />
-          <h3 className="font-semibold text-[var(--txt)] mb-1">Achievements</h3>
-          <p className="text-sm text-[var(--txt-muted)]">Unlock badges</p>
-        </Link>
-        {isPremium && (
-          <Link href="/dashboard/stack" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
-            <Pill className="text-[var(--acc)] mb-2" size={24} />
-            <h3 className="font-semibold text-[var(--txt)] mb-1">Manage Stack</h3>
-            <p className="text-sm text-[var(--txt-muted)]">Track supplements</p>
-          </Link>
-        )}
+        {/* Stats Section */}
+        <div className="glass-card">
+          <button
+            onClick={() => setShowStats(!showStats)}
+            className="w-full flex items-center justify-between p-6 text-left"
+          >
+            <h2 className="text-xl font-bold text-[var(--txt)]">Stats & Progress</h2>
+            {showStats ? <ChevronUp size={24} className="text-[var(--txt-muted)]" /> : <ChevronDown size={24} className="text-[var(--txt-muted)]" />}
+          </button>
+          {showStats && (
+            <div className="px-6 pb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <XPDisplay compact={false} />
+                <StreakCounter compact={false} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Link href="/dashboard/progress" className="glass-card p-4 hover:shadow-premium-lg transition text-center">
+                  <TrendingUp className="text-[var(--acc)] mb-2 mx-auto" size={24} />
+                  <h3 className="font-semibold text-[var(--txt)] mb-1">View Progress</h3>
+                  <p className="text-sm text-[var(--txt-muted)]">See detailed stats</p>
+                </Link>
+                <Link href="/dashboard/achievements" className="glass-card p-4 hover:shadow-premium-lg transition text-center">
+                  <Trophy className="text-[var(--acc)] mb-2 mx-auto" size={24} />
+                  <h3 className="font-semibold text-[var(--txt)] mb-1">Achievements</h3>
+                  <p className="text-sm text-[var(--txt-muted)]">Unlock badges</p>
+                </Link>
+                {isPremium && (
+                  <Link href="/dashboard/stack" className="glass-card p-4 hover:shadow-premium-lg transition text-center">
+                    <Pill className="text-[var(--acc)] mb-2 mx-auto" size={24} />
+                    <h3 className="font-semibold text-[var(--txt)] mb-1">Manage Stack</h3>
+                    <p className="text-sm text-[var(--txt-muted)]">Track supplements</p>
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Notes - Always visible but compact */}
+        <div className="mb-8">
+          <NotesWidget />
+        </div>
       </div>
     </div>
   );
