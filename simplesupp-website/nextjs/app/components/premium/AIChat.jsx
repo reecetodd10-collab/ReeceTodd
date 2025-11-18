@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { X, Send, Sparkles, Zap, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TESTING_MODE, hasPremiumAccess } from '../../lib/config';
@@ -10,6 +11,7 @@ import Button from '../shared/Button';
 
 export default function AIChat({ userIsPremium = false }) {
   const router = useRouter();
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -335,9 +337,34 @@ export default function AIChat({ userIsPremium = false }) {
             <Button
               variant="primary"
               className="flex-1"
-              onClick={() => {
+              onClick={async () => {
                 setShowUpgradeModal(false);
-                router.push('/pricing');
+                
+                if (!user) {
+                  router.push('/sign-in');
+                  return;
+                }
+
+                try {
+                  const response = await fetch('/api/stripe/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                  }
+
+                  const { url } = await response.json();
+                  if (url) {
+                    window.location.href = url;
+                  }
+                } catch (error) {
+                  console.error('Error creating checkout session:', error);
+                  alert('Failed to start checkout. Please try again.');
+                }
               }}
             >
               Upgrade to Premium

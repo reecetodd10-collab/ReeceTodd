@@ -1,23 +1,53 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { Crown, Zap, Sparkles, Download, MessageCircle } from 'lucide-react';
 import Modal from './Modal';
 import Button from './Button';
 import { TESTING_MODE } from '../../lib/config';
 
 export default function UpgradePrompt({ isOpen, onClose }) {
-  // Don't render upgrade prompt in testing mode
-  if (TESTING_MODE) {
-    return null;
-  }
+  const router = useRouter();
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
   const features = [
     { icon: Sparkles, text: 'AI-Powered Supplement Stack' },
     { icon: Zap, text: 'Custom Workout Plans' },
     { icon: MessageCircle, text: 'AI Chat Coach' },
     { icon: Download, text: 'PDF Downloads' },
   ];
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start checkout. Please try again.');
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Unlock Premium Features">
@@ -48,19 +78,24 @@ export default function UpgradePrompt({ isOpen, onClose }) {
         </div>
 
         <div className="flex gap-3">
-          <Link href="/pricing" className="flex-1">
-            <Button variant="primary" className="w-full">
-              Upgrade Now
-            </Button>
-          </Link>
-          <Link href="/pricing" className="flex-1">
-            <Button variant="secondary" className="w-full">
-              Learn More
-            </Button>
-          </Link>
+          <Button 
+            variant="primary" 
+            className="flex-1 w-full"
+            onClick={handleUpgrade}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Loading...' : 'Upgrade Now'}
+          </Button>
+          <Button 
+            variant="secondary" 
+            className="flex-1 w-full"
+            onClick={onClose}
+          >
+            Learn More
+          </Button>
         </div>
         <p className="text-xs text-center text-[var(--txt-muted)] mt-4">
-          Already premium? <Link href="/dashboard" className="text-[var(--acc)] hover:underline">Sign in</Link>
+          Already premium? <button onClick={onClose} className="text-[var(--acc)] hover:underline">Close</button>
         </p>
       </div>
     </Modal>

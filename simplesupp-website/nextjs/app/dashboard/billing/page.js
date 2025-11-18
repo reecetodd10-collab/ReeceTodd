@@ -1,13 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { CreditCard, Calendar, Download, Settings, Crown } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { CreditCard, Calendar, Download, Settings, Crown, ExternalLink } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import Button from '../../components/shared/Button';
 
 export default function Billing() {
-  // Mock data - would come from backend
+  const { user } = useUser();
+  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
+  
+  // Mock data - would come from backend/Supabase
   const subscription = {
     plan: 'Premium',
     price: '$9.99',
@@ -15,6 +19,45 @@ export default function Billing() {
     nextBillingDate: 'Dec 15, 2024',
     paymentMethod: '•••• 4242',
     status: 'active',
+    customerId: null, // TODO: Get from Supabase user record
+  };
+
+  const handleManageBilling = async () => {
+    if (!user) {
+      alert('Please sign in to manage billing');
+      return;
+    }
+
+    // TODO: Get customerId from Supabase user record
+    // For now, show a message that they need to have an active subscription
+    if (!subscription.customerId) {
+      alert('No active subscription found. Please upgrade to Premium first.');
+      return;
+    }
+
+    setIsLoadingPortal(true);
+    try {
+      const response = await fetch('/api/stripe/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ customerId: subscription.customerId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating portal session:', error);
+      alert('Failed to open billing portal. Please try again.');
+      setIsLoadingPortal(false);
+    }
   };
 
   return (
@@ -59,6 +102,34 @@ export default function Billing() {
         </div>
       </GlassCard>
 
+      {/* Manage Billing Button */}
+      <div className="mb-6">
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-[var(--txt)] mb-2">Manage Your Subscription</h3>
+              <p className="text-sm text-[var(--txt-muted)]">
+                Update payment methods, view invoices, and manage your subscription
+              </p>
+            </div>
+            <Button
+              onClick={handleManageBilling}
+              disabled={isLoadingPortal || !subscription.customerId}
+              variant="primary"
+              className="flex items-center gap-2"
+            >
+              <ExternalLink size={16} />
+              {isLoadingPortal ? 'Loading...' : 'Manage Billing'}
+            </Button>
+          </div>
+          {!subscription.customerId && (
+            <p className="text-xs text-yellow-500 mt-3 text-center">
+              No active subscription found. <Link href="/dashboard" className="underline">Upgrade to Premium</Link> to manage billing.
+            </p>
+          )}
+        </GlassCard>
+      </div>
+
       {/* Actions */}
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <GlassCard className="p-6">
@@ -69,11 +140,18 @@ export default function Billing() {
           <p className="text-sm text-[var(--txt-muted)] mb-4">
             Update your payment information
           </p>
-          <Button variant="secondary" className="w-full" disabled>
+          <Button 
+            variant="secondary" 
+            className="w-full" 
+            onClick={handleManageBilling}
+            disabled={isLoadingPortal || !subscription.customerId}
+          >
             <Settings size={16} />
             Update Payment Method
           </Button>
-          <p className="text-xs text-[var(--txt-muted)] mt-2 text-center">Coming soon</p>
+          {!subscription.customerId && (
+            <p className="text-xs text-[var(--txt-muted)] mt-2 text-center">Upgrade to Premium first</p>
+          )}
         </GlassCard>
 
         <GlassCard className="p-6">

@@ -15,7 +15,7 @@
 //   - Free tier restrictions enforced
 // ============================================
 
-export const TESTING_MODE = true; // Change this to false for production
+export const TESTING_MODE = false; // Set to false to enable real Stripe checkout
 
 // Helper function to check if user has premium access
 export const hasPremiumAccess = (userIsPremium = false) => {

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { UserButton, useUser } from '@clerk/nextjs';
 import { Menu, X, LayoutDashboard, Crown } from 'lucide-react';
 import PillLogo from './PillLogo';
 
@@ -12,6 +13,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === '/';
+  const { isSignedIn } = useUser();
 
   // Homepage section navigation (smooth scroll)
   const homeSections = [
@@ -136,19 +138,41 @@ export default function Navigation() {
             </Link>
           </div>
 
-          <Link
-            href="/pricing"
-            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition shadow-accent"
-          >
-            <Crown size={16} />
-            Get Premium
-          </Link>
-          <Link
-            href="/dashboard"
-            className="hidden lg:block btn-primary ml-2"
-          >
-            Get Your Stack
-          </Link>
+          <div className="hidden lg:flex items-center gap-3">
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/pricing"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition shadow-accent"
+                >
+                  <Crown size={16} />
+                  Get Premium
+                </Link>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10",
+                    },
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)] transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="btn-primary"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -206,23 +230,45 @@ export default function Navigation() {
               Dashboard
             </Link>
 
-            {/* Premium link - mobile */}
-            <Link
-              href="/pricing"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition"
-            >
-              <Crown size={18} />
-              Get Premium
-            </Link>
-
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="block px-4 py-3 bg-[var(--acc)] text-[#001018] rounded-lg font-semibold text-center hover:bg-blue-600 hover:text-white transition"
-            >
-              Get Your Stack
-            </Link>
+            {/* Auth links - mobile */}
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/pricing"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition"
+                >
+                  <Crown size={18} />
+                  Get Premium
+                </Link>
+                <div className="px-4 py-3 flex items-center justify-center">
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10",
+                      },
+                    }}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 rounded-lg font-medium text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] transition text-center"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 bg-[var(--acc)] text-[#001018] rounded-lg font-semibold text-center hover:bg-blue-600 hover:text-white transition"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>

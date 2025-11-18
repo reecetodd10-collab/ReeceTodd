@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
   Check, 
@@ -23,27 +24,68 @@ import Modal from '../components/shared/Modal';
 import { TESTING_MODE } from '../lib/config';
 
 export default function Pricing() {
-  const [showTrialModal, setShowTrialModal] = useState(false);
-  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+  const router = useRouter();
+  const { user } = useUser();
+  const [isLoadingCheckout, setIsLoadingCheckout] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
-  const handleStartTrial = () => {
-    if (TESTING_MODE) {
-      setShowTrialModal(true);
-    } else {
-      // TODO: Integrate Stripe Checkout for free trial
-      // window.location.href = '/api/stripe/checkout?trial=true';
-      setShowTrialModal(true);
+  const handleStartTrial = async () => {
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setIsLoadingCheckout(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start checkout. Please try again.');
+      setIsLoadingCheckout(false);
     }
   };
 
-  const handleSubscribe = () => {
-    if (TESTING_MODE) {
-      setShowSubscribeModal(true);
-    } else {
-      // TODO: Integrate Stripe Checkout
-      // window.location.href = '/api/stripe/checkout';
-      setShowSubscribeModal(true);
+  const handleSubscribe = async () => {
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setIsLoadingCheckout(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start checkout. Please try again.');
+      setIsLoadingCheckout(false);
     }
   };
 
@@ -153,15 +195,17 @@ export default function Pricing() {
                   onClick={handleStartTrial}
                   variant="primary"
                   className="w-full"
+                  disabled={isLoadingCheckout}
                 >
-                  Start Free Trial
+                  {isLoadingCheckout ? 'Loading...' : 'Start Free Trial'}
                 </Button>
                 <Button
                   onClick={handleSubscribe}
                   variant="secondary"
                   className="w-full"
+                  disabled={isLoadingCheckout}
                 >
-                  Subscribe Now
+                  {isLoadingCheckout ? 'Loading...' : 'Subscribe Now'}
                 </Button>
                 <p className="text-xs text-center text-[var(--txt-muted)] mt-4">
                   Cancel anytime. No commitments.
@@ -307,46 +351,7 @@ export default function Pricing() {
         </div>
       </div>
 
-      {/* Payment Modals */}
-      <PaymentModal
-        isOpen={showTrialModal}
-        onClose={() => setShowTrialModal(false)}
-        type="trial"
-      />
-
-      <PaymentModal
-        isOpen={showSubscribeModal}
-        onClose={() => setShowSubscribeModal(false)}
-        type="subscribe"
-      />
     </div>
-  );
-}
-
-// Payment Modal Component
-function PaymentModal({ isOpen, onClose, type }) {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title={type === 'trial' ? 'Start Free Trial' : 'Subscribe Now'}>
-      <div className="text-center py-8">
-        <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Crown className="text-[var(--acc)]" size={32} />
-        </div>
-        <h3 className="text-xl font-bold text-[var(--txt)] mb-2">
-          Payment Integration Coming Soon!
-        </h3>
-        <p className="text-[var(--txt-muted)] mb-6">
-          {TESTING_MODE 
-            ? "Testing mode is active - premium features are unlocked. In production, this will integrate with Stripe Checkout."
-            : "We're setting up secure payment processing. Check back soon to start your premium journey!"}
-        </p>
-        {TESTING_MODE && (
-          <p className="text-sm text-[var(--txt-muted)] mb-6">
-            To enable payments: Set TESTING_MODE = false in /app/lib/config.js and integrate Stripe Checkout.
-          </p>
-        )}
-        <Button onClick={onClose}>Got it</Button>
-      </div>
-    </Modal>
   );
 }
 

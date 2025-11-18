@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import MarketingLayout from "./components/MarketingLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -16,12 +17,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="bg-[var(--bg)] text-[var(--txt)] font-sans antialiased">
-        <ErrorBoundary>
-          <MarketingLayout>{children}</MarketingLayout>
-        </ErrorBoundary>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={inter.variable}>
+        <body className="bg-[var(--bg)] text-[var(--txt)] font-sans antialiased">
+          <ErrorBoundary>
+            <MarketingLayout>{children}</MarketingLayout>
+          </ErrorBoundary>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
