@@ -1,3 +1,11 @@
+import { Montserrat } from 'next/font/google'
+
+const montserrat = Montserrat({
+  weight: ['300', '400', '500', '600', '700', '800'
+  ],
+  subsets: ['latin'],
+  display: 'swap',
+})
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -16,7 +24,7 @@ import Dashboard from './pages/Dashboard';
 
 function MarketingLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className='min-h-screen flex flex-col ${montserrat.className}`}>
       <Navigation />
       <main className="flex-1">{children}</main>
       <Footer />

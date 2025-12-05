@@ -38,7 +38,7 @@ export default function AchievementCard({ achievementId, unlocked = false, unloc
       </div>
 
       {/* Achievement Info */}
-      <h3 className="text-lg font-bold text-[var(--txt)] mb-1 text-center">
+      <h3 className="text-lg font-normal text-[var(--txt)] mb-1 text-center">
         {achievement.name}
       </h3>
       <p className="text-sm text-[var(--txt-muted)] mb-3 text-center">
@@ -47,7 +47,7 @@ export default function AchievementCard({ achievementId, unlocked = false, unloc
 
       {/* XP Reward */}
       <div className="text-center mb-3">
-        <span className="text-xs font-semibold text-green-400">
+        <span className="text-xs font-normal text-green-400">
           +{achievement.xpReward} XP
         </span>
       </div>

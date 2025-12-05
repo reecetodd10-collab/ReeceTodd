@@ -83,7 +83,7 @@ export default function SleepTracker() {
             <Moon className="text-indigo-400" size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[var(--txt)]">Sleep Tracker</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Sleep Tracker</h3>
             <p className="text-xs text-[var(--txt-muted)]">Did you sleep well last night?</p>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function SleepTracker() {
               <X className="text-gray-400" size={24} />
             )}
             <div>
-              <div className={`font-semibold ${
+              <div className={`font-normal ${
                 lastNightEntry.quality ? 'text-green-400' : 'text-gray-400'
               }`}>
                 {lastNightEntry.quality ? '✓ Slept well last night' : '✗ Need better rest'}
@@ -126,7 +126,7 @@ export default function SleepTracker() {
           exit={{ opacity: 0, height: 0 }}
           className="mb-4 p-4 bg-[var(--bg-elev-1)] rounded-lg"
         >
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2 flex items-center gap-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2 flex items-center gap-2">
             <Clock size={16} />
             How many hours?
           </label>
@@ -139,7 +139,7 @@ export default function SleepTracker() {
               onChange={(e) => setHours(parseInt(e.target.value))}
               className="flex-1"
             />
-            <span className="text-lg font-bold text-[var(--txt)] w-12 text-center">
+            <span className="text-lg font-normal text-[var(--txt)] w-12 text-center">
               {hours}h
             </span>
           </div>
@@ -160,7 +160,7 @@ export default function SleepTracker() {
                   logSleep(true);
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-green-500/20 hover:bg-green-500/30 border-2 border-green-500/30 rounded-lg text-green-400 font-semibold transition"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-green-500/20 hover:bg-green-500/30 border-2 border-green-500/30 rounded-lg text-green-400 font-normal transition"
             >
               <Check size={20} />
               Yes ✓
@@ -175,7 +175,7 @@ export default function SleepTracker() {
                   logSleep(false);
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-gray-500/20 hover:bg-gray-500/30 border-2 border-gray-500/30 rounded-lg text-gray-400 font-semibold transition"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-4 bg-gray-500/20 hover:bg-gray-500/30 border-2 border-gray-500/30 rounded-lg text-gray-400 font-normal transition"
             >
               <X size={20} />
               No ✗
@@ -196,13 +196,13 @@ export default function SleepTracker() {
         <div className="mt-4 pt-4 border-t border-[var(--border)]">
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-[var(--txt)]">
+              <div className="text-2xl font-normal text-[var(--txt)]">
                 {sleepData.history.filter(h => h.quality).length}
               </div>
               <div className="text-xs text-[var(--txt-muted)]">Good nights</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-[var(--txt)]">
+              <div className="text-2xl font-normal text-[var(--txt)]">
                 {Math.round(
                   sleepData.history
                     .filter(h => h.hours)
@@ -224,7 +224,7 @@ export default function SleepTracker() {
           exit={{ opacity: 0, y: -40 }}
           className="absolute top-4 right-4 px-3 py-2 bg-green-500/90 backdrop-blur-sm rounded-lg shadow-lg border border-green-400/50"
         >
-          <div className="flex items-center gap-2 text-white font-semibold text-sm">
+          <div className="flex items-center gap-2 text-white font-normal text-sm">
             <Moon size={16} />
             <span>+5 XP</span>
           </div>

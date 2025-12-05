@@ -30,6 +30,7 @@ import { EXERCISES, MUSCLE_GROUPS } from '../../data/exercises';
 import GlassCard from '../../components/shared/GlassCard';
 import Button from '../../components/shared/Button';
 import Modal from '../../components/shared/Modal';
+import OptimizedImage from '../../components/OptimizedImage';
 import { TESTING_MODE, hasPremiumAccess } from '../../lib/config';
 import { awardXP, updateTodayProgress, XP_VALUES, checkAchievements, loadGamificationData } from '../../lib/gamification';
 import { XPToast } from '../../components/gamification/XPDisplay';
@@ -50,6 +51,7 @@ export default function WorkoutPlanner() {
   const [showRegenerateModal, setShowRegenerateModal] = useState(false);
   const [showOptimizeModal, setShowOptimizeModal] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [isGeneratingAIWorkout, setIsGeneratingAIWorkout] = useState(false);
   const [activeRestTimer, setActiveRestTimer] = useState(null);
   const [restTimerSeconds, setRestTimerSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -329,6 +331,77 @@ export default function WorkoutPlanner() {
     checkAchievements(result.data);
   };
 
+  // Generate AI workout plan
+  const handleGenerateAIWorkout = async (params) => {
+    setIsGeneratingAIWorkout(true);
+    try {
+      const response = await fetch('/api/ai/workout-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          goals: params.goals || 'Muscle Building',
+          experienceLevel: params.experienceLevel || 'Intermediate',
+          equipmentAvailable: params.equipmentAvailable || 'Full gym access',
+          daysPerWeek: params.daysPerWeek || 4,
+          workoutDuration: params.workoutDuration || '60 minutes',
+          preferences: params.preferences || ''
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate AI workout plan');
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.workoutPlan) {
+        // Convert AI workout plan to our format
+        const aiWorkouts = data.workoutPlan.workouts || [];
+        
+        if (aiWorkouts.length > 0) {
+          const newWeek = {
+            weekNumber: weeks.length + 1,
+            startDate: new Date().toISOString().split('T')[0],
+            days: aiWorkouts.map((workout, index) => {
+              const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+              return {
+                dayName: workout.day || dayNames[index] || `Day ${index + 1}`,
+                date: new Date(Date.now() + index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                workoutType: workout.focus || 'Full Body',
+                completed: false,
+                exercises: workout.exercises?.map((ex, exIndex) => ({
+                  id: Date.now() + exIndex,
+                  name: ex.name,
+                  sets: ex.sets || 3,
+                  reps: ex.reps || '8-12',
+                  weight: null,
+                  weightUnit: 'lbs',
+                  restTime: ex.rest || '90s',
+                  notes: ex.notes || '',
+                  lastWeekWeight: null,
+                  muscleGroup: ex.muscleGroup || 'General',
+                  order: exIndex,
+                  completedSets: Array(ex.sets || 3).fill(false),
+                })) || [],
+              };
+            }),
+          };
+
+          setWeeks(prev => [...prev, newWeek]);
+          setCurrentWeekIndex(weeks.length);
+          setShowAIModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error generating AI workout:', error);
+      alert('Failed to generate AI workout plan. Please try again.');
+    } finally {
+      setIsGeneratingAIWorkout(false);
+    }
+  };
+
   const handleGenerateNextWeek = () => {
     const currentWeek = weeks[currentWeekIndex];
     const newWeek = {
@@ -384,7 +457,35 @@ export default function WorkoutPlanner() {
   }
 
   return (
-    <div>
+    <div className="relative min-h-screen">
+      {/* Fixed Background - Fit Background Image */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div 
+          className="absolute inset-0"
+          style={{
+            filter: 'blur(30px)',
+            WebkitFilter: 'blur(30px)',
+            transform: 'scale(1.1)',
+            opacity: 0.15
+          }}
+        >
+          <OptimizedImage
+            src="/images/fit/fit-background.jpg"
+            alt="Workout background"
+            width={1920}
+            height={1080}
+            className="w-full h-full"
+            objectFit="cover"
+            objectPosition="center center"
+            fallbackText="Fit Background"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-start justify-between mb-2">
@@ -474,6 +575,23 @@ export default function WorkoutPlanner() {
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setShowAIModal(true)}
+          disabled={isGeneratingAIWorkout}
+          className="px-4 py-2 text-sm font-semibold bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-accent rounded-lg flex items-center gap-2"
+        >
+          {isGeneratingAIWorkout ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Generating...
+            </>
+          ) : (
+            <>
+              <Sparkles size={16} />
+              Generate AI Workout Plan
+            </>
+          )}
+        </button>
         <button
           onClick={() => setShowOptimizeModal(true)}
           className="px-3 py-1.5 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition flex items-center gap-1"
@@ -799,6 +917,14 @@ export default function WorkoutPlanner() {
         isOpen={showOptimizeModal}
         onClose={() => setShowOptimizeModal(false)}
       />
+
+      <AIWorkoutModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        onGenerate={handleGenerateAIWorkout}
+        isGenerating={isGeneratingAIWorkout}
+      />
+      </div>
     </div>
   );
 }
@@ -1304,6 +1430,135 @@ function OptimizeWeekModal({ isOpen, onClose }) {
       <div className="text-center py-8">
         <p className="text-[var(--txt-muted)] mb-6">AI optimization suggestions coming soon!</p>
         <Button onClick={onClose}>Got it</Button>
+      </div>
+    </Modal>
+  );
+}
+
+// AI Workout Generation Modal
+function AIWorkoutModal({ isOpen, onClose, onGenerate, isGenerating }) {
+  const [goals, setGoals] = useState('Muscle Building');
+  const [experienceLevel, setExperienceLevel] = useState('Intermediate');
+  const [equipmentAvailable, setEquipmentAvailable] = useState('Full gym access');
+  const [daysPerWeek, setDaysPerWeek] = useState('4');
+  const [workoutDuration, setWorkoutDuration] = useState('60 minutes');
+  const [preferences, setPreferences] = useState('');
+
+  const handleGenerate = () => {
+    onGenerate({
+      goals,
+      experienceLevel,
+      equipmentAvailable,
+      daysPerWeek: parseInt(daysPerWeek),
+      workoutDuration,
+      preferences
+    });
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Generate AI Workout Plan">
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Primary Goal</label>
+          <select
+            value={goals}
+            onChange={(e) => setGoals(e.target.value)}
+            className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)]"
+          >
+            <option value="Muscle Building">Muscle Building</option>
+            <option value="Fat Loss">Fat Loss</option>
+            <option value="Strength">Strength</option>
+            <option value="Endurance">Endurance</option>
+            <option value="General Fitness">General Fitness</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Experience Level</label>
+          <select
+            value={experienceLevel}
+            onChange={(e) => setExperienceLevel(e.target.value)}
+            className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)]"
+          >
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Equipment Available</label>
+          <select
+            value={equipmentAvailable}
+            onChange={(e) => setEquipmentAvailable(e.target.value)}
+            className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)]"
+          >
+            <option value="Full gym access">Full Gym Access</option>
+            <option value="Home gym with weights">Home Gym with Weights</option>
+            <option value="Dumbbells only">Dumbbells Only</option>
+            <option value="Bodyweight only">Bodyweight Only</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Days Per Week</label>
+            <select
+              value={daysPerWeek}
+              onChange={(e) => setDaysPerWeek(e.target.value)}
+              className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)]"
+            >
+              <option value="3">3 Days</option>
+              <option value="4">4 Days</option>
+              <option value="5">5 Days</option>
+              <option value="6">6 Days</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Workout Duration</label>
+            <select
+              value={workoutDuration}
+              onChange={(e) => setWorkoutDuration(e.target.value)}
+              className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)]"
+            >
+              <option value="30 minutes">30 minutes</option>
+              <option value="45 minutes">45 minutes</option>
+              <option value="60 minutes">60 minutes</option>
+              <option value="90 minutes">90 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Additional Preferences (optional)</label>
+          <textarea
+            value={preferences}
+            onChange={(e) => setPreferences(e.target.value)}
+            placeholder="E.g., Focus on upper body, avoid squats, prefer compound movements..."
+            rows={3}
+            className="w-full px-4 py-2 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--acc)] resize-none"
+          />
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <Button variant="secondary" onClick={onClose} className="flex-1" disabled={isGenerating}>
+            Cancel
+          </Button>
+          <Button onClick={handleGenerate} className="flex-1" disabled={isGenerating}>
+            {isGenerating ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles size={16} className="mr-2" />
+                Generate Plan
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </Modal>
   );

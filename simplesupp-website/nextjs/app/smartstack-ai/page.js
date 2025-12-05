@@ -61,7 +61,7 @@ export default function SmartStackAI() {
                 <div className="flex items-center gap-3">
                   <Crown className="text-[var(--acc)]" size={24} />
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Premium</p>
+                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Aviera Pro</p>
                     <p className="text-xs text-[var(--txt-muted)]">Get AI-powered stack builder with tracking</p>
                   </div>
                   <Sparkles className="text-[var(--acc)]" size={20} />

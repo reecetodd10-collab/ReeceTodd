@@ -82,8 +82,11 @@ export default function Navigation() {
     <nav className="sticky top-0 z-50 glass-dark shadow-premium transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-3">
             <PillLogo size="small" />
+            <span className="hidden xl:block text-xs text-[var(--txt-muted)] font-light" style={{ letterSpacing: '5px' }}>
+              Stop Guessing. Start Progressing.
+            </span>
           </Link>
 
           <div className="hidden lg:flex items-center space-x-2">
@@ -92,7 +95,7 @@ export default function Navigation() {
               <button
                 key={section.sectionId}
                 onClick={() => scrollToSection(section.sectionId)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg text-sm font-normal transition-all duration-300 ${
                   activeSection === section.sectionId
                     ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
                     : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
@@ -107,7 +110,7 @@ export default function Navigation() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg text-sm font-normal transition-all duration-300 ${
                   isActive(link.path)
                     ? 'bg-accent text-white shadow-accent'
                     : 'text-gray-700 hover:bg-gray-100 hover:text-accent'
@@ -120,7 +123,7 @@ export default function Navigation() {
             {/* Dashboard link - always visible */}
             <Link
               to="/dashboard"
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-lg text-sm font-normal transition-all duration-300 flex items-center gap-2 ${
                 isActive('/dashboard') || location.pathname.startsWith('/dashboard')
                   ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
                   : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
@@ -133,7 +136,7 @@ export default function Navigation() {
 
           <Link
             to="/pricing"
-            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition shadow-accent"
+            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-normal bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition shadow-accent"
           >
             <Crown size={16} />
             Get Premium
@@ -160,7 +163,7 @@ export default function Navigation() {
               <button
                 key={section.sectionId}
                 onClick={() => scrollToSection(section.sectionId)}
-                className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                className={`block w-full text-left px-4 py-3 rounded-lg font-normal transition-all duration-300 ${
                   activeSection === section.sectionId
                     ? 'bg-accent text-white'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -176,7 +179,7 @@ export default function Navigation() {
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-lg font-medium transition-all ${
+                className={`block px-4 py-3 rounded-lg font-normal transition-all ${
                   isActive(link.path)
                     ? 'bg-accent text-white'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -190,7 +193,7 @@ export default function Navigation() {
             <Link
               to="/dashboard"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg font-normal transition-all ${
                 isActive('/dashboard') || location.pathname.startsWith('/dashboard')
                   ? 'bg-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -204,7 +207,7 @@ export default function Navigation() {
             <Link
               to="/pricing"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition"
+              className="flex items-center gap-2 px-4 py-3 rounded-lg font-normal bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 transition"
             >
               <Crown size={18} />
               Get Premium
@@ -213,7 +216,7 @@ export default function Navigation() {
             <Link
               to="/smartstack-ai"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-3 bg-accent text-white rounded-lg font-semibold text-center"
+              className="block px-4 py-3 bg-accent text-white rounded-lg font-normal text-center"
             >
               Get Your Stack
             </Link>

@@ -92,11 +92,11 @@ export default function Pricing() {
   const faqs = [
     {
       question: "How does the free trial work?",
-      answer: "You get 7 days of full Premium access completely free. No credit card required to start the trial. After 7 days, you'll be automatically charged $9.99/month. You can cancel anytime during the trial and won't be charged."
+      answer: "You get 7 days of full Pro access completely free. No credit card required to start the trial. After 7 days, you'll be automatically charged $9.99/month. You can cancel anytime during the trial and won't be charged."
     },
     {
       question: "Can I cancel anytime?",
-      answer: "Yes! You can cancel your subscription at any time from your dashboard settings. Your premium access will continue until the end of your current billing period, and you won't be charged again."
+      answer: "Yes! You can cancel your subscription at any time from your dashboard settings. Your Pro access will continue until the end of your current billing period, and you won't be charged again."
     },
     {
       question: "What payment methods do you accept?",
@@ -104,14 +104,14 @@ export default function Pricing() {
     },
     {
       question: "Will my data be saved if I downgrade?",
-      answer: "Yes, all your data (workouts, supplement stacks, progress) is saved permanently. If you downgrade to free, you'll lose access to premium features but can upgrade again anytime to restore full access."
+      answer: "Yes, all your data (workouts, supplement stacks, progress) is saved permanently. If you downgrade to free, you'll lose access to Pro features but can upgrade again anytime to restore full access."
     },
     {
-      question: "Do premium members really get 10% off?",
-      answer: "Absolutely! Premium members automatically get 10% off all supplement purchases in our shop. The discount is applied at checkout - no coupon codes needed."
+      question: "Do Pro members really get 10% off?",
+      answer: "Absolutely! Pro members automatically get 10% off all supplement purchases in our shop. The discount is applied at checkout - no coupon codes needed."
     },
     {
-      question: "What happens if I don't like Premium?",
+      question: "What happens if I don't like Pro?",
       answer: "We offer a 7-day free trial so you can try Premium risk-free. If you're not satisfied, simply cancel before the trial ends and you won't be charged. We're confident you'll love it though!"
     }
   ];
@@ -131,7 +131,7 @@ export default function Pricing() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
-              Upgrade to Aviera Premium
+              Upgrade to Aviera Pro
             </h1>
             <p className="text-xl text-[var(--txt-muted)] mb-12 max-w-2xl mx-auto">
               Unlock AI-powered personalization and advanced features to take your fitness journey to the next level
@@ -218,7 +218,7 @@ export default function Pricing() {
         {/* Comparison Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-[var(--txt)] mb-8">
-            Free vs Premium
+            Free vs Pro
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Free Tier */}

@@ -29,7 +29,7 @@ export async function POST(request) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Aviera Premium',
+              name: 'Aviera Pro',
               description: 'AI-powered supplement stacks, custom workout plans, and advanced tracking',
             },
             recurring: {

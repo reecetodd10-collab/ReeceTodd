@@ -43,7 +43,7 @@ export default function SectionIndicators({ sections, activeSection }) {
               <motion.span
                 initial={{ opacity: 0, x: 10 }}
                 whileHover={{ opacity: 1, x: 0 }}
-                className={`absolute right-full mr-3 px-3 py-1 bg-[var(--bg)] border border-[var(--border)] text-[var(--txt)] text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none ${
+                className={`absolute right-full mr-3 px-3 py-1 bg-[var(--bg)] border border-[var(--border)] text-[var(--txt)] text-sm font-normal rounded-lg whitespace-nowrap pointer-events-none ${
                   isActive ? 'opacity-100' : 'opacity-0'
                 } group-hover:opacity-100 transition-opacity glass`}
               >

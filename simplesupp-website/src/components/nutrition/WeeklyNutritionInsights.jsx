@@ -96,24 +96,24 @@ export default function WeeklyNutritionInsights({ nutritionData }) {
 
   return (
     <GlassCard className="p-6">
-      <h3 className="text-lg font-bold text-[var(--txt)] mb-4">This Week's Nutrition</h3>
+      <h3 className="text-lg font-normal text-[var(--txt)] mb-4">This Week's Nutrition</h3>
 
       {/* Macro Goal Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="text-center p-3 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-2xl font-bold text-red-400 mb-1">
+          <div className="text-2xl font-normal text-red-400 mb-1">
             {stats.proteinDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Protein</div>
         </div>
         <div className="text-center p-3 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-2xl font-bold text-yellow-400 mb-1">
+          <div className="text-2xl font-normal text-yellow-400 mb-1">
             {stats.carbsDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Carbs</div>
         </div>
         <div className="text-center p-3 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-2xl font-bold text-blue-400 mb-1">
+          <div className="text-2xl font-normal text-blue-400 mb-1">
             {stats.fatsDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Fats</div>
@@ -124,13 +124,13 @@ export default function WeeklyNutritionInsights({ nutritionData }) {
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="p-3 bg-[var(--bg-elev-1)] rounded-lg">
           <div className="text-sm text-[var(--txt-muted)] mb-1">All Macros Hit</div>
-          <div className="text-xl font-bold text-[var(--txt)]">
+          <div className="text-xl font-normal text-[var(--txt)]">
             {stats.allMacrosDays}/7 days
           </div>
         </div>
         <div className="p-3 bg-[var(--bg-elev-1)] rounded-lg">
           <div className="text-sm text-[var(--txt-muted)] mb-1">Meal Consistency</div>
-          <div className="text-xl font-bold text-[var(--txt)]">
+          <div className="text-xl font-normal text-[var(--txt)]">
             {Math.round((stats.mealConsistency / 7) * 100)}%
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function WeeklyNutritionInsights({ nutritionData }) {
       {/* Calories Chart */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-[var(--txt)]">Daily Calories</span>
+          <span className="text-sm font-normal text-[var(--txt)]">Daily Calories</span>
           <div className="flex items-center gap-2">
             {stats.caloriesChange !== 0 && (
               <>
@@ -148,7 +148,7 @@ export default function WeeklyNutritionInsights({ nutritionData }) {
                 ) : (
                   <TrendingDown size={16} className="text-red-400" />
                 )}
-                <span className={`text-sm font-semibold ${
+                <span className={`text-sm font-normal ${
                   stats.caloriesChange > 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
                   {stats.caloriesChange > 0 ? '↑' : '↓'} {Math.abs(stats.caloriesChange)}%

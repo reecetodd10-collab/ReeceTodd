@@ -231,7 +231,7 @@ export default function Reassessment({ isOpen, onClose }) {
             {/* Progress Indicator */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-[var(--txt-muted)]">
+                <span className="text-sm font-normal text-[var(--txt-muted)]">
                   Step {currentStep} of 5
                 </span>
                 <span className="text-sm text-[var(--txt-muted)]">
@@ -279,7 +279,7 @@ export default function Reassessment({ isOpen, onClose }) {
               <button
                 onClick={handleNext}
                 disabled={!validateStep(currentStep)}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition ${
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-normal transition ${
                   validateStep(currentStep)
                     ? 'bg-[var(--acc)] text-white hover:bg-blue-600'
                     : 'bg-[var(--bg-elev-2)] text-[var(--txt-muted)] cursor-not-allowed'
@@ -309,13 +309,13 @@ function Step1Progress({ formData, updateField }) {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">How's it going?</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2">How's it going?</h2>
         <p className="text-[var(--txt-muted)]">Let's check in on your progress</p>
       </div>
 
       {/* Mood Selector */}
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-4 text-center">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-4 text-center">
           How are you feeling overall? <span className="text-red-400">*</span>
         </label>
         <div className="flex justify-center gap-4">
@@ -337,7 +337,7 @@ function Step1Progress({ formData, updateField }) {
 
       {/* Weight Input */}
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Current Weight (optional)
         </label>
         <div className="flex gap-2">
@@ -398,17 +398,17 @@ function Step2Goal({ formData, updateField, goals }) {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">Goal Review</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2">Goal Review</h2>
         <p className="text-[var(--txt-muted)]">Update your fitness goals</p>
       </div>
 
       <div className="glass-card p-6 mb-6">
         <p className="text-sm text-[var(--txt-muted)] mb-2">Current Goal</p>
-        <p className="text-lg font-semibold text-[var(--txt)]">Muscle Building</p>
+        <p className="text-lg font-normal text-[var(--txt)]">Muscle Building</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-4">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-4">
           Still on track with this goal? <span className="text-red-400">*</span>
         </label>
         <div className="space-y-3">
@@ -459,7 +459,7 @@ function Step2Goal({ formData, updateField, goals }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-4">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-4">
           Intensity Preference <span className="text-red-400">*</span>
         </label>
         <div className="space-y-3">
@@ -496,12 +496,12 @@ function Step3Biometrics({ formData, updateField, updateNestedField }) {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">Biometrics Update</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2">Biometrics Update</h2>
         <p className="text-[var(--txt-muted)]">All fields are optional</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Current Weight
         </label>
         <div className="flex gap-2">
@@ -524,7 +524,7 @@ function Step3Biometrics({ formData, updateField, updateNestedField }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Height
         </label>
         <div className="flex gap-2">
@@ -547,7 +547,7 @@ function Step3Biometrics({ formData, updateField, updateNestedField }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Body Fat %: {formData.bodyFat}%
         </label>
         <input
@@ -569,7 +569,7 @@ function Step3Biometrics({ formData, updateField, updateNestedField }) {
         className="w-full p-4 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] rounded-lg text-left transition"
       >
         <div className="flex items-center justify-between">
-          <span className="font-medium text-[var(--txt)]">Body Measurements (optional)</span>
+          <span className="font-normal text-[var(--txt)]">Body Measurements (optional)</span>
           <span className="text-[var(--txt-muted)]">{showMeasurements ? '−' : '+'}</span>
         </div>
       </button>
@@ -582,7 +582,7 @@ function Step3Biometrics({ formData, updateField, updateNestedField }) {
         >
           {['chest', 'waist', 'hips', 'arms', 'thighs'].map((measurement) => (
             <div key={measurement}>
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2 capitalize">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2 capitalize">
                 {measurement}
               </label>
               <input
@@ -605,12 +605,12 @@ function Step4Lifestyle({ formData, updateField, toggleArrayField, equipmentOpti
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">Lifestyle Changes</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2">Lifestyle Changes</h2>
         <p className="text-[var(--txt-muted)]">Update your training schedule</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Training Days Per Week <span className="text-red-400">*</span>
         </label>
         <select
@@ -628,7 +628,7 @@ function Step4Lifestyle({ formData, updateField, toggleArrayField, equipmentOpti
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-3">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-3">
           Available Equipment
         </label>
         <div className="flex flex-wrap gap-2">
@@ -636,7 +636,7 @@ function Step4Lifestyle({ formData, updateField, toggleArrayField, equipmentOpti
             <button
               key={equipment}
               onClick={() => toggleArrayField('equipment', equipment)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-lg text-sm font-normal transition ${
                 formData.equipment.includes(equipment)
                   ? 'bg-[var(--acc)] text-white'
                   : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] hover:bg-[var(--bg-elev-2)]'
@@ -649,7 +649,7 @@ function Step4Lifestyle({ formData, updateField, toggleArrayField, equipmentOpti
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Time Per Workout <span className="text-red-400">*</span>
         </label>
         <select
@@ -667,7 +667,7 @@ function Step4Lifestyle({ formData, updateField, toggleArrayField, equipmentOpti
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Injuries or Limitations (optional)
         </label>
         <textarea
@@ -700,12 +700,12 @@ function Step5Preferences({ formData, updateField, toggleArrayField, supplementC
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">Preferences</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2">Preferences</h2>
         <p className="text-[var(--txt-muted)]">Finalize your preferences</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-4">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-4">
           Diet Type <span className="text-red-400">*</span>
         </label>
         <div className="space-y-3">
@@ -729,7 +729,7 @@ function Step5Preferences({ formData, updateField, toggleArrayField, supplementC
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-3">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-3">
           Supplement Preferences
         </label>
         <div className="space-y-2">
@@ -737,7 +737,7 @@ function Step5Preferences({ formData, updateField, toggleArrayField, supplementC
             <button
               key={category}
               onClick={() => toggleArrayField('supplementPreferences', category)}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition ${
+              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-normal transition ${
                 formData.supplementPreferences.includes(category)
                   ? 'bg-[var(--acc)]/20 border border-[var(--acc)]/30 text-[var(--acc)]'
                   : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)]'
@@ -750,7 +750,7 @@ function Step5Preferences({ formData, updateField, toggleArrayField, supplementC
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+        <label className="block text-sm font-normal text-[var(--txt)] mb-2">
           Allergies / Restrictions
         </label>
         <div className="flex gap-2 mb-3">
@@ -808,7 +808,7 @@ function SuccessScreen({ onClose }) {
       >
         <Check size={40} className="text-green-500" />
       </motion.div>
-      <h2 className="text-3xl font-bold text-[var(--txt)] mb-3">✅ Goals Updated!</h2>
+      <h2 className="text-3xl font-normal text-[var(--txt)] mb-3">✅ Goals Updated!</h2>
       <p className="text-lg text-[var(--txt-muted)] mb-2">
         Your personalized plan will be updated to reflect these changes.
       </p>
@@ -827,8 +827,8 @@ function SliderInput({ label, value, onChange, min, max, leftLabel, rightLabel }
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <label className="text-sm font-medium text-[var(--txt)]">{label}</label>
-        <span className="text-sm font-semibold text-[var(--acc)]">{value}/10</span>
+        <label className="text-sm font-normal text-[var(--txt)]">{label}</label>
+        <span className="text-sm font-normal text-[var(--acc)]">{value}/10</span>
       </div>
       <input
         type="range"

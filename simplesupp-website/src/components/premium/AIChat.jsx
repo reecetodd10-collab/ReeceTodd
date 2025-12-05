@@ -135,7 +135,7 @@ export default function AIChat({ userIsPremium = false }) {
           />
         )}
         <Sparkles size={20} className="text-[var(--acc)] mb-0.5 relative z-10 opacity-85" />
-        <span className="text-[10px] font-medium text-[var(--txt)] relative z-10 tracking-tight leading-tight">Aviera AI</span>
+        <span className="text-[10px] font-normal text-[var(--txt)] relative z-10 tracking-tight leading-tight">Aviera AI</span>
       </motion.button>
 
       {/* Chat Panel */}
@@ -166,7 +166,7 @@ export default function AIChat({ userIsPremium = false }) {
                   <div className="w-8 h-8 rounded-lg bg-[var(--acc)]/10 flex items-center justify-center">
                     <Sparkles size={16} className="text-[var(--acc)]" />
                   </div>
-                  <h2 className="text-lg font-semibold text-[var(--txt)] tracking-tight">Aviera AI</h2>
+                  <h2 className="text-lg font-normal text-[var(--txt)] tracking-tight">Aviera AI</h2>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
@@ -184,7 +184,7 @@ export default function AIChat({ userIsPremium = false }) {
                     <div className="w-16 h-16 bg-gradient-to-br from-[var(--acc)]/20 to-blue-500/10 rounded-2xl flex items-center justify-center mb-4 border border-[var(--acc)]/10">
                       <Sparkles size={28} className="text-[var(--acc)]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[var(--txt)] mb-2 tracking-tight">
+                    <h3 className="text-lg font-normal text-[var(--txt)] mb-2 tracking-tight">
                       Welcome to Aviera AI
                     </h3>
                     <p className="text-sm text-[var(--txt-muted)] mb-6 max-w-sm">
@@ -193,7 +193,7 @@ export default function AIChat({ userIsPremium = false }) {
                     
                     {/* Suggested Prompts */}
                     <div className="w-full space-y-2">
-                      <p className="text-xs font-semibold text-[var(--txt-muted)] mb-2">
+                      <p className="text-xs font-normal text-[var(--txt-muted)] mb-2">
                         Try asking:
                       </p>
                       {suggestedPrompts.map((prompt, index) => (
@@ -300,7 +300,7 @@ export default function AIChat({ userIsPremium = false }) {
             <div className="w-16 h-16 bg-gradient-to-br from-[var(--acc)]/20 to-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[var(--acc)]/10">
               <Sparkles className="text-[var(--acc)]" size={32} />
             </div>
-            <h3 className="text-xl font-semibold text-[var(--txt)] mb-2 tracking-tight">
+            <h3 className="text-xl font-normal text-[var(--txt)] mb-2 tracking-tight">
               Unlock Aviera AI with Premium
             </h3>
             <p className="text-[var(--txt-muted)]">

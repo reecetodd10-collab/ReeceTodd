@@ -218,7 +218,7 @@ export default function StackBuilder() {
       <div className="mb-8">
         <div className="flex items-start justify-between mb-2">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)]">Your Supplement Stack</h1>
+            <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)]" style={{ letterSpacing: '2px' }}>Your Supplement Stack</h1>
             <p className="text-lg text-[var(--txt-muted)]">Track your daily supplements and stay on schedule</p>
           </div>
           <div className="flex items-center gap-2">
@@ -242,19 +242,19 @@ export default function StackBuilder() {
           <div className="flex flex-wrap gap-2 mt-4">
             <button
               onClick={() => handleSetAllTime('morning')}
-              className="px-3 py-1.5 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition"
+              className="px-3 py-1.5 text-xs font-normal bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition"
             >
               Set All to Morning
             </button>
             <button
               onClick={() => handleSetAllTime('evening')}
-              className="px-3 py-1.5 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition"
+              className="px-3 py-1.5 text-xs font-normal bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition"
             >
               Set All to Evening
             </button>
             <button
               onClick={() => setShowOptimizeModal(true)}
-              className="px-3 py-1.5 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition flex items-center gap-1"
+              className="px-3 py-1.5 text-xs font-normal bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition flex items-center gap-1"
             >
               <Sparkles size={12} />
               Optimize My Stack
@@ -270,7 +270,7 @@ export default function StackBuilder() {
             <div className="w-20 h-20 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Pill className="text-[var(--acc)]" size={40} />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--txt)] mb-3">Your Supplement Stack is Empty</h2>
+            <h2 className="text-2xl font-normal text-[var(--txt)] mb-3" style={{ letterSpacing: '2px' }}>Your Supplement Stack is Empty</h2>
             <p className="text-[var(--txt-muted)] mb-6">
               Start building your personalized supplement stack to track your daily routine.
             </p>
@@ -299,7 +299,7 @@ export default function StackBuilder() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-[var(--txt)]">
+                    <span className="text-2xl font-normal text-[var(--txt)]">
                       🔥 {userStreak.current} day streak!
                     </span>
                   </div>
@@ -310,11 +310,11 @@ export default function StackBuilder() {
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-center md:text-right">
-                  <div className="text-2xl font-bold text-[var(--txt)]">{dailyCompletion}%</div>
+                  <div className="text-2xl font-normal text-[var(--txt)]">{dailyCompletion}%</div>
                   <p className="text-sm text-[var(--txt-muted)]">Today</p>
                 </div>
                 <div className="text-center md:text-right">
-                  <div className="text-2xl font-bold text-[var(--txt)]">{userStreak.weeklyCompletion}%</div>
+                  <div className="text-2xl font-normal text-[var(--txt)]">{userStreak.weeklyCompletion}%</div>
                   <p className="text-sm text-[var(--txt-muted)]">This week</p>
                 </div>
               </div>
@@ -398,12 +398,12 @@ export default function StackBuilder() {
                               position="top"
                               delay={200}
                             >
-                              <h3 className="text-lg font-bold text-[var(--txt)] mb-2 cursor-help hover:text-[var(--acc)] transition">
+                              <h3 className="text-lg font-normal text-[var(--txt)] mb-2 cursor-help hover:text-[var(--acc)] transition" style={{ letterSpacing: '2px' }}>
                                 {supplement.name}
                               </h3>
                             </Tooltip>
                             {showStreakBadge && (
-                              <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 rounded-full text-xs font-semibold text-orange-400 mb-2">
+                              <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-500/20 border border-orange-500/30 rounded-full text-xs font-normal text-orange-400 mb-2">
                                 <Flame size={12} />
                                 {consecutiveDays} days in a row! 🔥
                               </div>
@@ -421,7 +421,7 @@ export default function StackBuilder() {
                                       timeIcon: getTimeIcon(timeOfDay),
                                     });
                                   }}
-                                  className="text-sm font-medium bg-transparent border-none text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer focus:outline-none"
+                                  className="text-sm font-normal bg-transparent border-none text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer focus:outline-none"
                                 >
                                   <option value="morning">Morning</option>
                                   <option value="pre-workout">Pre-Workout</option>
@@ -431,7 +431,7 @@ export default function StackBuilder() {
                                 </select>
                               </div>
                               <span>•</span>
-                              <span className="font-medium">{supplement.dosage}</span>
+                              <span className="font-light">{supplement.dosage}</span>
                               <span className="text-xs text-[var(--txt-muted)]/60">(as per product label)</span>
                             </div>
                           </div>
@@ -452,7 +452,7 @@ export default function StackBuilder() {
                               {supplement.isLowStock && (
                                 <AlertTriangle size={14} className="text-yellow-400" />
                               )}
-                              <span className={`font-semibold ${supplement.isLowStock ? 'text-yellow-400' : 'text-[var(--txt)]'}`}>
+                              <span className={`font-normal ${supplement.isLowStock ? 'text-yellow-400' : 'text-[var(--txt)]'}`}>
                                 {supplement.daysRemaining} days {supplement.isLowStock && '⚠️'}
                               </span>
                             </div>
@@ -481,7 +481,7 @@ export default function StackBuilder() {
                               showNotificationSettings === supplement.id ? null : supplement.id
                             )}
                             className={`
-                              flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                              flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200
                               ${supplement.notificationEnabled
                                 ? 'bg-[var(--acc)]/20 text-[var(--acc)] border border-[var(--acc)]/30'
                                 : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)]'
@@ -500,7 +500,7 @@ export default function StackBuilder() {
                           {/* Manage Button */}
                           <button
                             onClick={() => setShowManageModal(supplement)}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)] transition-all duration-200"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-normal bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)] transition-all duration-200"
                           >
                             <Settings size={16} />
                             Manage
@@ -509,7 +509,7 @@ export default function StackBuilder() {
                           {/* Reorder Button */}
                           <Link
                             to={`/shop?product=${encodeURIComponent(supplement.name)}`}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200 ${
                               supplement.isLowStock
                                 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/30'
                                 : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--acc)] hover:border-[var(--acc)]/30'
@@ -531,7 +531,7 @@ export default function StackBuilder() {
                               className="mt-4 pt-4 border-t border-[var(--border)]"
                             >
                               <div className="flex items-center gap-3 mb-3">
-                                <label className="text-sm font-medium text-[var(--txt)]">
+                                <label className="text-sm font-normal text-[var(--txt)]">
                                   Notification Time:
                                 </label>
                                 <input
@@ -548,7 +548,7 @@ export default function StackBuilder() {
                                   onClick={() => handleUpdateSupplement(supplement.id, {
                                     notificationEnabled: !supplement.notificationEnabled,
                                   })}
-                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                  className={`px-4 py-2 rounded-lg text-sm font-normal transition-all duration-200 ${
                                     supplement.notificationEnabled
                                       ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
                                       : 'bg-[var(--acc)]/20 text-[var(--acc)] border border-[var(--acc)]/30 hover:bg-[var(--acc)]/30'
@@ -560,7 +560,7 @@ export default function StackBuilder() {
                                   onClick={() => {
                                     alert(`Test notification scheduled for ${formatTime(supplement.notificationTime)}!`);
                                   }}
-                                  className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)] transition-all duration-200"
+                                  className="px-4 py-2 rounded-lg text-sm font-normal bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border border-[var(--border)] hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)] transition-all duration-200"
                                 >
                                   Test Notification
                                 </button>
@@ -595,7 +595,7 @@ export default function StackBuilder() {
                 <Pill className="text-[var(--acc)]" size={20} />
               </div>
               <div>
-                <p className="font-semibold text-[var(--txt)]">Premium Member</p>
+                <p className="font-normal text-[var(--txt)]">Premium Member</p>
                 <p className="text-sm text-[var(--txt-muted)]">10% off all supplement orders</p>
               </div>
             </div>
@@ -701,7 +701,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setManualEntry(false)}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-normal transition ${
               !manualEntry
                 ? 'bg-[var(--acc)] text-white'
                 : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] hover:bg-[var(--bg-elev-2)]'
@@ -711,7 +711,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
           </button>
           <button
             onClick={() => setManualEntry(true)}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-normal transition ${
               manualEntry
                 ? 'bg-[var(--acc)] text-white'
                 : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] hover:bg-[var(--bg-elev-2)]'
@@ -724,7 +724,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
         {manualEntry ? (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Supplement Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -736,7 +736,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Category
               </label>
               <select
@@ -750,7 +750,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Dosage (read-only after adding)
               </label>
               <input
@@ -762,7 +762,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Time of Day
               </label>
               <select
@@ -814,7 +814,7 @@ function AddSupplementModal({ isOpen, onClose, onAdd }) {
                   onClick={() => handleAddFromShop(product)}
                   className="w-full text-left p-4 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] rounded-lg border border-[var(--border)] transition"
                 >
-                  <div className="font-semibold text-[var(--txt)]">{product.name}</div>
+                  <div className="font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>{product.name}</div>
                   <div className="text-sm text-[var(--txt-muted)] mt-1">{product.category}</div>
                   <div className="text-xs text-[var(--txt-muted)] mt-1">Dosage: {product.dosage}</div>
                 </button>
@@ -877,7 +877,7 @@ function ManageSupplementModal({ isOpen, supplement, onClose, onUpdate }) {
     <Modal isOpen={isOpen} onClose={onClose} title={`Manage ${supplement.name}`}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">
             Days Supply Remaining
           </label>
           <input
@@ -889,7 +889,7 @@ function ManageSupplementModal({ isOpen, supplement, onClose, onUpdate }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">
             Auto-reorder when below (days)
           </label>
           <input
@@ -923,7 +923,7 @@ function AISupplementModal({ isOpen, onClose }) {
         <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <Sparkles className="text-[var(--acc)]" size={32} />
         </div>
-        <h3 className="text-xl font-bold text-[var(--txt)] mb-2">Coming Soon</h3>
+        <h3 className="text-xl font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>Coming Soon</h3>
         <p className="text-[var(--txt-muted)] mb-6">
           Ask questions about supplements, get dosage advice, and learn about interactions. This feature will be powered by AI soon.
         </p>
@@ -940,7 +940,7 @@ function OptimizeStackModal({ isOpen, onClose }) {
         <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <Sparkles className="text-[var(--acc)]" size={32} />
         </div>
-        <h3 className="text-xl font-bold text-[var(--txt)] mb-2">Coming Soon</h3>
+        <h3 className="text-xl font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>Coming Soon</h3>
         <p className="text-[var(--txt-muted)] mb-6">
           AI will analyze your stack and suggest optimizations, timing improvements, and potential gaps. This feature is in development.
         </p>

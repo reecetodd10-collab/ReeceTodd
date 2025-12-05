@@ -19,7 +19,7 @@ export default function Billing() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)]">Billing & Subscription</h1>
+        <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)]">Billing & Subscription</h1>
         <p className="text-lg text-[var(--txt-muted)]">Manage your premium subscription</p>
       </div>
 
@@ -31,10 +31,10 @@ export default function Billing() {
               <Crown className="text-[var(--acc)]" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[var(--txt)]">
+              <h2 className="text-xl font-normal text-[var(--txt)]">
                 {subscription.plan} - {subscription.price}/{subscription.billingCycle}
               </h2>
-              <p className="text-sm text-[var(--txt-muted)]">Status: <span className="text-green-500 font-medium">{subscription.status}</span></p>
+              <p className="text-sm text-[var(--txt-muted)]">Status: <span className="text-green-500 font-normal">{subscription.status}</span></p>
             </div>
           </div>
         </div>
@@ -44,14 +44,14 @@ export default function Billing() {
             <Calendar className="text-[var(--acc)]" size={20} />
             <div>
               <p className="text-sm text-[var(--txt-muted)]">Next Billing Date</p>
-              <p className="font-semibold text-[var(--txt)]">{subscription.nextBillingDate}</p>
+              <p className="font-normal text-[var(--txt)]">{subscription.nextBillingDate}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-[var(--bg-elev-1)] rounded-lg">
             <CreditCard className="text-[var(--acc)]" size={20} />
             <div>
               <p className="text-sm text-[var(--txt-muted)]">Payment Method</p>
-              <p className="font-semibold text-[var(--txt)]">{subscription.paymentMethod}</p>
+              <p className="font-normal text-[var(--txt)]">{subscription.paymentMethod}</p>
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function Billing() {
         <GlassCard className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <CreditCard className="text-[var(--acc)]" size={24} />
-            <h3 className="text-lg font-bold text-[var(--txt)]">Payment Method</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Payment Method</h3>
           </div>
           <p className="text-sm text-[var(--txt-muted)] mb-4">
             Update your payment information
@@ -77,7 +77,7 @@ export default function Billing() {
         <GlassCard className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <Download className="text-[var(--acc)]" size={24} />
-            <h3 className="text-lg font-bold text-[var(--txt)]">Invoices</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Invoices</h3>
           </div>
           <p className="text-sm text-[var(--txt-muted)] mb-4">
             Download your billing history
@@ -92,7 +92,7 @@ export default function Billing() {
         <GlassCard className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <Settings className="text-[var(--acc)]" size={24} />
-            <h3 className="text-lg font-bold text-[var(--txt)]">Cancel Subscription</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Cancel Subscription</h3>
           </div>
           <p className="text-sm text-[var(--txt-muted)] mb-4">
             Cancel your premium subscription

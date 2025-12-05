@@ -27,15 +27,15 @@ export default function SmartFitt() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-6xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
             Aviera Fit
           </h1>
 
-          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
+          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-normal" style={{ letterSpacing: '15px' }}>
             Your AI-Powered Workout Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-3xl mx-auto">
+          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-3xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
             Click any muscle group to get 3 coach-approved exercises with sets, reps, and form cues tailored to your goal.
           </p>
 
@@ -46,7 +46,7 @@ export default function SmartFitt() {
                 <div className="flex items-center gap-3">
                   <Crown className="text-[var(--acc)]" size={24} />
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Premium</p>
+                    <p className="text-sm font-normal text-[var(--txt)]">Upgrade to Premium</p>
                     <p className="text-xs text-[var(--txt-muted)]">Get custom AI workout plans with progressive overload</p>
                   </div>
                   <Sparkles className="text-[var(--acc)]" size={20} />
@@ -81,7 +81,7 @@ export default function SmartFitt() {
           <div className="flex gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
             <button
               onClick={() => setBodyType('male')}
-              className={`px-4 py-2 rounded-md font-medium transition-all ${
+              className={`px-4 py-2 rounded-md font-normal transition-all ${
                 bodyType === 'male'
                   ? 'bg-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -91,7 +91,7 @@ export default function SmartFitt() {
             </button>
             <button
               onClick={() => setBodyType('female')}
-              className={`px-4 py-2 rounded-md font-medium transition-all ${
+              className={`px-4 py-2 rounded-md font-normal transition-all ${
                 bodyType === 'female'
                   ? 'bg-gradient-to-r from-primary to-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -105,7 +105,7 @@ export default function SmartFitt() {
           <div className="flex gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
             <button
               onClick={() => setGoal('strength')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-normal transition-all ${
                 goal === 'strength'
                   ? 'bg-gradient-to-r from-primary to-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -115,7 +115,7 @@ export default function SmartFitt() {
             </button>
             <button
               onClick={() => setGoal('hypertrophy')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-normal transition-all ${
                 goal === 'hypertrophy'
                   ? 'bg-gradient-to-r from-primary to-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -125,7 +125,7 @@ export default function SmartFitt() {
             </button>
             <button
               onClick={() => setGoal('endurance')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-normal transition-all ${
                 goal === 'endurance'
                   ? 'bg-gradient-to-r from-primary to-accent text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -139,7 +139,7 @@ export default function SmartFitt() {
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Body Diagram - Simplified Grid Version */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+            <h3 className="text-xl font-normal text-gray-900 mb-4 text-center" style={{ letterSpacing: '2px' }}>
               Select a Muscle Group
             </h3>
             <p className="text-sm text-gray-600 mb-6 text-center">
@@ -151,7 +151,7 @@ export default function SmartFitt() {
                 <button
                   key={key}
                   onClick={() => setSelectedMuscle(value)}
-                  className={`p-4 rounded-xl font-semibold text-sm transition-all ${
+                  className={`p-4 rounded-xl font-normal text-sm transition-all ${
                     selectedMuscle === value
                       ? 'bg-accent text-white shadow-accent transform scale-105'
                       : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
@@ -193,7 +193,7 @@ export default function SmartFitt() {
                   className="bg-white rounded-2xl p-12 shadow-sm border border-gray-200 text-center"
                 >
                   <Dumbbell className="mx-auto mb-4 text-gray-400" size={64} />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-normal text-gray-900 mb-2" style={{ letterSpacing: '2px' }}>
                     Select a Muscle Group
                   </h3>
                   <p className="text-gray-600">
@@ -210,16 +210,16 @@ export default function SmartFitt() {
               <div className="mt-12 bg-accent/10 rounded-2xl p-8 border border-accent/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-2xl font-normal text-gray-900 mb-2" style={{ letterSpacing: '2px' }}>
                       Pair with Aviera Stack
                     </h3>
-                    <p className="text-gray-700">
+                    <p className="text-gray-700 font-light" style={{ letterSpacing: '5px' }}>
                       Get personalized supplement recommendations to support your training. Recovery, performance, and muscle growth supplements tailored to your goals.
                     </p>
                   </div>
                   <a
                     href="/smartstack-ai"
-                    className="px-6 py-3 bg-accent text-white rounded-lg font-semibold hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
+                    className="px-6 py-3 bg-accent text-white rounded-lg font-normal hover:shadow-accent hover:bg-blue-600 transition-all hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
                   >
                     Build Your Stack <ChevronRight size={20} />
                   </a>
@@ -244,19 +244,19 @@ function ExerciseCard({ exercise }) {
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">
+            <h4 className="text-lg font-normal text-gray-900 mb-1" style={{ letterSpacing: '2px' }}>
               {exercise.name}
             </h4>
             <div className="flex flex-wrap gap-2">
               {exercise.isTopPick && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-accent text-white text-xs font-semibold rounded-full">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-accent text-white text-xs font-normal rounded-full">
                   <Star size={12} fill="currentColor" /> Top Pick
                 </span>
               )}
-              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-normal rounded-full">
                 {exercise.setsReps}
               </span>
-              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-normal rounded-full">
                 Effectiveness: {exercise.effectiveness}/10
               </span>
             </div>
@@ -280,7 +280,7 @@ function ExerciseCard({ exercise }) {
         {/* Toggle Button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-accent hover:text-primary font-medium text-sm flex items-center gap-1"
+          className="text-accent hover:text-primary font-normal text-sm flex items-center gap-1"
         >
           {isExpanded ? 'Hide' : 'Show'} Full Details
           <ChevronRight size={16} className={`transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
@@ -299,7 +299,7 @@ function ExerciseCard({ exercise }) {
             <div className="space-y-4">
               {/* All Form Cues */}
               <div>
-                <h5 className="text-sm font-bold text-gray-900 mb-2">Coaching Cues:</h5>
+                <h5 className="text-sm font-normal text-gray-900 mb-2" style={{ letterSpacing: '2px' }}>Coaching Cues:</h5>
                 <ul className="space-y-1">
                   {exercise.cues.map((cue, i) => (
                     <li key={i} className="text-sm text-gray-700 flex items-start">
@@ -312,7 +312,7 @@ function ExerciseCard({ exercise }) {
 
               {/* Progression */}
               <div>
-                <h5 className="text-sm font-bold text-gray-900 mb-2">Progression Tips:</h5>
+                <h5 className="text-sm font-normal text-gray-900 mb-2" style={{ letterSpacing: '2px' }}>Progression Tips:</h5>
                 <p className="text-sm text-gray-700">{exercise.progression}</p>
               </div>
             </div>

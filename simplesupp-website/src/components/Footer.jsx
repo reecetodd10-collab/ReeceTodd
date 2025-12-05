@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Product */}
           <div>
-            <h3 className="text-white font-bold mb-4">Product</h3>
+            <h3 className="text-white font-normal mb-4" style={{ letterSpacing: '2px' }}>Product</h3>
             <ul className="space-y-2">
               <li><Link to="/smartstack-ai" className="hover:text-accent transition">Aviera Stack</Link></li>
               <li><Link to="/learn" className="hover:text-accent transition">Learn</Link></li>
@@ -20,7 +20,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-white font-bold mb-4">Company</h3>
+            <h3 className="text-white font-normal mb-4" style={{ letterSpacing: '2px' }}>Company</h3>
             <ul className="space-y-2">
               <li><Link to="/about" className="hover:text-accent transition">About</Link></li>
               <li><Link to="/contact" className="hover:text-accent transition">Contact</Link></li>
@@ -29,7 +29,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-white font-bold mb-4">Legal</h3>
+            <h3 className="text-white font-normal mb-4" style={{ letterSpacing: '2px' }}>Legal</h3>
             <ul className="space-y-2">
               <li><a href="#" className="hover:text-accent transition">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-accent transition">Terms of Service</a></li>
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-white font-bold mb-4">Stay Updated</h3>
+            <h3 className="text-white font-normal mb-4" style={{ letterSpacing: '2px' }}>Stay Updated</h3>
             <EmailCapture compact />
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-center md:text-left">
             <p className="text-sm">&copy; 2025 Aivra. All rights reserved.</p>
-            <p className="text-xs text-gray-500 mt-1">Your AI-Powered Supplement & Fitness Advisor.</p>
+            <p className="text-xs text-gray-500 mt-1 font-light" style={{ letterSpacing: '5px' }}>Stop Guessing. Start Progressing.</p>
           </div>
 
           <div className="flex space-x-4 mt-4 md:mt-0">

@@ -138,11 +138,11 @@ export default function WeeklyInsightsExpanded() {
     <GlassCard className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-xl font-bold text-[var(--txt)] mb-1">Weekly Insights</h3>
+          <h3 className="text-xl font-normal text-[var(--txt)] mb-1">Weekly Insights</h3>
           <p className="text-sm text-[var(--txt-muted)]">Your performance this week</p>
         </div>
         <div className="text-right">
-          <div className={`text-3xl font-bold ${getScoreColor(90)}`}>
+          <div className={`text-3xl font-normal ${getScoreColor(90)}`}>
             {stats.weekGrade}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Week Score</div>
@@ -153,7 +153,7 @@ export default function WeeklyInsightsExpanded() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className={`p-3 rounded-lg border ${getScoreBg((stats.workoutsCompleted / Math.max(stats.totalWorkouts, 1)) * 100)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Workouts</div>
-          <div className={`text-lg font-bold ${getScoreColor((stats.workoutsCompleted / Math.max(stats.totalWorkouts, 1)) * 100)}`}>
+          <div className={`text-lg font-normal ${getScoreColor((stats.workoutsCompleted / Math.max(stats.totalWorkouts, 1)) * 100)}`}>
             {stats.workoutsCompleted}/{stats.totalWorkouts}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -163,7 +163,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className={`p-3 rounded-lg border ${getScoreBg(stats.supplementAdherence)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Supplements</div>
-          <div className={`text-lg font-bold ${getScoreColor(stats.supplementAdherence)}`}>
+          <div className={`text-lg font-normal ${getScoreColor(stats.supplementAdherence)}`}>
             {stats.supplementAdherence}%
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Adherence</div>
@@ -171,7 +171,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className={`p-3 rounded-lg border ${getScoreBg((stats.waterDays / 7) * 100)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Water</div>
-          <div className={`text-lg font-bold ${getScoreColor((stats.waterDays / 7) * 100)}`}>
+          <div className={`text-lg font-normal ${getScoreColor((stats.waterDays / 7) * 100)}`}>
             {stats.waterDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -181,7 +181,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className={`p-3 rounded-lg border ${getScoreBg((stats.sleepDays / 7) * 100)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Sleep</div>
-          <div className={`text-lg font-bold ${getScoreColor((stats.sleepDays / 7) * 100)}`}>
+          <div className={`text-lg font-normal ${getScoreColor((stats.sleepDays / 7) * 100)}`}>
             {stats.sleepDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -191,7 +191,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className={`p-3 rounded-lg border ${getScoreBg((stats.nutritionDays / 7) * 100)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Nutrition</div>
-          <div className={`text-lg font-bold ${getScoreColor((stats.nutritionDays / 7) * 100)}`}>
+          <div className={`text-lg font-normal ${getScoreColor((stats.nutritionDays / 7) * 100)}`}>
             {stats.nutritionDays}/7
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -201,7 +201,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className={`p-3 rounded-lg border ${getScoreBg(stats.mealsConsistency)}`}>
           <div className="text-xs text-[var(--txt-muted)] mb-1">Meals</div>
-          <div className={`text-lg font-bold ${getScoreColor(stats.mealsConsistency)}`}>
+          <div className={`text-lg font-normal ${getScoreColor(stats.mealsConsistency)}`}>
             {stats.mealsConsistency}%
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Consistency</div>
@@ -209,7 +209,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className="p-3 rounded-lg border bg-[var(--bg-elev-1)] border-[var(--border)]">
           <div className="text-xs text-[var(--txt-muted)] mb-1">Total XP</div>
-          <div className="text-lg font-bold text-[var(--txt)]">
+          <div className="text-lg font-normal text-[var(--txt)]">
             {stats.weeklyXP}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">This week</div>
@@ -217,7 +217,7 @@ export default function WeeklyInsightsExpanded() {
 
         <div className="p-3 rounded-lg border bg-[var(--bg-elev-1)] border-[var(--border)]">
           <div className="text-xs text-[var(--txt-muted)] mb-1">Streak</div>
-          <div className="text-lg font-bold text-[var(--txt)] flex items-center gap-1">
+          <div className="text-lg font-normal text-[var(--txt)] flex items-center gap-1">
             🔥 {stats.currentStreak}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">Days</div>
@@ -232,7 +232,7 @@ export default function WeeklyInsightsExpanded() {
           ) : (
             <TrendingDown className="text-red-400" size={20} />
           )}
-          <span className={`text-sm font-semibold ${stats.xpChange > 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <span className={`text-sm font-normal ${stats.xpChange > 0 ? 'text-green-400' : 'text-red-400'}`}>
             {stats.xpChange > 0 ? '↑' : '↓'} {Math.abs(stats.xpChange)}% {stats.xpChange > 0 ? 'improvement' : 'decrease'} from last week
           </span>
         </div>

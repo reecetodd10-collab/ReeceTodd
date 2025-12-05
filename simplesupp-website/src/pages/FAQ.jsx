@@ -43,10 +43,10 @@ export default function FAQ() {
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-normal text-gray-900 mb-4" style={{ letterSpacing: '2px' }}>
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 font-light" style={{ letterSpacing: '5px' }}>
             Everything you need to know about Aivra.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function FAQ() {
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                 className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition"
               >
-                <h3 className="text-lg font-bold text-gray-900">{faq.q}</h3>
+                <h3 className="text-lg font-normal text-gray-900" style={{ letterSpacing: '2px' }}>{faq.q}</h3>
                 {openIndex === i ? (
                   <ChevronUp className="text-primary flex-shrink-0" size={24} />
                 ) : (
@@ -71,7 +71,7 @@ export default function FAQ() {
 
               {openIndex === i && (
                 <div className="px-6 pb-5">
-                  <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+                  <p className="text-gray-600 leading-relaxed font-light" style={{ letterSpacing: '5px' }}>{faq.a}</p>
                 </div>
               )}
             </div>
@@ -79,15 +79,15 @@ export default function FAQ() {
         </div>
 
         <div className="mt-12 bg-gradient-to-br from-primary/10 via-accent/10 to-violet/10 rounded-2xl p-8 border border-primary/20 text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+          <h3 className="text-2xl font-normal text-gray-900 mb-2" style={{ letterSpacing: '2px' }}>
             Still Have Questions?
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-4 font-light" style={{ letterSpacing: '5px' }}>
             We are here to help. Reach out anytime.
           </p>
           <a
             href="/contact"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-normal hover:shadow-lg hover:scale-105 transition-all"
           >
             Contact Us
           </a>

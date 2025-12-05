@@ -193,7 +193,7 @@ export default function Nutrition() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)] flex items-center gap-3">
+        <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)] flex items-center gap-3">
           <UtensilsCrossed className="text-[var(--acc)]" size={40} />
           Nutrition Tracking
         </h1>

@@ -85,7 +85,7 @@ export default function Welcome() {
             <Crown size={48} className="text-white" />
           </motion.div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-5xl font-normal text-[var(--txt)] mb-4">
             🎉 Welcome to Premium!
           </h1>
           <p className="text-xl text-[var(--txt-muted)] mb-8">
@@ -110,7 +110,7 @@ export default function Welcome() {
                           <Icon className="text-[var(--acc)]" size={24} />
                         </div>
                         <div className="flex-1 text-left">
-                          <h3 className="font-semibold text-[var(--txt)] mb-1">{feature.text}</h3>
+                          <h3 className="font-normal text-[var(--txt)] mb-1">{feature.text}</h3>
                           <p className="text-sm text-[var(--txt-muted)]">Explore this feature</p>
                         </div>
                         <ArrowRight className="text-[var(--txt-muted)]" size={20} />
@@ -126,15 +126,15 @@ export default function Welcome() {
           <GlassCard className="p-6 mb-8">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-[var(--txt)] mb-1">∞</div>
+                <div className="text-2xl font-normal text-[var(--txt)] mb-1">∞</div>
                 <p className="text-xs text-[var(--txt-muted)]">AI Features</p>
               </div>
               <div>
-                <div className="text-2xl font-bold text-[var(--txt)] mb-1">10%</div>
+                <div className="text-2xl font-normal text-[var(--txt)] mb-1">10%</div>
                 <p className="text-xs text-[var(--txt-muted)]">Shop Discount</p>
               </div>
               <div>
-                <div className="text-2xl font-bold text-[var(--txt)] mb-1">24/7</div>
+                <div className="text-2xl font-normal text-[var(--txt)] mb-1">24/7</div>
                 <p className="text-xs text-[var(--txt-muted)]">AI Support</p>
               </div>
             </div>

@@ -25,15 +25,15 @@ export default function SmartStackAI() {
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-6xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
             Aviera Stack
           </h1>
 
-          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-medium">
+          <p className="text-xl md:text-2xl text-[var(--txt-muted)] mb-3 font-normal" style={{ letterSpacing: '15px' }}>
             Your AI-Powered Supplement Advisor
           </p>
 
-          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-2xl mx-auto">
+          <p className="text-lg text-[var(--txt-muted)] mb-6 max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
             Answer a few questions and get your personalized supplement stack in 2 minutes — built from our premium catalog.
           </p>
 
@@ -44,7 +44,7 @@ export default function SmartStackAI() {
                 <div className="flex items-center gap-3">
                   <Crown className="text-[var(--acc)]" size={24} />
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-[var(--txt)]">Upgrade to Premium</p>
+                    <p className="text-sm font-normal text-[var(--txt)]">Upgrade to Premium</p>
                     <p className="text-xs text-[var(--txt-muted)]">Get AI-powered stack builder with tracking</p>
                   </div>
                   <Sparkles className="text-[var(--acc)]" size={20} />
@@ -69,7 +69,7 @@ export default function SmartStackAI() {
             </div>
           </div>
 
-          <p className="mt-6 text-sm text-[var(--txt-muted)] italic">
+          <p className="mt-6 text-sm text-[var(--txt-muted)] italic font-light" style={{ letterSpacing: '5px' }}>
             Powered by Aviera's curated catalog of 42 premium supplements
           </p>
         </div>

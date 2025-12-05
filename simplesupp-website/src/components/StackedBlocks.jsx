@@ -78,7 +78,7 @@ export default function StackedBlocks() {
                 {/* Label */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                   <div className="glass-dark rounded-2xl p-4 md:p-6">
-                    <h4 className="text-white font-bold text-xl md:text-2xl text-center">
+                    <h4 className="text-white font-normal text-xl md:text-2xl text-center">
                       {block.label}
                     </h4>
                   </div>

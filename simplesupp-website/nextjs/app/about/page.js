@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Heart, Target, Users, ArrowRight } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 export default function About() {
   return (
@@ -35,13 +36,24 @@ export default function About() {
             </p>
           </div>
 
-          {/* Photo Placeholder */}
-          <div className="mt-8 p-8 bg-[var(--acc-light)] rounded-xl text-center border border-[var(--acc)]/20">
-            <div className="w-32 h-32 mx-auto mb-4 bg-[var(--acc)] rounded-full flex items-center justify-center text-[#001018] text-4xl font-bold shadow-accent">
-              RT
+          {/* Founder Photo */}
+          <div className="mt-8 rounded-xl overflow-hidden border border-[var(--acc)]/20 shadow-premium">
+            <div className="relative w-full aspect-[3/4] max-w-xs mx-auto">
+              <OptimizedImage
+                src="/images/about/founder-photo.jpg"
+                alt="Reece Todd, Founder of Aviera"
+                width={600}
+                height={800}
+                className="w-full h-full"
+                objectFit="cover"
+                objectPosition="center center"
+                fallbackText="Founder Photo"
+              />
             </div>
-            <p className="text-[var(--txt)] font-semibold">Reece Todd</p>
-            <p className="text-sm text-[var(--txt-muted)]">Founder, Aviera</p>
+            <div className="p-6 text-center bg-[var(--bg-elev-1)]">
+              <p className="text-[var(--txt)] font-semibold text-lg">Reece Todd</p>
+              <p className="text-sm text-[var(--txt-muted)]">Founder, Aviera</p>
+            </div>
           </div>
         </div>
 

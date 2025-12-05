@@ -59,8 +59,8 @@ export default function PillLogo({ size = 'large', shimmer = false }) {
       </div>
 
       {/* Wordmark - Clean Aviera branding */}
-      <h1 className={`${config.text} font-bold text-[var(--txt)]`}>
-        Aviera
+      <h1 className={`${config.text} font-normal text-[var(--txt)]`} style={{ letterSpacing: '2px' }}>
+        AVIERA
       </h1>
     </div>
   );

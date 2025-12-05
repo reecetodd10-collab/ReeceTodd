@@ -86,10 +86,10 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
+            <h1 className="text-4xl md:text-5xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
               Upgrade to Aviera Premium
             </h1>
-            <p className="text-xl text-[var(--txt-muted)] mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-[var(--txt-muted)] mb-12 max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
               Unlock AI-powered personalization and advanced features to take your fitness journey to the next level
             </p>
           </motion.div>
@@ -104,18 +104,18 @@ export default function Pricing() {
             <GlassCard className="p-8 relative overflow-hidden">
               {/* Premium Badge */}
               <div className="absolute top-4 right-4">
-                <span className="px-3 py-1 bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <span className="px-3 py-1 bg-gradient-to-r from-[var(--acc)] to-blue-500 text-white text-xs font-normal rounded-full flex items-center gap-1">
                   <Crown size={12} />
                   Premium
                 </span>
               </div>
 
               <div className="mb-6">
-                <div className="text-5xl font-bold text-[var(--txt)] mb-2">
+                <div className="text-5xl font-normal text-[var(--txt)] mb-2">
                   $9.99<span className="text-2xl text-[var(--txt-muted)]">/month</span>
                 </div>
                 <div className="text-sm text-[var(--txt-muted)]">
-                  or <span className="font-semibold text-[var(--txt)]">$99/year</span> (save 17%)
+                  or <span className="font-normal text-[var(--txt)]">$99/year</span> (save 17%)
                 </div>
               </div>
 
@@ -171,13 +171,13 @@ export default function Pricing() {
 
         {/* Comparison Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-[var(--txt)] mb-8">
+          <h2 className="text-3xl font-normal text-center text-[var(--txt)] mb-8" style={{ letterSpacing: '2px' }}>
             Free vs Premium
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Free Tier */}
             <GlassCard className="p-6">
-              <h3 className="text-xl font-bold text-[var(--txt)] mb-4">Free Tier</h3>
+              <h3 className="text-xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>Free Tier</h3>
               <div className="space-y-3">
                 {[
                   { feature: 'Basic Supplement Recommendations', free: true, premium: true },
@@ -215,11 +215,11 @@ export default function Pricing() {
             {/* Premium Tier */}
             <GlassCard className="p-6 border-2 border-[var(--acc)]/30 relative">
               <div className="absolute top-4 right-4">
-                <span className="px-2 py-1 bg-[var(--acc)] text-white text-xs font-bold rounded">
+                <span className="px-2 py-1 bg-[var(--acc)] text-white text-xs font-normal rounded">
                   PREMIUM
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-[var(--txt)] mb-4">Premium</h3>
+              <h3 className="text-xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>Premium</h3>
               <div className="space-y-3">
                 {[
                   { feature: 'Basic Supplement Recommendations', free: true, premium: true },
@@ -258,7 +258,7 @@ export default function Pricing() {
 
         {/* FAQ Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-[var(--txt)] mb-8">
+          <h2 className="text-3xl font-normal text-center text-[var(--txt)] mb-8">
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-4">
@@ -268,7 +268,7 @@ export default function Pricing() {
                   onClick={() => toggleFAQ(index)}
                   className="w-full flex items-center justify-between text-left"
                 >
-                  <h3 className="text-lg font-semibold text-[var(--txt)] pr-4">
+                  <h3 className="text-lg font-normal text-[var(--txt)] pr-4">
                     {faq.question}
                   </h3>
                   {expandedFAQ === index ? (
@@ -295,7 +295,7 @@ export default function Pricing() {
         {/* Testimonials Section */}
         <div className="text-center mb-16">
           <GlassCard className="p-8">
-            <h2 className="text-2xl font-bold text-[var(--txt)] mb-4">
+            <h2 className="text-2xl font-normal text-[var(--txt)] mb-4">
               Join 1,000+ members optimizing their fitness
             </h2>
             <p className="text-[var(--txt-muted)]">
@@ -329,7 +329,7 @@ function PaymentModal({ isOpen, onClose, type }) {
         <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <Crown className="text-[var(--acc)]" size={32} />
         </div>
-        <h3 className="text-xl font-bold text-[var(--txt)] mb-2">
+        <h3 className="text-xl font-normal text-[var(--txt)] mb-2">
           Payment Integration Coming Soon!
         </h3>
         <p className="text-[var(--txt-muted)] mb-6">

@@ -175,7 +175,7 @@ export default function EnhancedGoalsChecklist() {
             <Target className="text-[var(--acc)]" size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[var(--txt)]">Today's Goals</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Today's Goals</h3>
             <p className="text-xs text-[var(--txt-muted)]">
               {goals.completedCount}/{goals.totalCount} complete - {goals.completionPercentage}%
             </p>
@@ -220,7 +220,7 @@ export default function EnhancedGoalsChecklist() {
 
       {goals.completionPercentage === 100 && (
         <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-          <p className="text-sm font-semibold text-green-400 text-center flex items-center justify-center gap-2">
+          <p className="text-sm font-normal text-green-400 text-center flex items-center justify-center gap-2">
             <Trophy size={16} />
             Perfect day! All goals completed! 🎉
           </p>
@@ -237,7 +237,7 @@ export default function EnhancedGoalsChecklist() {
           >
             {/* Core Goals */}
             <div className="mb-4">
-              <h4 className="text-sm font-semibold text-[var(--txt)] mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-normal text-[var(--txt)] mb-3 flex items-center gap-2">
                 <Target size={16} />
                 Core Goals (Required for Streak)
               </h4>
@@ -258,7 +258,7 @@ export default function EnhancedGoalsChecklist() {
                         {goal.icon}
                       </div>
                       <div>
-                        <div className="font-medium text-[var(--txt)]">{goal.name}</div>
+                        <div className="font-normal text-[var(--txt)]">{goal.name}</div>
                         <div className="text-xs text-[var(--txt-muted)]">{goal.progress}</div>
                       </div>
                     </div>
@@ -277,7 +277,7 @@ export default function EnhancedGoalsChecklist() {
 
             {/* Bonus Goals */}
             <div>
-              <h4 className="text-sm font-semibold text-[var(--txt)] mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-normal text-[var(--txt)] mb-3 flex items-center gap-2">
                 <Trophy size={16} />
                 Bonus Goals (Extra XP)
               </h4>
@@ -298,7 +298,7 @@ export default function EnhancedGoalsChecklist() {
                         {goal.icon}
                       </div>
                       <div>
-                        <div className="font-medium text-[var(--txt)]">{goal.name}</div>
+                        <div className="font-normal text-[var(--txt)]">{goal.name}</div>
                         <div className="text-xs text-[var(--txt-muted)]">{goal.progress}</div>
                       </div>
                     </div>
@@ -317,7 +317,7 @@ export default function EnhancedGoalsChecklist() {
             <div className="mt-4 pt-4 border-t border-[var(--border)]">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[var(--txt-muted)]">Consistency Score</span>
-                <span className="font-semibold text-[var(--txt)]">
+                <span className="font-normal text-[var(--txt)]">
                   Core: {Math.round(coreComplete * 100)}% | Bonus: {Math.round(bonusComplete * 100)}%
                 </span>
               </div>

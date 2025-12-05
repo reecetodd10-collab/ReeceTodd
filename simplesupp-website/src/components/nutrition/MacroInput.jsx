@@ -38,7 +38,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
     <>
       <GlassCard className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-[var(--txt)]">Daily Macros</h3>
+          <h3 className="text-lg font-normal text-[var(--txt)]">Daily Macros</h3>
           <button
             onClick={() => setShowGoalsModal(true)}
             className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-sm text-[var(--txt-muted)] hover:text-[var(--txt)] transition"
@@ -52,7 +52,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
           {/* Protein */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-[var(--txt)] flex items-center gap-2">
+              <label className="text-sm font-normal text-[var(--txt)] flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-red-500"></span>
                 Protein
               </label>
@@ -73,7 +73,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
           {/* Carbs */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-[var(--txt)] flex items-center gap-2">
+              <label className="text-sm font-normal text-[var(--txt)] flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
                 Carbs
               </label>
@@ -94,7 +94,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
           {/* Fats */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-[var(--txt)] flex items-center gap-2">
+              <label className="text-sm font-normal text-[var(--txt)] flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-blue-500"></span>
                 Fats
               </label>
@@ -115,8 +115,8 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
           {/* Calories Display */}
           <div className="pt-4 border-t border-[var(--border)]">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[var(--txt)]">Total Calories</span>
-              <span className="text-lg font-bold text-[var(--txt)]">
+              <span className="text-sm font-normal text-[var(--txt)]">Total Calories</span>
+              <span className="text-lg font-normal text-[var(--txt)]">
                 {calories} / {goals?.calories || 2100} cal
               </span>
             </div>
@@ -134,7 +134,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
       <Modal isOpen={showGoalsModal} onClose={() => setShowGoalsModal(false)} title="Adjust Macro Goals">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">
               Goal Type
             </label>
             <select
@@ -154,7 +154,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">
               Daily Calories
             </label>
             <input
@@ -169,7 +169,7 @@ export default function MacroInput({ goals, today, onUpdate, onUpdateGoals }) {
 
           {/* Preview */}
           <div className="p-4 bg-[var(--bg-elev-1)] rounded-lg">
-            <p className="text-sm font-semibold text-[var(--txt)] mb-2">New Goals:</p>
+            <p className="text-sm font-normal text-[var(--txt)] mb-2">New Goals:</p>
             {(() => {
               const preview = getDefaultMacroGoals(goalType, customCalories);
               return (

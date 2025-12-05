@@ -72,7 +72,7 @@ export default function NotesWidget() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <FileText className="text-[var(--acc)]" size={20} />
-            <h3 className="text-lg font-bold text-[var(--txt)]">Personal Notes</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Personal Notes</h3>
           </div>
           <Button
             variant="icon"

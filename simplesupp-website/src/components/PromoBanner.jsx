@@ -54,7 +54,7 @@ export default function PromoBanner() {
                   <div className="hidden md:flex items-center gap-4 flex-1">
                     <div className="flex items-center gap-2">
                       <Mail size={20} className="flex-shrink-0" />
-                      <span className="font-semibold text-sm lg:text-base">
+                      <span className="font-normal text-sm lg:text-base">
                         Get 10% off your first purchase!
                       </span>
                     </div>
@@ -81,7 +81,7 @@ export default function PromoBanner() {
                   <div className="flex md:hidden flex-col gap-2 flex-1">
                     <div className="flex items-center gap-2">
                       <Mail size={18} />
-                      <span className="font-semibold text-sm">
+                      <span className="font-normal text-sm">
                         Get 10% off your first purchase!
                       </span>
                     </div>
@@ -105,7 +105,7 @@ export default function PromoBanner() {
                 </>
               ) : (
                 <div className="flex items-center justify-center flex-1 py-1">
-                  <span className="font-semibold text-sm lg:text-base">
+                  <span className="font-normal text-sm lg:text-base">
                     🎉 Success! Check your email for your 10% discount code.
                   </span>
                 </div>

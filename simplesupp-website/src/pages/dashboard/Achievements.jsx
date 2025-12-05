@@ -111,7 +111,7 @@ export default function Achievements() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)] flex items-center gap-3">
+        <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)] flex items-center gap-3">
           <Trophy className="text-[var(--acc)]" size={40} />
           Achievements
         </h1>
@@ -124,13 +124,13 @@ export default function Achievements() {
       <GlassCard className="p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-[var(--txt)] mb-1">Collection Progress</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)] mb-1">Collection Progress</h3>
             <p className="text-sm text-[var(--txt-muted)]">
               {unlockedCount} of {totalCount} achievements unlocked
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-[var(--acc)]">
+            <div className="text-3xl font-normal text-[var(--acc)]">
               {Math.round((unlockedCount / totalCount) * 100)}%
             </div>
             <div className="text-xs text-[var(--txt-muted)]">Complete</div>
@@ -146,7 +146,7 @@ export default function Achievements() {
 
       {/* Starter Badges */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4 flex items-center gap-2">
           <Sparkles size={20} />
           Starter Badges
         </h2>
@@ -169,7 +169,7 @@ export default function Achievements() {
 
       {/* Workout Badges */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4">Workout Badges</h2>
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4">Workout Badges</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {workoutBadges.map(id => {
             const unlocked = unlockedIds.includes(id);
@@ -189,7 +189,7 @@ export default function Achievements() {
 
       {/* Supplement Badges */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4">Supplement Badges</h2>
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4">Supplement Badges</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {supplementBadges.map(id => {
             const unlocked = unlockedIds.includes(id);
@@ -209,7 +209,7 @@ export default function Achievements() {
 
       {/* Health Badges (Water & Sleep) */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4">Health Badges</h2>
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4">Health Badges</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {healthBadges.map(id => {
             const unlocked = unlockedIds.includes(id);
@@ -229,7 +229,7 @@ export default function Achievements() {
 
       {/* Lifestyle Badges */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4 flex items-center gap-2">
           <Sparkles size={20} />
           Lifestyle Badges
         </h2>

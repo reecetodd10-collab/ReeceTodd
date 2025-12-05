@@ -48,8 +48,14 @@ export default function OptimizedImage({
   // Create blur data URL for placeholder
   const blurDataURL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==';
 
+  // Check if className indicates we want to fill container (w-full, h-full, etc.)
+  const shouldFill = className.includes('w-full') || className.includes('h-full');
+  
   return (
-    <div className={`relative overflow-hidden ${className}`} style={{ width, height }}>
+    <div 
+      className={`relative overflow-hidden ${className}`} 
+      style={shouldFill ? { width: '100%', height: '100%' } : { width, height }}
+    >
       <Image
         src={src}
         alt={alt}
@@ -72,7 +78,7 @@ export default function OptimizedImage({
           console.error('Image load error:', src, e);
           setImageError(true);
         }}
-        onLoadingComplete={() => {
+        onLoad={() => {
           setImageLoaded(true);
         }}
         unoptimized={false}

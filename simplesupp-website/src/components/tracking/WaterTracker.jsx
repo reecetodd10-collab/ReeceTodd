@@ -88,12 +88,12 @@ export default function WaterTracker() {
             <Droplets className="text-blue-400" size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[var(--txt)]">Water Tracker</h3>
+            <h3 className="text-lg font-normal text-[var(--txt)]">Water Tracker</h3>
             <p className="text-xs text-[var(--txt-muted)]">Daily Goal: {waterData.dailyGoal} glasses</p>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-[var(--txt)]">
+          <div className="text-2xl font-normal text-[var(--txt)]">
             {waterData.today}/{waterData.dailyGoal}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">glasses</div>
@@ -154,7 +154,7 @@ export default function WaterTracker() {
       <div className="mb-4">
         <div className="flex justify-between items-center text-sm mb-2">
           <span className="text-[var(--txt-muted)]">Progress</span>
-          <span className={`font-semibold ${goalReached ? 'text-green-400' : 'text-[var(--txt)]'}`}>
+          <span className={`font-normal ${goalReached ? 'text-green-400' : 'text-[var(--txt)]'}`}>
             {progressPercentage}% hydrated
           </span>
         </div>
@@ -177,7 +177,7 @@ export default function WaterTracker() {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => addWater(1)}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--acc)]/20 hover:bg-[var(--acc)]/30 border border-[var(--acc)]/30 rounded-lg text-[var(--acc)] font-semibold transition"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--acc)]/20 hover:bg-[var(--acc)]/30 border border-[var(--acc)]/30 rounded-lg text-[var(--acc)] font-normal transition"
         >
           <Plus size={20} />
           +1 Glass
@@ -185,14 +185,14 @@ export default function WaterTracker() {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => addWater(2)}
-          className="px-4 py-3 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 font-semibold transition"
+          className="px-4 py-3 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 font-normal transition"
         >
           +2
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => addWater(4)}
-          className="px-4 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-cyan-400 font-semibold transition"
+          className="px-4 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-cyan-400 font-normal transition"
         >
           +4
         </motion.button>
@@ -207,7 +207,7 @@ export default function WaterTracker() {
             exit={{ opacity: 0, y: -40 }}
             className="absolute top-4 right-4 px-3 py-2 bg-green-500/90 backdrop-blur-sm rounded-lg shadow-lg border border-green-400/50"
           >
-            <div className="flex items-center gap-2 text-white font-semibold">
+            <div className="flex items-center gap-2 text-white font-normal">
               <Droplet size={16} />
               <span>+10 XP - Goal Reached!</span>
             </div>
@@ -218,7 +218,7 @@ export default function WaterTracker() {
       {/* Goal Reached Message */}
       {goalReached && waterData.today >= waterData.dailyGoal && (
         <div className="mt-4 pt-4 border-t border-[var(--border)] text-center">
-          <p className="text-sm font-semibold text-green-400">
+          <p className="text-sm font-normal text-green-400">
             🎉 You've reached your daily water goal!
           </p>
         </div>

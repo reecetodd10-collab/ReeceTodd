@@ -92,7 +92,7 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
   return (
     <GlassCard className="p-6 mb-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-[var(--txt)] mb-2">Today's Progress</h2>
+        <h2 className="text-2xl font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>Today's Progress</h2>
         <p className="text-sm text-[var(--txt-muted)]">{today}</p>
       </div>
 
@@ -192,7 +192,7 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-3xl font-bold text-[var(--txt)]"
+                  className="text-3xl font-normal text-[var(--txt)]"
                 >
                   {overallCompletion}%
                 </motion.div>
@@ -210,9 +210,9 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center">
               <Pill className="text-orange-400" size={16} />
             </div>
-            <span className="text-sm font-medium text-[var(--txt)]">Supplements</span>
+            <span className="text-sm font-normal text-[var(--txt)]">Supplements</span>
           </div>
-          <span className="text-sm font-semibold text-[var(--txt)]">
+          <span className="text-sm font-normal text-[var(--txt)]">
             {supplementsTaken}/{supplementsTotal}
           </span>
         </div>
@@ -222,9 +222,9 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
               <Dumbbell className="text-green-400" size={16} />
             </div>
-            <span className="text-sm font-medium text-[var(--txt)]">Workout</span>
+            <span className="text-sm font-normal text-[var(--txt)]">Workout</span>
           </div>
-          <span className={`text-sm font-semibold ${workoutComplete ? 'text-green-400' : 'text-[var(--txt-muted)]'}`}>
+          <span className={`text-sm font-normal ${workoutComplete ? 'text-green-400' : 'text-[var(--txt-muted)]'}`}>
             {workoutComplete ? 'Complete ✓' : 'Not started'}
           </span>
         </div>
@@ -234,9 +234,9 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center">
               <Target className="text-blue-400" size={16} />
             </div>
-            <span className="text-sm font-medium text-[var(--txt)]">Consistency</span>
+            <span className="text-sm font-normal text-[var(--txt)]">Consistency</span>
           </div>
-          <span className="text-sm font-semibold text-[var(--txt)]">
+          <span className="text-sm font-normal text-[var(--txt)]">
             {consistencyPercentage}%
           </span>
         </div>
@@ -273,7 +273,7 @@ export default function HabitRings({ supplementsTaken = 0, supplementsTotal = 0,
           <div className="mt-4 pt-4 border-t border-[var(--border)] text-center">
             <div className="flex items-center justify-center gap-2">
               <span className="text-2xl">🔥</span>
-              <span className="text-lg font-bold text-[var(--txt)]">
+              <span className="text-lg font-normal text-[var(--txt)]">
                 {data.currentStreak} day streak!
               </span>
             </div>

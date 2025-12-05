@@ -49,7 +49,7 @@ export default function AddNoteModal({ isOpen, onClose, onNoteAdded }) {
     >
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">
             Note
           </label>
           <textarea
@@ -65,7 +65,7 @@ export default function AddNoteModal({ isOpen, onClose, onNoteAdded }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">
             Tag (optional)
           </label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">

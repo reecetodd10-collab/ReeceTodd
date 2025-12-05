@@ -98,12 +98,12 @@ export default function ReassessmentForm({ isOpen, onClose }) {
 function Step1Progress({ data, updateField }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Progress Check-in</h2>
+      <h2 className="text-2xl font-normal mb-2">Progress Check-in</h2>
       <p className="text-secondary mb-6">How's it going?</p>
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Energy Levels (1-10)</label>
+          <label className="block text-sm font-normal mb-2">Energy Levels (1-10)</label>
           <input
             type="range"
             min="1"
@@ -114,13 +114,13 @@ function Step1Progress({ data, updateField }) {
           />
           <div className="flex justify-between text-xs text-muted mt-1">
             <span>Low</span>
-            <span className="font-bold text-primary">{data.energy}</span>
+            <span className="font-normal text-primary">{data.energy}</span>
             <span>High</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Sleep Quality (1-10)</label>
+          <label className="block text-sm font-normal mb-2">Sleep Quality (1-10)</label>
           <input
             type="range"
             min="1"
@@ -131,13 +131,13 @@ function Step1Progress({ data, updateField }) {
           />
           <div className="flex justify-between text-xs text-muted mt-1">
             <span>Poor</span>
-            <span className="font-bold text-primary">{data.sleep}</span>
+            <span className="font-normal text-primary">{data.sleep}</span>
             <span>Excellent</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Stress Levels (1-10)</label>
+          <label className="block text-sm font-normal mb-2">Stress Levels (1-10)</label>
           <input
             type="range"
             min="1"
@@ -148,7 +148,7 @@ function Step1Progress({ data, updateField }) {
           />
           <div className="flex justify-between text-xs text-muted mt-1">
             <span>Low</span>
-            <span className="font-bold text-primary">{data.stress}</span>
+            <span className="font-normal text-primary">{data.stress}</span>
             <span>High</span>
           </div>
         </div>
@@ -162,7 +162,7 @@ function Step2Goal({ data, updateField }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Goal Review</h2>
+      <h2 className="text-2xl font-normal mb-2">Goal Review</h2>
       <p className="text-secondary mb-6">Still working toward the same goal?</p>
 
       <div className="space-y-3">
@@ -189,12 +189,12 @@ function Step2Goal({ data, updateField }) {
 function Step3Biometrics({ data, updateField }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Biometrics Update</h2>
+      <h2 className="text-2xl font-normal mb-2">Biometrics Update</h2>
       <p className="text-secondary mb-6">Update your current stats (optional)</p>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Current Weight (lbs)</label>
+          <label className="block text-sm font-normal mb-2">Current Weight (lbs)</label>
           <input
             type="number"
             value={data.weight}
@@ -211,12 +211,12 @@ function Step3Biometrics({ data, updateField }) {
 function Step4Lifestyle({ data, updateField }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Lifestyle Changes</h2>
+      <h2 className="text-2xl font-normal mb-2">Lifestyle Changes</h2>
       <p className="text-secondary mb-6">Any updates to your routine?</p>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Training Days Per Week</label>
+          <label className="block text-sm font-normal mb-2">Training Days Per Week</label>
           <input
             type="range"
             min="1"
@@ -225,7 +225,7 @@ function Step4Lifestyle({ data, updateField }) {
             onChange={(e) => updateField('trainingDays', parseInt(e.target.value))}
             className="w-full"
           />
-          <div className="text-center text-sm font-bold mt-1">{data.trainingDays} days</div>
+          <div className="text-center text-sm font-normal mt-1">{data.trainingDays} days</div>
         </div>
       </div>
     </div>
@@ -237,7 +237,7 @@ function Step5Nutrition({ data, updateField }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Nutrition Preferences</h2>
+      <h2 className="text-2xl font-normal mb-2">Nutrition Preferences</h2>
       <p className="text-secondary mb-6">Update your dietary preferences</p>
 
       <div className="space-y-3">

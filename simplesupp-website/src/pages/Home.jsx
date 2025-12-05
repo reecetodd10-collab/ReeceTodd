@@ -83,15 +83,15 @@ export default function Home() {
                 H1: #F0F6FF on scrim (avg rgba(0,0,0,0.4)) = ~9.5:1 (exceeds 7:1 requirement)
                 Body: #B8C2D9 on scrim = ~6.2:1 (exceeds 4.5:1 requirement)
               */}
-                              <h1 className="text-6xl md:text-7xl lg:text-[96px] font-extrabold leading-tight mb-6 text-[#F0F6FF] text-shadow">
-                Aviera
+                              <h1 className="text-6xl md:text-7xl lg:text-[96px] font-normal leading-tight mb-6 text-[#F0F6FF] text-shadow" style={{ letterSpacing: '2px' }}>
+                AVIERA
               </h1>
 
-              <p className="text-xl md:text-2xl text-[24px] text-[var(--txt-muted)] max-w-3xl mx-auto mb-4 font-medium">
-                Your AI-Powered Supplement & Fitness Advisor
+              <p className="text-lg md:text-xl text-white max-w-3xl mx-auto mb-4 font-light relative z-20" style={{ letterSpacing: '7px', opacity: 1, textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' }}>
+                Stop Guessing. Start Progressing.
               </p>
 
-              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-2xl mx-auto mb-12 leading-relaxed">
+              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-2xl mx-auto mb-12 leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
                 Get personalized supplement recommendations and workout plans tailored to your goals — 
                 built in minutes by AI. Science-backed, personalized, results-driven.
               </p>
@@ -152,10 +152,10 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-20">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                 How It Works
               </h2>
-              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Simple. Smart. Personalized. Get your perfect stack in three easy steps.
               </p>
             </div>
@@ -199,11 +199,11 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="inline-block px-4 py-2 bg-[var(--acc)] text-[#001018] rounded-full font-semibold text-sm mb-6">
+                  <div className="inline-block px-4 py-2 bg-[var(--acc)] text-[#001018] rounded-full font-normal text-sm mb-6">
                     Step {item.step}
                   </div>
-                  <h3 className="text-2xl font-bold text-[var(--txt)] mb-4">{item.title}</h3>
-                  <p className="text-[#d1d5db] leading-relaxed text-lg">
+                  <h3 className="text-2xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>{item.title}</h3>
+                  <p className="text-[#d1d5db] leading-relaxed text-lg font-light" style={{ letterSpacing: '5px' }}>
                     {item.description}
                   </p>
                 </motion.div>
@@ -241,10 +241,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+                <h2 className="text-5xl md:text-6xl font-normal text-white mb-6" style={{ letterSpacing: '2px' }}>
                   Aviera Stack
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
                   Answer a quick 2-minute quiz and get an AI-generated supplement stack tailored to your exact
                   goals, lifestyle, and experience level. Our intelligence engine analyzes 42+ premium supplements
                   to build your perfect combination.
@@ -261,7 +261,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg font-light" style={{ letterSpacing: '5px' }}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -312,16 +312,16 @@ export default function Home() {
                 <div className="relative p-8 bg-gray-50 rounded-3xl shadow-premium-lg border border-gray-100">
                   <div className="space-y-6">
                     <div className="text-center">
-                      <div className="inline-block px-6 py-3 bg-[var(--acc)] text-[#001018] rounded-full font-semibold mb-4">
+                      <div className="inline-block px-6 py-3 bg-[var(--acc)] text-[#001018] rounded-full font-normal mb-4">
                         Your Workout Plan
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 bg-white rounded-xl shadow-sm">
-                          <div className="text-3xl font-bold text-[var(--acc)] mb-1">4</div>
+                          <div className="text-3xl font-normal text-[var(--acc)] mb-1">4</div>
                           <div className="text-sm text-[var(--txt-muted)]">Days/Week</div>
                         </div>
                         <div className="p-4 bg-white rounded-xl shadow-sm">
-                          <div className="text-3xl font-bold text-[var(--acc)] mb-1">60</div>
+                          <div className="text-3xl font-normal text-[var(--acc)] mb-1">60</div>
                           <div className="text-sm text-[var(--txt-muted)]">Min/Session</div>
                         </div>
                       </div>
@@ -348,10 +348,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+                <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                   Aviera Fit
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
                   Get AI-powered workout recommendations tailored to your goals and experience level.
                   Match your training plan with the perfect supplement stack for maximum results.
                 </p>
@@ -367,7 +367,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg font-light" style={{ letterSpacing: '5px' }}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -413,10 +413,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+                <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                   Aviera Shop
                 </h2>
-                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed">
+                <p className="text-xl text-[#d1d5db] mb-8 leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
                   Order premium supplements directly through our Supliful integration.
                   Quality guaranteed, fast shipping, hassle-free returns. Your perfect stack,
                   delivered to your door.
@@ -433,7 +433,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-[var(--acc)] rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle size={16} className="text-[#001018]" />
                       </div>
-                      <span className="text-[#d1d5db] text-lg">{feature}</span>
+                      <span className="text-[#d1d5db] text-lg font-light" style={{ letterSpacing: '5px' }}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -466,8 +466,8 @@ export default function Home() {
                       <div className="w-full h-24 bg-[var(--acc)]/20 rounded-xl mb-4 flex items-center justify-center">
                         <div className="w-12 h-12 bg-[var(--acc)] rounded-lg opacity-100"></div>
                       </div>
-                      <h4 className="font-bold text-[var(--txt)] mb-2">{product.name}</h4>
-                      <p className="text-2xl font-bold text-[var(--acc)]">{product.price}</p>
+                      <h4 className="font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>{product.name}</h4>
+                      <p className="text-2xl font-normal text-[var(--acc)]">{product.price}</p>
                     </div>
                   ))}
                 </div>
@@ -489,10 +489,10 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${goalsAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                 Whatever Your Goal
               </h2>
-              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Personalized supplement stacks for every fitness journey.
               </p>
             </div>
@@ -513,10 +513,10 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${reviewsAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[#ffffff] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[#ffffff] mb-6" style={{ letterSpacing: '2px' }}>
                 What Our Users Say
               </h2>
-              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Real results from real people transforming their fitness journey with Aivra.
               </p>
             </div>
@@ -555,9 +555,9 @@ export default function Home() {
                       <Star key={i} className="text-yellow-400 fill-current" size={20} />
                     ))}
                   </div>
-                  <p className="text-[var(--txt)] leading-relaxed text-lg italic mb-6">"{review.quote}"</p>
-                  <div className="font-semibold text-[var(--txt)] text-lg">{review.name}</div>
-                  <div className="text-sm text-[var(--txt-muted)]">{review.role}</div>
+                  <p className="text-[var(--txt)] leading-relaxed text-lg italic mb-6 font-light" style={{ letterSpacing: '5px' }}>"{review.quote}"</p>
+                  <div className="font-normal text-[var(--txt)] text-lg" style={{ letterSpacing: '2px' }}>{review.name}</div>
+                  <div className="text-sm text-[var(--txt-muted)] font-light" style={{ letterSpacing: '5px' }}>{review.role}</div>
                 </motion.div>
               ))}
             </div>
@@ -576,10 +576,10 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${faqAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Everything you need to know about Aivra and our AI-powered recommendations.
               </p>
             </div>
@@ -598,12 +598,12 @@ export default function Home() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-full mb-6">
                 <Crown className="text-[var(--acc)]" size={20} />
-                <span className="text-sm font-semibold text-[var(--acc)]">Premium Features</span>
+                <span className="text-sm font-normal text-[var(--acc)]">Premium Features</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
+              <h2 className="text-4xl md:text-5xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
                 Take Your Fitness to the Next Level
               </h2>
-              <p className="text-lg text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-lg text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Unlock AI-powered personalization, advanced tracking, and custom workout plans
               </p>
             </div>
@@ -620,8 +620,8 @@ export default function Home() {
                     <div className="w-16 h-16 bg-[var(--acc)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Icon className="text-[var(--acc)]" size={32} />
                     </div>
-                    <h3 className="text-xl font-bold text-[var(--txt)] mb-2">{feature.title}</h3>
-                    <p className="text-sm text-[var(--txt-muted)]">{feature.desc}</p>
+                    <h3 className="text-xl font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>{feature.title}</h3>
+                    <p className="text-sm text-[var(--txt-muted)] font-light" style={{ letterSpacing: '5px' }}>{feature.desc}</p>
                   </GlassCard>
                 );
               })}
@@ -662,11 +662,11 @@ export default function Home() {
                 <Sparkles className="mx-auto mb-6" size={64} />
               </div>
 
-              <h2 className="text-5xl md:text-7xl font-bold text-[var(--txt)] mb-8">
+              <h2 className="text-5xl md:text-7xl font-normal text-[var(--txt)] mb-8" style={{ letterSpacing: '2px' }}>
                 Ready to Get Started?
               </h2>
 
-              <p className="text-xl md:text-2xl text-[#d1d5db] mb-12 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl text-[#d1d5db] mb-12 leading-relaxed max-w-3xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Simplify your supplement routine with Aviera. Get AI-powered recommendations
                 in 2 minutes. Free to use, no credit card required.
               </p>
@@ -718,10 +718,13 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             {/* Section Title */}
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
                 About Aviera
               </h2>
-              <p className="text-lg md:text-xl text-[#d1d5db] max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[#d1d5db] max-w-3xl mx-auto mb-2 font-light" style={{ letterSpacing: '7px' }}>
+                Stop Guessing. Start Progressing.
+              </p>
+              <p className="text-base md:text-lg text-[#d1d5db] max-w-3xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Built by fitness enthusiasts, for everyone on a fitness journey.
               </p>
             </div>
@@ -735,7 +738,7 @@ export default function Home() {
                     {/* Placeholder for founder photo - user will upload separately */}
                     <div className="aspect-[3/4] bg-gradient-to-br from-[var(--charcoal-light)] to-[var(--bg)] flex items-center justify-center">
                       <div className="text-center">
-                        <div className="w-24 h-24 mx-auto mb-4 bg-[var(--acc)] rounded-full flex items-center justify-center text-[#001018] text-3xl font-bold shadow-accent">
+                        <div className="w-24 h-24 mx-auto mb-4 bg-[var(--acc)] rounded-full flex items-center justify-center text-[#001018] text-3xl font-normal shadow-accent">
                           RT
                         </div>
                         <p className="text-[var(--txt)] text-sm">Founder Photo</p>
@@ -749,26 +752,26 @@ export default function Home() {
               {/* Bio Column (60%) */}
               <div className="lg:col-span-3">
                 <div className="glass-card p-8 md:p-12">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                  <h3 className="text-3xl md:text-4xl font-normal text-white mb-6" style={{ letterSpacing: '2px' }}>
                     Why I Built Aviera
                   </h3>
                   <div className="space-y-6">
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      I am <strong className="text-white">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
+                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
+                      I am <strong className="text-white font-normal">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      I built <strong className="text-white">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
+                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
+                      I built <strong className="text-white font-normal">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-white">That confusion ends here.</strong>
+                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
+                      The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-white font-normal">That confusion ends here.</strong>
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
+                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed font-light" style={{ letterSpacing: '5px' }}>
                       What I love most: if you are brand-new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
                     </p>
                   </div>
                   <div className="mt-8 pt-8 border-t border-white/10">
-                    <p className="text-white font-semibold text-lg">Reece Todd</p>
-                    <p className="text-sm text-[#a0a0a0] mt-1">Founder, Aivra</p>
+                    <p className="text-white font-normal text-lg" style={{ letterSpacing: '2px' }}>Reece Todd</p>
+                    <p className="text-sm text-[#a0a0a0] mt-1 font-light" style={{ letterSpacing: '5px' }}>Founder, Aivra</p>
                   </div>
                 </div>
               </div>
@@ -788,10 +791,10 @@ export default function Home() {
             className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${contactAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[var(--txt)] mb-6">
+              <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>
                 Get In Touch
               </h2>
-              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto">
+              <p className="text-xl text-[#d1d5db] max-w-2xl mx-auto font-light" style={{ letterSpacing: '5px' }}>
                 Have questions? We're here to help. Send us a message and we'll get back to you as soon as possible.
               </p>
             </div>

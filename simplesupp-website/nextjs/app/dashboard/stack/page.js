@@ -611,7 +611,7 @@ export default function StackBuilder() {
                 <Pill className="text-[var(--acc)]" size={20} />
               </div>
               <div>
-                <p className="font-semibold text-[var(--txt)]">Premium Member</p>
+                <p className="font-semibold text-[var(--txt)]">Pro Member</p>
                 <p className="text-sm text-[var(--txt-muted)]">10% off all supplement orders</p>
               </div>
             </div>

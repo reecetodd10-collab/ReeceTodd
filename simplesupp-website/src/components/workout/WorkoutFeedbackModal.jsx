@@ -86,7 +86,7 @@ export default function WorkoutFeedbackModal({ isOpen, onClose, workoutId, worko
                 whileTap={{ scale: 0.95 }}
               >
                 <div className="text-4xl mb-2">{option.emoji}</div>
-                <div className="text-sm font-semibold">{option.label}</div>
+                <div className="text-sm font-normal">{option.label}</div>
               </motion.button>
             ))}
           </div>
@@ -97,7 +97,7 @@ export default function WorkoutFeedbackModal({ isOpen, onClose, workoutId, worko
               animate={{ opacity: 1, y: 0 }}
               className="mt-4 p-3 bg-[var(--bg-elev-1)] rounded-lg text-center"
             >
-              <p className="text-sm font-medium text-[var(--txt)]">
+              <p className="text-sm font-normal text-[var(--txt)]">
                 {getFeedbackMessage()}
               </p>
             </motion.div>
@@ -106,7 +106,7 @@ export default function WorkoutFeedbackModal({ isOpen, onClose, workoutId, worko
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">
             Notes (optional)
           </label>
           <textarea

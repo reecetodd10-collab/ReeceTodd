@@ -74,7 +74,7 @@ export default function GoalCards() {
               </div>
 
             {/* Title */}
-            <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+            <h3 className="text-xl md:text-2xl font-normal text-[var(--txt)] mb-3 text-center" style={{ letterSpacing: '2px' }}>
               {goal.title}
             </h3>
 

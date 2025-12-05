@@ -381,7 +381,7 @@ export default function WorkoutPlanner() {
       <div className="mb-8">
         <div className="flex items-start justify-between mb-2">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)]">Your Workout Plan</h1>
+            <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)]" style={{ letterSpacing: '2px' }}>Your Workout Plan</h1>
             <p className="text-lg text-[var(--txt-muted)]">
               Week of {currentWeek.startDate}
             </p>
@@ -411,7 +411,7 @@ export default function WorkoutPlanner() {
           >
             <ArrowLeft size={20} className="text-[var(--txt)]" />
           </button>
-          <span className="text-sm font-medium text-[var(--txt)]">
+          <span className="text-sm font-normal text-[var(--txt)]">
             Week {currentWeek.weekNumber}
           </span>
           <button
@@ -432,14 +432,14 @@ export default function WorkoutPlanner() {
               <Target className="text-[var(--acc)]" size={24} />
             </div>
             <div>
-              <div className="text-xl font-bold text-[var(--txt)]">
+              <div className="text-xl font-normal text-[var(--txt)]">
                 🎯 Current Goal: Muscle Building
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-[var(--txt)]">
+              <div className="text-2xl font-normal text-[var(--txt)]">
                 {completedWorkouts}/{totalWorkouts}
               </div>
               <p className="text-sm text-[var(--txt-muted)]">Workouts Complete</p>
@@ -451,7 +451,7 @@ export default function WorkoutPlanner() {
         <div>
           <div className="flex justify-between items-center text-sm mb-2">
             <span className="text-[var(--txt-muted)]">This week: {completedWorkouts}/{totalWorkouts} workouts complete</span>
-            <span className="font-semibold text-[var(--txt)]">{weeklyCompletion}%</span>
+            <span className="font-normal text-[var(--txt)]">{weeklyCompletion}%</span>
           </div>
           <div className="w-full bg-[var(--bg-elev-2)] rounded-full h-3 overflow-hidden">
             <motion.div
@@ -468,7 +468,7 @@ export default function WorkoutPlanner() {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setShowOptimizeModal(true)}
-          className="px-3 py-1.5 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition flex items-center gap-1"
+          className="px-3 py-1.5 text-xs font-normal bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition flex items-center gap-1"
         >
           <Sparkles size={12} />
           Optimize This Week
@@ -505,19 +505,19 @@ export default function WorkoutPlanner() {
                         onClick={() => setShowEditDayTypeModal({ dayIndex, currentType: day.workoutType })}
                         className="text-left"
                       >
-                        <h3 className="text-lg font-bold text-[var(--txt)] hover:text-[var(--acc)] transition">
+                        <h3 className="text-lg font-normal text-[var(--txt)] hover:text-[var(--acc)] transition" style={{ letterSpacing: '2px' }}>
                           {day.dayName}
                         </h3>
                       </button>
                       {isToday && (
-                        <span className="px-2 py-0.5 bg-[var(--acc)]/20 text-[var(--acc)] rounded text-xs font-semibold">
+                        <span className="px-2 py-0.5 bg-[var(--acc)]/20 text-[var(--acc)] rounded text-xs font-normal">
                           Today
                         </span>
                       )}
                     </div>
                     <p className="text-sm text-[var(--txt-muted)] mb-2">{day.date}</p>
                     <div className="px-3 py-1 bg-[var(--acc)]/10 border border-[var(--acc)]/20 rounded-full inline-block">
-                      <span className="text-sm font-medium text-[var(--acc)]">{day.workoutType}</span>
+                      <span className="text-sm font-normal text-[var(--acc)]">{day.workoutType}</span>
                     </div>
                   </div>
                   
@@ -550,7 +550,7 @@ export default function WorkoutPlanner() {
                     <div className="text-4xl mb-2">😴</div>
                     <p className="text-[var(--txt-muted)] mb-4">Rest Day</p>
                     {day.workoutType.toLowerCase().includes('active') && (
-                      <p className="text-sm text-[var(--acc)] font-medium">20min walk or Yoga</p>
+                      <p className="text-sm text-[var(--acc)] font-light">20min walk or Yoga</p>
                     )}
                   </div>
                 )}
@@ -566,7 +566,7 @@ export default function WorkoutPlanner() {
                         <div className="space-y-2">
                           {day.exercises.slice(0, 2).map((exercise) => (
                             <div key={exercise.id} className="text-sm text-[var(--txt)]">
-                              <span className="font-medium">{exercise.name}</span>
+                              <span className="font-normal">{exercise.name}</span>
                               <span className="text-[var(--txt-muted)]"> • {exercise.sets} x {exercise.reps}</span>
                             </div>
                           ))}
@@ -591,7 +591,7 @@ export default function WorkoutPlanner() {
                     {/* Add Exercise Button */}
                     <button
                       onClick={() => setShowAddExerciseModal({ dayIndex })}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg transition text-sm font-medium text-[var(--txt-muted)] hover:text-[var(--txt)] mb-2"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg transition text-sm font-normal text-[var(--txt-muted)] hover:text-[var(--txt)] mb-2"
                     >
                       <Plus size={16} />
                       Add Exercise
@@ -601,7 +601,7 @@ export default function WorkoutPlanner() {
                     {!isCompleted && day.exercises.length > 0 && (
                       <button
                         onClick={() => setShowCompleteWorkoutModal({ dayIndex, dayName: day.dayName })}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg transition text-sm font-medium text-green-400 hover:text-green-300"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg transition text-sm font-normal text-green-400 hover:text-green-300"
                       >
                         <Check size={16} />
                         Mark Complete
@@ -679,7 +679,7 @@ export default function WorkoutPlanner() {
             animate={{ scale: 1, opacity: 1 }}
             className="glass-card p-8 text-center"
           >
-            <div className="text-6xl font-bold text-[var(--acc)] mb-4">
+            <div className="text-6xl font-normal text-[var(--acc)] mb-4">
               {formatRestTime(restTimerSeconds)}
             </div>
             <p className="text-[var(--txt-muted)] mb-4">Rest Period</p>
@@ -689,13 +689,13 @@ export default function WorkoutPlanner() {
                   setActiveRestTimer(null);
                   setRestTimerSeconds(0);
                 }}
-                className="px-4 py-2 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] rounded-lg text-sm font-medium text-[var(--txt)] transition"
+                className="px-4 py-2 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] rounded-lg text-sm font-normal text-[var(--txt)] transition"
               >
                 Skip
               </button>
               <button
                 onClick={() => setRestTimerSeconds(restTimerSeconds + 30)}
-                className="px-4 py-2 bg-[var(--acc)] text-white rounded-lg hover:bg-blue-600 text-sm font-medium transition"
+                className="px-4 py-2 bg-[var(--acc)] text-white rounded-lg hover:bg-blue-600 text-sm font-normal transition"
               >
                 +30s
               </button>
@@ -826,9 +826,9 @@ function ExerciseCard({ exercise, dayIndex, exerciseIndex, onEdit, onRemove, onS
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-[var(--txt)]">{exercise.name}</h4>
+                <h4 className="font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>{exercise.name}</h4>
                 {isNewPR && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-xs font-semibold text-yellow-400">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 border border-yellow-500/30 rounded text-xs font-normal text-yellow-400">
                     <Trophy size={12} />
                     New PR!
                   </span>
@@ -839,7 +839,7 @@ function ExerciseCard({ exercise, dayIndex, exerciseIndex, onEdit, onRemove, onS
                 {exercise.weight && (
                   <>
                     <span>•</span>
-                    <span className="font-medium">{exercise.weight} {exercise.weightUnit}</span>
+                    <span className="font-normal">{exercise.weight} {exercise.weightUnit}</span>
                   </>
                 )}
                 {exercise.lastWeekWeight && (
@@ -851,7 +851,7 @@ function ExerciseCard({ exercise, dayIndex, exerciseIndex, onEdit, onRemove, onS
                 {suggestedIncrease && (
                   <button
                     onClick={() => setShowProgressiveOverload(!showProgressiveOverload)}
-                    className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-xs font-semibold text-green-400"
+                    className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-xs font-normal text-green-400"
                   >
                     {suggestedIncrease}
                   </button>
@@ -956,7 +956,7 @@ function AddExerciseModal({ isOpen, dayIndex, onClose, onAdd }) {
               })}
               className="w-full text-left p-3 bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] rounded-lg border border-[var(--border)] transition"
             >
-              <div className="font-semibold text-[var(--txt)]">{exercise.name}</div>
+              <div className="font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>{exercise.name}</div>
               <div className="text-xs text-[var(--txt-muted)] mt-1">
                 {exercise.muscleGroup} • Equipment: {Array.isArray(exercise.equipment) ? exercise.equipment.join(', ') : 'Various'}
               </div>
@@ -1004,7 +1004,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Sets</label>
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">Sets</label>
             <input
               type="number"
               value={formData.sets}
@@ -1014,7 +1014,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Reps</label>
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">Reps</label>
             <input
               type="text"
               value={formData.reps}
@@ -1026,7 +1026,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Weight</label>
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">Weight</label>
             <input
               type="number"
               value={formData.weight}
@@ -1035,7 +1035,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--txt)] mb-2">Unit</label>
+            <label className="block text-sm font-normal text-[var(--txt)] mb-2">Unit</label>
             <select
               value={formData.weightUnit}
               onChange={(e) => setFormData({ ...formData, weightUnit: e.target.value })}
@@ -1047,7 +1047,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Rest Time</label>
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">Rest Time</label>
           <select
             value={formData.restTime}
             onChange={(e) => setFormData({ ...formData, restTime: e.target.value })}
@@ -1061,7 +1061,7 @@ function EditExerciseModal({ isOpen, exercise, onClose, onUpdate }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Notes</label>
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">Notes</label>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -1191,7 +1191,7 @@ function CompleteWorkoutModal({ isOpen, dayName, onClose, onComplete }) {
     <Modal isOpen={isOpen} onClose={onClose} title={`Complete ${dayName} Workout`}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-3">
+          <label className="block text-sm font-normal text-[var(--txt)] mb-3">
             How was today's workout?
           </label>
           <div className="space-y-2">
@@ -1214,7 +1214,7 @@ function CompleteWorkoutModal({ isOpen, dayName, onClose, onComplete }) {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--txt)] mb-2">Notes (optional)</label>
+          <label className="block text-sm font-normal text-[var(--txt)] mb-2">Notes (optional)</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

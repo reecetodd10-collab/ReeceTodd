@@ -97,7 +97,7 @@ export default function Dashboard() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-[var(--txt)]">Aviera Premium</h1>
+            <h1 className="text-xl font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>Aviera Premium</h1>
             {isPremium && !TESTING_MODE && (
               <Crown size={18} className="text-[var(--acc)]" />
             )}
@@ -105,7 +105,7 @@ export default function Dashboard() {
           {!isPremium && !TESTING_MODE && (
             <div className="mt-3 space-y-2">
               <div className="px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
-                <span className="text-xs font-semibold text-[var(--acc)]">Free Tier</span>
+                <span className="text-xs font-normal text-[var(--acc)]">Free Tier</span>
               </div>
               <Link to="/pricing" className="block">
                 <Button variant="primary" className="w-full text-xs py-2">
@@ -119,11 +119,11 @@ export default function Dashboard() {
               <div className="px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
                 <div className="flex items-center justify-center gap-1.5">
                   <Crown size={12} className="text-[var(--acc)]" />
-                  <span className="text-xs font-semibold text-[var(--acc)]">Premium Member</span>
+                  <span className="text-xs font-normal text-[var(--acc)]">Premium Member</span>
                 </div>
               </div>
               <Link to="/dashboard/billing" className="block">
-                <button className="w-full px-3 py-2 text-xs font-medium bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition">
+                <button className="w-full px-3 py-2 text-xs font-normal bg-[var(--bg-elev-1)] hover:bg-[var(--bg-elev-2)] border border-[var(--border)] rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] transition">
                   Manage Subscription
                 </button>
               </Link>
@@ -131,7 +131,7 @@ export default function Dashboard() {
           )}
           {TESTING_MODE && (
             <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-center">
-              <span className="text-xs font-semibold text-yellow-400 flex items-center justify-center gap-1">
+              <span className="text-xs font-normal text-yellow-400 flex items-center justify-center gap-1">
                 <FlaskConical size={12} />
                 Testing Mode
               </span>
@@ -159,7 +159,7 @@ export default function Dashboard() {
                 `}
               >
                 <Icon size={20} />
-                <span className="font-medium">{item.label}</span>
+                <span className="font-normal">{item.label}</span>
                 {isPremiumFeature && !isPremium && !TESTING_MODE && (
                   <Crown size={14} className="ml-auto text-[var(--acc)] opacity-60" />
                 )}
@@ -175,7 +175,7 @@ export default function Dashboard() {
               <User size={16} className="text-[var(--acc)]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[var(--txt)] truncate">User Name</p>
+              <p className="text-sm font-normal text-[var(--txt)] truncate">User Name</p>
               <p className="text-xs text-[var(--txt-muted)] truncate">user@example.com</p>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function Dashboard() {
       <main className="flex-1 overflow-auto">
         {/* Testing Mode Indicator - Top Right */}
         {TESTING_MODE && (
-          <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+          <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-normal text-yellow-400 flex items-center gap-1.5 shadow-lg">
             <FlaskConical size={14} />
             Testing Mode
           </div>
@@ -210,7 +210,7 @@ export default function Dashboard() {
         <div className="hidden lg:flex sticky top-0 z-30 bg-[var(--bg-elev-1)]/80 backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] px-8 py-4 items-center justify-end gap-4">
           <button
             onClick={() => setShowReassessment(true)}
-            className="flex items-center gap-2 px-4 py-2 glass-card rounded-lg text-sm font-medium text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
+            className="flex items-center gap-2 px-4 py-2 glass-card rounded-lg text-sm font-normal text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
           >
             <Target size={16} />
             🎯 Update Goals
@@ -220,7 +220,7 @@ export default function Dashboard() {
               <User size={16} className="text-[var(--acc)]" />
             </div>
             <div className="text-sm">
-              <p className="font-medium text-[var(--txt)]">User Name</p>
+              <p className="font-normal text-[var(--txt)]">User Name</p>
               <p className="text-xs text-[var(--txt-muted)]">user@example.com</p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function Dashboard() {
         <div className="lg:hidden sticky top-[73px] z-30 bg-[var(--bg-elev-1)]/80 backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => setShowReassessment(true)}
-            className="flex items-center gap-2 px-3 py-2 glass-card rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
+            className="flex items-center gap-2 px-3 py-2 glass-card rounded-lg text-xs font-normal text-[var(--txt)] hover:bg-[var(--bg-elev-2)] transition border border-[var(--border)]"
           >
             <Target size={14} />
             🎯 Update Goals
@@ -254,7 +254,7 @@ export default function Dashboard() {
             <div className="max-w-2xl mx-auto mt-12">
               <div className="glass-card p-8 text-center">
                 <Crown size={48} className="mx-auto mb-4 text-[var(--acc)]" />
-                <h2 className="text-2xl font-bold text-[var(--txt)] mb-3">Premium Feature</h2>
+                <h2 className="text-2xl font-normal text-[var(--txt)] mb-3" style={{ letterSpacing: '2px' }}>Premium Feature</h2>
                 <p className="text-[var(--txt-muted)] mb-6">
                   {location.pathname === '/dashboard/stack' 
                     ? 'Unlock AI-powered supplement stack builder with tracking and notifications.'
@@ -342,7 +342,7 @@ function DashboardOverview({ isPremium }) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-[var(--txt)]">Welcome back!</h1>
+        <h1 className="text-3xl font-normal mb-2 text-[var(--txt)]" style={{ letterSpacing: '2px' }}>Welcome back!</h1>
         <p className="text-[var(--txt-muted)]">Here's your fitness overview.</p>
       </div>
 
@@ -374,7 +374,7 @@ function DashboardOverview({ isPremium }) {
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-4">
             <Pill className="text-[var(--acc)]" size={24} />
-            <h2 className="text-xl font-bold text-[var(--txt)]">Your Stack</h2>
+            <h2 className="text-xl font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>Your Stack</h2>
           </div>
           {isPremium ? (
             <>
@@ -396,7 +396,7 @@ function DashboardOverview({ isPremium }) {
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-4">
             <Dumbbell className="text-[var(--acc)]" size={24} />
-            <h2 className="text-xl font-bold text-[var(--txt)]">This Week's Workouts</h2>
+            <h2 className="text-xl font-normal text-[var(--txt)]" style={{ letterSpacing: '2px' }}>This Week's Workouts</h2>
           </div>
           {isPremium ? (
             <>
@@ -430,18 +430,18 @@ function DashboardOverview({ isPremium }) {
       <div className="grid md:grid-cols-3 gap-4">
         <Link to="/dashboard/progress" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
           <TrendingUp className="text-[var(--acc)] mb-2" size={24} />
-          <h3 className="font-semibold text-[var(--txt)] mb-1">View Progress</h3>
+          <h3 className="font-normal text-[var(--txt)] mb-1" style={{ letterSpacing: '2px' }}>View Progress</h3>
           <p className="text-sm text-[var(--txt-muted)]">See detailed stats</p>
         </Link>
         <Link to="/dashboard/achievements" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
           <Trophy className="text-[var(--acc)] mb-2" size={24} />
-          <h3 className="font-semibold text-[var(--txt)] mb-1">Achievements</h3>
+          <h3 className="font-normal text-[var(--txt)] mb-1" style={{ letterSpacing: '2px' }}>Achievements</h3>
           <p className="text-sm text-[var(--txt-muted)]">Unlock badges</p>
         </Link>
         {isPremium && (
           <Link to="/dashboard/stack" className="glass-card p-4 hover:shadow-premium-lg transition cursor-pointer">
             <Pill className="text-[var(--acc)] mb-2" size={24} />
-            <h3 className="font-semibold text-[var(--txt)] mb-1">Manage Stack</h3>
+            <h3 className="font-normal text-[var(--txt)] mb-1" style={{ letterSpacing: '2px' }}>Manage Stack</h3>
             <p className="text-sm text-[var(--txt-muted)]">Track supplements</p>
           </Link>
         )}

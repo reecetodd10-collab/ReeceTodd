@@ -61,13 +61,27 @@ export default function FAQAccordion() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.05 }}
           viewport={{ once: true }}
-          className="glass-card rounded-2xl overflow-hidden shadow-premium hover:shadow-premium-lg transition-all duration-300"
+          className="rounded-2xl overflow-hidden transition-all duration-300"
+          style={{
+            background: 'rgba(30, 30, 30, 0.9)',
+            border: '1px solid rgba(0, 217, 255, 0.3)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+          }}
         >
           <button
             onClick={() => toggleFAQ(index)}
             className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors duration-200"
           >
-            <span className="text-lg md:text-xl font-semibold text-[var(--txt)] pr-4">
+            <span className="text-lg md:text-xl font-bold text-white pr-4">
               {faq.question}
             </span>
             <motion.div
@@ -93,7 +107,7 @@ export default function FAQAccordion() {
                 className="overflow-hidden"
               >
                 <div className="px-6 md:px-8 pb-5 md:pb-6 pt-2">
-                  <p className="text-[var(--txt-secondary)] leading-relaxed text-base md:text-lg">
+                  <p className="text-[var(--txt-muted)] leading-relaxed text-base md:text-lg font-light">
                     {faq.answer}
                   </p>
                 </div>

@@ -23,7 +23,7 @@ export default function Reviews() {
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-normal text-gray-900 mb-4">
             Success Stories
           </h1>
           <p className="text-xl text-gray-600">
@@ -37,7 +37,7 @@ export default function Reviews() {
             <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-gray-900">{review.name}</h3>
+                  <h3 className="font-normal text-gray-900">{review.name}</h3>
                   <p className="text-sm text-gray-500">Goal: {review.goal}</p>
                 </div>
                 <div className="flex">
@@ -50,7 +50,7 @@ export default function Reviews() {
               <p className="text-gray-700 mb-4 italic">"{review.review}"</p>
 
               <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-500 font-medium">STACK USED:</p>
+                <p className="text-xs text-gray-500 font-normal">STACK USED:</p>
                 <p className="text-sm text-gray-600">{review.stack}</p>
               </div>
             </div>
@@ -59,20 +59,20 @@ export default function Reviews() {
 
         {/* Submit Review Form */}
         <div className="max-w-2xl mx-auto bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit Your Review</h2>
+          <h2 className="text-2xl font-normal text-gray-900 mb-6">Submit Your Review</h2>
 
           {submitted ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                 <Send className="text-green-600" size={32} />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Thank You!</h3>
+              <h3 className="text-xl font-normal text-gray-900 mb-2">Thank You!</h3>
               <p className="text-gray-600">Your review has been submitted.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <label className="block text-sm font-normal text-gray-700 mb-2">Name</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -83,7 +83,7 @@ export default function Reviews() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your Goal</label>
+                <label className="block text-sm font-normal text-gray-700 mb-2">Your Goal</label>
                 <input
                   type="text"
                   value={formData.goal}
@@ -95,7 +95,7 @@ export default function Reviews() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your Results</label>
+                <label className="block text-sm font-normal text-gray-700 mb-2">Your Results</label>
                 <textarea
                   value={formData.results}
                   onChange={(e) => setFormData({ ...formData, results: e.target.value })}
@@ -120,7 +120,7 @@ export default function Reviews() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                className="w-full px-6 py-3 bg-gradient-to-r from-primary via-accent to-violet text-white rounded-lg font-normal hover:shadow-lg hover:scale-105 transition-all"
               >
                 Submit Review
               </button>

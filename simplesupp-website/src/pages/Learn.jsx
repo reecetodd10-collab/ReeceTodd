@@ -16,7 +16,7 @@ export default function Learn() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <BookOpen className="mx-auto mb-6 text-primary" size={64} />
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-normal text-gray-900 mb-4">
             Learn
           </h1>
           <p className="text-xl text-gray-600">
@@ -31,12 +31,12 @@ export default function Learn() {
               className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-all cursor-pointer group"
             >
               <div className="mb-3">
-                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-normal rounded-full">
                   {article.category}
                 </span>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
+              <h3 className="text-xl font-normal text-gray-900 mb-3 group-hover:text-primary transition">
                 {article.title}
               </h3>
 

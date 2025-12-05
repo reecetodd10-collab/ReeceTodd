@@ -77,7 +77,7 @@ export default function Progress() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[var(--txt)] flex items-center gap-3">
+        <h1 className="text-3xl md:text-4xl font-normal mb-2 text-[var(--txt)] flex items-center gap-3">
           <TrendingUp className="text-[var(--acc)]" size={40} />
           Progress & Stats
         </h1>
@@ -95,21 +95,21 @@ export default function Progress() {
 
       {/* Monthly Stats */}
       <GlassCard className="p-6 mb-6">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4 flex items-center gap-2">
           <Calendar size={20} />
           This Month
         </h2>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
-            <div className="text-2xl font-bold text-[var(--txt)] mb-1">{monthlyStats.completed}</div>
+            <div className="text-2xl font-normal text-[var(--txt)] mb-1">{monthlyStats.completed}</div>
             <div className="text-sm text-[var(--txt-muted)]">Days Completed</div>
           </div>
           <div className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
-            <div className="text-2xl font-bold text-[var(--txt)] mb-1">{monthlyStats.totalXP}</div>
+            <div className="text-2xl font-normal text-[var(--txt)] mb-1">{monthlyStats.totalXP}</div>
             <div className="text-sm text-[var(--txt-muted)]">XP Earned</div>
           </div>
           <div className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
-            <div className="text-2xl font-bold text-[var(--txt)] mb-1">{monthlyStats.averageXP}</div>
+            <div className="text-2xl font-normal text-[var(--txt)] mb-1">{monthlyStats.averageXP}</div>
             <div className="text-sm text-[var(--txt-muted)]">Avg XP/Day</div>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function Progress() {
 
       {/* Calendar Heatmap */}
       <GlassCard className="p-6 mb-6">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4 flex items-center gap-2">
           <Target size={20} />
           Activity Heatmap (Last 365 Days)
         </h2>
@@ -154,7 +154,7 @@ export default function Progress() {
 
       {/* XP Progression */}
       <GlassCard className="p-6 mb-6">
-        <h2 className="text-xl font-bold text-[var(--txt)] mb-4">XP Progression</h2>
+        <h2 className="text-xl font-normal text-[var(--txt)] mb-4">XP Progression</h2>
         <div className="h-32 flex items-end justify-between gap-1">
           {Array.from({ length: 30 }).map((_, i) => {
             const date = new Date();
@@ -184,7 +184,7 @@ export default function Progress() {
       {/* Achievements This Month */}
       {data.unlockedBadges && data.unlockedBadges.length > 0 && (
         <GlassCard className="p-6">
-          <h2 className="text-xl font-bold text-[var(--txt)] mb-4 flex items-center gap-2">
+          <h2 className="text-xl font-normal text-[var(--txt)] mb-4 flex items-center gap-2">
             <Award size={20} />
             Recent Achievements
           </h2>
@@ -195,7 +195,7 @@ export default function Progress() {
               return (
                 <div key={index} className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
                   <div className="text-4xl mb-2">{achievement.emoji}</div>
-                  <div className="text-sm font-semibold text-[var(--txt)]">{achievement.name}</div>
+                  <div className="text-sm font-normal text-[var(--txt)]">{achievement.name}</div>
                   <div className="text-xs text-[var(--txt-muted)] mt-1">
                     {new Date(badge.unlockedDate).toLocaleDateString()}
                   </div>

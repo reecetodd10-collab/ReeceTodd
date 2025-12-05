@@ -81,7 +81,7 @@ export default function ContactForm() {
                 <CheckCircle className="text-white" size={40} />
               </div>
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-[var(--txt)] mb-3">
+            <h3 className="text-2xl md:text-3xl font-normal text-[var(--txt)] mb-3" style={{ letterSpacing: '2px' }}>
               Message Sent!
             </h3>
             <p className="text-[#d1d5db] text-lg">
@@ -92,7 +92,7 @@ export default function ContactForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="name" className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Name
               </label>
               <input
@@ -115,7 +115,7 @@ export default function ContactForm() {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="email" className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Email
               </label>
               <input
@@ -138,7 +138,7 @@ export default function ContactForm() {
 
             {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="message" className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Message
               </label>
               <textarea
@@ -164,7 +164,7 @@ export default function ContactForm() {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full px-8 py-4 bg-gradient-to-r from-[var(--acc)] to-[var(--acc-2)] text-white rounded-xl font-semibold text-lg shadow-premium hover:shadow-premium-lg transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full px-8 py-4 bg-gradient-to-r from-[var(--acc)] to-[var(--acc-2)] text-white rounded-xl font-normal text-lg shadow-premium hover:shadow-premium-lg transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>Send Message</span>
               <Send size={20} />

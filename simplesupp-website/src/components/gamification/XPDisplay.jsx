@@ -32,7 +32,7 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-elev-1)] border border-[var(--border)] rounded-lg">
           <span className="text-lg">{levelInfo.badge}</span>
           <div>
-            <div className="text-xs font-semibold text-[var(--txt)]">
+            <div className="text-xs font-normal text-[var(--txt)]">
               Level {data.currentLevel}
             </div>
             <div className="text-xs text-[var(--txt-muted)]">{levelInfo.tier}</div>
@@ -54,11 +54,11 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
             <span className="text-3xl">{levelInfo.badge}</span>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[var(--txt)]">
+            <div className="text-2xl font-normal text-[var(--txt)]">
               Level {data.currentLevel}
             </div>
             <div className="text-sm text-[var(--txt-muted)]">{levelInfo.tier}</div>
-            <div className="text-sm font-semibold text-[var(--acc)] mt-1">
+            <div className="text-sm font-normal text-[var(--acc)] mt-1">
               {data.totalXP} Total XP
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
         <div>
           <div className="flex justify-between items-center text-sm mb-2">
             <span className="text-[var(--txt-muted)]">Progress to Level {data.currentLevel + 1}</span>
-            <span className="font-semibold text-[var(--txt)]">{progress}%</span>
+            <span className="font-normal text-[var(--txt)]">{progress}%</span>
           </div>
           <div className="w-full bg-[var(--bg-elev-2)] rounded-full h-3 overflow-hidden">
             <motion.div
@@ -88,7 +88,7 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
         {/* Recent XP */}
         {data.xpHistory && data.xpHistory.length > 0 && (
           <div>
-            <h4 className="text-sm font-semibold text-[var(--txt)] mb-2 flex items-center gap-2">
+            <h4 className="text-sm font-normal text-[var(--txt)] mb-2 flex items-center gap-2">
               <TrendingUp size={16} />
               Recent Activity
             </h4>
@@ -98,7 +98,7 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
                   <span className="text-[var(--txt-muted)]">
                     {entry.action.replace(/_/g, ' ')}
                   </span>
-                  <span className="font-semibold text-green-400">+{entry.xp} XP</span>
+                  <span className="font-normal text-green-400">+{entry.xp} XP</span>
                 </div>
               ))}
             </div>
@@ -130,7 +130,7 @@ export default function XPDisplay({ compact = false, showLevelUp = false }) {
               >
                 🎉
               </motion.div>
-              <h2 className="text-3xl font-bold text-[var(--txt)] mb-2">
+              <h2 className="text-3xl font-normal text-[var(--txt)] mb-2">
                 Level Up!
               </h2>
               <p className="text-xl text-[var(--txt-muted)] mb-4">
@@ -164,7 +164,7 @@ export function XPToast({ xp, action, isVisible, onClose }) {
         >
           <div className="flex items-center gap-2 px-4 py-2 bg-green-500/90 backdrop-blur-sm rounded-lg shadow-lg border border-green-400/50">
             <Star className="text-white" size={20} />
-            <span className="text-white font-semibold">
+            <span className="text-white font-normal">
               +{xp} XP
             </span>
             <span className="text-white/80 text-sm">

@@ -65,7 +65,7 @@ export default function FAQAccordion() {
             onClick={() => toggleFAQ(index)}
             className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between text-left hover:bg-white/30 transition-colors duration-200"
           >
-            <span className="text-lg md:text-xl font-semibold text-[#1a1a1a] pr-4">
+            <span className="text-lg md:text-xl font-normal text-[#1a1a1a] pr-4">
               {faq.question}
             </span>
             <motion.div

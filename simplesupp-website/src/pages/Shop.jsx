@@ -3,6 +3,21 @@ import { Search, Filter, ShoppingCart, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 
+
+{/* Background Image */}
+<div 
+  className="fixed inset-0 -z-10"
+  style={{
+    backgroundImage: "url('/images/shop/shop-background.jpg')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    filter: 'blur(25px)',
+    opacity: 0.3,
+  }}
+/>
+<div className="fixed inset-0 -z-10 bg-black/60" />
+
+
 export default function Shop() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -58,13 +73,13 @@ export default function Shop() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-4">
+          <h1 className="text-4xl md:text-5xl font-normal text-[var(--txt)] mb-4" style={{ letterSpacing: '2px' }}>
             Aviera Shop
           </h1>
-          <p className="text-xl text-[var(--txt-muted)] mb-2">
+          <p className="text-xl text-[var(--txt-muted)] mb-2 font-light" style={{ letterSpacing: '15px' }}>
             Premium supplements powered by Supliful
           </p>
-          <p className="text-sm text-[var(--txt-muted)]/80">
+          <p className="text-sm text-[var(--txt-muted)]/80 font-light" style={{ letterSpacing: '5px' }}>
             {filteredProducts.length} products available
           </p>
         </div>
@@ -130,13 +145,13 @@ export default function Shop() {
         {/* Coming Soon Notice */}
         <div className="mt-12 glass-card p-8 text-center">
           <ShoppingCart className="mx-auto mb-4 text-[var(--acc)]" size={48} />
-          <h3 className="text-2xl font-bold text-[var(--txt)] mb-2">
+          <h3 className="text-2xl font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>
             Checkout Coming Soon
           </h3>
-          <p className="text-[var(--txt-muted)] mb-4">
+          <p className="text-[var(--txt-muted)] mb-4 font-light" style={{ letterSpacing: '5px' }}>
             We're finalizing our Shopify integration. You'll be able to purchase these products very soon!
           </p>
-          <p className="text-sm text-[var(--txt-muted)]/80">
+          <p className="text-sm text-[var(--txt-muted)]/80 font-light" style={{ letterSpacing: '5px' }}>
             All products are sourced from Supliful and ship directly to your door.
           </p>
         </div>
@@ -159,7 +174,7 @@ function ProductCard({ product }) {
       {/* Category Badge */}
       <div className="relative">
         <div className="absolute top-3 left-3 z-10">
-          <span className="px-3 py-1 bg-[var(--acc)] text-[#001018] text-xs font-semibold rounded-full">
+          <span className="px-3 py-1 bg-[var(--acc)] text-[#001018] text-xs font-normal rounded-full">
             {product.category}
           </span>
         </div>
@@ -167,7 +182,7 @@ function ProductCard({ product }) {
         {/* Priority Badge */}
         {product.priority === 'essential' && (
           <div className="absolute top-3 right-3 z-10">
-            <span className="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
+            <span className="px-3 py-1 bg-green-500 text-white text-xs font-normal rounded-full flex items-center gap-1">
               <Check size={12} /> Essential
             </span>
           </div>
@@ -181,18 +196,18 @@ function ProductCard({ product }) {
 
       {/* Product Info */}
       <div className="p-6">
-        <h3 className="text-lg font-bold text-[var(--txt)] mb-2">{product.name}</h3>
-        <p className="text-sm text-[var(--txt-muted)] mb-4 line-clamp-2">{product.description}</p>
+        <h3 className="text-lg font-normal text-[var(--txt)] mb-2" style={{ letterSpacing: '2px' }}>{product.name}</h3>
+        <p className="text-sm text-[var(--txt-muted)] mb-4 line-clamp-2 font-light" style={{ letterSpacing: '5px' }}>{product.description}</p>
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-2xl font-bold text-[var(--acc)]">${product.price.toFixed(2)}</span>
+          <span className="text-2xl font-normal text-[var(--acc)]">${product.price.toFixed(2)}</span>
           <span className="text-sm text-[var(--txt-muted)]/60 line-through">${(product.price * 1.2).toFixed(2)}</span>
         </div>
 
         {/* Benefits Preview */}
         <div className="mb-4">
-          <p className="text-xs font-semibold text-[var(--txt-muted)] mb-2">KEY BENEFITS:</p>
+          <p className="text-xs font-normal text-[var(--txt-muted)] mb-2">KEY BENEFITS:</p>
           <ul className="space-y-1">
             {product.benefits.slice(0, 2).map((benefit, i) => (
               <li key={i} className="text-xs text-[var(--txt-muted)] flex items-start">
@@ -206,7 +221,7 @@ function ProductCard({ product }) {
         {/* Toggle Details */}
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="text-sm text-[var(--acc)] hover:text-[var(--acc-2)] font-medium mb-4"
+          className="text-sm text-[var(--acc)] hover:text-[var(--acc-2)] font-normal mb-4"
         >
           {showDetails ? 'Hide Details' : 'Show More'}
         </button>
@@ -220,7 +235,7 @@ function ProductCard({ product }) {
           >
             <div className="space-y-3">
               <div>
-                <p className="text-xs font-semibold text-[var(--txt-muted)] mb-1">ALL BENEFITS:</p>
+                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1">ALL BENEFITS:</p>
                 <ul className="space-y-1">
                   {product.benefits.map((benefit, i) => (
                     <li key={i} className="text-xs text-[var(--txt-muted)] flex items-start">
@@ -232,12 +247,12 @@ function ProductCard({ product }) {
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-[var(--txt-muted)] mb-1">RECOMMENDED DOSAGE:</p>
+                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1">RECOMMENDED DOSAGE:</p>
                 <p className="text-xs text-[var(--txt-muted)]">{product.dosage}</p>
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-[var(--txt-muted)] mb-1">BEST FOR:</p>
+                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1">BEST FOR:</p>
                 <div className="flex flex-wrap gap-1">
                   {product.goals.map((goal, i) => (
                     <span key={i} className="px-2 py-0.5 bg-[var(--bg-elev-1)] text-[var(--txt-muted)] text-xs rounded-full border border-[var(--border)]">

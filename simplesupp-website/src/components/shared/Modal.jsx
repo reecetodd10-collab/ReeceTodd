@@ -73,7 +73,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
           >
             {title && (
               <div className="flex items-center justify-between p-6 border-b border-[var(--glass-border)]">
-                <h2 id="modal-title" className="text-2xl font-bold text-[var(--txt)]">{title}</h2>
+                <h2 id="modal-title" className="text-2xl font-normal text-[var(--txt)]">{title}</h2>
                 <button
                   onClick={onClose}
                   className="btn-icon"

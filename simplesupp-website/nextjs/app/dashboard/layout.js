@@ -43,6 +43,11 @@ export default function DashboardLayout({ children }) {
   const userIsPremium = false; // User's actual premium status from backend
   const isPremium = hasPremiumAccess(userIsPremium); // Respects testing mode
 
+  // Block all dashboard routes - show coming soon modal
+  // In production, this will always be false, so dashboard is blocked
+  // In development with TESTING_MODE, users can access dashboard
+  const shouldBlockDashboard = !TESTING_MODE || process.env.NODE_ENV === 'production';
+
   const navItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
     { icon: Pill, label: 'Stack Builder', path: '/dashboard/stack' },
@@ -87,7 +92,7 @@ export default function DashboardLayout({ children }) {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-[var(--txt)]">Aviera Premium</h1>
+            <h1 className="text-xl font-bold text-[var(--txt)]">Aviera Pro</h1>
             {isPremium && !TESTING_MODE && (
               <Crown size={18} className="text-[var(--acc)]" />
             )}
@@ -99,7 +104,7 @@ export default function DashboardLayout({ children }) {
               </div>
               <Link href="/pricing" className="block">
                 <Button variant="primary" className="w-full text-xs py-2">
-                  Upgrade to Premium
+                  Upgrade to Aviera Pro
                 </Button>
               </Link>
             </div>
@@ -109,7 +114,7 @@ export default function DashboardLayout({ children }) {
               <div className="px-3 py-1.5 bg-[var(--acc)]/20 border border-[var(--acc)]/30 rounded-lg text-center">
                 <div className="flex items-center justify-center gap-1.5">
                   <Crown size={12} className="text-[var(--acc)]" />
-                  <span className="text-xs font-semibold text-[var(--acc)]">Premium Member</span>
+                  <span className="text-xs font-semibold text-[var(--acc)]">Pro Member</span>
                 </div>
               </div>
               <Link href="/dashboard/billing" className="block">
@@ -180,15 +185,23 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        {/* Testing Mode Indicator - Top Right */}
-        {TESTING_MODE && (
-          <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400 flex items-center gap-1.5 shadow-lg">
-            <FlaskConical size={14} />
-            Testing Mode
-          </div>
-        )}
-        
-        {/* Mobile Header */}
+        {/* Block all dashboard routes if not in testing mode */}
+        {shouldBlockDashboard ? (
+          <DashboardBlockingModal
+            isOpen={true}
+            onClose={() => router.push('/')}
+          />
+        ) : (
+          <>
+            {/* Testing Mode Indicator - Top Right (only in development) */}
+            {process.env.NODE_ENV === 'development' && TESTING_MODE && (
+              <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+                <FlaskConical size={14} />
+                ⚠️ Testing Mode
+              </div>
+            )}
+            
+            {/* Mobile Header */}
         <div className="lg:hidden sticky top-0 z-30 bg-[var(--bg-elev-1)] backdrop-blur-[var(--glass-blur)] border-b border-[var(--border)] p-4">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -230,10 +243,12 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 lg:p-8">
-          {children}
-        </div>
+            {/* Content */}
+            <div className="p-6 lg:p-8">
+              {children}
+            </div>
+          </>
+        )}
       </main>
 
       {/* Mobile Sidebar Overlay */}

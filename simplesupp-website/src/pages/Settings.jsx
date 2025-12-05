@@ -60,7 +60,7 @@ export default function Settings() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-[var(--txt)]">Settings</h1>
+        <h1 className="text-3xl font-normal mb-2 text-[var(--txt)]">Settings</h1>
         <p className="text-[var(--txt-muted)]">Manage your account and preferences.</p>
       </div>
 
@@ -68,7 +68,7 @@ export default function Settings() {
       <div className="glass-card p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Target className="text-[var(--acc)]" size={24} />
-          <h2 className="text-xl font-bold text-[var(--txt)]">Goals & Progress</h2>
+          <h2 className="text-xl font-normal text-[var(--txt)]">Goals & Progress</h2>
         </div>
         <p className="text-[var(--txt-muted)] mb-4">
           Update your goals, progress, and preferences to keep your plan personalized.
@@ -83,7 +83,7 @@ export default function Settings() {
       <GlassCard className="p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Target className="text-[var(--acc)]" size={24} />
-          <h2 className="text-xl font-bold text-[var(--txt)]">Daily Goal Tracking</h2>
+          <h2 className="text-xl font-normal text-[var(--txt)]">Daily Goal Tracking</h2>
         </div>
         <p className="text-[var(--txt-muted)] mb-6">
           Customize which goals you want to track and adjust your targets.
@@ -94,7 +94,7 @@ export default function Settings() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-[var(--txt)]">Track water intake</p>
+                <p className="font-normal text-[var(--txt)]">Track water intake</p>
                 <p className="text-sm text-[var(--txt-muted)]">Daily hydration goal</p>
               </div>
               <button
@@ -114,7 +114,7 @@ export default function Settings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-[var(--txt)]">Track sleep quality</p>
+                <p className="font-normal text-[var(--txt)]">Track sleep quality</p>
                 <p className="text-sm text-[var(--txt-muted)]">7-8+ hours per night</p>
               </div>
               <button
@@ -134,7 +134,7 @@ export default function Settings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-[var(--txt)]">Track meals</p>
+                <p className="font-normal text-[var(--txt)]">Track meals</p>
                 <p className="text-sm text-[var(--txt-muted)]">Meal check-ins</p>
               </div>
               <button
@@ -154,7 +154,7 @@ export default function Settings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-[var(--txt)]">Track macros</p>
+                <p className="font-normal text-[var(--txt)]">Track macros</p>
                 <p className="text-sm text-[var(--txt-muted)]">Protein, carbs, fats</p>
               </div>
               <button
@@ -176,7 +176,7 @@ export default function Settings() {
           {/* Adjust Targets */}
           {trackWater && (
             <div className="pt-4 border-t border-[var(--border)]">
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Water goal (glasses/day)
               </label>
               <input
@@ -192,7 +192,7 @@ export default function Settings() {
 
           {trackSleep && (
             <div className="pt-4 border-t border-[var(--border)]">
-              <label className="block text-sm font-medium text-[var(--txt)] mb-2">
+              <label className="block text-sm font-normal text-[var(--txt)] mb-2">
                 Sleep target (hours)
               </label>
               <input
@@ -217,11 +217,11 @@ export default function Settings() {
       <div className="glass-card p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Bell className="text-[var(--acc)]" size={24} />
-          <h2 className="text-xl font-bold text-[var(--txt)]">Notifications</h2>
+          <h2 className="text-xl font-normal text-[var(--txt)]">Notifications</h2>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium mb-1 text-[var(--txt)]">Push Notifications</p>
+            <p className="font-normal mb-1 text-[var(--txt)]">Push Notifications</p>
             <p className="text-[var(--txt-muted)] text-sm">Get reminded to take your supplements</p>
           </div>
           <button
@@ -246,16 +246,16 @@ export default function Settings() {
       <div className="glass-card p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <User className="text-[var(--acc)]" size={24} />
-          <h2 className="text-xl font-bold text-[var(--txt)]">Account</h2>
+          <h2 className="text-xl font-normal text-[var(--txt)]">Account</h2>
         </div>
         <div className="space-y-4">
           <div>
             <p className="text-[var(--txt-muted)] text-sm mb-1">Email</p>
-            <p className="font-medium text-[var(--txt)]">user@example.com</p>
+            <p className="font-normal text-[var(--txt)]">user@example.com</p>
           </div>
           <div>
             <p className="text-[var(--txt-muted)] text-sm mb-1">Subscription</p>
-            <p className="font-medium text-[var(--acc)]">Premium - $9.99/month</p>
+            <p className="font-normal text-[var(--acc)]">Premium - $9.99/month</p>
           </div>
         </div>
       </div>

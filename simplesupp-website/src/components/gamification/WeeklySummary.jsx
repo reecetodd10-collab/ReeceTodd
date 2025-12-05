@@ -71,7 +71,7 @@ export default function WeeklySummary() {
   return (
     <GlassCard className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-[var(--txt)] flex items-center gap-2">
+        <h3 className="text-xl font-normal text-[var(--txt)] flex items-center gap-2">
           <Calendar size={20} />
           This Week
         </h3>
@@ -84,10 +84,10 @@ export default function WeeklySummary() {
         {/* Workouts */}
         <div className={`p-4 rounded-lg border ${getStatusBg(workoutCompletionPercentage)}`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[var(--txt)]">Workouts</span>
+            <span className="text-sm font-normal text-[var(--txt)]">Workouts</span>
             <Target size={16} className={getStatusColor(workoutCompletionPercentage)} />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${getStatusColor(workoutCompletionPercentage)}`}>
+          <div className={`text-2xl font-normal mb-1 ${getStatusColor(workoutCompletionPercentage)}`}>
             {stats.workoutsCompleted}/{stats.totalWorkouts}
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -98,10 +98,10 @@ export default function WeeklySummary() {
         {/* Supplements */}
         <div className={`p-4 rounded-lg border ${getStatusBg(stats.supplementPercentage)}`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[var(--txt)]">Supplements</span>
+            <span className="text-sm font-normal text-[var(--txt)]">Supplements</span>
             <TrendingUp size={16} className={getStatusColor(stats.supplementPercentage)} />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${getStatusColor(stats.supplementPercentage)}`}>
+          <div className={`text-2xl font-normal mb-1 ${getStatusColor(stats.supplementPercentage)}`}>
             {stats.supplementPercentage}%
           </div>
           <div className="text-xs text-[var(--txt-muted)]">
@@ -113,12 +113,12 @@ export default function WeeklySummary() {
       {/* XP and Streak */}
       <div className="grid grid-cols-2 gap-4">
         <div className="p-4 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-sm font-medium text-[var(--txt-muted)] mb-1">XP Earned</div>
-          <div className="text-xl font-bold text-[var(--txt)]">{stats.xpEarned}</div>
+          <div className="text-sm font-normal text-[var(--txt-muted)] mb-1">XP Earned</div>
+          <div className="text-xl font-normal text-[var(--txt)]">{stats.xpEarned}</div>
         </div>
         <div className="p-4 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-sm font-medium text-[var(--txt-muted)] mb-1">Current Streak</div>
-          <div className="text-xl font-bold text-[var(--txt)] flex items-center gap-1">
+          <div className="text-sm font-normal text-[var(--txt-muted)] mb-1">Current Streak</div>
+          <div className="text-xl font-normal text-[var(--txt)] flex items-center gap-1">
             🔥 {stats.currentStreak}
           </div>
         </div>

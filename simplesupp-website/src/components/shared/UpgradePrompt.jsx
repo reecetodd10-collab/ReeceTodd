@@ -22,7 +22,7 @@ export default function UpgradePrompt({ isOpen, onClose }) {
       <div className="text-center">
         <div className="mb-6">
           <Crown className="mx-auto mb-4 text-[var(--acc)]" size={48} />
-          <h3 className="text-2xl font-bold mb-2 text-[var(--txt)]">Upgrade to Aviera Premium</h3>
+          <h3 className="text-2xl font-normal mb-2 text-[var(--txt)]">Upgrade to Aviera Premium</h3>
           <p className="text-[var(--txt-muted)]">
             Get full access to AI-powered features and personalized plans.
           </p>
@@ -41,7 +41,7 @@ export default function UpgradePrompt({ isOpen, onClose }) {
         </div>
 
         <div className="mb-6 p-4 glass rounded-lg">
-          <div className="text-3xl font-bold mb-1 text-[var(--txt)]">$9.99<span className="text-lg text-[var(--txt-muted)]">/month</span></div>
+          <div className="text-3xl font-normal mb-1 text-[var(--txt)]">$9.99<span className="text-lg text-[var(--txt-muted)]">/month</span></div>
           <p className="text-[var(--txt-muted)] text-sm">Cancel anytime</p>
         </div>
 

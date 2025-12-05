@@ -8,14 +8,19 @@
 //   - All premium features are accessible
 //   - No upgrade modals appear
 //   - "Free Tier" badge shows as "Testing Mode"
+//   - AI features can be tested without Stripe subscription
 //
 // When TESTING_MODE = false:
 //   - Normal premium gating applies
 //   - Users see upgrade prompts
 //   - Free tier restrictions enforced
+//   - Stripe checkout required for premium features
+//
+// ⚠️ IMPORTANT: Set TESTING_MODE = false before production deployment!
 // ============================================
 
-export const TESTING_MODE = false; // Set to false to enable real Stripe checkout
+// Testing mode should only be enabled in development
+export const TESTING_MODE = process.env.NODE_ENV === 'development';
 
 // Helper function to check if user has premium access
 export const hasPremiumAccess = (userIsPremium = false) => {

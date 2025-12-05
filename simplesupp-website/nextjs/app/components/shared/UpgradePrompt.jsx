@@ -50,11 +50,11 @@ export default function UpgradePrompt({ isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Unlock Premium Features">
+    <Modal isOpen={isOpen} onClose={onClose} title="Unlock Pro Features">
       <div className="text-center">
         <div className="mb-6">
           <Crown className="mx-auto mb-4 text-[var(--acc)]" size={48} />
-          <h3 className="text-2xl font-bold mb-2 text-[var(--txt)]">Upgrade to Aviera Premium</h3>
+          <h3 className="text-2xl font-bold mb-2 text-[var(--txt)]">Upgrade to Aviera Pro</h3>
           <p className="text-[var(--txt-muted)]">
             Get full access to AI-powered features and personalized plans.
           </p>
@@ -95,7 +95,7 @@ export default function UpgradePrompt({ isOpen, onClose }) {
           </Button>
         </div>
         <p className="text-xs text-center text-[var(--txt-muted)] mt-4">
-          Already premium? <button onClick={onClose} className="text-[var(--acc)] hover:underline">Close</button>
+          Already a Pro member? <button onClick={onClose} className="text-[var(--acc)] hover:underline">Close</button>
         </p>
       </div>
     </Modal>

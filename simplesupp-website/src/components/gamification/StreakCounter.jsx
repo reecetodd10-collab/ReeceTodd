@@ -17,7 +17,7 @@ export default function StreakCounter({ compact = false }) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-500/20 border border-orange-500/30 rounded-lg">
         <Flame className="text-orange-400" size={16} />
-        <span className="text-sm font-semibold text-[var(--txt)]">{data.currentStreak} days</span>
+        <span className="text-sm font-normal text-[var(--txt)]">{data.currentStreak} days</span>
       </div>
     );
   }
@@ -54,19 +54,19 @@ export default function StreakCounter({ compact = false }) {
   return (
     <GlassCard className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-[var(--txt)]">Streak</h3>
+        <h3 className="text-xl font-normal text-[var(--txt)]">Streak</h3>
         <Flame className="text-orange-400" size={24} />
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-3xl font-bold text-[var(--txt)] mb-1">
+          <div className="text-3xl font-normal text-[var(--txt)] mb-1">
             🔥 {data.currentStreak}
           </div>
           <div className="text-sm text-[var(--txt-muted)]">Current Streak</div>
         </div>
         <div className="text-center p-4 bg-[var(--bg-elev-1)] rounded-lg">
-          <div className="text-3xl font-bold text-[var(--txt)] mb-1">
+          <div className="text-3xl font-normal text-[var(--txt)] mb-1">
             <TrendingUp className="inline text-[var(--acc)]" size={28} /> {data.longestStreak}
           </div>
           <div className="text-sm text-[var(--txt-muted)]">Longest Streak</div>
@@ -75,7 +75,7 @@ export default function StreakCounter({ compact = false }) {
 
       {/* Calendar View */}
       <div className="mb-4">
-        <h4 className="text-sm font-semibold text-[var(--txt)] mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-normal text-[var(--txt)] mb-3 flex items-center gap-2">
           <Calendar size={16} />
           Last 30 Days
         </h4>
@@ -84,7 +84,7 @@ export default function StreakCounter({ compact = false }) {
             <div
               key={index}
               className={`
-                aspect-square rounded flex items-center justify-center text-xs font-medium
+                aspect-square rounded flex items-center justify-center text-xs font-normal
                 ${day.isToday 
                   ? 'ring-2 ring-[var(--acc)] bg-[var(--acc)]/20' 
                   : day.completed

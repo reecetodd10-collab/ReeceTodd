@@ -123,7 +123,7 @@ export default function MacroRings({ protein = 0, carbs = 0, fats = 0, goals = {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="text-2xl font-bold text-[var(--txt)] mb-1"
+                className="text-2xl font-normal text-[var(--txt)] mb-1"
               >
                 {totalCalories}
               </motion.div>
