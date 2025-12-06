@@ -1,0 +1,6 @@
+@echo off
+echo Cleaning Next.js cache...
+rmdir /s /q .next 2>nul
+echo Starting dev server on port 3002...
+npm run dev
+

@@ -2,9 +2,16 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
-});
+// Lazy initialization - only creates Stripe instance when actually called
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not set');
+  }
+  return new Stripe(key, {
+    apiVersion: '2024-12-18.acacia',
+  });
+};
 
 export async function POST(request) {
   try {
@@ -19,6 +26,9 @@ export async function POST(request) {
 
     // Get the base URL for redirect URLs
     const origin = request.headers.get('origin') || 'http://localhost:3001';
+    
+    // Initialize Stripe only when API is called
+    const stripe = getStripe();
     
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

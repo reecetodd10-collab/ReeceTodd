@@ -8,10 +8,11 @@ import Footer from './Footer';
 export default function MarketingLayout({ children }) {
   const pathname = usePathname();
   
-  // Don't show nav/footer on dashboard routes
+  // Don't show nav/footer on dashboard routes or landing page
   const isDashboardRoute = pathname?.startsWith('/dashboard');
+  const isLandingPage = pathname === '/landing';
   
-  if (isDashboardRoute) {
+  if (isDashboardRoute || isLandingPage) {
     return <>{children}</>;
   }
 

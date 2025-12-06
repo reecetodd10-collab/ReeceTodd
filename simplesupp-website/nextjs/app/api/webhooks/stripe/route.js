@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
-});
+// Lazy initialization - only creates Stripe instance when actually called
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not set');
+  }
+  return new Stripe(key, {
+    apiVersion: '2024-12-18.acacia',
+  });
+};
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -35,6 +42,8 @@ export async function POST(request) {
 
     try {
       if (webhookSecret) {
+        // Initialize Stripe only when webhook is called
+        const stripe = getStripe();
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
       } else {
         // For development/testing without webhook secret
