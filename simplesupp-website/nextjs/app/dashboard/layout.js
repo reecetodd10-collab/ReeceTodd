@@ -25,6 +25,7 @@ import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
 import PillLogo from '../components/PillLogo';
 import Button from '../components/shared/Button';
+import DashboardBlockingModal from '../components/DashboardBlockingModal';
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 
 // TODO: Add Clerk authentication here
