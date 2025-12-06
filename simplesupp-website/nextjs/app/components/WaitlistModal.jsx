@@ -184,7 +184,7 @@ export default function WaitlistModal({ isOpen, onClose }) {
       };
 
       // Submit to API endpoint
-      const response = await fetch('/api/waitlist', {
+      const response = await fetch('/api/pro-waitlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
