@@ -5,11 +5,20 @@ const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
+export default clerkMiddleware(
+  async (auth, req) => {
+    if (isProtectedRoute(req)) {
+      await auth.protect();
+    }
+  },
+  {
+    publicRoutes: [
+      '/landing',
+      '/api/waitlist',
+      '/api/pro-waitlist',
+    ],
   }
-});
+);
 
 export const config = {
   matcher: [
