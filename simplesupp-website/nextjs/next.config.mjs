@@ -8,6 +8,16 @@ const nextConfig = {
   experimental: {
     // Turbopack configuration if needed
   },
+
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/landing',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
