@@ -1,9 +1,142 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle } from 'lucide-react';
+import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { products, PRODUCT_CATEGORIES } from '../data/products';
+import { fetchShopifyProducts } from '../lib/shopify';
+import Image from 'next/image';
+
+// Fuzzy matching function to map AI names to actual product names
+const fuzzyMatchProduct = (aiName) => {
+  if (!aiName) return null;
+  
+  const normalizedName = aiName.toLowerCase().trim();
+  
+  // Direct match mappings for common AI responses
+  const directMappings = {
+    // Protein
+    'protein powder': 'Whey Protein Isolate (Chocolate)',
+    'whey protein': 'Whey Protein Isolate (Chocolate)',
+    'protein': 'Whey Protein Isolate (Chocolate)',
+    'whey protein isolate': 'Whey Protein Isolate (Chocolate)',
+    'plant protein': 'Plant Protein (Chocolate)',
+    'vegan protein': 'Plant Protein (Chocolate)',
+    'plant-based protein': 'Plant Protein (Chocolate)',
+    
+    // Performance
+    'creatine': 'Creatine Monohydrate',
+    'creatine monohydrate': 'Creatine Monohydrate',
+    'pre-workout': 'Pre-Workout Formula',
+    'pre workout': 'Pre-Workout Formula',
+    'preworkout': 'Pre-Workout Formula',
+    'nitric oxide': 'Pre-Workout Formula',
+    'bcaa': 'BCAAs',
+    'bcaas': 'BCAAs',
+    'branch chain amino acids': 'BCAAs',
+    'amino acids': 'BCAAs',
+    'glutamine': 'L-Glutamine',
+    'l-glutamine': 'L-Glutamine',
+    'alpha energy': 'Alpha Energy',
+    
+    // Health & Wellness
+    'omega-3': 'Omega-3 Fish Oil',
+    'omega 3': 'Omega-3 Fish Oil',
+    'fish oil': 'Omega-3 Fish Oil',
+    'omega-3 fish oil': 'Omega-3 Fish Oil',
+    'multivitamin': 'Complete MultiVitamin',
+    'multi-vitamin': 'Complete MultiVitamin',
+    'vitamin d': 'Complete MultiVitamin',
+    'vitamins': 'Complete MultiVitamin',
+    'coq10': 'CoQ10',
+    'co-q10': 'CoQ10',
+    'ubiquinone': 'CoQ10',
+    'turmeric': 'Platinum Turmeric',
+    'curcumin': 'Platinum Turmeric',
+    'probiotics': 'Probiotics 40 Billion',
+    'probiotic': 'Probiotics 40 Billion',
+    'gut bacteria': 'Probiotics 40 Billion',
+    'fiber': 'Fiber Supplement (Gut Health)',
+    'gut health': 'Fiber Supplement (Gut Health)',
+    'digestive health': 'Fiber Supplement (Gut Health)',
+    'apple cider vinegar': 'Apple Cider Vinegar',
+    'acv': 'Apple Cider Vinegar',
+    
+    // Hydration
+    'electrolytes': 'Electrolyte Formula (Lemonade)',
+    'electrolyte': 'Electrolyte Formula (Lemonade)',
+    'hydration': 'Electrolyte Formula (Lemonade)',
+    'beetroot': 'Beetroot',
+    'beet root': 'Beetroot',
+    'beetroot powder': 'Beetroot Powder',
+    'green tea': 'Green Tea Extract',
+    'green tea extract': 'Green Tea Extract',
+    'matcha': 'Green Tea Extract',
+    
+    // Weight Loss
+    'fat burner': 'Fat Burner with MCT',
+    'thermogenic': 'Fat Burner with MCT',
+    'mct': 'Fat Burner with MCT',
+    'keto': 'Keto BHB',
+    'keto bhb': 'Keto BHB',
+    'ketones': 'Keto BHB',
+    'keto-5': 'Keto-5',
+    'keto 5': 'Keto-5',
+    
+    // Sleep & Recovery
+    'magnesium': 'Magnesium Glycinate',
+    'magnesium glycinate': 'Magnesium Glycinate',
+    'melatonin': 'Sleep Support (Melatonin)',
+    'sleep support': 'Sleep Support (Melatonin)',
+    'sleep aid': 'Sleep Support (Melatonin)',
+    'ashwagandha': 'Ashwagandha',
+    'adaptogen': 'Ashwagandha',
+    'stress relief': 'Ashwagandha',
+    
+    // Focus & Cognition
+    'lion\'s mane': "Lion's Mane Mushroom",
+    'lions mane': "Lion's Mane Mushroom",
+    'lion mane': "Lion's Mane Mushroom",
+    'nootropic': "Lion's Mane Mushroom",
+    'flow state': 'Flow State Nootropic (Sour Candy)',
+    'energy powder': 'Energy Powder (Fruit Punch)',
+    'energy drink': 'Energy Powder (Fruit Punch)',
+    'methylene blue': 'Methylene Blue Drops',
+    
+    // Beauty
+    'collagen': 'Collagen Peptides',
+    'collagen peptides': 'Collagen Peptides',
+    'collagen powder': 'Collagen Peptides',
+    'hyaluronic acid': 'Hyaluronic Acid Serum',
+    'vitamin serum': 'Vitamin Glow Serum',
+  };
+  
+  // Check direct mappings first
+  if (directMappings[normalizedName]) {
+    return directMappings[normalizedName];
+  }
+  
+  // Try partial matching
+  for (const [key, value] of Object.entries(directMappings)) {
+    if (normalizedName.includes(key) || key.includes(normalizedName)) {
+      return value;
+    }
+  }
+  
+  // Try to find in products array
+  const exactMatch = products.find(p => p.name.toLowerCase() === normalizedName);
+  if (exactMatch) return exactMatch.name;
+  
+  // Partial match in product names
+  const partialMatch = products.find(p => 
+    p.name.toLowerCase().includes(normalizedName) || 
+    normalizedName.includes(p.name.toLowerCase().split(' ')[0])
+  );
+  if (partialMatch) return partialMatch.name;
+  
+  // Return original name if no match found
+  return aiName;
+};
 
 // Convert products.js catalog to quiz format
 const createSupplementDatabase = () => {
@@ -35,6 +168,7 @@ const createSupplementDatabase = () => {
           priority: product.priority === 'essential' ? 'Essential' : product.priority === 'high' ? 'High' : 'Medium',
           suplifulId: product.id,
           price: product.price || 0,
+          suplifulName: product.suplifulName || product.name,
           image: 'supplement'
         };
       }
@@ -74,6 +208,50 @@ export default function SupplementAdvisor() {
   // SHOPPING CART STATE
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  
+  // SHOPIFY PRODUCTS STATE (for real images)
+  const [shopifyProducts, setShopifyProducts] = useState([]);
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
+  
+  // Fetch Shopify products for real images
+  useEffect(() => {
+    fetchShopifyProducts()
+      .then((products) => {
+        setShopifyProducts(products);
+        console.log('[SupplementQuiz] Loaded', products.length, 'Shopify products with images');
+      })
+      .catch((error) => {
+        console.error('[SupplementQuiz] Error fetching Shopify products:', error);
+      });
+  }, []);
+  
+  // Get Shopify product by matching name
+  const getShopifyProduct = (supplementName) => {
+    if (!shopifyProducts.length) return null;
+    
+    const dbProduct = SUPPLEMENT_DATABASE[supplementName];
+    const suplifulName = dbProduct?.suplifulName || supplementName;
+    
+    // Try to match by title
+    return shopifyProducts.find(p => 
+      p.title.toLowerCase().includes(supplementName.toLowerCase()) ||
+      supplementName.toLowerCase().includes(p.title.toLowerCase().split(' ')[0]) ||
+      p.title.toLowerCase().includes(suplifulName.toLowerCase()) ||
+      suplifulName.toLowerCase().includes(p.title.toLowerCase().split(' ')[0])
+    );
+  };
+  
+  // Get product images
+  const getProductImages = (supplementName) => {
+    const shopifyProduct = getShopifyProduct(supplementName);
+    if (shopifyProduct?.images?.length > 0) {
+      return shopifyProduct.images;
+    }
+    if (shopifyProduct?.image) {
+      return [shopifyProduct.image];
+    }
+    return [];
+  };
 
   const goalCategories = [
     { id: 'muscle', title: 'Build Muscle & Strength', icon: Dumbbell, description: 'Pack on size, max strength, get powerful', color: 'from-primary via-accent to-violet', emoji: '💪' },
@@ -146,43 +324,6 @@ export default function SupplementAdvisor() {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
-  const getSupplementImage = (name) => {
-    const baseUrl = 'data:image/svg+xml,';
-    const svg = (color, text) => `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1F2937"/><stop offset="100%" stop-color="#111827"/></linearGradient><linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${color}" stop-opacity="0.8"/><stop offset="100%" stop-color="${color}" stop-opacity="0.4"/></linearGradient></defs><rect width="400" height="300" fill="url(#bg)" rx="16"/><rect x="20" y="20" width="360" height="260" fill="none" stroke="url(#accent)" stroke-width="2" rx="12" opacity="0.3"/><text x="50%" y="45%" font-family="system-ui" font-size="32" font-weight="700" text-anchor="middle" fill="white" opacity="0.95">${text}</text><rect x="50%" y="55%" width="120" height="2" transform="translate(-60,0)" fill="url(#accent)" opacity="0.6"/><text x="50%" y="68%" font-family="system-ui" font-size="14" letter-spacing="2" text-anchor="middle" fill="white" opacity="0.5">SUPPLEMENT</text></svg>`;
-
-    const imageMap = {
-      'creatine': ['#3B82F6', 'CREATINE'],
-      'protein': ['#60A5FA', 'WHEY PROTEIN'],
-      'preworkout': ['#3B82F6', 'PRE-WORKOUT'],
-      'bcaa': ['#06B6D4', 'BCAAs'],
-      'citrulline': ['#2DD4BF', 'CITRULLINE'],
-      'betaalanine': ['#2DD4BF', 'BETA-ALANINE'],
-      'caffeine': ['#3B82F6', 'CAFFEINE'],
-      'greentea': ['#06B6D4', 'GREEN TEA'],
-      'collagen': ['#60A5FA', 'COLLAGEN'],
-      'biotin': ['#3B82F6', 'BIOTIN'],
-      'omega3': ['#06B6D4', 'OMEGA-3'],
-      'magnesium': ['#3B82F6', 'MAGNESIUM'],
-      'theanine': ['#60A5FA', 'L-THEANINE'],
-      'melatonin': ['#3B82F6', 'MELATONIN'],
-      'vitamind': ['#60A5FA', 'VITAMIN D'],
-      'multivitamin': ['#06B6D4', 'MULTIVITAMIN'],
-      'electrolyte': ['#2DD4BF', 'ELECTROLYTES'],
-      'fiber': ['#06B6D4', 'FIBER'],
-      'b12': ['#3B82F6', 'B12'],
-      'alphagpc': ['#60A5FA', 'ALPHA-GPC'],
-      'lionsmane': ['#2DD4BF', 'LIONS MANE'],
-      'coq10': ['#2DD4BF', 'CoQ10'],
-      'vitaminc': ['#3B82F6', 'VITAMIN C']
-    };
-
-    const supplement = SUPPLEMENT_DATABASE[name];
-    if (supplement && supplement.image && imageMap[supplement.image]) {
-      const [color, text] = imageMap[supplement.image];
-      return baseUrl + encodeURIComponent(svg(color, text));
-    }
-    return baseUrl + encodeURIComponent(svg('#6B7280', 'SUPPLEMENT'));
-  };
 
   const handleInputChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
   const toggleArrayField = (field, value) => setFormData(prev => ({
@@ -193,7 +334,10 @@ export default function SupplementAdvisor() {
   // AI-powered recommendation generation
   const generateAIRecommendations = async () => {
     setIsGeneratingAI(true);
+    console.log('[SupplementQuiz] Starting AI recommendation generation...');
+    
     try {
+      console.log('[SupplementQuiz] Sending request to /api/ai/supplement-recommendation');
       const response = await fetch('/api/ai/supplement-recommendation', {
         method: 'POST',
         headers: {
@@ -209,20 +353,32 @@ export default function SupplementAdvisor() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate AI recommendations');
-      }
-
+      console.log('[SupplementQuiz] Response status:', response.status);
+      
       const data = await response.json();
+      console.log('[SupplementQuiz] Response data:', data);
+
+      if (!response.ok) {
+        // Show the actual error from the API
+        const errorMsg = data.details || data.error || 'Failed to generate AI recommendations';
+        console.error('[SupplementQuiz] API Error:', errorMsg);
+        throw new Error(errorMsg);
+      }
       
       if (data.success && data.recommendations) {
-        // Map AI recommendations to our format
+        console.log('[SupplementQuiz] AI recommendations received successfully');
+        // Map AI recommendations to our format with fuzzy matching
         const aiStack = data.recommendations.supplements || [];
         const mappedStack = aiStack.map(supp => {
-          // Try to find in database, otherwise use AI data
-          const dbSupp = SUPPLEMENT_DATABASE[supp.name];
+          // Use fuzzy matching to find the actual product name
+          const matchedName = fuzzyMatchProduct(supp.name);
+          const dbSupp = SUPPLEMENT_DATABASE[matchedName];
+          
+          console.log('[SupplementQuiz] Mapping AI name:', supp.name, '→', matchedName, dbSupp ? '✓' : '✗');
+          
           return {
-            name: supp.name,
+            name: matchedName, // Use the matched product name
+            originalAIName: supp.name, // Keep original for reference
             dosage: supp.dosage || dbSupp?.dosage || 'As directed',
             timing: supp.timing || dbSupp?.timing || 'As directed',
             reason: supp.reason || 'AI recommended based on your profile',
@@ -242,8 +398,18 @@ export default function SupplementAdvisor() {
         throw new Error('Invalid response from AI');
       }
     } catch (error) {
-      console.error('Error generating AI recommendations:', error);
-      alert('Failed to generate AI recommendations. Using standard recommendations instead.');
+      console.error('[SupplementQuiz] Error generating AI recommendations:', error);
+      
+      // Show a more helpful error message
+      const errorMessage = error.message || 'Unknown error';
+      if (errorMessage.includes('OPENAI_API_KEY') || errorMessage.includes('API key')) {
+        alert('OpenAI API key not configured. Please check server configuration. Using standard recommendations instead.');
+      } else if (errorMessage.includes('OpenAI')) {
+        alert(`OpenAI API error: ${errorMessage}. Using standard recommendations instead.`);
+      } else {
+        alert(`AI generation failed: ${errorMessage}. Using standard recommendations instead.`);
+      }
+      
       generateRecommendations();
     } finally {
       setIsGeneratingAI(false);
@@ -360,8 +526,25 @@ export default function SupplementAdvisor() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] p-4 md:p-8 py-12">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen p-4 md:p-8 py-12">
+      <div 
+        className="max-w-6xl mx-auto rounded-3xl p-6 md:p-8 transition-all duration-300"
+        style={{
+          background: 'rgba(10, 10, 10, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0, 217, 255, 0.2)',
+          boxShadow: '0 0 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 217, 255, 0.08)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 0, 0, 0.5), 0 0 80px rgba(0, 217, 255, 0.15)';
+          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 217, 255, 0.08)';
+          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+        }}
+      >
         {/* HEADER WITH CART */}
         {!showLanding && (
           <div className="text-center mb-8 relative">
@@ -385,7 +568,19 @@ export default function SupplementAdvisor() {
             {/* Cart Button */}
             <button
               onClick={() => setShowCart(!showCart)}
-              className="fixed top-6 right-6 z-50 bg-[var(--acc)] text-white p-4 rounded-full shadow-accent hover:bg-blue-600 transition-all duration-300 flex items-center gap-2"
+              className="fixed top-6 right-6 z-50 text-white p-4 rounded-full transition-all duration-300 flex items-center gap-2"
+              style={{
+                background: '#00d9ff',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.5)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.7)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.5)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
             >
               <ShoppingCart size={24} />
               {getCartCount() > 0 && (
@@ -401,7 +596,7 @@ export default function SupplementAdvisor() {
         {showCart && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowCart(false)}>
             <div className="bg-[var(--bg-elev-1)] rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-[var(--border)]" onClick={e => e.stopPropagation()}>
-              <div className="p-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--acc)]">
+              <div className="p-6 border-b border-[var(--border)] flex items-center justify-between" style={{ background: '#00d9ff' }}>
                 <h2 className="text-2xl font-normal text-white flex items-center gap-2">
                   <ShoppingCart size={28} />
                   Your Stack ({getCartCount()} items)
@@ -462,7 +657,21 @@ export default function SupplementAdvisor() {
                     <span className="text-xl font-normal text-[var(--txt)]">Total:</span>
                     <span className="text-3xl font-normal text-[var(--acc)]">${getCartTotal()}</span>
                   </div>
-                  <button className="w-full py-4 px-6 rounded-lg bg-[var(--acc)] text-white text-lg font-normal hover:bg-blue-600 hover:shadow-accent transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-0.5">
+                  <button 
+                    className="w-full py-4 px-6 rounded-lg text-white text-lg font-normal transition-all duration-300 flex items-center justify-center gap-2"
+                    style={{
+                      background: '#00d9ff',
+                      boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.6)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
                     <Check size={24} />
                     Checkout with Supliful
                   </button>
@@ -487,12 +696,13 @@ export default function SupplementAdvisor() {
                   {Math.round(((step + 1) / 4) * 100)}%
                 </span>
               </div>
-              <div className="w-full h-2 bg-[var(--bg-elev-2)] rounded-full overflow-hidden">
+              <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(20, 20, 20, 0.8)' }}>
                 <div
-                  className="h-full bg-[var(--acc)] transition-all duration-300 ease-out rounded-full"
+                  className="h-full transition-all duration-300 ease-out rounded-full"
                   style={{
                     width: `${((step + 1) / 4) * 100}%`,
-                    boxShadow: '0 0 12px rgba(96, 165, 250, 0.5)'
+                    background: '#00d9ff',
+                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.6)'
                   }}
                 />
               </div>
@@ -523,7 +733,24 @@ export default function SupplementAdvisor() {
                 <p className="text-lg text-[var(--txt-muted)] max-w-2xl mx-auto">Get a personalized supplement stack from our database of 42+ premium supplements</p>
               </div>
               <div className="text-center space-y-4 max-w-xl mx-auto">
-                <button onClick={() => setShowLanding(false)} className="w-full py-4 px-8 rounded-lg bg-[var(--acc)] text-white text-xl font-normal hover:bg-blue-600 hover:shadow-accent transition-all duration-300">Get Your Stack →</button>
+                <button 
+                  onClick={() => setShowLanding(false)} 
+                  className="w-full py-4 px-8 rounded-lg text-white text-xl font-normal transition-all duration-300"
+                  style={{
+                    background: '#00d9ff',
+                    boxShadow: '0 0 25px rgba(0, 217, 255, 0.5)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 217, 255, 0.7)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.5)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Get Your Stack →
+                </button>
                 <p className="text-[var(--txt-muted)] text-sm">Free • 2 minutes • Science-backed • 42+ Supplements</p>
               </div>
             </div>
@@ -540,7 +767,23 @@ export default function SupplementAdvisor() {
                 {goalCategories.map(goal => {
                   const Icon = goal.icon;
                   return (
-                    <button key={goal.id} onClick={() => { setPrimaryGoal(goal.id); setStep(1); }} className="group p-6 bg-[var(--bg-elev-1)] rounded-2xl border-2 border-[var(--border)] hover:border-[var(--acc)] hover:shadow-accent transition-all duration-300 hover:-translate-y-1">
+                    <button 
+                      key={goal.id} 
+                      onClick={() => { setPrimaryGoal(goal.id); setStep(1); }} 
+                      className="group p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                      style={{
+                        background: 'rgba(20, 20, 20, 0.8)',
+                        border: '1px solid rgba(0, 217, 255, 0.2)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#00d9ff';
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
                       <div className="flex items-start gap-4">
                         <div className="relative">
                           <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-xl blur-xl"></div>
@@ -567,11 +810,45 @@ export default function SupplementAdvisor() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Age</label>
-                  <input type="number" value={formData.age} onChange={(e) => handleInputChange('age', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] placeholder-[var(--txt-muted)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300" placeholder="30" />
+                  <input 
+                    type="number" 
+                    value={formData.age} 
+                    onChange={(e) => handleInputChange('age', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] placeholder-[var(--txt-muted)] focus:outline-none transition-all duration-300" 
+                    placeholder="30"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Gender</label>
-                  <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                  <select 
+                    value={formData.gender} 
+                    onChange={(e) => handleInputChange('gender', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
                     <option value="">Select</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -579,7 +856,23 @@ export default function SupplementAdvisor() {
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Activity Level</label>
-                  <select value={formData.activityLevel} onChange={(e) => handleInputChange('activityLevel', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                  <select 
+                    value={formData.activityLevel} 
+                    onChange={(e) => handleInputChange('activityLevel', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
                     <option value="">Select</option>
                     <option value="sedentary">Sedentary</option>
                     <option value="light">Lightly Active</option>
@@ -590,7 +883,23 @@ export default function SupplementAdvisor() {
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Workout Frequency</label>
-                  <select value={formData.workoutFrequency} onChange={(e) => handleInputChange('workoutFrequency', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                  <select 
+                    value={formData.workoutFrequency} 
+                    onChange={(e) => handleInputChange('workoutFrequency', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
                     <option value="">Select</option>
                     <option value="0">0 days/week</option>
                     <option value="1-2">1-2 days/week</option>
@@ -601,11 +910,45 @@ export default function SupplementAdvisor() {
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Sleep (hours)</label>
-                  <input type="number" value={formData.sleepHours} onChange={(e) => handleInputChange('sleepHours', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] placeholder-[var(--txt-muted)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300" placeholder="7" />
+                  <input 
+                    type="number" 
+                    value={formData.sleepHours} 
+                    onChange={(e) => handleInputChange('sleepHours', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] placeholder-[var(--txt-muted)] focus:outline-none transition-all duration-300" 
+                    placeholder="7"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-[var(--txt)] mb-2">Stress Level</label>
-                  <select value={formData.stressLevel} onChange={(e) => handleInputChange('stressLevel', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                  <select 
+                    value={formData.stressLevel} 
+                    onChange={(e) => handleInputChange('stressLevel', e.target.value)} 
+                    className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#00d9ff';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
                     <option value="">Select</option>
                     <option value="low">Low</option>
                     <option value="moderate">Moderate</option>
@@ -615,7 +958,23 @@ export default function SupplementAdvisor() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[var(--txt)] mb-2">Biggest Challenge</label>
-                <select value={formData.biggestChallenge} onChange={(e) => handleInputChange('biggestChallenge', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                <select 
+                  value={formData.biggestChallenge} 
+                  onChange={(e) => handleInputChange('biggestChallenge', e.target.value)} 
+                  className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                  style={{
+                    background: 'rgba(20, 20, 20, 0.8)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#00d9ff';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
                   <option value="">Select</option>
                   <option value="energy">Low energy</option>
                   <option value="motivation">Lack of motivation</option>
@@ -625,8 +984,45 @@ export default function SupplementAdvisor() {
                 </select>
               </div>
               <div className="flex gap-3 pt-4">
-                <button onClick={() => setStep(0)} className="flex-1 px-6 py-3 rounded-lg bg-[var(--bg-elev-1)] text-[var(--txt)] font-normal hover:bg-[var(--bg-elev-2)] transition-all duration-300">Back</button>
-                <button onClick={() => setStep(2)} disabled={!formData.age || !formData.gender || !formData.activityLevel} className="flex-1 px-6 py-3 rounded-lg bg-[var(--acc)] text-white font-normal hover:bg-blue-600 hover:shadow-accent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300">Continue</button>
+                <button 
+                  onClick={() => setStep(0)} 
+                  className="flex-1 px-6 py-3 rounded-lg text-[var(--txt)] font-normal transition-all duration-300"
+                  style={{
+                    background: 'rgba(20, 20, 20, 0.8)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  Back
+                </button>
+                <button 
+                  onClick={() => setStep(2)} 
+                  disabled={!formData.age || !formData.gender || !formData.activityLevel} 
+                  className="flex-1 px-6 py-3 rounded-lg text-white font-normal disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                  style={{
+                    background: '#00d9ff',
+                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.6)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Continue
+                </button>
               </div>
             </div>
           )}
@@ -637,7 +1033,23 @@ export default function SupplementAdvisor() {
               <h2 className="text-2xl font-normal text-[var(--txt)] mb-6">Personalize Your Stack</h2>
               <div>
                 <label className="block text-sm font-medium text-[var(--txt)] mb-2">Diet Type</label>
-                <select value={formData.dietType} onChange={(e) => handleInputChange('dietType', e.target.value)} className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none transition-all duration-300">
+                <select 
+                  value={formData.dietType} 
+                  onChange={(e) => handleInputChange('dietType', e.target.value)} 
+                  className="w-full px-4 py-3 rounded-lg text-[var(--txt)] focus:outline-none transition-all duration-300"
+                  style={{
+                    background: 'rgba(20, 20, 20, 0.8)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#00d9ff';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
                   <option value="">Select</option>
                   <option value="omnivore">Omnivore</option>
                   <option value="vegetarian">Vegetarian</option>
@@ -649,13 +1061,42 @@ export default function SupplementAdvisor() {
                 <label className="block text-sm font-medium text-[var(--txt)] mb-3">Specific Goals (select all that apply)</label>
                 <div className="grid grid-cols-2 gap-3">
                   {healthGoalsByCategory[primaryGoal]?.map(goal => (
-                    <button key={goal} onClick={() => toggleArrayField('healthGoals', goal)} className={`p-3 rounded-lg border-2 text-sm transition-all duration-300 font-normal ${formData.healthGoals.includes(goal) ? 'border-[var(--acc)] bg-[var(--acc)]/10 text-[var(--txt)]' : 'border-[var(--border)] bg-[var(--bg-elev-1)] text-[var(--txt)] hover:border-[var(--acc)]/50'}`}>{goal}</button>
+                    <button 
+                      key={goal} 
+                      onClick={() => toggleArrayField('healthGoals', goal)} 
+                      className="p-3 rounded-lg text-sm transition-all duration-300 font-normal text-[var(--txt)]"
+                      style={{
+                        background: formData.healthGoals.includes(goal) ? 'rgba(0, 217, 255, 0.1)' : 'rgba(20, 20, 20, 0.8)',
+                        border: formData.healthGoals.includes(goal) ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.2)',
+                        boxShadow: formData.healthGoals.includes(goal) ? '0 0 15px rgba(0, 217, 255, 0.3)' : 'none',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!formData.healthGoals.includes(goal)) {
+                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                          e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 217, 255, 0.2)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!formData.healthGoals.includes(goal)) {
+                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }
+                      }}
+                    >
+                      {goal}
+                    </button>
                   ))}
                 </div>
               </div>
               <div className="space-y-3 pt-4">
                 {/* AI vs Standard toggle */}
-                <div className="flex items-center gap-3 p-3 bg-[var(--bg-elev-1)] rounded-lg border border-[var(--border)]">
+                <div 
+                  className="flex items-center gap-3 p-3 rounded-lg transition-all duration-300"
+                  style={{
+                    background: 'rgba(20, 20, 20, 0.8)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                  }}
+                >
                   <input
                     type="checkbox"
                     id="useAI"
@@ -804,11 +1245,42 @@ export default function SupplementAdvisor() {
                 )}
                 
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(1)} className="flex-1 px-6 py-3 rounded-lg bg-[var(--bg-elev-1)] text-[var(--txt)] font-normal hover:bg-[var(--bg-elev-2)] transition-all duration-300">Back</button>
+                  <button 
+                    onClick={() => setStep(1)} 
+                    className="flex-1 px-6 py-3 rounded-lg text-[var(--txt)] font-normal transition-all duration-300"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.8)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    Back
+                  </button>
                   <button 
                     onClick={useAIRecommendations ? generateAIRecommendations : generateRecommendations} 
                     disabled={!formData.healthGoals.length || !formData.dietType || isGeneratingAI} 
-                    className="flex-1 px-6 py-3 rounded-lg bg-[var(--acc)] text-white font-normal hover:bg-blue-600 hover:shadow-accent disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-300"
+                    className="flex-1 px-6 py-3 rounded-lg text-white font-normal disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-300"
+                    style={{
+                      background: '#00d9ff',
+                      boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.6)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
                   >
                     {isGeneratingAI ? (
                       <>
@@ -830,18 +1302,11 @@ export default function SupplementAdvisor() {
           {/* STEP 4: RECOMMENDATIONS */}
           {!showLanding && step === 4 && recommendations && (() => {
             const goalTitle = goalCategories.find(g => g.id === primaryGoal)?.title || 'Your Goal';
+            const goalEmoji = goalCategories.find(g => g.id === primaryGoal)?.emoji || '🎯';
             
             return (
-            <div className="space-y-6">
-              <div className="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200">
-                <h3 className="text-xl font-normal text-[#1a1a1a] mb-2 flex items-center gap-2">
-                  <Info size={24} className="text-amber-600" />
-                  Disclaimer
-                </h3>
-                <p className="text-[#1a1a1a] text-sm">Educational purposes only. Consult healthcare provider before starting supplements.</p>
-              </div>
-
-                {/* Personalized Stack Bundle Section */}
+            <div className="space-y-8">
+                {/* Personalized Stack Bundle Section - Matching Aviera Stacks Style */}
                 {(() => {
                   const totalPrice = recommendations.stack.reduce((sum, supp) => {
                     const supplement = SUPPLEMENT_DATABASE[supp.name];
@@ -852,264 +1317,411 @@ export default function SupplementAdvisor() {
 
                   return (
                     <div 
-                      className="rounded-2xl p-8 mb-8 transition-all duration-300"
+                      className="rounded-2xl overflow-hidden transition-all duration-300"
                       style={{
-                        background: 'rgba(30, 30, 30, 0.85)',
-                        border: '2px solid rgba(0, 229, 255, 0.4)',
-                        boxShadow: '0 0 25px rgba(0, 229, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3)'
+                        background: 'rgba(30, 30, 30, 0.9)',
+                        border: '1px solid rgba(0, 217, 255, 0.3)',
+                        boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
+                        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+                        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                       }}
                     >
-                      {/* Header */}
-                      <div className="text-center mb-6">
-                        <h3 className="text-3xl md:text-4xl font-normal text-[var(--txt)] mb-2">
-                          Your Personalized 3-Supplement Stack
-                        </h3>
-                        <p className="text-lg text-[var(--txt-muted)]">
-                          Optimized for: <span className="text-[var(--acc)] font-normal">{goalTitle}</span>
+                      {/* Header with Icon */}
+                      <div className="p-6 pb-0">
+                        <div className="flex items-start gap-4 mb-4">
+                          {/* Icon Box */}
+                          <div 
+                            className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{
+                              background: 'rgba(0, 217, 255, 0.1)',
+                              border: '1px solid rgba(0, 217, 255, 0.3)',
+                            }}
+                          >
+                            <Sparkles size={28} className="text-[#00d9ff]" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-xl font-semibold text-white">Your Personalized Stack</h3>
+                              {recommendations.isAI && (
+                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-[#00d9ff]/20 text-[#00d9ff] border border-[#00d9ff]/30">
+                                  AI-Powered
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-400">
+                              Optimized for: <span className="text-[#00d9ff]">{goalEmoji} {goalTitle}</span>
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Includes Header */}
+                        <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">
+                          Includes ({recommendations.stack.length} Supplements)
                         </p>
-                        {recommendations.isAI && (
-                          <span className="inline-block px-3 py-1 bg-[var(--acc)]/20 text-[var(--acc)] text-xs font-normal rounded-full border border-[var(--acc)]/30 mt-3">
-                            AI-Powered
-                          </span>
+
+                        {/* Supplement List with Checkmarks */}
+                        <div className="space-y-2 mb-4">
+                          {recommendations.stack.map((supp, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <Check size={16} className="text-[#00d9ff] flex-shrink-0" />
+                              <span className="text-sm text-white">{supp.name}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* AI Summary */}
+                        {recommendations.summary ? (
+                          <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                            {recommendations.summary.length > 200 
+                              ? recommendations.summary.substring(0, 200) + '...' 
+                              : recommendations.summary}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                            This carefully selected combination is specifically designed to support your {goalTitle.toLowerCase()} goals with synergistic supplements.
+                          </p>
                         )}
                       </div>
 
-                      {/* Description */}
-                      <div className="mb-6 p-6 bg-[var(--bg-elev-1)] rounded-xl border border-[var(--border)]">
-                        <p className="text-base text-[var(--txt)] leading-relaxed font-light">
-                          This carefully selected combination of 3 supplements is specifically designed to fast-track your {goalTitle.toLowerCase()} goals. Each supplement works synergistically to maximize results and support your body's natural processes, creating a powerful foundation for achieving your desired outcomes.
-                        </p>
-                      </div>
-
-                      {/* Pricing Display */}
-                      <div className="mb-6 flex items-center justify-center">
-                        <div className="text-center">
-                          <p className="text-sm text-[var(--txt-muted)] mb-2 font-light">Bundle Price</p>
-                          <div className="flex items-baseline justify-center gap-4 mb-2">
-                            <span className="text-5xl font-normal text-[var(--acc)]">${discountedPrice}</span>
-                            <span className="text-xl text-[var(--txt-muted)]/60 line-through font-light">${totalPrice.toFixed(2)}</span>
-                          </div>
-                          <p className="text-sm text-[var(--acc)] font-light">
-                            Save ${savings} with 10% bundle discount
-                          </p>
+                      {/* Pricing Section */}
+                      <div className="px-6 pb-4 pt-4 border-t border-[rgba(255,255,255,0.1)]">
+                        <div className="flex items-baseline gap-3 mb-1">
+                          <span className="text-3xl font-bold text-[#00d9ff]">${discountedPrice}</span>
+                          <span className="text-lg text-gray-500 line-through">${totalPrice.toFixed(2)}</span>
+                          <span className="text-sm text-gray-400">USD</span>
                         </div>
-                      </div>
+                        <p className="text-sm text-[#00d9ff] mb-4">
+                          Save ${savings} (10% bundle discount)
+                        </p>
 
-                      {/* Add Complete Stack Button */}
-                      <button 
-                        onClick={addAllToCart} 
-                        className="w-full px-8 py-4 rounded-xl bg-[var(--acc)] text-white font-normal hover:bg-blue-600 hover:shadow-lg hover:shadow-[var(--acc)]/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg hover:-translate-y-0.5"
-                      >
-                        <ShoppingCart size={24} />
-                        Add Complete Stack to Cart
-                      </button>
+                        {/* Add Stack Button */}
+                        <button 
+                          onClick={addAllToCart} 
+                          className="w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+                          style={{
+                            background: '#00d9ff',
+                            boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }}
+                        >
+                          <ShoppingCart size={18} />
+                          Add Stack to Cart
+                        </button>
+                      </div>
                     </div>
                   );
                 })()}
 
-                {/* Individual Supplements Section */}
-                <div className="mb-6">
-                  <h4 className="text-xl font-normal text-[var(--txt)] mb-4">Individual Supplements</h4>
-                </div>
+                {/* Individual Supplements Section - Grid Layout Like Shop */}
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-4">Individual Supplements</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recommendations.stack.map((supp, idx) => {
+                      const isExpanded = expandedSupplement === idx;
+                      const supplement = SUPPLEMENT_DATABASE[supp.name];
+                      const inCart = cart.some(item => item.name === supp.name);
+                      const productImages = getProductImages(supp.name);
+                      const currentImageIndex = currentImageIndices[idx] || 0;
+                      const hasMultipleImages = productImages.length > 1;
 
-                <div className="space-y-4">
-                  {recommendations.stack.map((supp, idx) => {
-                    const isExpanded = expandedSupplement === idx;
-                    const supplement = SUPPLEMENT_DATABASE[supp.name];
-                    const inCart = cart.some(item => item.name === supp.name);
+                      return (
+                        <motion.div 
+                          key={idx} 
+                          className="rounded-2xl overflow-hidden transition-all duration-300 group"
+                          style={{
+                            background: 'rgba(30, 30, 30, 0.9)',
+                            border: '1px solid rgba(0, 217, 255, 0.3)',
+                            boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+                          }}
+                          whileHover={{ y: -4 }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
+                            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+                            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                          }}
+                        >
+                          {/* Product Image Carousel - Matching Shop Page */}
+                          <div 
+                            className="relative w-full h-64 flex items-center justify-center overflow-hidden"
+                            style={{
+                              background: 'linear-gradient(to bottom, var(--bg-elev-1), var(--bg))'
+                            }}
+                          >
+                            {productImages.length > 0 ? (
+                              <div className="relative w-full h-full">
+                                <AnimatePresence mode="wait">
+                                  <motion.div
+                                    key={currentImageIndex}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="absolute inset-0 w-full h-full"
+                                  >
+                                    <Image
+                                      src={productImages[currentImageIndex]}
+                                      alt={supp.name}
+                                      width={400}
+                                      height={400}
+                                      className="w-full h-full object-contain p-4"
+                                      unoptimized
+                                    />
+                                  </motion.div>
+                                </AnimatePresence>
+                                
+                                {/* Navigation Arrows */}
+                                {hasMultipleImages && (
+                                  <>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentImageIndices(prev => ({
+                                          ...prev,
+                                          [idx]: currentImageIndex === 0 ? productImages.length - 1 : currentImageIndex - 1
+                                        }));
+                                      }}
+                                      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+                                      style={{
+                                        background: 'rgba(0, 217, 255, 0.8)',
+                                      }}
+                                    >
+                                      <ChevronLeft size={16} className="text-[#001018]" strokeWidth={2.5} />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentImageIndices(prev => ({
+                                          ...prev,
+                                          [idx]: currentImageIndex === productImages.length - 1 ? 0 : currentImageIndex + 1
+                                        }));
+                                      }}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+                                      style={{
+                                        background: 'rgba(0, 217, 255, 0.8)',
+                                      }}
+                                    >
+                                      <ChevronRight size={16} className="text-[#001018]" strokeWidth={2.5} />
+                                    </button>
+                                  </>
+                                )}
 
-                    return (
-                      <div 
-                        key={idx} 
-                        className="rounded-2xl overflow-hidden transition-all duration-300"
-                        style={{
-                          background: 'rgba(30, 30, 30, 0.9)',
-                          border: '1px solid rgba(0, 217, 255, 0.3)',
-                          borderRadius: '16px',
-                          boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
-                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
-                          e.currentTarget.style.transform = 'translateY(-5px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
-                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                      >
-                        <div className="flex gap-4 p-5">
-                          <img src={getSupplementImage(supp.name)} alt={supp.name} className="w-24 h-24 object-cover rounded-xl flex-shrink-0 shadow-md" />
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="flex-1">
-                                <h4 className="text-lg font-normal text-white">{supp.name}</h4>
-                                <p className="text-[var(--acc)] font-bold text-lg">${supplement?.price.toFixed(2)}</p>
+                                {/* Image Indicator Dots */}
+                                {hasMultipleImages && (
+                                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                                    {productImages.map((_, imgIdx) => (
+                                      <button
+                                        key={imgIdx}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setCurrentImageIndices(prev => ({ ...prev, [idx]: imgIdx }));
+                                        }}
+                                        className="transition-all duration-300"
+                                        style={{
+                                          width: currentImageIndex === imgIdx ? '24px' : '8px',
+                                          height: '8px',
+                                          borderRadius: '4px',
+                                          background: currentImageIndex === imgIdx 
+                                            ? 'rgba(0, 217, 255, 1)' 
+                                            : 'rgba(255, 255, 255, 0.4)',
+                                          border: 'none',
+                                          cursor: 'pointer',
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                              <span className={`px-3 py-1 rounded-full text-xs font-normal ${supp.priority === 'Essential' ? 'bg-[var(--acc)]/10 text-[var(--acc)] border border-[var(--acc)]/30' : supp.priority === 'High' ? 'bg-[var(--acc)]/10 text-[var(--acc)] border border-[var(--acc)]/30' : 'bg-[var(--bg-elev-2)] text-white border border-[var(--border)]'}`}>
-                                {supp.priority}
-                              </span>
+                            ) : (
+                              <div className="text-6xl opacity-20">💊</div>
+                            )}
+                            
+                            {/* Priority Badge */}
+                            <span 
+                              className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium z-20"
+                              style={{
+                                background: supp.priority === 'Essential' ? 'rgba(0, 217, 255, 0.2)' : 'rgba(255,255,255,0.1)',
+                                color: supp.priority === 'Essential' ? '#00d9ff' : '#9ca3af',
+                                border: supp.priority === 'Essential' ? '1px solid rgba(0, 217, 255, 0.4)' : '1px solid rgba(255,255,255,0.2)',
+                              }}
+                            >
+                              {supp.priority}
+                            </span>
+                          </div>
+
+                          {/* Product Content */}
+                          <div className="p-6">
+                            {/* Product Title */}
+                            <h3 className="text-lg font-normal text-white mb-3 line-clamp-2 min-h-[3.5rem]">
+                              {supp.name}
+                            </h3>
+
+                            {/* Description - Expandable */}
+                            <div className="mb-4">
+                              <p 
+                                className={`text-sm text-[var(--txt-muted)] font-light leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}
+                              >
+                                {supp.reason}
+                              </p>
+                              <button 
+                                onClick={() => setExpandedSupplement(isExpanded ? null : idx)} 
+                                className="text-sm text-[#00d9ff] hover:text-[#00f0ff] font-normal mt-2 transition-colors duration-300 flex items-center gap-1"
+                              >
+                                {isExpanded ? 'View Less' : 'View More'}
+                                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                              </button>
                             </div>
-                                <p className="text-sm text-white mb-2 font-light"><strong className="text-white">Dosage:</strong> {supp.dosage}</p>
-                            <p className="text-sm text-white mb-2 font-light"><strong className="text-white">Timing:</strong> {supp.timing}</p>
-                            <p className="text-sm text-[var(--txt-muted)] mb-3 font-light">{supp.reason}</p>
 
-                            <button onClick={() => setExpandedSupplement(isExpanded ? null : idx)} className="text-sm text-[var(--acc)] hover:text-[var(--acc-hover)] font-normal flex items-center gap-1 mb-3 transition-colors duration-300">
-                              <Info size={14} />
-                              {isExpanded ? 'Hide details' : 'Learn more'}
-                            </button>
-
+                            {/* Expanded Details */}
                             {isExpanded && (
-                              <div className="bg-[var(--acc)]/5 p-4 rounded-lg mb-3 border border-[var(--acc)]/20">
-                                <p className="text-sm text-white font-light">{supplement?.info}</p>
+                              <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(0, 217, 255, 0.05)', border: '1px solid rgba(0, 217, 255, 0.2)' }}>
+                                <p className="text-xs text-gray-300 mb-1"><strong className="text-white">Dosage:</strong> {supp.dosage}</p>
+                                <p className="text-xs text-gray-300 mb-1"><strong className="text-white">Timing:</strong> {supp.timing}</p>
+                                {supplement?.info && (
+                                  <p className="text-xs text-gray-400 mt-2">{supplement.info}</p>
+                                )}
                               </div>
                             )}
 
-                            <div className="flex gap-3">
-                              <button
-                                onClick={() => addToCart(supp.name)}
-                                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                                  inCart
-                                    ? 'bg-green-500 text-white border-2 border-green-400'
-                                    : 'bg-[var(--acc)] text-white hover:bg-[var(--acc-hover)] hover:shadow-lg hover:shadow-[var(--acc)]/40'
-                                }`}
-                                style={!inCart ? {
-                                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
-                                } : {}}
-                                onMouseEnter={(e) => {
-                                  if (!inCart) {
-                                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                                    e.currentTarget.style.transform = 'translateY(-3px)';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (!inCart) {
-                                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                  }
-                                }}
-                              >
-                                {inCart ? (
-                                  <><Check size={18} /> In Cart</>
-                                ) : (
-                                  <><ShoppingCart size={18} /> Add to Cart</>
-                                )}
-                              </button>
+                            {/* Price */}
+                            <div className="mb-6 pt-4 border-t border-[var(--border)]">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-3xl font-bold text-[#00d9ff]">
+                                  ${supplement?.price?.toFixed(2) || '0.00'}
+                                </span>
+                                <span className="text-sm text-[var(--txt-muted)] font-light">USD</span>
+                              </div>
                             </div>
+
+                            {/* Add to Cart Button - Matching Shop Style */}
+                            <button
+                              onClick={() => addToCart(supp.name)}
+                              className="w-full flex items-center justify-center gap-2 text-white transition-all duration-300"
+                              style={{
+                                background: inCart ? 'rgba(16, 185, 129, 0.9)' : 'rgba(30, 30, 30, 0.9)',
+                                border: inCart ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(0, 217, 255, 0.4)',
+                                borderRadius: '12px',
+                                padding: '14px 28px',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                boxShadow: inCart 
+                                  ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
+                                  : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!inCart) {
+                                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                                  e.currentTarget.style.transform = 'translateY(-3px)';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!inCart) {
+                                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                }
+                              }}
+                            >
+                              {inCart ? (
+                                <><Check size={18} /> Added to Cart</>
+                              ) : (
+                                <><ShoppingCart size={18} /> Add to Cart</>
+                              )}
+                            </button>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-              {/* Aviera AI Insights Section */}
-              {(() => {
-                const goalTitle = goalCategories.find(g => g.id === primaryGoal)?.title || 'Your Goal';
-                
-                return recommendations.isAI && recommendations.summary ? (
-                  <div 
-                    className="p-6 mb-6 rounded-xl transition-all duration-300"
-                    style={{
-                      background: 'rgba(30, 30, 30, 0.95)',
-                      border: '2px solid rgba(0, 217, 255, 0.5)',
-                      borderRadius: '12px',
-                      padding: '24px',
-                    }}
-                  >
-                    <h4 className="text-xl font-normal text-white mb-4 flex items-center gap-2">
-                      <Sparkles size={20} className="text-[#00d9ff]" />
-                      🎯 Aviera AI Insights for Your Goal
-                    </h4>
-                    
-                    {/* Goal Summary */}
-                    <div className="mb-6">
-                      <p className="text-base text-white font-light leading-relaxed">
-                        Based on your goal to <span className="text-[#00d9ff] font-normal">{goalTitle.toLowerCase()}</span>, here's how your personalized stack works:
-                      </p>
-                    </div>
+              {/* Why This Stack Works - AI Insights Section */}
+              <div 
+                className="rounded-2xl overflow-hidden transition-all duration-300"
+                style={{
+                  background: 'rgba(30, 30, 30, 0.9)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <div className="p-6">
+                  <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Sparkles size={20} className="text-[#00d9ff]" />
+                    Why This Stack Works For You
+                  </h4>
+                  
+                  {/* Goal Context */}
+                  <p className="text-sm text-gray-400 mb-6">
+                    Based on your goal to <span className="text-[#00d9ff] font-medium">{goalTitle.toLowerCase()}</span>, here's how each supplement helps:
+                  </p>
 
-                    {/* Why Each Supplement */}
-                    <div className="space-y-6 mb-6">
-                      {recommendations.stack.slice(0, 3).map((supp, idx) => (
-                        <div key={idx} className="border-l-2 border-[#00d9ff]/50 pl-4">
-                          <h5 className="text-lg font-normal text-[#00d9ff] mb-2">{supp.name}</h5>
-                          <div className="space-y-2">
-                            <div className="flex items-start gap-2">
-                              <CheckCircle size={16} className="text-[#00d9ff] mt-1 flex-shrink-0" />
-                              <div>
-                                <p className="text-sm font-normal text-white mb-1">How it helps:</p>
-                                <p className="text-sm text-gray-300 font-light">{supp.reason}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <Clock size={16} className="text-[#00d9ff] mt-1 flex-shrink-0" />
-                              <div>
-                                <p className="text-sm font-normal text-white mb-1">When to take:</p>
-                                <p className="text-sm text-gray-300 font-light">{supp.timing}</p>
-                              </div>
-                            </div>
+                  {/* Supplement Explanations */}
+                  <div className="space-y-4 mb-6">
+                    {recommendations.stack.map((supp, idx) => (
+                      <div 
+                        key={idx} 
+                        className="p-4 rounded-xl"
+                        style={{
+                          background: 'rgba(0, 217, 255, 0.05)',
+                          border: '1px solid rgba(0, 217, 255, 0.15)',
+                        }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div 
+                            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                            style={{
+                              background: 'rgba(0, 217, 255, 0.15)',
+                              border: '1px solid rgba(0, 217, 255, 0.3)',
+                            }}
+                          >
+                            <Check size={16} className="text-[#00d9ff]" />
+                          </div>
+                          <div>
+                            <h5 className="text-sm font-semibold text-[#00d9ff] mb-1">{supp.name}</h5>
+                            <p className="text-sm text-gray-300 leading-relaxed">{supp.reason}</p>
+                            <p className="text-xs text-gray-500 mt-2">
+                              <Clock size={12} className="inline mr-1" />
+                              Take: {supp.timing} • {supp.dosage}
+                            </p>
                           </div>
                         </div>
-                      ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Additional Insights */}
+                  {recommendations.insights && recommendations.insights.length > 0 && (
+                    <div className="pt-4 border-t border-[rgba(255,255,255,0.1)]">
+                      <h5 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                        <TrendingUp size={16} className="text-[#00d9ff]" />
+                        Tips for Best Results
+                      </h5>
+                      <ul className="space-y-2">
+                        {recommendations.insights.map((insight, idx) => (
+                          <li key={idx} className="text-sm text-gray-400 flex items-start gap-2">
+                            <CheckCircle size={14} className="text-[#00d9ff] mt-0.5 flex-shrink-0" />
+                            <span>{insight}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-
-                    {/* Synergy Explanation */}
-                    {recommendations.summary && (
-                      <div className="mb-6 p-4 rounded-lg" style={{ background: 'rgba(0, 217, 255, 0.05)', border: '1px solid rgba(0, 217, 255, 0.2)' }}>
-                        <h5 className="text-base font-normal text-[#00d9ff] mb-2 flex items-center gap-2">
-                          <Sparkles size={16} />
-                          How They Work Together
-                        </h5>
-                        <p className="text-sm text-white font-light leading-relaxed">{recommendations.summary}</p>
-                      </div>
-                    )}
-
-                    {/* Additional Tips */}
-                    {recommendations.insights && recommendations.insights.length > 0 && (
-                      <div>
-                        <h5 className="text-base font-normal text-[#00d9ff] mb-3 flex items-center gap-2">
-                          <TrendingUp size={16} />
-                          Additional Tips for Success
-                        </h5>
-                        <ul className="space-y-2">
-                          {recommendations.insights.map((insight, idx) => (
-                            <li key={idx} className="text-sm text-gray-300 font-light flex items-start gap-2">
-                              <CheckCircle size={14} className="text-[#00d9ff] mt-0.5 flex-shrink-0" />
-                              <span>{insight}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  /* Standard Key Insights Box */
-                  <div 
-                    className="p-6 mb-6 rounded-xl transition-all duration-300"
-                    style={{
-                      background: 'rgba(30, 30, 30, 0.95)',
-                      border: '2px solid rgba(0, 217, 255, 0.5)',
-                      borderRadius: '12px',
-                      padding: '24px',
-                    }}
-                  >
-                    <h4 className="text-xl font-normal text-white mb-4 flex items-center gap-2">
-                      <Sparkles size={20} className="text-[#00d9ff]" />
-                      Aviera AI Insights for Your Goal
-                    </h4>
-                    <ul className="space-y-2">
-                      {recommendations.insights && recommendations.insights.map((insight, idx) => (
-                        <li key={idx} className="text-sm text-gray-300 font-light flex items-start gap-2">
-                          <CheckCircle size={14} className="text-[#00d9ff] mt-0.5 flex-shrink-0" />
-                          <span>{insight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })()}
+                  )}
+                </div>
+              </div>
 
               <button 
                 onClick={() => { setStep(0); setPrimaryGoal(''); setRecommendations(null); setShowLanding(false); }} 

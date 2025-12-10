@@ -38,28 +38,28 @@ export default function SmartStackAI() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
-      {/* Hero Header */}
-      <div className="relative text-[var(--txt)] py-20 md:py-32 overflow-hidden min-h-[60vh]">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <OptimizedImage
-            src="/images/stack/stack-background.jpg"
-            alt="Fitness and supplements background"
-            width={1920}
-            height={1080}
-            className="w-full h-full"
-            priority
-            objectFit="cover"
-            objectPosition="center center"
-            fallbackText="Background"
-          />
-          {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
-          <div className="absolute inset-0 bg-black/50"></div>
-          {/* Additional gradient overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
-        </div>
+    <div className="min-h-screen relative">
+      {/* Full-page Background Image */}
+      <div className="fixed inset-0 z-0">
+        <OptimizedImage
+          src="/images/stack/stack-background.jpg"
+          alt="Fitness and supplements background"
+          width={1920}
+          height={1080}
+          className="w-full h-full"
+          priority
+          objectFit="cover"
+          objectPosition="center center"
+          fallbackText="Background"
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/60"></div>
+        {/* Gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70"></div>
+      </div>
 
+      {/* Hero Header */}
+      <div className="relative text-[var(--txt)] py-20 md:py-32 overflow-hidden min-h-[60vh] z-10">
         {/* Floating Particles Background */}
         <div className="absolute inset-0 z-[5] overflow-hidden pointer-events-none">
           {[
@@ -379,7 +379,7 @@ export default function SmartStackAI() {
       </div>
 
       {/* Quiz Section */}
-      <div id="supplement-quiz">
+      <div id="supplement-quiz" className="relative z-10">
         <SupplementQuiz />
       </div>
     </div>

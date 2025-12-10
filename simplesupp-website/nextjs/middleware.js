@@ -16,6 +16,8 @@ export default clerkMiddleware(
       '/landing',
       '/api/waitlist',
       '/api/pro-waitlist',
+      '/api/ai/supplement-recommendation',
+      '/smartstack-ai',
     ],
   }
 );

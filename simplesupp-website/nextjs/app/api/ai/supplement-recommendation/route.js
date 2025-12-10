@@ -1,33 +1,63 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { createOpenAIClient, SYSTEM_PROMPTS, formatSupplementResponse } from '@/lib/openai';
+import OpenAI from 'openai';
+
+// System prompt for supplement recommendations
+const SYSTEM_PROMPT = `You are an expert fitness and nutrition advisor specializing in evidence-based supplement recommendations. Your role is to analyze user profiles and provide personalized supplement stacks.
+
+Guidelines:
+- Only recommend supplements with strong scientific backing
+- Consider user goals, experience level, dietary restrictions, and health conditions
+- Provide clear explanations for each recommendation
+- Include dosage and timing recommendations
+- Prioritize safety and avoid interactions
+- Be honest about limitations and when supplements may not be necessary
+- Format responses as JSON with supplements array and explanations
+
+Safety Disclaimer: Always remind users to consult with healthcare providers before starting new supplements, especially if they have medical conditions or take medications.`;
 
 export async function POST(request) {
-  try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+  console.log('=== AI SUPPLEMENT RECOMMENDATION API CALLED ===');
+  
+  // Check environment variables first
+  const apiKey = process.env.OPENAI_API_KEY;
+  console.log('OPENAI_API_KEY exists:', !!apiKey);
+  console.log('OPENAI_API_KEY length:', apiKey ? apiKey.length : 0);
+  console.log('OPENAI_API_KEY starts with:', apiKey ? apiKey.substring(0, 10) + '...' : 'N/A');
 
+  if (!apiKey) {
+    console.error('ERROR: OPENAI_API_KEY is not set in environment variables');
+    return NextResponse.json(
+      { 
+        error: 'OpenAI API key not configured',
+        details: 'OPENAI_API_KEY environment variable is missing'
+      },
+      { status: 500 }
+    );
+  }
+
+  try {
+    // Parse request body
     const body = await request.json();
-    const { 
-      primaryGoal,
-      formData,
-      quizResults 
-    } = body;
+    console.log('Request body received:', JSON.stringify(body, null, 2).substring(0, 500));
+    
+    const { primaryGoal, formData, quizResults } = body;
 
     if (!primaryGoal || !formData) {
+      console.error('Missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: primaryGoal and formData' },
         { status: 400 }
       );
     }
 
-    const openai = createOpenAIClient();
+    console.log('Creating OpenAI client...');
+    
+    // Create OpenAI client directly (inline to avoid import issues)
+    const openai = new OpenAI({
+      apiKey: apiKey,
+    });
+
+    console.log('OpenAI client created successfully');
 
     // Build user profile context
     const userProfile = `
@@ -74,23 +104,48 @@ Focus on supplements that are:
 
 Keep the stack focused (3-7 supplements max) and prioritize the most impactful ones.`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: SYSTEM_PROMPTS.supplementRecommendation
+    console.log('Calling OpenAI API...');
+    
+    // Call OpenAI with try-catch for specific error handling
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: SYSTEM_PROMPT
+          },
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500,
+      });
+      console.log('OpenAI API call successful');
+    } catch (openaiError) {
+      console.error('=== OPENAI API ERROR ===');
+      console.error('Error name:', openaiError.name);
+      console.error('Error message:', openaiError.message);
+      console.error('Error status:', openaiError.status);
+      console.error('Error code:', openaiError.code);
+      console.error('Full error:', JSON.stringify(openaiError, null, 2));
+      
+      return NextResponse.json(
+        { 
+          error: 'OpenAI API call failed',
+          details: openaiError.message,
+          code: openaiError.code || openaiError.status || 'UNKNOWN'
         },
-        {
-          role: 'user',
-          content: userPrompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1500,
-    });
+        { status: 500 }
+      );
+    }
 
     const aiResponse = completion.choices[0]?.message?.content || '';
+    console.log('AI Response length:', aiResponse.length);
+    console.log('AI Response preview:', aiResponse.substring(0, 200));
     
     // Try to parse and format the response
     let formattedResponse;
@@ -98,15 +153,25 @@ Keep the stack focused (3-7 supplements max) and prioritize the most impactful o
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         formattedResponse = JSON.parse(jsonMatch[0]);
+        console.log('Successfully parsed JSON response');
       } else {
-        // Fallback if JSON parsing fails
-        formattedResponse = formatSupplementResponse(aiResponse);
+        console.log('No JSON found in response, using fallback format');
+        formattedResponse = {
+          supplements: [],
+          summary: aiResponse,
+          insights: ['AI generated recommendation - see summary for details']
+        };
       }
     } catch (parseError) {
-      console.error('Error parsing AI response:', parseError);
-      formattedResponse = formatSupplementResponse(aiResponse);
+      console.error('Error parsing AI response:', parseError.message);
+      formattedResponse = {
+        supplements: [],
+        summary: aiResponse,
+        insights: ['AI generated recommendation - see summary for details']
+      };
     }
 
+    console.log('=== AI RECOMMENDATION SUCCESS ===');
     return NextResponse.json({
       success: true,
       recommendations: formattedResponse,
@@ -114,14 +179,18 @@ Keep the stack focused (3-7 supplements max) and prioritize the most impactful o
     });
 
   } catch (error) {
-    console.error('Error generating supplement recommendations:', error);
+    console.error('=== GENERAL API ERROR ===');
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return NextResponse.json(
       { 
         error: 'Failed to generate recommendations',
-        details: error.message 
+        details: error.message,
+        type: error.constructor.name
       },
       { status: 500 }
     );
   }
 }
-
