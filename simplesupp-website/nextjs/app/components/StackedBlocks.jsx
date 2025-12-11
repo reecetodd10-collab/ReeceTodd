@@ -2,132 +2,224 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { Dumbbell, Flame, Brain, Zap, ArrowRight, Check, Pill } from 'lucide-react';
 
 /**
- * StackedBlocks Component
- *
- * 3D visualization of stacked supplement blocks/bottles.
- * Creates depth with CSS 3D transforms and brand gradient colors.
- * Used in SmartStack AI section for visual appeal.
+ * StackedBlocks Component - Stack Preview CTA
+ * 
+ * An interactive preview showcasing what users get from the quiz.
+ * Features goal cards, pulse animation, and clear CTA.
  */
 export default function StackedBlocks() {
-  const blocks = [
-    {
-      label: 'Creatine',
-      gradient: 'from-blue-500 to-cyan-500',
-      delay: 0,
-      rotation: '-3deg',
-      zIndex: 30,
-      translateZ: '40px'
-    },
-    {
-      label: 'Protein',
-      gradient: 'from-cyan-500 to-blue-600',
-      delay: 0.1,
-      rotation: '2deg',
-      zIndex: 20,
-      translateZ: '20px'
-    },
-    {
-      label: 'Omega-3',
-      gradient: 'from-blue-600 to-cyan-600',
-      delay: 0.2,
-      rotation: '-2deg',
-      zIndex: 10,
-      translateZ: '0px'
-    }
+  const previewGoals = [
+    { icon: Dumbbell, label: 'Build Muscle', color: 'text-white' },
+    { icon: Flame, label: 'Burn Fat', color: 'text-white' },
+    { icon: Brain, label: 'Focus', color: 'text-white' },
+    { icon: Zap, label: 'Energy', color: 'text-white' },
+  ];
+
+  const sampleSupplements = [
+    'Creatine Monohydrate',
+    'Whey Protein Isolate',
+    'Pre-Workout Formula',
   ];
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[400px] md:h-[500px]">
-      {/* 3D perspective container */}
-      <div className="relative w-full h-full" style={{ perspective: '1000px' }}>
-        {blocks.map((block, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 50, rotateX: -15 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: block.delay,
-              ease: [0.25, 0.46, 0.45, 0.94]
-            }}
-            viewport={{ once: true }}
-            className="absolute inset-0 flex items-center justify-center"
+    <div className="relative w-full max-w-md mx-auto">
+      {/* Main CTA Card */}
+      <Link href="/smartstack-ai">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="relative group cursor-pointer"
+        >
+          {/* Pulsing glow background */}
+          <div 
+            className="absolute -inset-1 rounded-3xl opacity-60 blur-xl transition-all duration-500 group-hover:opacity-80"
             style={{
-              zIndex: block.zIndex,
-              transform: `translateZ(${block.translateZ}) rotate(${block.rotation})`
-            }}
-          >
-            {/* Block/Bottle */}
-            <div className="relative w-[280px] md:w-[320px] h-[360px] md:h-[420px]">
-              {/* Glow effect */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${block.gradient} opacity-30 blur-3xl rounded-[3rem]`}
-              />
-
-              {/* Main block */}
-              <div
-                className={`relative w-full h-full bg-gradient-to-br ${block.gradient} rounded-[3rem] shadow-2xl overflow-hidden`}
-                style={{
-                  transformStyle: 'preserve-3d',
-                  transform: 'rotateY(0deg)'
-                }}
-              >
-                {/* Shine/highlight effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50" />
-
-                {/* Label */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <div className="glass-dark rounded-2xl p-4 md:p-6">
-                    <h4 className="text-white font-bold text-xl md:text-2xl text-center">
-                      {block.label}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-8 right-8 w-16 h-16 bg-white/20 rounded-full blur-2xl" />
-                <div className="absolute bottom-1/3 left-8 w-24 h-24 bg-white/10 rounded-full blur-3xl" />
-              </div>
-
-              {/* Side shadow for depth */}
-              <div
-                className="absolute inset-0 bg-black/20 rounded-[3rem] blur-sm"
-                style={{
-                  transform: 'translateZ(-10px) translateX(5px) translateY(5px)',
-                  transformStyle: 'preserve-3d'
-                }}
-              />
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-[var(--acc)]/30 rounded-full"
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0, 1, 0],
-              scale: [0.5, 1, 0.5]
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.3
-            }}
-            style={{
-              left: `${20 + i * 15}%`,
-              top: `${30 + (i % 3) * 20}%`
+              background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.4) 0%, rgba(0, 150, 255, 0.3) 100%)',
+              animation: 'pulse-glow 3s ease-in-out infinite',
             }}
           />
-        ))}
-      </div>
+          
+          {/* Card container - glass-card style (transparent) */}
+          <div 
+            className="relative rounded-2xl p-6 transition-all duration-300 group-hover:scale-[1.02]"
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(12px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            {/* Header - Aviera Stack branding (matching SupplementQuiz exactly) */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                {/* Pill icon container with cyan glow */}
+                <div className="relative group/pill">
+                  <div 
+                    className="absolute inset-0 rounded-xl blur-xl transition-all duration-300"
+                    style={{
+                      background: 'rgba(0, 217, 255, 0.3)',
+                      animation: 'pulse-glow 3s ease-in-out infinite',
+                    }}
+                  ></div>
+                  <div 
+                    className="relative rounded-xl flex items-center justify-center shadow-premium transition-all duration-300"
+                    style={{
+                      background: 'var(--charcoal-light)',
+                      padding: '10px',
+                      border: '1px solid rgba(0, 217, 255, 0.3)',
+                      boxShadow: '0 0 15px rgba(0, 217, 255, 0.25)',
+                    }}
+                  >
+                    <Pill 
+                      className="text-white fill-current" 
+                      size={28} 
+                      style={{ filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.8))' }} 
+                    />
+                  </div>
+                </div>
+                <h3 
+                  className="text-white font-bold text-xl"
+                  style={{ 
+                    fontFamily: 'Montserrat, sans-serif',
+                    textShadow: '0 0 15px rgba(0, 217, 255, 0.4)'
+                  }}
+                >
+                  Aviera Stack
+                </h3>
+              </div>
+              {/* Find Your Stack button - styled like Add to Cart */}
+              <div 
+                className="px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-semibold transition-all duration-300"
+                style={{
+                  background: 'rgba(20, 20, 20, 0.9)',
+                  color: '#00d9ff',
+                  border: '1px solid rgba(0, 217, 255, 0.4)',
+                  boxShadow: '0 0 12px rgba(0, 217, 255, 0.15)',
+                }}
+              >
+                <ArrowRight size={14} />
+                Find Your Stack
+              </div>
+            </div>
+
+            {/* Goal Icons Row */}
+            <div className="grid grid-cols-4 gap-2 mb-5">
+              {previewGoals.map((goal, idx) => {
+                const Icon = goal.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.1, duration: 0.3 }}
+                    viewport={{ once: true }}
+                    className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200 group-hover:bg-[rgba(0,217,255,0.05)]"
+                  >
+                    {/* Icon with cyan glow */}
+                    <div className="relative">
+                      <div 
+                        className="absolute inset-0 rounded-lg blur-md"
+                        style={{
+                          background: 'rgba(0, 217, 255, 0.2)',
+                        }}
+                      ></div>
+                      <div 
+                        className="relative w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{
+                          background: 'rgba(15, 15, 15, 0.9)',
+                          border: '1px solid rgba(0, 217, 255, 0.25)',
+                          boxShadow: '0 0 10px rgba(0, 217, 255, 0.15)',
+                        }}
+                      >
+                        <Icon size={16} className={goal.color} />
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-gray-400 text-center leading-tight">{goal.label}</span>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Sample Stack Preview */}
+            <div 
+              className="rounded-xl p-4 mb-5"
+              style={{
+                background: 'rgba(0, 0, 0, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-3">Sample Stack Includes</p>
+              <div className="space-y-2">
+                {sampleSupplements.map((supp, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-2"
+                  >
+                    <div className="w-4 h-4 rounded-full bg-[#00d9ff] flex items-center justify-center flex-shrink-0">
+                      <Check size={10} className="text-[#001018]" strokeWidth={3} />
+                    </div>
+                    <span className="text-gray-300 text-xs">{supp}</span>
+                  </motion.div>
+                ))}
+                <div className="flex items-center gap-2 text-gray-500 text-xs mt-2">
+                  <span>+ personalized recommendations...</span>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Button - Exact same style as Add to Cart */}
+            <div 
+              className="w-full flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out group-hover:translate-y-[-3px]"
+              style={{
+                background: 'rgba(30, 30, 30, 0.9)',
+                border: '1px solid rgba(0, 217, 255, 0.4)',
+                borderRadius: '12px',
+                padding: '14px 28px',
+                fontSize: '16px',
+                fontWeight: 600,
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <ArrowRight size={18} />
+              <span>Build My Stack</span>
+            </div>
+
+            {/* Bottom text */}
+            <p className="text-center text-gray-500 text-[10px] mt-3">
+              Free • 2 minutes • No account required
+            </p>
+          </div>
+        </motion.div>
+      </Link>
+
+      {/* Floating accent elements */}
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-[#00d9ff]/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-[#00d9ff]/15 rounded-full blur-xl pointer-events-none" />
+
+      {/* CSS for pulse animation */}
+      <style jsx>{`
+        @keyframes pulse-glow {
+          0%, 100% {
+            opacity: 0.4;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(1.02);
+          }
+        }
+      `}</style>
     </div>
   );
 }
-

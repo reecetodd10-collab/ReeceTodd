@@ -1,11 +1,44 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Grid3X3, Layers, Truck, MessageCircle, Send, Bot } from 'lucide-react';
 import { products, PRODUCT_CATEGORIES } from '../data/products';
 import { fetchShopifyProducts } from '../lib/shopify';
 import Image from 'next/image';
+import Link from 'next/link';
+
+// Aviera "A" Logo - matches site header branding (two angled lines meeting at top)
+const AvieraLogo = ({ size = 24, className = '' }) => {
+  const strokeWidth = size > 20 ? 2.5 : 2;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Left angled line */}
+      <path
+        d="M 8 36 L 8 20 L 20 4"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Right angled line */}
+      <path
+        d="M 32 36 L 32 20 L 20 4"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
 
 // Fuzzy matching function to map AI names to actual product names
 const fuzzyMatchProduct = (aiName) => {
@@ -213,6 +246,74 @@ export default function SupplementAdvisor() {
   const [shopifyProducts, setShopifyProducts] = useState([]);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   
+  // HOVER STATE FOR PERSONALIZED STACK (matching shop page)
+  const [hoveredPersonalizedSupplement, setHoveredPersonalizedSupplement] = useState(null);
+  const [hoveredPersonalizedProduct, setHoveredPersonalizedProduct] = useState(null);
+  
+  // AVIERA AI CHAT WIDGET STATE
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const chatContainerRef = useRef(null);
+  
+  // Auto-scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages, isChatLoading]);
+  
+  // Function to send message to AI API
+  const sendChatMessage = async (message) => {
+    if (!message.trim()) return;
+    
+    // Add user message to chat
+    const newMessages = [...chatMessages, { role: 'user', content: message }];
+    setChatMessages(newMessages);
+    setIsChatLoading(true);
+    
+    try {
+      const response = await fetch('/api/ai/quiz-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          conversationHistory: newMessages,
+          userContext: {
+            primaryGoal,
+            goalTitle: goalCategories.find(g => g.id === primaryGoal)?.title,
+            recommendedStack: recommendations?.stack || [],
+            formData
+          }
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.response) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      } else if (data.fallbackResponse) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.fallbackResponse }]);
+      } else {
+        setChatMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: "I'm having trouble connecting right now. Try checking out the 'Why This Stack Works' section above, or browse our shop for more supplement info!" 
+        }]);
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "Oops! Something went wrong. Feel free to explore our shop or check out the Aviera Stacks for more options!" 
+      }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+  
   // Fetch Shopify products for real images
   useEffect(() => {
     fetchShopifyProducts()
@@ -241,6 +342,9 @@ export default function SupplementAdvisor() {
     );
   };
   
+  // State for chat product hover
+  const [chatHoveredProduct, setChatHoveredProduct] = useState(null);
+  
   // Get product images
   const getProductImages = (supplementName) => {
     const shopifyProduct = getShopifyProduct(supplementName);
@@ -252,16 +356,154 @@ export default function SupplementAdvisor() {
     }
     return [];
   };
+  
+  // Function to render message with clickable product mentions
+  const renderMessageWithProducts = (content, role) => {
+    if (role === 'user') return content;
+    
+    // Get all supplement names from our database
+    const supplementNames = Object.keys(SUPPLEMENT_DATABASE);
+    
+    // Create regex pattern to find supplement mentions
+    const pattern = new RegExp(
+      `\\b(${supplementNames.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`,
+      'gi'
+    );
+    
+    // Split content by product mentions
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = pattern.exec(content)) !== null) {
+      // Add text before match
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', content: content.slice(lastIndex, match.index) });
+      }
+      
+      // Find matching supplement name (case-insensitive)
+      const matchedName = supplementNames.find(
+        name => name.toLowerCase() === match[0].toLowerCase()
+      ) || match[0];
+      
+      parts.push({ type: 'product', name: matchedName });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add remaining text
+    if (lastIndex < content.length) {
+      parts.push({ type: 'text', content: content.slice(lastIndex) });
+    }
+    
+    // If no products found, return original content
+    if (parts.length === 0) return content;
+    
+    // Render parts with clickable product links
+    return (
+      <span>
+        {parts.map((part, idx) => {
+          if (part.type === 'text') {
+            return <span key={idx}>{part.content}</span>;
+          }
+          
+          const supplement = SUPPLEMENT_DATABASE[part.name];
+          const shopifyProduct = getShopifyProduct(part.name);
+          const productImage = shopifyProduct?.images?.[0] || shopifyProduct?.image || null;
+          const price = supplement?.price || 29.99;
+          
+          // Create URL-friendly product slug
+          const productSlug = part.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+          
+          return (
+            <span 
+              key={idx} 
+              className="relative inline-block"
+              onMouseEnter={() => setChatHoveredProduct(part.name)}
+              onMouseLeave={() => setChatHoveredProduct(null)}
+            >
+              <Link
+                href={`/shop?product=${productSlug}`}
+                className="text-[#00d9ff] cursor-pointer hover:underline font-medium transition-all duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {part.name}
+              </Link>
+              
+              {/* Hover Product Card */}
+              {chatHoveredProduct === part.name && (
+                <div 
+                  className="absolute bottom-full left-0 mb-2 z-50"
+                  style={{
+                    animation: 'fadeIn 0.2s ease-out',
+                  }}
+                >
+                  <div 
+                    className="p-3 rounded-xl w-[220px]"
+                    style={{
+                      background: 'rgba(20, 20, 20, 0.98)',
+                      border: '1px solid rgba(0, 217, 255, 0.3)',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 217, 255, 0.15)',
+                    }}
+                  >
+                    {productImage && (
+                      <div className="w-full h-28 mb-2 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center">
+                        <img 
+                          src={productImage} 
+                          alt={part.name}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <p className="text-white text-sm font-medium mb-1">{part.name}</p>
+                    <p className="text-[#00d9ff] text-sm font-bold mb-2">${price.toFixed(2)}</p>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/shop?product=${productSlug}`}
+                        className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-center transition-all duration-200 border border-[#00d9ff]/50 text-[#00d9ff] hover:bg-[#00d9ff]/10"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(part.name);
+                        }}
+                        className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
+                        style={{
+                          background: '#00d9ff',
+                          color: '#001018',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      >
+                        <ShoppingCart size={10} />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </span>
+          );
+        })}
+      </span>
+    );
+  };
 
   const goalCategories = [
-    { id: 'muscle', title: 'Build Muscle & Strength', icon: Dumbbell, description: 'Pack on size, max strength, get powerful', color: 'from-primary via-accent to-violet', emoji: '💪' },
-    { id: 'fatloss', title: 'Lose Fat & Get Lean', icon: Flame, description: 'Shed pounds, reveal definition, beach ready', color: 'from-accent via-violet to-primary', emoji: '🔥' },
-    { id: 'tone', title: 'Tone & Sculpt', icon: Activity, description: 'Lean, toned, fit physique without bulk', color: 'from-violet via-primary to-accent', emoji: '✨' },
-    { id: 'athletic', title: 'Athletic Performance', icon: Zap, description: 'Speed, endurance, explosiveness, sports', color: 'from-primary via-accent to-violet', emoji: '⚡' },
-    { id: 'beauty', title: 'Beauty & Anti-Aging', icon: Sparkles, description: 'Glowing skin, strong hair nails, youthful', color: 'from-accent via-violet to-primary', emoji: '💅' },
-    { id: 'sleep', title: 'Sleep & Recovery', icon: Moon, description: 'Deep rest, repair, recharge, destress', color: 'from-violet via-primary to-accent', emoji: '😴' },
-    { id: 'focus', title: 'Focus & Productivity', icon: Brain, description: 'Mental clarity, energy, crush work', color: 'from-primary via-accent to-violet', emoji: '🧠' },
-    { id: 'longevity', title: 'Longevity & Wellness', icon: Heart, description: 'Disease prevention, anti-aging, feel great', color: 'from-accent via-violet to-primary', emoji: '❤️' }
+    { id: 'muscle', title: 'Build Muscle & Strength', icon: Dumbbell, description: 'Pack on size, max strength, get powerful', color: 'from-primary via-accent to-violet' },
+    { id: 'fatloss', title: 'Lose Fat & Get Lean', icon: Flame, description: 'Shed pounds, reveal definition, beach ready', color: 'from-accent via-violet to-primary' },
+    { id: 'tone', title: 'Tone & Sculpt', icon: Activity, description: 'Lean, toned, fit physique without bulk', color: 'from-violet via-primary to-accent' },
+    { id: 'athletic', title: 'Athletic Performance', icon: Zap, description: 'Speed, endurance, explosiveness, sports', color: 'from-primary via-accent to-violet' },
+    { id: 'beauty', title: 'Beauty & Anti-Aging', icon: Sparkles, description: 'Glowing skin, strong hair nails, youthful', color: 'from-accent via-violet to-primary' },
+    { id: 'sleep', title: 'Sleep & Recovery', icon: Moon, description: 'Deep rest, repair, recharge, destress', color: 'from-violet via-primary to-accent' },
+    { id: 'focus', title: 'Focus & Productivity', icon: Brain, description: 'Mental clarity, energy, crush work', color: 'from-primary via-accent to-violet' },
+    { id: 'longevity', title: 'Longevity & Wellness', icon: Heart, description: 'Disease prevention, anti-aging, feel great', color: 'from-accent via-violet to-primary' }
   ];
 
   const healthGoalsByCategory = {
@@ -792,7 +1034,7 @@ export default function SupplementAdvisor() {
                           </div>
                         </div>
                         <div className="flex-1 text-left">
-                          <h3 className="text-lg font-normal text-[var(--txt)] mb-1 flex items-center gap-2"><span>{goal.emoji}</span>{goal.title}</h3>
+                          <h3 className="text-lg font-normal text-[var(--txt)] mb-1">{goal.title}</h3>
                           <p className="text-[var(--txt-muted)] text-sm">{goal.description}</p>
                         </div>
                       </div>
@@ -1335,15 +1577,37 @@ export default function SupplementAdvisor() {
                       {/* Header with Icon */}
                       <div className="p-6 pb-0">
                         <div className="flex items-start gap-4 mb-4">
-                          {/* Icon Box */}
+                          {/* Icon Box - Matching Shop Page Aviera Stacks Style */}
                           <div 
-                            className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
+                            className="relative transition-all duration-300 ease-in-out flex items-center justify-center flex-shrink-0"
                             style={{
-                              background: 'rgba(0, 217, 255, 0.1)',
+                              background: 'rgba(30, 30, 30, 0.9)',
                               border: '1px solid rgba(0, 217, 255, 0.3)',
+                              borderRadius: '12px',
+                              padding: '20px',
+                              width: '64px',
+                              height: '64px',
+                              boxShadow: '0 0 15px rgba(0, 217, 255, 0.2)',
+                              cursor: 'default'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                              e.currentTarget.style.transform = 'scale(1.05)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
+                              e.currentTarget.style.transform = 'scale(1)';
                             }}
                           >
-                            <Sparkles size={28} className="text-[#00d9ff]" />
+                            <Sparkles 
+                              className="text-white" 
+                              size={32}
+                              style={{
+                                filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.5))'
+                              }}
+                            />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -1365,14 +1629,83 @@ export default function SupplementAdvisor() {
                           Includes ({recommendations.stack.length} Supplements)
                         </p>
 
-                        {/* Supplement List with Checkmarks */}
-                        <div className="space-y-2 mb-4">
-                          {recommendations.stack.map((supp, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <Check size={16} className="text-[#00d9ff] flex-shrink-0" />
-                              <span className="text-sm text-white">{supp.name}</span>
-                            </div>
-                          ))}
+                        {/* Supplement List with Checkmarks and Hover Product Images */}
+                        <div className="space-y-2 mb-4 relative">
+                          {recommendations.stack.map((supp, idx) => {
+                            const shopifyProduct = getShopifyProduct(supp.name);
+                            const isHovered = hoveredPersonalizedSupplement === `personalized-${idx}`;
+                            
+                            return (
+                              <div 
+                                key={idx} 
+                                className="flex items-start gap-2 text-sm text-white font-light relative"
+                                onMouseEnter={() => {
+                                  setHoveredPersonalizedSupplement(`personalized-${idx}`);
+                                  if (shopifyProduct) setHoveredPersonalizedProduct(shopifyProduct);
+                                }}
+                                onMouseLeave={() => {
+                                  setHoveredPersonalizedSupplement(null);
+                                  setHoveredPersonalizedProduct(null);
+                                }}
+                              >
+                                <Check size={14} className="text-[#00d9ff] mt-0.5 flex-shrink-0" />
+                                <span className="relative cursor-default">
+                                  {supp.name}
+                                  {/* Product Image Tooltip - Same as Shop Page */}
+                                  {isHovered && hoveredPersonalizedProduct && hoveredPersonalizedProduct.image && (
+                                    <div
+                                      className="absolute z-50 pointer-events-none"
+                                      style={{
+                                        bottom: 'calc(100% + 12px)',
+                                        left: '50%',
+                                        transform: 'translateX(-50%)',
+                                        opacity: 1,
+                                        transition: 'opacity 0.2s ease',
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          width: '150px',
+                                          height: '150px',
+                                          background: 'rgba(30, 30, 30, 0.95)',
+                                          border: '1px solid rgba(0, 217, 255, 0.5)',
+                                          borderRadius: '8px',
+                                          padding: '8px',
+                                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 217, 255, 0.3)',
+                                          backdropFilter: 'blur(10px)',
+                                        }}
+                                      >
+                                        <img
+                                          src={hoveredPersonalizedProduct.image}
+                                          alt={hoveredPersonalizedProduct.title || supp.name}
+                                          style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain',
+                                            borderRadius: '4px',
+                                          }}
+                                        />
+                                      </div>
+                                      {/* Tooltip arrow */}
+                                      <div
+                                        style={{
+                                          position: 'absolute',
+                                          bottom: '-6px',
+                                          left: '50%',
+                                          transform: 'translateX(-50%)',
+                                          width: 0,
+                                          height: 0,
+                                          borderLeft: '6px solid transparent',
+                                          borderRight: '6px solid transparent',
+                                          borderTop: '6px solid rgba(0, 217, 255, 0.5)',
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
 
                         {/* AI Summary */}
@@ -1723,6 +2056,88 @@ export default function SupplementAdvisor() {
                 </div>
               </div>
 
+              {/* Explore More CTA Section */}
+              <div 
+                className="rounded-2xl overflow-hidden transition-all duration-300"
+                style={{
+                  background: 'rgba(30, 30, 30, 0.9)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                }}
+              >
+                <div className="p-6 text-center">
+                  <h4 className="text-xl font-semibold text-white mb-2">
+                    Want to Explore More?
+                  </h4>
+                  <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">
+                    Browse our full collection of 42+ premium supplements or check out our curated stacks
+                  </p>
+                  
+                  {/* CTA Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+                    {/* Primary Button - Browse All Supplements */}
+                    <a
+                      href="/shop"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+                      style={{
+                        background: '#00d9ff',
+                        color: '#001018',
+                        boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <Grid3X3 size={18} />
+                      Browse All Supplements
+                    </a>
+                    
+                    {/* Secondary Button - View Aviera Stacks */}
+                    <a
+                      href="/shop?tab=stacks"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+                      style={{
+                        background: 'transparent',
+                        border: '2px solid #00d9ff',
+                        color: '#00d9ff',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(0, 217, 255, 0.1)';
+                        e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.4)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <Layers size={18} />
+                      View Aviera Stacks
+                    </a>
+                  </div>
+                  
+                  {/* Shipping Info */}
+                  <p className="text-xs text-gray-500 flex items-center justify-center gap-1">
+                    <Truck size={14} className="text-[#00d9ff]" />
+                    Free shipping on orders over $50
+                  </p>
+                </div>
+              </div>
+
               <button 
                 onClick={() => { setStep(0); setPrimaryGoal(''); setRecommendations(null); setShowLanding(false); }} 
                 className="w-full py-4 rounded-lg font-medium text-white transition-all duration-300"
@@ -1826,6 +2241,284 @@ export default function SupplementAdvisor() {
           })()}
         </div>
       </div>
+
+      {/* AVIERA AI CHAT WIDGET - Only show on results page (Step 4) */}
+      {step === 4 && recommendations && (
+        <>
+          {/* Floating Chat Button with Aviera Logo */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+            className="fixed bottom-6 right-6 z-[100] flex flex-col items-center"
+          >
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative"
+              style={{
+                background: isChatOpen ? 'rgba(30, 30, 30, 0.95)' : 'rgba(20, 20, 20, 0.95)',
+                border: '1px solid rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 0 25px rgba(0, 217, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.4)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.7), 0 4px 20px rgba(0, 0, 0, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+              }}
+            >
+              {isChatOpen ? (
+                <X size={22} className="text-white" />
+              ) : (
+                <>
+                  <AvieraLogo size={26} className="text-white" />
+                  {/* Pulse animation ring */}
+                  <span 
+                    className="absolute inset-0 rounded-full animate-ping pointer-events-none"
+                    style={{
+                      background: 'transparent',
+                      border: '2px solid rgba(0, 217, 255, 0.4)',
+                      animationDuration: '2s',
+                    }}
+                  />
+                </>
+              )}
+            </button>
+            {/* Label below button */}
+            {!isChatOpen && (
+              <span 
+                className="mt-2 text-[9px] text-gray-400 font-medium tracking-wide"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                Aviera AI
+              </span>
+            )}
+          </motion.div>
+
+          {/* Expanded Chat Panel */}
+          <AnimatePresence>
+            {isChatOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="fixed bottom-24 right-6 z-[99] w-[380px] max-w-[calc(100vw-48px)] rounded-2xl overflow-hidden"
+                style={{
+                  background: 'rgba(20, 20, 20, 0.98)',
+                  border: '1px solid rgba(0, 217, 255, 0.4)',
+                  boxShadow: '0 0 40px rgba(0, 217, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.5)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Chat Header */}
+                <div 
+                  className="p-4 border-b border-[rgba(0,217,255,0.2)]"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.08) 0%, rgba(0, 217, 255, 0.02) 100%)',
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'rgba(20, 20, 20, 0.9)',
+                        border: '1px solid rgba(0, 217, 255, 0.3)',
+                      }}
+                    >
+                      <AvieraLogo size={18} className="text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-white font-semibold text-sm">Aviera AI</h4>
+                      <p className="text-[11px] text-gray-400">Your Personal Fitness Expert</p>
+                    </div>
+                    <button
+                      onClick={() => setIsChatOpen(false)}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Chat Content */}
+                <div ref={chatContainerRef} className="p-4 max-h-[420px] overflow-y-auto scroll-smooth">
+                  {/* Welcome Message - Only show when no messages */}
+                  {chatMessages.length === 0 && (
+                    <div className="mb-4">
+                      <p className="text-lg font-semibold text-white mb-1">
+                        How can I help you today?
+                      </p>
+                      <p className="text-sm text-gray-400 leading-relaxed">
+                        Ask me about your personalized stack, supplement timing, dosing, or recommendations to reach your goals faster.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Context Info - Only show when no messages */}
+                  {chatMessages.length === 0 && primaryGoal && (
+                    <div 
+                      className="mb-4 p-3 rounded-xl"
+                      style={{
+                        background: 'rgba(0, 217, 255, 0.05)',
+                        border: '1px solid rgba(0, 217, 255, 0.15)',
+                      }}
+                    >
+                      <p className="text-xs text-gray-400 mb-1">Your Goal</p>
+                      <p className="text-sm text-[#00d9ff] font-medium">
+                        {goalCategories.find(g => g.id === primaryGoal)?.title}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {recommendations?.stack?.length || 0} supplements in your personalized stack
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Chat Messages with Product Card Rendering */}
+                  <div className="space-y-3 mb-4">
+                    {chatMessages.map((msg, idx) => (
+                      <div 
+                        key={idx}
+                        className={`rounded-xl text-sm ${
+                          msg.role === 'user' 
+                            ? 'p-3 bg-[#00d9ff]/20 text-white ml-8' 
+                            : 'p-3 bg-[rgba(255,255,255,0.05)] text-gray-300 mr-2'
+                        }`}
+                      >
+                        {msg.role === 'assistant' && (
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <AvieraLogo size={12} className="text-white" />
+                            <span className="text-[10px] text-[#00d9ff] font-medium">Aviera AI</span>
+                          </div>
+                        )}
+                        {/* Render message with clickable product mentions */}
+                        <div className="whitespace-pre-wrap">
+                          {renderMessageWithProducts(msg.content, msg.role)}
+                        </div>
+                      </div>
+                    ))}
+                    {isChatLoading && (
+                      <div className="p-3 rounded-xl bg-[rgba(255,255,255,0.05)] text-gray-300 mr-2">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <AvieraLogo size={12} className="text-white" />
+                          <span className="text-[10px] text-[#00d9ff] font-medium">Aviera AI</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <div className="w-2 h-2 bg-[#00d9ff] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Quick Actions */}
+                  {chatMessages.length === 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Suggested Questions</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          'Why these supplements for me?',
+                          'How do I take this stack?',
+                          'What else would help my goals?',
+                        ].map((action, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => sendChatMessage(action)}
+                            disabled={isChatLoading}
+                            className="px-3 py-1.5 text-xs rounded-full transition-all duration-300 disabled:opacity-50"
+                            style={{
+                              background: 'transparent',
+                              border: '1px solid rgba(0, 217, 255, 0.4)',
+                              color: '#00d9ff',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isChatLoading) {
+                                e.currentTarget.style.background = 'rgba(0, 217, 255, 0.1)';
+                                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+                            }}
+                          >
+                            {action}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Chat Input */}
+                <div className="p-4 border-t border-[rgba(0,217,255,0.2)]">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && chatInput.trim() && !isChatLoading) {
+                          const message = chatInput.trim();
+                          setChatInput('');
+                          sendChatMessage(message);
+                        }
+                      }}
+                      disabled={isChatLoading}
+                      placeholder={isChatLoading ? "Thinking..." : "Ask me anything..."}
+                      className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white placeholder-gray-500 transition-all duration-300 disabled:opacity-50"
+                      style={{
+                        background: 'rgba(30, 30, 30, 0.9)',
+                        border: '1px solid rgba(0, 217, 255, 0.3)',
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                        e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.3)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        if (chatInput.trim() && !isChatLoading) {
+                          const message = chatInput.trim();
+                          setChatInput('');
+                          sendChatMessage(message);
+                        }
+                      }}
+                      disabled={isChatLoading || !chatInput.trim()}
+                      className="p-2.5 rounded-xl transition-all duration-300 disabled:opacity-50"
+                      style={{
+                        background: '#00d9ff',
+                        boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isChatLoading && chatInput.trim()) {
+                          e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.6)';
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.4)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    >
+                      <Send size={18} className="text-[#001018]" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, Filter, ShoppingCart, Check, Dumbbell, Flame, Zap, Brain, Moon, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
@@ -8,14 +9,26 @@ import GlassCard from '../components/shared/GlassCard';
 import ShopifyProductCard from '../components/ShopifyProductCard';
 import { fetchShopifyProducts, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
 
-export default function Shop() {
-  const [activeTab, setActiveTab] = useState('products'); // 'products' or 'stacks'
+// Component that handles URL params
+function ShopContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam === 'stacks' ? 'stacks' : 'products');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [shopifyProducts, setShopifyProducts] = useState([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [shopifyCartInitialized, setShopifyCartInitialized] = useState(false);
+
+  // Handle URL tab parameter changes (e.g., /shop?tab=stacks)
+  useEffect(() => {
+    if (tabParam === 'stacks') {
+      setActiveTab('stacks');
+    } else if (tabParam === 'products') {
+      setActiveTab('products');
+    }
+  }, [tabParam]);
 
   // Fetch Shopify products when products tab is active
   useEffect(() => {
@@ -417,6 +430,15 @@ export default function Shop() {
 
       </div>
     </div>
+  );
+}
+
+// Main export with Suspense wrapper for useSearchParams
+export default function Shop() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-[var(--acc)] border-t-transparent rounded-full animate-spin"></div></div>}>
+      <ShopContent />
+    </Suspense>
   );
 }
 

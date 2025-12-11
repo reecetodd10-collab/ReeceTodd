@@ -5,7 +5,6 @@ import Link from 'next/link';
 import SupplementQuiz from '../components/SupplementQuiz';
 import OptimizedImage from '../components/OptimizedImage';
 import { Brain, Target, Sparkles, Crown, Check } from 'lucide-react';
-import { Button } from '../components/ui/moving-border';
 
 export default function SmartStackAI() {
   const [mounted, setMounted] = useState(false);
@@ -343,15 +342,25 @@ export default function SmartStackAI() {
 
           {/* CTA Button */}
           <div className="mb-4">
-            <Button
+            <button
               onClick={handleGetStack}
-              borderRadius="0.75rem"
-              containerClassName="w-auto inline-block"
-              className="px-8 py-4 text-base"
-              duration={3000}
+              className="px-8 py-4 text-base font-semibold rounded-xl transition-all duration-300"
+              style={{
+                background: '#00D9FF',
+                color: '#001018',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.7)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               Get Your Stack →
-            </Button>
+            </button>
           </div>
 
           {/* Excitement Social Proof */}
@@ -361,7 +370,7 @@ export default function SmartStackAI() {
               animationDelay: '0.3s',
             }}
           >
-            🚀 Join 500+ who found their perfect stack
+            Join 500+ who found their perfect stack
           </p>
 
           {/* Social Proof */}
