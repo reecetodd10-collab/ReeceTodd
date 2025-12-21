@@ -332,11 +332,43 @@ export default function Home() {
             ======================================== */}
         <section
           id="how-it-works"
-          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
+          {/* Subtle Floating Cyan Particles - Ambient background detail */}
+          <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
+            {[
+              { left: '10%', top: '20%', size: 3, delay: 0, duration: 18 },
+              { left: '25%', top: '60%', size: 4, delay: 2, duration: 20 },
+              { left: '45%', top: '15%', size: 3.5, delay: 1, duration: 22 },
+              { left: '60%', top: '75%', size: 4, delay: 3, duration: 19 },
+              { left: '75%', top: '30%', size: 3, delay: 1.5, duration: 21 },
+              { left: '85%', top: '55%', size: 5, delay: 2.5, duration: 17 },
+              { left: '15%', top: '80%', size: 3.5, delay: 0.5, duration: 23 },
+              { left: '35%', top: '40%', size: 4, delay: 1.8, duration: 20 },
+              { left: '55%', top: '65%', size: 3, delay: 2.2, duration: 18 },
+              { left: '70%', top: '10%', size: 4.5, delay: 0.8, duration: 24 },
+              { left: '90%', top: '45%', size: 3, delay: 1.2, duration: 19 },
+              { left: '5%', top: '50%', size: 4, delay: 3.5, duration: 21 },
+            ].map((particle, i) => (
+              <div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: `${particle.size}px`,
+                  height: `${particle.size}px`,
+                  background: 'rgba(0, 217, 255, 0.4)',
+                  left: particle.left,
+                  top: particle.top,
+                  animation: `float-particle ${particle.duration}s ease-in-out infinite`,
+                  animationDelay: `${particle.delay}s`,
+                  boxShadow: '0 0 6px rgba(0, 217, 255, 0.4)',
+                }}
+              />
+            ))}
+          </div>
           <div
             ref={howItWorksAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-20">
               <div 

@@ -76,13 +76,13 @@ export default function Navigation() {
     };
   }, []); // Empty dependency array - only run once on mount
 
-  // Homepage section navigation (smooth scroll)
-  const homeSections = [
-    { name: 'Aviera Stack', sectionId: 'aviera-stack' },
-    { name: 'Aviera Fit', sectionId: 'aviera-fit' },
-    { name: 'Aviera Shop', sectionId: 'aviera-shop' },
-    { name: 'Aviera News', href: '/news' },
-    { name: 'About', sectionId: 'about' },
+  // Main navigation links - always visible
+  const mainNavLinks = [
+    { name: 'Aviera Stack', sectionId: 'aviera-stack', isHomeSection: true },
+    { name: 'Aviera Fit', sectionId: 'aviera-fit', isHomeSection: true },
+    { name: 'Aviera Shop', sectionId: 'aviera-shop', isHomeSection: true },
+    { name: 'Aviera News', href: '/news', isCyan: true },
+    { name: 'About', sectionId: 'about', isHomeSection: true },
   ];
 
   // Other page links (only show if not on homepage)
@@ -343,58 +343,72 @@ export default function Navigation() {
           </Link>
 
           <div className="hidden lg:flex items-center space-x-2">
-            {/* Homepage: Show section navigation with scroll spy */}
-            {isHomePage && homeSections.map((section) => 
-              section.href ? (
-                <Link
-                  key={section.href}
-                  href={section.href}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    isActive(section.href)
-                      ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
-                      : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
-                  }`}
-                >
-                  {section.name}
-                </Link>
-              ) : (
-                <button
-                  key={section.sectionId}
-                  onClick={() => scrollToSection(section.sectionId)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    activeSection === section.sectionId
-                      ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
-                      : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
-                  }`}
-                >
-                  {section.name}
-                </button>
-              )
-            )}
+            {/* Main navigation links - always visible */}
+            {mainNavLinks.map((link) => {
+              // Handle homepage sections (scroll to section)
+              if (link.isHomeSection && link.sectionId) {
+                if (isHomePage) {
+                  return (
+                    <button
+                      key={link.sectionId}
+                      onClick={() => scrollToSection(link.sectionId)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                        activeSection === link.sectionId
+                          ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
+                          : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                  );
+                } else {
+                  // Navigate to homepage then scroll
+                  return (
+                    <button
+                      key={link.sectionId}
+                      onClick={() => {
+                        router.push('/');
+                        setTimeout(() => {
+                          const element = document.getElementById(link.sectionId);
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
+                        }, 100);
+                      }}
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]"
+                    >
+                      {link.name}
+                    </button>
+                  );
+                }
+              }
+              
+              // Handle regular links (like Aviera News)
+              if (link.href) {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                      link.isCyan
+                        ? 'text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10'
+                        : isActive(link.href)
+                        ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
+                        : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              }
+              
+              return null;
+            })}
 
-            {/* Other page links (only if not on homepage) */}
-            {!isHomePage && pageLinks.map((link) => (
-              <Link
-                key={link.path}
-                href={link.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  isActive(link.path)
-                    ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
-                    : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-
-            {/* Dashboard link - always visible */}
+            {/* Dashboard link - always visible (in cyan) */}
             <button
               onClick={handleDashboardClick}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                isActive('/dashboard')
-                  ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
-                  : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
-              }`}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10"
             >
               <LayoutDashboard size={16} />
               Dashboard
@@ -531,38 +545,51 @@ export default function Navigation() {
 
         {isOpen && (
           <div className="lg:hidden py-4 space-y-2 border-t border-[var(--border)]">
-            {/* Homepage sections */}
-            {isHomePage && homeSections.map((section) => 
-              section.href ? (
-                <Link
-                  key={section.href}
-                  href={section.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                    isActive(section.href)
-                      ? 'bg-[var(--acc)] text-[#001018]'
-                      : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-                  }`}
-                >
-                  {section.name}
-                </Link>
-              ) : (
-                <button
-                  key={section.sectionId}
-                  onClick={() => {
-                    scrollToSection(section.sectionId);
-                    setIsOpen(false);
-                  }}
-                  className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                    activeSection === section.sectionId
-                      ? 'bg-[var(--acc)] text-[#001018]'
-                      : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-                  }`}
-                >
-                  {section.name}
-                </button>
-              )
-            )}
+            {/* Main navigation links - always visible */}
+            {mainNavLinks.map((link) => {
+              // Handle homepage sections (scroll to section)
+              if (link.isHomeSection && link.sectionId) {
+                return (
+                  <button
+                    key={link.sectionId}
+                    onClick={() => {
+                      scrollToSection(link.sectionId);
+                      setIsOpen(false);
+                    }}
+                    className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                      activeSection === link.sectionId
+                        ? 'bg-[var(--acc)] text-[#001018]'
+                        : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
+                    }`}
+                  >
+                    {link.name}
+                  </button>
+                );
+              }
+              
+              // Handle regular links (like Aviera News)
+              if (link.href) {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                      link.isCyan
+                        ? 'text-[var(--acc)] hover:bg-[var(--acc)]/10'
+                        : isActive(link.href)
+                        ? 'bg-[var(--acc)] text-[#001018]'
+                        : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              }
+              
+              return null;
+            })}
+
 
             {/* Other page links */}
             {!isHomePage && pageLinks.map((link) => (
@@ -580,18 +607,14 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* Dashboard link - always visible in mobile */}
+            {/* Dashboard link - always visible in mobile (in cyan) */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 setIsOpen(false);
                 setShowDashboardModal(true);
               }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all w-full text-left ${
-                isActive('/dashboard')
-                  ? 'bg-[var(--acc)] text-[#001018]'
-                  : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-              }`}
+              className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all w-full text-left text-[var(--acc)] hover:bg-[var(--acc)]/10"
             >
               <LayoutDashboard size={18} />
               Dashboard

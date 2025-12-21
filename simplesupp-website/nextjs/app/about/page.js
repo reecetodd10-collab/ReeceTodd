@@ -1,98 +1,470 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Heart, Target, Users, ArrowRight } from 'lucide-react';
+import { Heart, Target, ArrowRight, TrendingUp, Globe, Sparkles, DoorOpen } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-[var(--bg)] py-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero */}
+    <div className="min-h-screen bg-[var(--bg)] py-16 relative overflow-hidden">
+      {/* Background Image with Dark Overlay */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/about-bg.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-[rgba(0,0,0,0.7)]"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSI2MCIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-10"></div>
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Our Mission */}
+        <div className="mb-24">
+          <div className="text-center mb-12">
+            <div 
+              className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
+              style={{
+                background: 'rgba(20, 20, 20, 0.9)',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                border: '1px solid rgba(0, 217, 255, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <h2 className="text-4xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
+                Our Mission
+              </h2>
+            </div>
+          </div>
+          <div 
+            className="rounded-3xl p-10 md:p-16 relative overflow-hidden transition-all duration-300 ease"
+            style={{
+              background: 'rgba(20, 20, 20, 0.9)',
+              boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+              border: '1px solid rgba(0, 217, 255, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-4px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--acc)] to-transparent opacity-50"></div>
+            <p className="text-2xl md:text-3xl text-[var(--txt)] font-light leading-relaxed italic border-l-4 border-[var(--acc)] pl-8 md:pl-12">
+              "We believe everyone deserves access to a healthy lifestyle. Health is wealth. The foundation upon which every aspect of life is built. A happy life is always built on top of a healthy, confident body. Aviera exists to help you build that foundation and discover your best self."
+            </p>
+          </div>
+        </div>
+
+        {/* Hero Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--txt)] mb-6">
-            Why I Built Aviera
-          </h1>
-        </div>
-
-        {/* Story */}
-        <div className="glass-card rounded-2xl p-8 md:p-12 shadow-premium mb-12">
-          <div className="prose prose-lg max-w-none">
-            <p className="text-lg text-[var(--txt-secondary)] leading-relaxed mb-6">
-              I am <strong className="text-[var(--txt)]">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
-            </p>
-
-            <p className="text-lg text-[var(--txt-secondary)] leading-relaxed mb-6">
-              I built <strong className="text-[var(--txt)]">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
-            </p>
-
-            <p className="text-lg text-[var(--txt-secondary)] leading-relaxed mb-6">
-              The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-[var(--txt)]">That confusion ends here.</strong>
-            </p>
-
-            <p className="text-lg text-[var(--txt-secondary)] leading-relaxed">
-              What I love most: if you are brand-new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
-            </p>
-          </div>
-
-          {/* Founder Photo */}
-          <div className="mt-8 rounded-xl overflow-hidden border border-[var(--acc)]/20 shadow-premium">
-            <div className="relative w-full aspect-[3/4] max-w-xs mx-auto">
-              <OptimizedImage
-                src="/images/about/founder-photo.jpg"
-                alt="Reece Todd, Founder of Aviera"
-                width={600}
-                height={800}
-                className="w-full h-full"
-                objectFit="cover"
-                objectPosition="center center"
-                fallbackText="Founder Photo"
-              />
-            </div>
-            <div className="p-6 text-center bg-[var(--bg-elev-1)]">
-              <p className="text-[var(--txt)] font-semibold text-lg">Reece Todd</p>
-              <p className="text-sm text-[var(--txt-muted)]">Founder, Aviera</p>
-            </div>
+          <div 
+            className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
+            style={{
+              background: 'rgba(20, 20, 20, 0.9)',
+              boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-4px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <h1 className="text-4xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
+              Why I Built Aviera
+            </h1>
           </div>
         </div>
 
-        {/* Values */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="glass-card p-6 text-center shadow-premium">
-            <Heart className="mx-auto mb-4 text-[var(--acc)]" size={40} />
-            <h3 className="font-bold text-[var(--txt)] mb-2">Simplicity First</h3>
-            <p className="text-sm text-[var(--txt-muted)]">No confusion. Just clear, actionable recommendations.</p>
+        {/* Story Section with Image on Left */}
+        <div className="grid lg:grid-cols-5 gap-12 items-start lg:items-center mb-24">
+          {/* Photo Column (40%) */}
+          <div className="lg:col-span-2 flex justify-center lg:justify-start">
+            <div 
+              className="relative w-full max-w-md mx-auto lg:mx-0 transition-all duration-300 ease-in-out rounded-2xl overflow-hidden"
+              style={{
+                boxShadow: '0 0 0px rgba(0, 255, 255, 0)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0px rgba(0, 255, 255, 0)';
+              }}
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-premium-lg border border-[var(--border)]">
+                <div className="relative w-full aspect-[3/4] overflow-hidden founder-photo-container">
+                  <OptimizedImage
+                    src="/images/about/founder-photo.jpg"
+                    alt="Reece Todd, Founder of Aviera"
+                    width={600}
+                    height={800}
+                    className="w-full h-full"
+                    objectFit="cover"
+                    objectPosition="center center"
+                    fallbackText="Founder Photo"
+                    priority
+                  />
+                </div>
+                <div className="p-6 text-center bg-[var(--bg-elev-1)] border-t border-[var(--border)]">
+                  <p className="text-[var(--txt)] font-semibold text-lg">Reece Todd</p>
+                  <p className="text-sm text-[var(--txt-muted)]">Founder, Aviera</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="glass-card p-6 text-center shadow-premium">
-            <Target className="mx-auto mb-4 text-[var(--acc)]" size={40} />
-            <h3 className="font-bold text-[var(--txt)] mb-2">Science-Backed</h3>
-            <p className="text-sm text-[var(--txt-muted)]">Every recommendation based on research and evidence.</p>
-          </div>
+          {/* Bio Column (60%) */}
+          <div className="lg:col-span-3">
+            <div 
+              className="p-8 md:p-12 transition-all duration-300 ease rounded-3xl"
+              style={{
+                background: 'rgba(20, 20, 20, 0.9)',
+                border: '1px solid rgba(0, 217, 255, 0.3)',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div className="prose prose-lg max-w-none">
+                <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8">
+                  I am <strong className="text-[var(--txt)]">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they are simple, consistent, and matched to your goals.
+                </p>
 
-          <div className="glass-card p-6 text-center shadow-premium">
-            <Users className="mx-auto mb-4 text-[var(--acc)]" size={40} />
-            <h3 className="font-bold text-[var(--txt)] mb-2">You First</h3>
-            <p className="text-sm text-[var(--txt-muted)]">Personalized to your goals, lifestyle, and needs.</p>
+                <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8">
+                  I built <strong className="text-[var(--txt)]">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
+                </p>
+
+                <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8 border-l-2 border-[var(--acc)]/30 pl-6 italic">
+                  The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-[var(--txt)]">That confusion ends here.</strong>
+                </p>
+
+                <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed">
+                  What I love most: if you are brand new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm — just a clear, science backed plan you can actually follow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* What We Stand For */}
+        <div className="mb-24">
+          <div className="text-center mb-12">
+            <div 
+              className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
+              style={{
+                background: 'rgba(20, 20, 20, 0.9)',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                border: '1px solid rgba(0, 217, 255, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <h2 className="text-4xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
+                What We Stand For
+              </h2>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {/* Health is Wealth */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              viewport={{ once: true }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="card-premium"
+            >
+              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+                {/* Icon - Charcoal rounded square with accent glow */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
+                      <Heart className="text-white" size={40} strokeWidth={2} />
+                    </div>
+                  </div>
+                </div>
+
+              {/* Title */}
+              <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+                Health is Wealth
+              </h3>
+
+              {/* Description */}
+              <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+                A healthy body is the foundation for a happy, successful life.
+              </p>
+
+              {/* Features */}
+              <ul className="space-y-2">
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Foundation for success
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Long-term wellness
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Quality of life
+                </li>
+              </ul>
+              </div>
+            </motion.div>
+
+            {/* Accessibility */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.1,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              viewport={{ once: true }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="card-premium"
+            >
+              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+                {/* Icon - Charcoal rounded square with accent glow */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
+                      <DoorOpen className="text-white" size={40} strokeWidth={2} />
+                    </div>
+                  </div>
+                </div>
+
+              {/* Title */}
+              <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+                Accessibility
+              </h3>
+
+              {/* Description */}
+              <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+                Everyone deserves access to a healthy lifestyle, regardless of where they start.
+              </p>
+
+              {/* Features */}
+              <ul className="space-y-2">
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Inclusive approach
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  No barriers to entry
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Support for all
+                </li>
+              </ul>
+              </div>
+            </motion.div>
+
+            {/* Progress Over Perfection */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.2,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              viewport={{ once: true }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="card-premium"
+            >
+              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+                {/* Icon - Charcoal rounded square with accent glow */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
+                      <TrendingUp className="text-white" size={40} strokeWidth={2} />
+                    </div>
+                  </div>
+                </div>
+
+              {/* Title */}
+              <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+                Progress Over Perfection
+              </h3>
+
+              {/* Description */}
+              <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+                Go at your own pace. Your journey, your style.
+              </p>
+
+              {/* Features */}
+              <ul className="space-y-2">
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Your own pace
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Consistent growth
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Sustainable change
+                </li>
+              </ul>
+              </div>
+            </motion.div>
+
+            {/* Personalization */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.3,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              viewport={{ once: true }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="card-premium"
+            >
+              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+                {/* Icon - Charcoal rounded square with accent glow */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
+                      <Target className="text-white" size={40} strokeWidth={2} />
+                    </div>
+                  </div>
+                </div>
+
+              {/* Title */}
+              <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+                Personalization
+              </h3>
+
+              {/* Description */}
+              <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+                One size fits all does not work. Your plan should be as unique as you.
+              </p>
+
+              {/* Features */}
+              <ul className="space-y-2">
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Tailored to you
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Unique approach
+                </li>
+                <li className="flex items-center text-sm text-[#e5e5e5]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  Individual goals
+                </li>
+              </ul>
+              </div>
+            </motion.div>
           </div>
         </div>
 
         {/* CTA */}
-        <div className="text-center glass-card p-8 shadow-premium">
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--txt)] mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center p-12 md:p-20 rounded-3xl mb-16 transition-all duration-300 ease"
+          style={{
+            background: 'rgba(20, 20, 20, 0.9)',
+            border: '1px solid rgba(0, 217, 255, 0.3)',
+            boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+            e.currentTarget.style.transform = 'translateY(-4px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          <h2 className="text-4xl md:text-5xl font-normal text-[var(--txt)] mb-6 tracking-tight">
             Ready to Start Your Journey?
           </h2>
-          <p className="text-lg mb-6 text-[var(--txt-secondary)]">
+          <p className="text-xl mb-10 text-[var(--txt-secondary)] font-light tracking-wide">
             Get your personalized supplement stack in 2 minutes.
           </p>
           <Link
             href="/smartstack-ai"
-            className="btn-primary inline-flex items-center"
+            className="btn-primary inline-flex items-center px-10 py-4 text-lg"
+            style={{ boxShadow: '0 0 25px rgba(0, 217, 255, 0.5)' }}
           >
-            Try Aviera Stack <ArrowRight className="ml-2" size={20} />
+            Try Aviera Stack <ArrowRight className="ml-2" size={24} />
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

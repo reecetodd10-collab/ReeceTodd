@@ -859,6 +859,26 @@ input:checked + .toggle-slider:before {
   }
 }
 
+/* Floating particle animation for cyan stars effect - subtle ambient */
+@keyframes float-particle {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translate(20px, -15px) rotate(90deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-15px, -25px) rotate(180deg);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(-20px, 15px) rotate(270deg);
+    opacity: 0.4;
+  }
+}
+
 /* ========================================
    MOBILE OPTIMIZATION
    ======================================== */
@@ -1346,6 +1366,15 @@ a[href]:not(.btn-primary):not(.btn-secondary):hover {
 }
 
 /* CART TOGGLE BUTTON */
+/* Hide Shopify cart overlay by default - only show when opened */
+.shopify-buy__cart {
+  display: none !important;
+}
+
+.shopify-buy__cart.is-open {
+  display: block !important;
+}
+
 .shopify-buy__cart-toggle {
   position: fixed !important;
   bottom: 30px !important;
@@ -1377,6 +1406,26 @@ a[href]:not(.btn-primary):not(.btn-secondary):hover {
   background: rgba(10, 10, 10, 0.98) !important;
   backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  display: none !important; /* Hide by default */
+}
+
+/* Show cart only when it has the is-open class (when toggle is clicked) */
+.shopify-buy__cart.is-open,
+.shopify-buy__cart[data-state="open"] {
+  display: block !important;
+}
+
+/* Ensure close button is visible and clickable */
+.shopify-buy__cart__close {
+  color: #ffffff !important;
+  cursor: pointer !important;
+  z-index: 1001 !important;
+  opacity: 1 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.shopify-buy__cart__close:hover {
+  opacity: 0.8 !important;
 }
 
 .shopify-buy__cart__header {

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Filter, ShoppingCart, Check, Dumbbell, Flame, Zap, Brain, Moon, Heart } from 'lucide-react';
+import { Search, Filter, ShoppingCart, Check, Dumbbell, Flame, Zap, Brain, Moon, Heart, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 import GlassCard from '../components/shared/GlassCard';
@@ -13,7 +13,11 @@ import { fetchShopifyProducts, initializeShopifyCart, addMultipleToCart } from '
 function ShopContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam === 'stacks' ? 'stacks' : 'products');
+  const [activeTab, setActiveTab] = useState(
+    tabParam === 'stacks' ? 'stacks' : 
+    tabParam === 'apparel' ? 'apparel' : 
+    'products'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -165,6 +169,9 @@ function ShopContent() {
                               },
                               'close-button': {
                                 'color': '#ffffff',
+                              },
+                              'cart': {
+                                'display': 'none', // Hide by default, only show when opened
                               }
                             },
                             text: {
@@ -173,11 +180,35 @@ function ShopContent() {
                               button: 'Checkout',
                               total: 'Total',
                               subtotal: 'Subtotal'
+                            },
+                            toggle: {
+                              // Don't auto-open cart
+                              'iframe': false
                             }
                           }
                         }
                       }).then(() => {
                         cartNode.setAttribute('data-shopify-component', 'true');
+                        // Hide cart overlay by default and ensure it's closed
+                        setTimeout(() => {
+                          const cartOverlay = cartNode.querySelector('.shopify-buy__cart');
+                          if (cartOverlay) {
+                            cartOverlay.style.display = 'none';
+                            cartOverlay.classList.remove('is-open');
+                            cartOverlay.setAttribute('data-state', 'closed');
+                          }
+                          // Also try to close via Shopify's API if available
+                          if (window.ShopifyBuy && window.ShopifyBuy.UI) {
+                            try {
+                              const cartComponent = ui.components.cart;
+                              if (cartComponent && cartComponent.close) {
+                                cartComponent.close();
+                              }
+                            } catch (e) {
+                              // Ignore errors
+                            }
+                          }
+                        }, 100);
                         console.log('Cart overlay initialized successfully');
                       }).catch((err) => {
                         console.error('Cart overlay creation failed:', err);
@@ -321,12 +352,24 @@ function ShopContent() {
               ? isLoadingProducts 
                 ? 'Loading products...' 
                 : `${filteredShopifyProducts.length}+ products available`
+              : activeTab === 'apparel'
+              ? 'Coming soon...'
               : '6 pre-made stacks available'}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="flex justify-center mb-8 gap-4">
+          <button
+            onClick={() => setActiveTab('apparel')}
+            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${
+              activeTab === 'apparel'
+                ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
+                : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
+            }`}
+          >
+            Aviera Apparel
+          </button>
           <button
             onClick={() => setActiveTab('products')}
             className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${
@@ -393,6 +436,11 @@ function ShopContent() {
             </select>
           </div>
         </div>
+        )}
+
+        {/* Aviera Apparel Section */}
+        {activeTab === 'apparel' && (
+          <AvieraApparelSection />
         )}
 
         {/* Aviera Stacks Section */}
@@ -484,6 +532,147 @@ function findProductByName(products, searchTerms) {
   }
   
   return null;
+}
+
+// Aviera Apparel Section Component
+function AvieraApparelSection() {
+  const apparelItems = [
+    {
+      id: 'hat',
+      name: 'Aviera Hat',
+      description: 'Premium quality cap featuring the Aviera logo. Perfect for your workouts and everyday wear.',
+      price: 0,
+      image: null,
+    },
+    {
+      id: 'shirt',
+      name: 'Aviera Shirt',
+      description: 'Comfortable and stylish t-shirt with the Aviera brand. Made from high-quality materials.',
+      price: 0,
+      image: null,
+    },
+  ];
+
+  return (
+    <div>
+      {/* Coming Soon Banner */}
+      <div 
+        className="glass-card p-8 mb-10 text-center transition-all duration-300"
+        style={{
+          background: 'rgba(30, 30, 30, 0.95)',
+          border: '1px solid rgba(0, 217, 255, 0.4)',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 217, 255, 0.3)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 217, 255, 0.5)';
+          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 217, 255, 0.3)';
+          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+        }}
+      >
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--acc)]/20 rounded-full mb-6">
+          <Sparkles className="text-[var(--acc)]" size={48} />
+        </div>
+        <h2 
+          className="text-3xl md:text-4xl font-normal text-[var(--acc)] mb-4"
+          style={{
+            textShadow: '0 0 20px rgba(0, 217, 255, 0.6)',
+            filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.4))'
+          }}
+        >
+          Coming Soon...
+        </h2>
+        <p className="text-lg text-[var(--txt-muted)] font-light max-w-2xl mx-auto">
+          We're working on bringing you premium Aviera apparel. Stay tuned for updates!
+        </p>
+      </div>
+
+      {/* Apparel Cards Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {apparelItems.map((item) => (
+          <motion.div
+            key={item.id}
+            className="glass-card overflow-hidden transition-all group"
+            style={{
+              background: 'rgba(30, 30, 30, 0.9)',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+              borderRadius: '20px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+            }}
+            whileHover={{ 
+              y: -4
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+            }}
+          >
+            {/* Product Image Placeholder */}
+            <div className="h-64 bg-[var(--bg-elev-1)] flex items-center justify-center border-b border-[var(--border)] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--acc)]/10 via-transparent to-[var(--acc)]/5"></div>
+              <div className="text-6xl opacity-20 relative z-10">
+                {item.id === 'hat' ? '🧢' : '👕'}
+              </div>
+              {/* Coming Soon Badge */}
+              <div className="absolute top-4 right-4 z-10">
+                <span 
+                  className="px-3 py-1 text-xs font-normal rounded-full"
+                  style={{
+                    background: 'rgba(0, 217, 255, 0.2)',
+                    border: '1px solid rgba(0, 217, 255, 0.5)',
+                    color: '#00d9ff',
+                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
+                    textShadow: '0 0 10px rgba(0, 217, 255, 0.6)'
+                  }}
+                >
+                  Coming Soon
+                </span>
+              </div>
+            </div>
+
+            {/* Product Info */}
+            <div className="p-6">
+              <h3 className="text-xl font-normal text-[var(--txt)] mb-3">{item.name}</h3>
+              <p className="text-sm text-[var(--txt-muted)] mb-6 leading-relaxed font-light">
+                {item.description}
+              </p>
+
+              {/* Price Placeholder */}
+              <div className="mb-6 pt-4 border-t border-[var(--border)]">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-normal text-[var(--txt-muted)]/50">Price TBD</span>
+                </div>
+              </div>
+
+              {/* CTA Button - Disabled */}
+              <button
+                disabled
+                className="w-full font-semibold flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out cursor-not-allowed opacity-50"
+                style={{
+                  background: 'rgba(30, 30, 30, 0.9)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  borderRadius: '12px',
+                  padding: '14px 28px',
+                  fontSize: '16px',
+                  boxShadow: '0 0 15px rgba(0, 217, 255, 0.2)'
+                }}
+              >
+                <ShoppingCart size={18} />
+                Coming Soon
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // Aviera Stacks Section Component
