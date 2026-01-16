@@ -45,15 +45,23 @@ export default function StackedBlocks() {
             }}
           />
           
-          {/* Card container - glass-card style (transparent) */}
+          {/* Card container - consistent card styling */}
           <div 
-            className="relative rounded-2xl p-6 transition-all duration-300 group-hover:scale-[1.02]"
+            className="relative rounded-2xl p-6 transition-all duration-300"
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(12px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(12px) saturate(180%)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)',
+              background: 'rgba(15, 15, 15, 0.85)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(0, 217, 255, 0.25)',
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.15)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.25)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.25)';
             }}
           >
             {/* Header - Aviera Stack branding (matching SupplementQuiz exactly) */}

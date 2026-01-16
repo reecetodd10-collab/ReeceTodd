@@ -50,6 +50,40 @@ const GET_COLLECTION_PRODUCTS = `
   }
 `;
 
+// GraphQL query to fetch a single product by ID
+const GET_PRODUCT_BY_ID = `
+  query getProductById($productId: ID!) {
+    product(id: $productId) {
+      id
+      title
+      description
+      handle
+      tags
+      productType
+      images(first: 20) {
+        edges {
+          node {
+            url
+            altText
+          }
+        }
+      }
+      variants(first: 1) {
+        edges {
+          node {
+            id
+            price {
+              amount
+              currencyCode
+            }
+            availableForSale
+          }
+        }
+      }
+    }
+  }
+`;
+
 // Category mapping function - maps Shopify product tags/titles to categories
 function mapProductToCategory(product) {
   const title = product.title.toLowerCase();
@@ -162,6 +196,79 @@ function mapProductToCategory(product) {
   
   // Default to Health & Wellness if no match
   return 'Health & Wellness';
+}
+
+/**
+ * Fetch a single product by ID from Shopify Storefront API
+ */
+export async function fetchProductById(productId) {
+  try {
+    // Convert numeric ID to Shopify GID format if needed
+    const shopifyProductId = productId.toString().startsWith('gid://')
+      ? productId
+      : `gid://shopify/Product/${productId}`;
+
+    const response = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
+      },
+      body: JSON.stringify({
+        query: GET_PRODUCT_BY_ID,
+        variables: {
+          productId: shopifyProductId,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Shopify API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.errors) {
+      console.error('Shopify GraphQL errors:', data.errors);
+      throw new Error('Failed to fetch product from Shopify');
+    }
+
+    if (!data.data.product) {
+      throw new Error('Product not found');
+    }
+
+    const product = data.data.product;
+    const variant = product.variants.edges[0]?.node;
+    const image = product.images.edges[0]?.node;
+
+    // Get all product images
+    const allImages = product.images.edges.map(edge => edge.node.url);
+
+    return {
+      id: product.id,
+      shopifyId: product.id,
+      variantId: variant?.id,
+      title: product.title,
+      description: product.description || '',
+      handle: product.handle,
+      price: parseFloat(variant?.price.amount || 0),
+      currencyCode: variant?.price.currencyCode || 'USD',
+      image: image?.url || null,
+      images: allImages,
+      imageAlt: image?.altText || product.title,
+      available: variant?.availableForSale || false,
+      category: mapProductToCategory({
+        title: product.title,
+        description: product.description || '',
+        tags: product.tags || [],
+        productType: product.productType || '',
+      }),
+      tags: product.tags || [],
+    };
+  } catch (error) {
+    console.error('Error fetching product from Shopify:', error);
+    throw error;
+  }
 }
 
 /**

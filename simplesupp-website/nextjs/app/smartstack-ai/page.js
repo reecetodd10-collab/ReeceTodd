@@ -252,18 +252,19 @@ export default function SmartStackAI() {
                 className="p-4 rounded-xl cursor-pointer transition-all duration-300"
                 style={{
                   background: 'rgba(30, 30, 30, 0.9)',
-                  border: '1px solid rgba(0, 217, 255, 0.3)',
-                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.2)',
+                  border: '1px solid rgba(0, 217, 255, 0.2)',
+                  boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
                   backdropFilter: 'blur(12px) saturate(180%)',
+                  transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.2)';
-                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -288,15 +289,16 @@ export default function SmartStackAI() {
               className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 cursor-pointer ${mounted ? 'animate-bounce-in-1' : 'opacity-0'}`}
               style={{
                 background: 'rgba(30, 30, 30, 0.7)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.4)';
-                e.currentTarget.style.borderColor = '#00D9FF';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
               }}
             >
               <Brain size={16} className="text-[#00D9FF]" />
@@ -306,15 +308,16 @@ export default function SmartStackAI() {
               className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 cursor-pointer ${mounted ? 'animate-bounce-in-2' : 'opacity-0'}`}
               style={{
                 background: 'rgba(30, 30, 30, 0.7)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.4)';
-                e.currentTarget.style.borderColor = '#00D9FF';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
               }}
             >
               <Target size={16} className="text-[#00D9FF]" />
@@ -324,15 +327,16 @@ export default function SmartStackAI() {
               className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 cursor-pointer ${mounted ? 'animate-bounce-in-3' : 'opacity-0'}`}
               style={{
                 background: 'rgba(30, 30, 30, 0.7)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.4)';
-                e.currentTarget.style.borderColor = '#00D9FF';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
               }}
             >
               <Sparkles size={16} className="text-[#00D9FF]" />

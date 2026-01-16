@@ -120,7 +120,7 @@ Use this context to provide personalized, relevant responses.`;
 
     // Call OpenAI
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-5.1',
       messages: messages,
       temperature: 0.8,
       max_tokens: 400,

@@ -27,6 +27,12 @@ export default function ShopifyProductCard({ product }) {
   const hasMultipleImages = productImages.length > 1;
 
   const handleAddToCart = async () => {
+    // Handle local products without variant IDs
+    if (product.isLocalProduct && !product.variantId) {
+      alert('This product will be available for purchase soon. Please check back later!');
+      return;
+    }
+    
     if (!product.variantId || !product.available) return;
 
     setIsAdding(true);
@@ -86,16 +92,20 @@ export default function ShopifyProductCard({ product }) {
     <motion.div
       className="glass-card overflow-hidden transition-all group"
       style={{
-        boxShadow: '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+        border: '1px solid rgba(0, 217, 255, 0.3)',
+        boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+        transition: 'all 0.3s ease'
       }}
       whileHover={{ 
-        y: -4
+        y: -2
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 229, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.3)';
+        e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
       }}
     >
       {/* Product Image Carousel */}
@@ -307,7 +317,7 @@ export default function ShopifyProductCard({ product }) {
         {/* Add to Cart Button - Matches "Get Aviera Pro" style */}
         <button
           onClick={handleAddToCart}
-          disabled={!product.available || isAdding || added}
+          disabled={(!product.available || isAdding || added) && !product.isLocalProduct}
           className="w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out"
           style={{
             background: added 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { createOpenAIClient, SYSTEM_PROMPTS } from '@/lib/openai';
+import { createClaudeClient, SYSTEM_PROMPTS } from '@/lib/claude';
 
 export async function POST(request) {
   try {
@@ -27,12 +27,12 @@ export async function POST(request) {
       );
     }
 
-    const openai = createOpenAIClient();
+    const anthropic = createClaudeClient();
 
     // Build context from user profile if available
-    let contextPrompt = SYSTEM_PROMPTS.chat;
+    let systemPrompt = SYSTEM_PROMPTS.chat;
     if (userProfile) {
-      contextPrompt += `\n\nUser Profile Context:
+      systemPrompt += `\n\nUser Profile Context:
 - Goals: ${userProfile.goals || 'Not specified'}
 - Experience Level: ${userProfile.experienceLevel || 'Not specified'}
 - Current Supplements: ${userProfile.currentSupplements || 'None'}
@@ -42,13 +42,8 @@ export async function POST(request) {
 Use this context to provide more personalized advice.`;
     }
 
-    // Build conversation messages
-    const messages = [
-      {
-        role: 'system',
-        content: contextPrompt
-      }
-    ];
+    // Build conversation messages for Claude
+    const messages = [];
 
     // Add conversation history (last 10 messages for context)
     const recentHistory = conversationHistory.slice(-10);
@@ -65,14 +60,15 @@ Use this context to provide more personalized advice.`;
       content: message
     });
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: messages,
-      temperature: 0.8,
+    const completion = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 500,
+      temperature: 0.8,
+      system: systemPrompt,
+      messages: messages,
     });
 
-    const aiResponse = completion.choices[0]?.message?.content || '';
+    const aiResponse = completion.content[0]?.text || '';
 
     return NextResponse.json({
       success: true,

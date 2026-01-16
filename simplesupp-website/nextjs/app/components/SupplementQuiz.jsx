@@ -689,7 +689,11 @@ export default function SupplementAdvisor() {
       addSupplement('Pre-Workout Formula', 'Intense workouts and better pumps');
       addSupplement('BCAAs', 'Enhanced recovery and muscle preservation');
       if (needsRecovery) addSupplement('L-Glutamine', 'Extra recovery for frequent training');
-      if (formData.healthGoals.includes('Better Pumps')) addSupplement('Beetroot', 'Enhanced blood flow and pumps');
+      if (formData.healthGoals.includes('Better Pumps')) {
+        addSupplement('Nitric Oxide', 'Enhanced blood flow, circulation, and muscle pumps');
+      } else {
+        addSupplement('Nitric Oxide', 'Supports healthy circulation and nutrient delivery to muscles');
+      }
       insights.push('Progressive overload - increase weight weekly', 'Eat 200-500 calories above maintenance', 'Prioritize 7-9 hours sleep for recovery');
     }
 
@@ -713,7 +717,7 @@ export default function SupplementAdvisor() {
       addSupplement('Creatine Monohydrate', 'Explosive power and speed');
       addSupplement('Pre-Workout Formula', 'Delays fatigue, improves performance');
       addSupplement('Electrolyte Formula (Lemonade)', 'Prevents dehydration and cramping');
-      addSupplement('Beetroot Powder', 'Boosts endurance and oxygen use');
+      addSupplement('Nitric Oxide', 'Enhances blood flow, endurance, and exercise performance');
       if (needsRecovery) addSupplement('Platinum Turmeric', 'Reduces muscle soreness and inflammation');
       insights.push('Recovery is crucial - 7-9 hours sleep', 'Periodize training for peak performance', 'Stay hydrated: 0.5-1 oz per lb bodyweight');
     }

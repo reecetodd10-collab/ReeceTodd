@@ -12,10 +12,16 @@ export default function MarketingLayout({ children }) {
   // Don't show nav/footer on dashboard routes or landing page
   const isDashboardRoute = pathname?.startsWith('/dashboard');
   const isLandingPage = pathname === '/landing';
+  const isNitricPage = pathname === '/nitric';
   const isSmartStackPage = pathname === '/smartstack-ai';
   
   // Landing page - no nav or footer or widget
   if (isLandingPage) {
+    return <>{children}</>;
+  }
+  
+  // Nitric Oxide landing page - standalone, no nav or footer or widget
+  if (isNitricPage) {
     return <>{children}</>;
   }
   

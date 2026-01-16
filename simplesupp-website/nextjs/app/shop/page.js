@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 import GlassCard from '../components/shared/GlassCard';
 import ShopifyProductCard from '../components/ShopifyProductCard';
-import { fetchShopifyProducts, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
+import { fetchShopifyProducts, fetchProductById, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
 
 // Component that handles URL params
 function ShopContent() {
@@ -39,8 +39,67 @@ function ShopContent() {
     if (activeTab === 'products' && shopifyProducts.length === 0) {
       setIsLoadingProducts(true);
       fetchShopifyProducts()
-        .then((products) => {
-          setShopifyProducts(products);
+        .then(async (shopifyProds) => {
+          // Transform local products to match Shopify format
+          const localProductsPromises = products
+            .filter(p => p.active && (p.id === 'nitric-oxide' || p.id === 'sleep-formula'))
+            .map(async (p) => {
+              let productImages = p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []);
+              let productImage = p.image || null;
+
+              // Try to fetch images and variant ID from Shopify if product exists there
+              let variantId = null;
+              if (p.shopifyProductId) {
+                try {
+                  const shopifyProduct = await fetchProductById(p.shopifyProductId);
+                  if (shopifyProduct) {
+                    // Use Shopify images if available
+                    if (shopifyProduct.images && shopifyProduct.images.length > 0) {
+                      productImages = shopifyProduct.images;
+                      productImage = shopifyProduct.image || productImages[0] || p.image;
+                      console.log(`Fetched ${p.name} images from Shopify:`, productImages.length);
+                    }
+                    // Get variant ID for checkout
+                    if (shopifyProduct.variantId) {
+                      variantId = shopifyProduct.variantId;
+                    }
+                  }
+                } catch (error) {
+                  console.warn(`Could not fetch ${p.name} from Shopify, using local data:`, error);
+                }
+              }
+
+              return {
+                id: p.id,
+                shopifyId: p.shopifyProductId || p.suplifulId || p.id,
+                variantId: variantId, // Fetched from Shopify if available
+                title: p.name,
+                description: p.description || '',
+                handle: p.id.toLowerCase().replace(/\s+/g, '-'),
+                price: p.price,
+                currencyCode: 'USD',
+                image: productImage,
+                images: productImages,
+                imageAlt: p.name,
+                available: true, // Local products are always available
+                category: p.category,
+                tags: p.tags || [],
+                // Additional fields for local products
+                isLocalProduct: true,
+                benefits: p.benefits || [],
+                ingredients: p.ingredients || '',
+                servingSize: p.servingSize || '',
+                servings: p.servings || 0,
+                productAmount: p.productAmount || '',
+                suggestedUse: p.suggestedUse || '',
+              };
+            });
+          
+          const localProducts = await Promise.all(localProductsPromises);
+          
+          // Merge Shopify products with local products
+          const allProducts = [...shopifyProds, ...localProducts];
+          setShopifyProducts(allProducts);
           setIsLoadingProducts(false);
         })
         .catch((error) => {
@@ -329,15 +388,17 @@ function ShopContent() {
             className="inline-block px-8 py-6 rounded-2xl mb-4 relative transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
             style={{
               background: 'rgba(30, 30, 30, 0.85)',
-              boxShadow: '0 0 30px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-              border: '1px solid rgba(0, 229, 255, 0.2)',
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 50px rgba(0, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
             }}
           >
             <h1 className="text-5xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
@@ -560,17 +621,20 @@ function AvieraApparelSection() {
         className="glass-card p-8 mb-10 text-center transition-all duration-300"
         style={{
           background: 'rgba(30, 30, 30, 0.95)',
-          border: '1px solid rgba(0, 217, 255, 0.4)',
+          border: '1px solid rgba(0, 217, 255, 0.3)',
           borderRadius: '20px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 217, 255, 0.3)'
+          boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+          transition: 'all 0.3s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 217, 255, 0.5)';
+          e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
           e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+          e.currentTarget.style.transform = 'translateY(-2px)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 217, 255, 0.3)';
-          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+          e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+          e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
         <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--acc)]/20 rounded-full mb-6">
@@ -600,18 +664,21 @@ function AvieraApparelSection() {
               background: 'rgba(30, 30, 30, 0.9)',
               border: '1px solid rgba(0, 217, 255, 0.3)',
               borderRadius: '20px',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+              transition: 'all 0.3s ease'
             }}
             whileHover={{ 
               y: -4
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+              e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
             {/* Product Image Placeholder */}
@@ -881,16 +948,20 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
             key={stack.id}
             className="glass-card overflow-hidden transition-all group"
             style={{
-              boxShadow: '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+              transition: 'all 0.3s ease'
             }}
             whileHover={{ 
-              y: -4
+              y: -2
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 229, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
             }}
           >
             {/* Stack Header with Icon */}
@@ -905,18 +976,19 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
                     padding: '20px',
                     width: '64px',
                     height: '64px',
-                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.2)',
-                    cursor: 'default'
+                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                    cursor: 'default',
+                    transition: 'all 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
                     e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.2)';
-                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   <Icon 
@@ -1106,16 +1178,16 @@ function ProductCard({ product }) {
     <motion.div
       className="glass-card overflow-hidden transition-all group"
       style={{
-        boxShadow: '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+        boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
       }}
       whileHover={{ 
         y: -4
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 229, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.3)';
+        e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.3)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 229, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
       }}
     >
       {/* Category Badge */}

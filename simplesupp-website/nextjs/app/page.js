@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, ShoppingCart, Award, Crown, X } from 'lucide-react';
+import { ArrowRight, CheckCircle, Dumbbell, Brain, Heart, Zap, Star, Sparkles, Target, ShoppingCart, Award, Crown, X, Flag } from 'lucide-react';
 import PillLogo from './components/PillLogo';
 import ParallaxLayer from './components/ParallaxLayer';
 import PromoBanner from './components/PromoBanner';
@@ -153,7 +153,7 @@ export default function Home() {
               className="glass-card p-8 max-w-md w-full text-center relative"
               style={{
                 boxShadow: '0 0 40px rgba(0, 217, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.5)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -334,37 +334,20 @@ export default function Home() {
           id="how-it-works"
           className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
-          {/* Subtle Floating Cyan Particles - Ambient background detail */}
-          <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
-            {[
-              { left: '10%', top: '20%', size: 3, delay: 0, duration: 18 },
-              { left: '25%', top: '60%', size: 4, delay: 2, duration: 20 },
-              { left: '45%', top: '15%', size: 3.5, delay: 1, duration: 22 },
-              { left: '60%', top: '75%', size: 4, delay: 3, duration: 19 },
-              { left: '75%', top: '30%', size: 3, delay: 1.5, duration: 21 },
-              { left: '85%', top: '55%', size: 5, delay: 2.5, duration: 17 },
-              { left: '15%', top: '80%', size: 3.5, delay: 0.5, duration: 23 },
-              { left: '35%', top: '40%', size: 4, delay: 1.8, duration: 20 },
-              { left: '55%', top: '65%', size: 3, delay: 2.2, duration: 18 },
-              { left: '70%', top: '10%', size: 4.5, delay: 0.8, duration: 24 },
-              { left: '90%', top: '45%', size: 3, delay: 1.2, duration: 19 },
-              { left: '5%', top: '50%', size: 4, delay: 3.5, duration: 21 },
-            ].map((particle, i) => (
-              <div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: `${particle.size}px`,
-                  height: `${particle.size}px`,
-                  background: 'rgba(0, 217, 255, 0.4)',
-                  left: particle.left,
-                  top: particle.top,
-                  animation: `float-particle ${particle.duration}s ease-in-out infinite`,
-                  animationDelay: `${particle.delay}s`,
-                  boxShadow: '0 0 6px rgba(0, 217, 255, 0.4)',
-                }}
-              />
-            ))}
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <div 
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url(/images/hero/howitworks-background.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            ></div>
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/70"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
           </div>
           <div
             ref={howItWorksAnimation.ref}
@@ -375,14 +358,17 @@ export default function Home() {
                 className="inline-block px-8 py-6 rounded-2xl mb-6 transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
                 style={{
                   background: 'rgba(30, 30, 30, 0.85)',
-                  boxShadow: '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(0, 229, 255, 0.2)'
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                 }}
               >
                 <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)]">
@@ -468,8 +454,8 @@ export default function Home() {
               objectPosition="center 45%"
               fallbackText="Background"
             />
-            {/* Dark overlay for text readability - rgba(0,0,0,0.5) equivalent */}
-            <div className="absolute inset-0 bg-black/50"></div>
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/70"></div>
             {/* Additional gradient overlay for better text contrast */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
           </div>
@@ -678,7 +664,7 @@ export default function Home() {
               fallbackText="Shop Background"
             />
             {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-black/50"></div>
+            <div className="absolute inset-0 bg-black/70"></div>
             {/* Additional gradient overlay for better text contrast */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
           </div>
@@ -774,15 +760,16 @@ export default function Home() {
                           background: 'rgba(30, 30, 30, 0.9)',
                           border: '1px solid rgba(0, 217, 255, 0.3)',
                           borderRadius: '16px',
-                          boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
+                          boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                          transition: 'all 0.3s ease'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
-                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
-                          e.currentTarget.style.transform = 'translateY(-5px)';
+                          e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
+                          e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
                           e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                           e.currentTarget.style.transform = 'translateY(0)';
                         }}
@@ -807,25 +794,43 @@ export default function Home() {
             ======================================== */}
         <section
           id="goals"
-          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <div 
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url(/images/whateveryourgoal-background.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            ></div>
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/70"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
           <div
             ref={goalsAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${goalsAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${goalsAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-16">
               <div 
                 className="inline-block px-8 py-6 rounded-2xl mb-6 transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
                 style={{
                   background: 'rgba(30, 30, 30, 0.85)',
-                  boxShadow: '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(0, 229, 255, 0.2)'
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                 }}
               >
                 <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)]">
@@ -891,20 +896,21 @@ export default function Home() {
                   className="rounded-2xl p-6 transition-all duration-300"
                   style={{
                     background: 'rgba(30, 30, 30, 0.9)',
-                    border: '1px solid rgba(0, 217, 255, 0.3)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
                     borderRadius: '16px',
                     padding: '24px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                    transition: 'all 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(-5px)';
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                    e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
                   }}
                 >
                   <div className="flex mb-4">
@@ -978,13 +984,13 @@ export default function Home() {
                     className="p-6 text-center rounded-2xl transition-all duration-300"
                     style={{
                       background: 'rgba(30, 30, 30, 0.9)',
-                      border: '1px solid rgba(0, 217, 255, 0.3)',
+                      border: '1px solid rgba(0, 217, 255, 0.2)',
                       borderRadius: '16px',
                       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
-                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+                      e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
                       e.currentTarget.style.transform = 'translateY(-5px)';
                     }}
                     onMouseLeave={(e) => {
@@ -1009,14 +1015,17 @@ export default function Home() {
                   className="group text-lg px-8 py-4 rounded-2xl transition-all duration-300 ease-in-out hover:scale-[1.02] relative"
                   style={{
                     background: 'rgba(30, 30, 30, 0.9)',
-                    boxShadow: '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                    border: '1px solid rgba(0, 229, 255, 0.2)'
+                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                    border: '1px solid rgba(0, 217, 255, 0.3)',
+                    transition: 'all 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                   }}
                 >
                   <span className="flex items-center gap-2 text-[#00E5FF]">
@@ -1104,60 +1113,69 @@ export default function Home() {
             ======================================== */}
         <section
           id="about"
-          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4"
+          className="scroll-snap-section relative min-h-[80vh] flex items-center bg-[var(--bg)] py-20 md:py-32 px-4 overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            {/* Section Title */}
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <div 
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url(/images/about/about-background.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            ></div>
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/70"></div>
+            {/* Additional gradient overlay for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+          </div>
+
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            {/* Hero Header */}
             <div className="text-center mb-16">
               <div 
-                className="inline-block px-8 py-6 rounded-2xl mb-6 transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
+                className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
                 style={{
-                  background: 'rgba(30, 30, 30, 0.85)',
-                  boxShadow: '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(0, 229, 255, 0.2)'
+                  background: 'rgba(20, 20, 20, 0.9)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)]">
-                  About Aviera
-                </h2>
+                <h1 className="text-4xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
+                  Why I Built Aviera
+                </h1>
               </div>
-              <p className="text-lg md:text-xl text-[var(--txt-muted)] max-w-3xl mx-auto">
-                Built by fitness enthusiasts, for everyone on a fitness journey.
-              </p>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-12 items-start lg:items-center">
+            {/* Story Section with Image on Left */}
+            <div className="grid lg:grid-cols-5 gap-12 items-start lg:items-center mb-24">
               {/* Photo Column (40%) */}
               <div className="lg:col-span-2 flex justify-center lg:justify-start">
                 <div 
                   className="relative w-full max-w-md mx-auto lg:mx-0 transition-all duration-300 ease-in-out rounded-2xl overflow-hidden"
                   style={{
-                    boxShadow: '0 0 0px rgba(0, 255, 255, 0)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 0px rgba(0, 255, 255, 0)';
+                    boxShadow: '0 0 30px rgba(0, 217, 255, 0.2), 0 0 60px rgba(0, 217, 255, 0.1)',
+                    border: '1px solid rgba(0, 217, 255, 0.1)',
                   }}
                 >
-                  <div className="relative rounded-2xl overflow-hidden shadow-premium-lg">
+                  <div 
+                    className="relative rounded-2xl overflow-hidden"
+                  >
                     <div className="relative w-full aspect-[3/4] overflow-hidden founder-photo-container">
-                      {/* 
-                        If person is off-center, adjust objectPosition:
-                        - Person too far LEFT in frame: try "55% center" or "60% center"
-                        - Person too far RIGHT in frame: try "45% center" or "40% center"  
-                        - Person too HIGH in frame: try "center 60%"
-                        - Person too LOW in frame: try "center 40%"
-                      */}
                       <OptimizedImage
-                        src="/images/about/founder-photo.jpg"
+                        src="/images/about/founder-photo.jpeg"
                         alt="Reece Todd, Founder of Aviera"
                         width={600}
                         height={800}
@@ -1168,6 +1186,10 @@ export default function Home() {
                         priority
                       />
                     </div>
+                    <div className="p-6 text-center bg-[var(--bg-elev-1)] border-t border-[var(--border)]">
+                      <p className="text-[var(--txt)] font-semibold text-lg">Reece Todd</p>
+                      <p className="text-sm text-[var(--txt-muted)]">Founder, Aviera</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1175,37 +1197,79 @@ export default function Home() {
               {/* Bio Column (60%) */}
               <div className="lg:col-span-3">
                 <div 
-                  className="glass-card p-8 md:p-12 transition-all duration-300 ease-in-out"
+                  className="p-8 md:p-12 transition-all duration-300 ease rounded-3xl"
                   style={{
-                    boxShadow: '0 0 0px rgba(0, 255, 255, 0)',
+                    background: 'rgba(20, 20, 20, 0.9)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                    transition: 'all 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 0px rgba(0, 255, 255, 0)';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <h3 className="text-3xl md:text-4xl font-normal text-white mb-6">
-                    Why I Built Aviera
-                  </h3>
-                  <div className="space-y-6">
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      I am <strong className="text-white">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they're simple, consistent, and matched to your goals.
+                  <div className="prose prose-lg max-w-none">
+                    <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8">
+                      I am <strong className="text-[var(--txt)]">Reece Todd</strong>, a passionate fitness enthusiast who learned firsthand how powerful the right supplements can be when they are simple, consistent, and matched to your goals.
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      I built <strong className="text-white">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
+
+                    <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8">
+                      I built <strong className="text-[var(--txt)]">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health. Aviera's AI creates your perfect starting stack instantly.
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-white">That confusion ends here.</strong>
+
+                    <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8 border-l-2 border-[var(--acc)]/30 pl-6 italic">
+                      The supplement industry is overwhelming. Hundreds of products, conflicting advice, and aggressive marketing make it nearly impossible to know where to start. <strong className="text-[var(--txt)]">That confusion ends here.</strong>
                     </p>
-                    <p className="text-lg md:text-xl text-[#e5e5e5] leading-relaxed">
-                      What I love most: if you are brand-new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm—just a clear, science-backed plan you can actually follow.
+
+                    <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed">
+                      What I love most: if you are brand new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm. Just a clear, science backed plan you can actually follow.
                     </p>
                   </div>
-                  <div className="mt-8 pt-8 border-t border-white/10">
-                    <p className="text-white font-normal text-lg">Reece Todd</p>
-                    <p className="text-sm text-[#a0a0a0] mt-1">Founder, Aviera</p>
+                  
+                  {/* CTA Button with Flag Icon */}
+                  <div className="mt-8 flex items-center gap-4 justify-start">
+                    {/* Standalone Flag Icon Box */}
+                    <div className="relative flex-shrink-0">
+                      {/* Subtle glow effect */}
+                      <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-3xl blur-2xl"></div>
+                      {/* Icon container */}
+                      <div className="relative w-28 h-28 bg-[var(--charcoal-light)] rounded-3xl flex items-center justify-center shadow-premium-lg border border-[var(--border)] icon-aivra">
+                        <Flag className="text-white" size={56} strokeWidth={1.5} />
+                      </div>
+                    </div>
+                    
+                    {/* CTA Button */}
+                    <Link
+                      href="/about"
+                      className="flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out"
+                      style={{
+                        background: 'rgba(30, 30, 30, 0.9)',
+                        border: '1px solid rgba(0, 217, 255, 0.4)',
+                        borderRadius: '12px',
+                        padding: '12px 24px',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <span>Learn About Our Mission</span>
+                      <ArrowRight size={16} />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -1275,14 +1339,14 @@ function FeaturedProductCard({ product }) {
       className="glass-card p-6 transition-all duration-300"
       style={{
         background: 'rgba(30, 30, 30, 0.9)',
-        border: '1px solid rgba(0, 217, 255, 0.3)',
+        border: '1px solid rgba(0, 217, 255, 0.2)',
         borderRadius: '16px',
         boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
       }}
       whileHover={{ y: -5 }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3)';
-        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.7)';
+        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';

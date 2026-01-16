@@ -106,7 +106,7 @@ export default function ContactForm() {
                 className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.name
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
+                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
                 }`}
                 placeholder="Your name"
               />
@@ -129,7 +129,7 @@ export default function ContactForm() {
                 className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.email
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
+                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
                 }`}
                 placeholder="your.email@example.com"
               />
@@ -152,7 +152,7 @@ export default function ContactForm() {
                 className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none resize-none text-[var(--txt)] placeholder-[#6b7280] ${
                   errors.message
                     ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#06b6d4]'
+                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
                 }`}
                 placeholder="How can we help you?"
               />

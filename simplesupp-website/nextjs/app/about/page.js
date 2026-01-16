@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Heart, Target, ArrowRight, TrendingUp, Globe, Sparkles, DoorOpen } from 'lucide-react';
+import { Heart, Target, ArrowRight, TrendingUp, Globe, Sparkles, DoorOpen, Flag } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 export default function About() {
@@ -14,13 +14,16 @@ export default function About() {
         <div 
           className="absolute inset-0"
           style={{
-            backgroundImage: 'url(/images/about-bg.jpg)',
+            backgroundImage: 'url(/images/about/about-background.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed'
           }}
         ></div>
-        <div className="absolute inset-0 bg-[rgba(0,0,0,0.7)]"></div>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/70"></div>
+        {/* Additional gradient overlay for better text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSI2MCIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-10"></div>
       </div>
 
@@ -28,21 +31,32 @@ export default function About() {
         {/* Our Mission */}
         <div className="mb-24">
           <div className="text-center mb-12">
+            {/* Standalone Flag Icon Box */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                {/* Subtle glow effect */}
+                <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-3xl blur-2xl"></div>
+                {/* Icon container */}
+                <div className="relative w-28 h-28 bg-[var(--charcoal-light)] rounded-3xl flex items-center justify-center shadow-premium-lg border border-[var(--border)] icon-aivra">
+                  <Flag className="text-white" size={56} strokeWidth={1.5} />
+                </div>
+              </div>
+            </div>
             <div 
               className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
               style={{
                 background: 'rgba(20, 20, 20, 0.9)',
-                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
                 border: '1px solid rgba(0, 217, 255, 0.3)',
                 transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
@@ -56,16 +70,17 @@ export default function About() {
             className="rounded-3xl p-10 md:p-16 relative overflow-hidden transition-all duration-300 ease"
             style={{
               background: 'rgba(20, 20, 20, 0.9)',
-              boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
-              border: '1px solid rgba(0, 217, 255, 0.3)'
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+              transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
@@ -83,17 +98,17 @@ export default function About() {
             className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
             style={{
               background: 'rgba(20, 20, 20, 0.9)',
-              boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
               border: '1px solid rgba(0, 217, 255, 0.3)',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
               e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
@@ -111,19 +126,16 @@ export default function About() {
             <div 
               className="relative w-full max-w-md mx-auto lg:mx-0 transition-all duration-300 ease-in-out rounded-2xl overflow-hidden"
               style={{
-                boxShadow: '0 0 0px rgba(0, 255, 255, 0)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 0px rgba(0, 255, 255, 0)';
+                boxShadow: '0 0 30px rgba(0, 217, 255, 0.2), 0 0 60px rgba(0, 217, 255, 0.1)',
+                border: '1px solid rgba(0, 217, 255, 0.1)',
               }}
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-premium-lg border border-[var(--border)]">
+              <div 
+                className="relative rounded-2xl overflow-hidden"
+              >
                 <div className="relative w-full aspect-[3/4] overflow-hidden founder-photo-container">
                   <OptimizedImage
-                    src="/images/about/founder-photo.jpg"
+                    src="/images/about/founder-photo.jpeg"
                     alt="Reece Todd, Founder of Aviera"
                     width={600}
                     height={800}
@@ -148,17 +160,18 @@ export default function About() {
               className="p-8 md:p-12 transition-all duration-300 ease rounded-3xl"
               style={{
                 background: 'rgba(20, 20, 20, 0.9)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
-                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)'
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -168,7 +181,7 @@ export default function About() {
                 </p>
 
                 <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8">
-                  I built <strong className="text-[var(--txt)]">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health — Aviera's AI creates your perfect starting stack instantly.
+                  I built <strong className="text-[var(--txt)]">Aviera</strong> to help you stop guessing which supplements actually help you reach your goals. Whether you are building muscle, cutting fat, or optimizing health. Aviera's AI creates your perfect starting stack instantly.
                 </p>
 
                 <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed mb-8 border-l-2 border-[var(--acc)]/30 pl-6 italic">
@@ -176,7 +189,7 @@ export default function About() {
                 </p>
 
                 <p className="text-lg md:text-xl text-[var(--txt-secondary)] leading-relaxed">
-                  What I love most: if you are brand new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm — just a clear, science backed plan you can actually follow.
+                  What I love most: if you are brand new and do not know where to begin, Aviera gets you on the right track fast. No confusion, no overwhelm. Just a clear, science backed plan you can actually follow.
                 </p>
               </div>
             </div>
@@ -190,17 +203,17 @@ export default function About() {
               className="inline-block px-8 py-6 rounded-2xl mb-6 relative transition-all duration-300 ease cursor-default"
               style={{
                 background: 'rgba(20, 20, 20, 0.9)',
-                boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
                 border: '1px solid rgba(0, 217, 255, 0.3)',
                 transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
@@ -221,10 +234,28 @@ export default function About() {
                 ease: [0.25, 0.46, 0.45, 0.94]
               }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              whileHover={{ transition: { duration: 0.3 } }}
               className="card-premium"
             >
-              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+              <div 
+                className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+                style={{
+                  background: 'rgba(15, 15, 15, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
                 {/* Icon - Charcoal rounded square with accent glow */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
@@ -250,15 +281,15 @@ export default function About() {
               {/* Features */}
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Foundation for success
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Long-term wellness
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Quality of life
                 </li>
               </ul>
@@ -275,10 +306,28 @@ export default function About() {
                 ease: [0.25, 0.46, 0.45, 0.94]
               }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              whileHover={{ transition: { duration: 0.3 } }}
               className="card-premium"
             >
-              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+              <div 
+                className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+                style={{
+                  background: 'rgba(15, 15, 15, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
                 {/* Icon - Charcoal rounded square with accent glow */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
@@ -304,15 +353,15 @@ export default function About() {
               {/* Features */}
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Inclusive approach
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   No barriers to entry
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Support for all
                 </li>
               </ul>
@@ -329,10 +378,28 @@ export default function About() {
                 ease: [0.25, 0.46, 0.45, 0.94]
               }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              whileHover={{ transition: { duration: 0.3 } }}
               className="card-premium"
             >
-              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+              <div 
+                className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+                style={{
+                  background: 'rgba(15, 15, 15, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
                 {/* Icon - Charcoal rounded square with accent glow */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
@@ -358,15 +425,15 @@ export default function About() {
               {/* Features */}
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Your own pace
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Consistent growth
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Sustainable change
                 </li>
               </ul>
@@ -383,10 +450,28 @@ export default function About() {
                 ease: [0.25, 0.46, 0.45, 0.94]
               }}
               viewport={{ once: true }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              whileHover={{ transition: { duration: 0.3 } }}
               className="card-premium"
             >
-              <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+              <div 
+                className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+                style={{
+                  background: 'rgba(15, 15, 15, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
                 {/* Icon - Charcoal rounded square with accent glow */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
@@ -412,15 +497,15 @@ export default function About() {
               {/* Features */}
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Tailored to you
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Unique approach
                 </li>
                 <li className="flex items-center text-sm text-[#e5e5e5]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                   Individual goals
                 </li>
               </ul>
@@ -437,17 +522,18 @@ export default function About() {
           className="text-center p-12 md:p-20 rounded-3xl mb-16 transition-all duration-300 ease"
           style={{
             background: 'rgba(20, 20, 20, 0.9)',
-            border: '1px solid rgba(0, 217, 255, 0.3)',
-            boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)'
+            border: '1px solid rgba(0, 217, 255, 0.2)',
+            boxShadow: '0 0 15px rgba(0, 217, 255, 0.15)',
+            transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4)';
-            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.15)';
-            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >

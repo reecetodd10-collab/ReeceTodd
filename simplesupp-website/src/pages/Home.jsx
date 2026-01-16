@@ -46,6 +46,46 @@ export default function Home() {
 
   return (
     <>
+      {/* Floating Cyan Particles - Fixed across entire page */}
+      <div className="fixed inset-0 z-[5] overflow-hidden pointer-events-none">
+        {[
+          { left: '5%', top: '15%', size: 10, delay: 0, duration: 18 },
+          { left: '12%', top: '45%', size: 8, delay: 1.5, duration: 20 },
+          { left: '20%', top: '75%', size: 12, delay: 0.8, duration: 22 },
+          { left: '28%', top: '25%', size: 9, delay: 2.2, duration: 19 },
+          { left: '35%', top: '60%', size: 11, delay: 1, duration: 21 },
+          { left: '42%', top: '10%', size: 8, delay: 3, duration: 17 },
+          { left: '50%', top: '85%', size: 10, delay: 0.5, duration: 23 },
+          { left: '58%', top: '35%', size: 12, delay: 1.8, duration: 20 },
+          { left: '65%', top: '70%', size: 9, delay: 2.5, duration: 18 },
+          { left: '72%', top: '20%', size: 11, delay: 0.3, duration: 24 },
+          { left: '80%', top: '55%', size: 8, delay: 1.2, duration: 19 },
+          { left: '88%', top: '80%', size: 10, delay: 2.8, duration: 21 },
+          { left: '92%', top: '30%', size: 12, delay: 0.7, duration: 20 },
+          { left: '8%', top: '90%', size: 9, delay: 1.6, duration: 22 },
+          { left: '48%', top: '50%', size: 11, delay: 2, duration: 19 },
+          { left: '75%', top: '5%', size: 8, delay: 3.2, duration: 18 },
+          { left: '18%', top: '55%', size: 10, delay: 0.9, duration: 21 },
+          { left: '62%', top: '42%', size: 12, delay: 1.4, duration: 23 },
+        ].map((particle, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full animate-float-particle"
+            style={{
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              background: '#00d9ff',
+              opacity: 0.7,
+              left: particle.left,
+              top: particle.top,
+              animationDuration: `${particle.duration}s`,
+              animationDelay: `${particle.delay}s`,
+              boxShadow: '0 0 12px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4)',
+            }}
+          />
+        ))}
+      </div>
+
       {/* Promotional Banner */}
       <PromoBanner />
 
@@ -145,11 +185,11 @@ export default function Home() {
             ======================================== */}
         <section
           id="how-it-works"
-          className="scroll-snap-section relative min-h-screen flex items-center bg-white py-32 px-4"
+          className="scroll-snap-section relative min-h-screen flex items-center bg-[var(--bg)] py-32 px-4"
         >
           <div
             ref={howItWorksAnimation.ref}
-            className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
+            className={`relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full slide-up ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
           >
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-normal text-[var(--txt)] mb-6" style={{ letterSpacing: '2px' }}>

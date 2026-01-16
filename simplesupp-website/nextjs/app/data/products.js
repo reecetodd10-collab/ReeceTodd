@@ -154,6 +154,35 @@ export const products = [
     active: true
   },
   {
+    id: 'nitric-oxide',
+    name: 'Nitric Oxide',
+    suplifulName: 'Nitric Oxide',
+    category: PRODUCT_CATEGORIES.PERFORMANCE,
+    price: 19.99,
+    costPrice: 12.00,
+    description: 'Nitric Oxide is designed to support healthy circulation and muscle growth, making it a great addition to your fitness or wellness routine. The formula includes L-Arginine Alpha-Ketoglutarate, known for its ability to promote normal blood flow and nutrient delivery to muscles, contributing to exercise performance.',
+    benefits: ['Supports healthy circulation', 'Promotes muscle growth', 'Enhances blood flow and nutrient delivery', 'Supports exercise performance and endurance'],
+    dosage: '2 capsules daily with 6-8 oz of water',
+    goals: ['muscle_gain', 'energy', 'health'],
+    priority: 'high',
+    active: true,
+    image: 'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734704-generated-label-image-0.jpg?v=1766350977',
+    images: [
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734704-generated-label-image-0.jpg?v=1766350977',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734705-generated-label-image-1.jpg?v=1766350977',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734707-generated-label-image-2.jpg?v=1766350977',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734709-generated-label-image-3.jpg?v=1766350977'
+    ],
+    ingredients: 'L-Arginine Alpha-Ketoglutarate, L-Arginine Hydrochloride, L-Citrulline DL-Malate, Cellulose (vegetable capsule), Brown Rice Flour',
+    servingSize: '2 capsules',
+    servings: 30,
+    productAmount: '60 Capsules',
+    suggestedUse: 'As a dietary supplement, adults take two (2) capsules daily. For best results, take with 6-8 oz of water or as directed by healthcare professional.',
+    tags: ['performance', 'pump', 'circulation', 'muscle growth', 'blood flow', 'endurance'],
+    suplifulId: '',
+    shopifyProductId: '8645601657022'
+  },
+  {
     id: 'alpha-energy-001',
     name: 'Alpha Energy',
     suplifulName: 'Alpha Energy',
@@ -452,6 +481,36 @@ export const products = [
     goals: ['recovery', 'sleep', 'health'],
     priority: 'high',
     active: true
+  },
+  {
+    id: 'sleep-formula',
+    name: 'Sleep Formula',
+    suplifulName: 'Sleep Formula',
+    category: PRODUCT_CATEGORIES.RECOVERY,
+    price: 26.90,
+    costPrice: 15.00,
+    description: 'This Sleep Formula is crafted to foster restful and rejuvenating sleep through a blend of natural ingredients. It is designed to promote a tranquil night\'s sleep, leveraging the synergistic effects of Valerian Extract, Chamomile, GABA, and more.',
+    benefits: ['Supports restful sleep', 'Promotes relaxation', 'Natural ingredients', 'Supports natural sleep cycle'],
+    dosage: '2 capsules daily before bed',
+    goals: ['sleep', 'recovery'],
+    priority: 'high',
+    active: true,
+    image: 'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1765396233884-generated-label-image-0.jpg?v=1765397433',
+    images: [
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1765396233884-generated-label-image-0.jpg?v=1765397433',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1765396233884-generated-label-image-1.jpg?v=1765397433',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1765396233884-generated-label-image-2.jpg?v=1765397433',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1765396233884-generated-label-image-3.jpg?v=1765397433',
+      'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/20240305175036-jtp0slee-sf.png?v=1765397433'
+    ],
+    ingredients: 'Valerian Extract (root), Chamomile Extract (flower), GABA (Gamma-Aminobutyric Acid), L-Tryptophan, Lemon Balm Extract, Passion Flower Extract, Melatonin',
+    servingSize: '2 capsules',
+    servings: 30,
+    productAmount: '60 Capsules',
+    suggestedUse: 'As a dietary supplement, adults take two (2) capsules daily. For best results, take with 6-8 oz of water or as directed by a healthcare professional.',
+    tags: ['sleep', 'relaxation', 'recovery', 'melatonin', 'natural', 'calming'],
+    suplifulId: '',
+    shopifyProductId: '8632063099070'
   },
 
   // FOCUS & COGNITION

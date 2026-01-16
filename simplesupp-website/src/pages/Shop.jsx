@@ -4,19 +4,6 @@ import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 
 
-{/* Background Image */}
-<div 
-  className="fixed inset-0 -z-10"
-  style={{
-    backgroundImage: "url('/images/shop/shop-background.jpg')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    filter: 'blur(25px)',
-    opacity: 0.3,
-  }}
-/>
-<div className="fixed inset-0 -z-10 bg-black/60" />
-
 
 export default function Shop() {
   const [searchQuery, setSearchQuery] = useState('');

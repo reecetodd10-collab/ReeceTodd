@@ -61,10 +61,28 @@ export default function GoalCards() {
               ease: [0.25, 0.46, 0.45, 0.94]
             }}
             viewport={{ once: true }}
-            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+            whileHover={{ transition: { duration: 0.3 } }}
             className="card-premium"
           >
-            <div className="glass-card rounded-2xl p-8 h-full flex flex-col shadow-premium hover:shadow-premium-lg transition-all duration-300">
+            <div 
+              className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+              style={{
+                background: 'rgba(15, 15, 15, 0.85)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(0, 217, 255, 0.3)',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
               {/* Icon - Charcoal rounded square with accent glow */}
               <div className="flex justify-center mb-6">
                 <div className="relative">
@@ -91,7 +109,7 @@ export default function GoalCards() {
               <ul className="space-y-2">
                 {goal.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-center text-sm text-[#e5e5e5]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] mr-2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
                     {feature}
                   </li>
                 ))}

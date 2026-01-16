@@ -110,7 +110,7 @@ Keep the stack focused (3-7 supplements max) and prioritize the most impactful o
     let completion;
     try {
       completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-5.1',
         messages: [
           {
             role: 'system',

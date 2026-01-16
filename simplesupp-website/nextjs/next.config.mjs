@@ -9,6 +9,16 @@ const nextConfig = {
     // Turbopack configuration if needed
   },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
+        pathname: '/**',
+      },
+    ],
+  },
+
   async redirects() {
     return [
       {
