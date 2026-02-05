@@ -19,133 +19,111 @@ export default function About() {
             {/* Animated Background Elements */}
             {isMounted && (
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    {/* LEFT SIDE - Wavy Lines with Sliding Beam Glow */}
+                    {/* LEFT SIDE - Simple Breathing Vertical Lines */}
                     <div className="absolute left-0 top-0 w-64 h-full">
-                        {/* Two static wavy lines - Thinner base lines */}
-                        {[0, 1].map((lineIndex) => (
-                            <svg
-                                key={`wave-left-${lineIndex}`}
-                                className="absolute top-0 left-0 w-full h-full"
-                                style={{ opacity: 0.3 }}
-                                preserveAspectRatio="none"
-                                viewBox="0 0 100 1000"
-                            >
-                                <path
-                                    id={`wavepath-left-${lineIndex}`}
-                                    d={`M ${40 + lineIndex * 20} 0 
-                     Q ${10 + lineIndex * 20} 250 ${40 + lineIndex * 20} 500 
-                     Q ${70 + lineIndex * 20} 750 ${40 + lineIndex * 20} 1000`}
-                                    fill="none"
-                                    stroke="#00d9ff"
-                                    strokeWidth="1"
-                                />
-                            </svg>
+                        {[0, 1, 2, 3].map((i) => (
+                            <motion.div
+                                key={`line-left-${i}`}
+                                className="absolute top-0 h-full"
+                                style={{
+                                    left: `${30 + i * 50}px`,
+                                    width: '2px',
+                                    background: 'linear-gradient(to bottom, transparent 0%, #00d9ff 15%, #00d9ff 85%, transparent 100%)',
+                                }}
+                                animate={{
+                                    opacity: [0.1, 0.4, 0.1], // Slightly lower opacity for dark mode
+                                    boxShadow: [
+                                        '0 0 5px rgba(0, 217, 255, 0.2)',
+                                        '0 0 15px rgba(0, 217, 255, 0.6), 0 0 30px rgba(0, 217, 255, 0.3)',
+                                        '0 0 5px rgba(0, 217, 255, 0.2)',
+                                    ],
+                                }}
+                                transition={{
+                                    duration: 4,
+                                    repeat: Infinity,
+                                    delay: i * 0.8,
+                                    ease: 'easeInOut',
+                                }}
+                            />
                         ))}
 
-                        {/* Glowing BEAMS - Sliding light effect */}
-                        {[0, 1].map((beamIndex) => (
-                            <svg
-                                key={`beam-left-${beamIndex}`}
-                                className="absolute top-0 left-0 w-full h-full"
-                                preserveAspectRatio="none"
-                                viewBox="0 0 100 1000"
-                            >
-                                <defs>
-                                    <filter id={`glow-blur-left-${beamIndex}`} x="-50%" y="-50%" width="200%" height="200%">
-                                        <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                                        <feMerge>
-                                            <feMergeNode in="coloredBlur" />
-                                            <feMergeNode in="SourceGraphic" />
-                                        </feMerge>
-                                    </filter>
-                                </defs>
-                                <motion.path
-                                    d={`M ${40 + beamIndex * 20} 0 
-                     Q ${10 + beamIndex * 20} 250 ${40 + beamIndex * 20} 500 
-                     Q ${70 + beamIndex * 20} 750 ${40 + beamIndex * 20} 1000`}
-                                    fill="none"
-                                    stroke="#00d9ff"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    filter={`url(#glow-blur-left-${beamIndex})`}
-                                    initial={{ strokeDasharray: "150 1500", strokeDashoffset: 150 }}
-                                    animate={{
-                                        strokeDashoffset: [-150, -1500],
-                                        opacity: [0, 1, 1, 0],
-                                    }}
-                                    transition={{
-                                        duration: 7,
-                                        repeat: Infinity,
-                                        ease: "linear",
-                                        delay: 0,
-                                    }}
-                                />
-                            </svg>
+                        {[0, 1, 2, 3].map((i) => (
+                            <motion.div
+                                key={`glow-left-${i}`}
+                                className="absolute"
+                                style={{
+                                    left: `${26 + i * 50}px`,
+                                    width: '10px',
+                                    height: '100px',
+                                    background: 'linear-gradient(to bottom, transparent, #00d9ff, transparent)',
+                                    filter: 'blur(4px)',
+                                    borderRadius: '50%',
+                                }}
+                                animate={{
+                                    top: ['-100px', 'calc(100% + 100px)'],
+                                    opacity: [0, 0.5, 0.5, 0],
+                                }}
+                                transition={{
+                                    duration: 6,
+                                    repeat: Infinity,
+                                    delay: i * 1.5,
+                                    ease: 'linear',
+                                }}
+                            />
                         ))}
                     </div>
 
-                    {/* RIGHT SIDE - Wavy Lines with Sliding Beam Glow (Mirrored) */}
+                    {/* RIGHT SIDE - Mirror (Symmetric) */}
                     <div className="absolute right-0 top-0 w-64 h-full">
-                        {/* Two static wavy lines - Mirrored & Thinner */}
-                        {[0, 1].map((lineIndex) => (
-                            <svg
-                                key={`wave-right-${lineIndex}`}
-                                className="absolute top-0 right-0 w-full h-full"
-                                style={{ opacity: 0.3 }}
-                                preserveAspectRatio="none"
-                                viewBox="0 0 100 1000"
-                            >
-                                <path
-                                    id={`wavepath-right-${lineIndex}`}
-                                    d={`M ${60 - lineIndex * 20} 0 
-                     Q ${90 - lineIndex * 20} 250 ${60 - lineIndex * 20} 500 
-                     Q ${30 - lineIndex * 20} 750 ${60 - lineIndex * 20} 1000`}
-                                    fill="none"
-                                    stroke="#00d9ff"
-                                    strokeWidth="1"
-                                />
-                            </svg>
+                        {[0, 1, 2, 3].map((i) => (
+                            <motion.div
+                                key={`line-right-${i}`}
+                                className="absolute top-0 h-full"
+                                style={{
+                                    right: `${30 + i * 50}px`,
+                                    width: '2px',
+                                    background: 'linear-gradient(to bottom, transparent 0%, #00d9ff 15%, #00d9ff 85%, transparent 100%)',
+                                }}
+                                animate={{
+                                    opacity: [0.1, 0.4, 0.1],
+                                    boxShadow: [
+                                        '0 0 5px rgba(0, 217, 255, 0.2)',
+                                        '0 0 15px rgba(0, 217, 255, 0.6), 0 0 30px rgba(0, 217, 255, 0.3)',
+                                        '0 0 5px rgba(0, 217, 255, 0.2)',
+                                    ],
+                                }}
+                                transition={{
+                                    duration: 4,
+                                    repeat: Infinity,
+                                    delay: (3 - i) * 0.8,
+                                    ease: 'easeInOut',
+                                }}
+                            />
                         ))}
 
-                        {/* Glowing BEAMS - Sliding light effect */}
-                        {[0, 1].map((beamIndex) => (
-                            <svg
-                                key={`beam-right-${beamIndex}`}
-                                className="absolute top-0 right-0 w-full h-full"
-                                preserveAspectRatio="none"
-                                viewBox="0 0 100 1000"
-                            >
-                                <defs>
-                                    <filter id={`glow-blur-right-${beamIndex}`} x="-50%" y="-50%" width="200%" height="200%">
-                                        <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                                        <feMerge>
-                                            <feMergeNode in="coloredBlur" />
-                                            <feMergeNode in="SourceGraphic" />
-                                        </feMerge>
-                                    </filter>
-                                </defs>
-                                <motion.path
-                                    d={`M ${60 - beamIndex * 20} 0 
-                     Q ${90 - beamIndex * 20} 250 ${60 - beamIndex * 20} 500 
-                     Q ${30 - beamIndex * 20} 750 ${60 - beamIndex * 20} 1000`}
-                                    fill="none"
-                                    stroke="#00d9ff"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    filter={`url(#glow-blur-right-${beamIndex})`}
-                                    initial={{ strokeDasharray: "150 1500", strokeDashoffset: 150 }}
-                                    animate={{
-                                        strokeDashoffset: [-150, -1500],
-                                        opacity: [0, 1, 1, 0],
-                                    }}
-                                    transition={{
-                                        duration: 7,
-                                        repeat: Infinity,
-                                        ease: "linear",
-                                        delay: 0,
-                                    }}
-                                />
-                            </svg>
+                        {[0, 1, 2, 3].map((i) => (
+                            <motion.div
+                                key={`glow-right-${i}`}
+                                className="absolute"
+                                style={{
+                                    right: `${26 + i * 50}px`,
+                                    width: '10px',
+                                    height: '100px',
+                                    background: 'linear-gradient(to bottom, transparent, #00d9ff, transparent)',
+                                    filter: 'blur(4px)',
+                                    borderRadius: '50%',
+                                }}
+                                animate={{
+                                    top: ['-100px', 'calc(100% + 100px)'],
+                                    opacity: [0, 0.5, 0.5, 0],
+                                }}
+                                transition={{
+                                    duration: 6,
+                                    repeat: Infinity,
+                                    delay: (3 - i) * 1.5 + 0.5,
+                                    ease: 'linear',
+                                }}
+                            />
                         ))}
                     </div>
 

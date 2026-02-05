@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, ShoppingCart, Flame, Brain, Dumbbell, Moon, Sparkles, Zap, Heart, Activity } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { fetchShopifyProducts } from '../lib/shopify';
 
@@ -113,7 +114,7 @@ export default function AvieraAIWidget() {
   // Get product image from Shopify
   const getProductImage = (supplementName) => {
     if (!shopifyProducts.length) return null;
-    const product = shopifyProducts.find(p => 
+    const product = shopifyProducts.find(p =>
       p.title.toLowerCase().includes(supplementName.toLowerCase().split(' ')[0]) ||
       supplementName.toLowerCase().includes(p.title.toLowerCase().split(' ')[0])
     );
@@ -158,11 +159,11 @@ export default function AvieraAIWidget() {
   // Send message to AI
   const sendChatMessage = async (message) => {
     if (!message.trim()) return;
-    
+
     const newMessages = [...chatMessages, { role: 'user', content: message }];
     setChatMessages(newMessages);
     setIsChatLoading(true);
-    
+
     try {
       const response = await fetch('/api/ai/quiz-chat', {
         method: 'POST',
@@ -173,21 +174,21 @@ export default function AvieraAIWidget() {
           userContext: { currentPage: pathname }
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.response) {
         setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
       } else {
-        setChatMessages(prev => [...prev, { 
-          role: 'assistant', 
-          content: "I can help with supplement recommendations, dosing, and timing. What would you like to know?" 
+        setChatMessages(prev => [...prev, {
+          role: 'assistant',
+          content: "I can help with supplement recommendations, dosing, and timing. What would you like to know?"
         }]);
       }
     } catch (error) {
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "I can help with supplement questions. Feel free to ask about any of our products or check out our Aviera Stacks." 
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: "I can help with supplement questions. Feel free to ask about any of our products or check out our Aviera Stacks."
       }]);
     } finally {
       setIsChatLoading(false);
@@ -198,9 +199,9 @@ export default function AvieraAIWidget() {
   const ProductHoverCard = ({ supplement, price, description }) => {
     const productImage = getProductImage(supplement);
     const productSlug = supplement.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    
+
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -5 }}
@@ -209,19 +210,19 @@ export default function AvieraAIWidget() {
         onMouseEnter={() => handleMouseEnter(supplement)}
         onMouseLeave={handleMouseLeave}
       >
-        <div 
+        <div
           className="p-3 rounded-xl mx-1"
           style={{
             background: 'rgba(12, 12, 12, 0.98)',
-            border: '1px solid rgba(0, 217, 255, 0.3)',
-            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 217, 255, 0.15)',
+            border: '1px solid #00D9FF',
+
           }}
         >
           <div className="flex gap-3">
             {productImage && (
               <div className="w-16 h-16 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center flex-shrink-0">
-                <img 
-                  src={productImage} 
+                <img
+                  src={productImage}
                   alt={supplement}
                   className="max-h-full max-w-full object-contain"
                 />
@@ -246,7 +247,7 @@ export default function AvieraAIWidget() {
                 e.preventDefault();
                 addToCart(supplement, price);
               }}
-              className="flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 bg-[#00d9ff] text-[#001018] hover:shadow-[0_0_20px_rgba(0,217,255,0.5)]"
+
             >
               <ShoppingCart size={12} />
               Add to Cart
@@ -268,42 +269,44 @@ export default function AvieraAIWidget() {
       >
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative"
+          className={`w-16 h-16 rounded-full flex items-center justify-center relative`}
           style={{
-            background: 'rgba(15, 15, 15, 0.95)',
-            border: '1px solid rgba(0, 217, 255, 0.4)',
-            boxShadow: '0 0 25px rgba(0, 217, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.4)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.7), 0 4px 20px rgba(0, 0, 0, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.4)';
+            background: 'transparent',
+            border: 'none',
+            boxShadow: 'none',
+            filter: 'none',
+            cursor: 'pointer',
           }}
         >
           {isChatOpen ? (
-            <X size={22} className="text-white" />
+            <div className="w-full h-full rounded-full bg-black flex items-center justify-center border-2 border-[#00D9FF]">
+              <X size={24} className="text-[#00D9FF]" />
+            </div>
           ) : (
-            <>
-              <AvieraLogo size={26} className="text-white" />
-              <span 
-                className="absolute inset-0 rounded-full animate-ping pointer-events-none"
-                style={{
-                  background: 'transparent',
-                  border: '2px solid rgba(0, 217, 255, 0.3)',
-                  animationDuration: '2.5s',
-                }}
-              />
-            </>
+            <Image
+              src="/aviera-icon-glow.png"
+              alt="Aviera AI"
+              width={64}
+              height={64}
+              className="object-cover rounded-full"
+              style={{
+                width: '64px',
+                height: '64px',
+              }}
+              priority
+            />
           )}
         </button>
         {!isChatOpen && (
-          <span className="mt-2 text-[9px] text-gray-500 font-medium tracking-wide">
+          <span
+            className="mt-2 text-[10px] font-semibold tracking-wider"
+            style={{ color: '#00D9FF', textShadow: '0 0 8px #00D9FF' }}
+          >
             Aviera AI
           </span>
         )}
+
+
       </motion.div>
 
       {/* Chat Panel */}
@@ -317,24 +320,23 @@ export default function AvieraAIWidget() {
             className="fixed bottom-24 right-6 z-[99] w-[380px] max-w-[calc(100vw-48px)] rounded-2xl overflow-hidden"
             style={{
               background: 'rgba(12, 12, 12, 0.98)',
-              border: '1px solid rgba(0, 217, 255, 0.25)',
-              boxShadow: '0 0 50px rgba(0, 217, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.6)',
-              backdropFilter: 'blur(20px)',
+              border: '1px solid #00D9FF',
+
             }}
           >
             {/* Header */}
-            <div 
+            <div
               className="px-4 py-3 border-b border-[rgba(255,255,255,0.08)]"
               style={{
                 background: 'rgba(0, 0, 0, 0.3)',
               }}
             >
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center"
                   style={{
-                    background: 'rgba(0, 217, 255, 0.08)',
-                    border: '1px solid rgba(0, 217, 255, 0.25)',
+                    background: '#000000ff',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
                   }}
                 >
                   <AvieraLogo size={16} className="text-white" />
@@ -363,13 +365,13 @@ export default function AvieraAIWidget() {
                   <p className="text-gray-500 text-xs mb-4">
                     Select a goal or ask me anything about supplements.
                   </p>
-                  
+
                   {/* Suggestions Grid */}
                   <div className="grid grid-cols-2 gap-2">
                     {PROACTIVE_SUGGESTIONS.map((item, idx) => {
                       const Icon = item.icon;
                       const isHovered = hoveredProduct === item.supplement;
-                      
+
                       return (
                         <div
                           key={idx}
@@ -381,16 +383,16 @@ export default function AvieraAIWidget() {
                             onClick={() => sendChatMessage(`Tell me about ${item.supplement} for ${item.goal}`)}
                             className="w-full p-2.5 rounded-xl text-left transition-all duration-200"
                             style={{
-                              background: isHovered ? 'rgba(0, 217, 255, 0.06)' : 'rgba(255, 255, 255, 0.02)',
-                              border: isHovered ? '1px solid rgba(0, 217, 255, 0.4)' : '1px solid rgba(255, 255, 255, 0.06)',
+                              background: isHovered ? '#00D9FF' : 'rgba(255, 255, 255, 0.02)',
+                              border: isHovered ? '1px solid #00D9FF' : '1px solid rgba(255, 255, 255, 0.06)',
                             }}
                           >
                             <div className="flex items-start gap-2">
-                              <div 
+                              <div
                                 className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                                 style={{
                                   background: 'rgba(0, 0, 0, 0.4)',
-                                  border: '1px solid rgba(0, 217, 255, 0.2)',
+                                  border: '1px solid #00D9FF',
                                 }}
                               >
                                 <Icon size={14} className="text-white" />
@@ -404,11 +406,11 @@ export default function AvieraAIWidget() {
                               {item.supplement}
                             </p>
                           </button>
-                          
+
                           {/* Hover Card */}
                           <AnimatePresence>
                             {isHovered && (
-                              <ProductHoverCard 
+                              <ProductHoverCard
                                 supplement={item.supplement}
                                 price={item.price}
                                 description={item.description}
@@ -419,7 +421,7 @@ export default function AvieraAIWidget() {
                       );
                     })}
                   </div>
-                  
+
                   {/* Shop Link */}
                   <Link
                     href="/shop"
@@ -434,13 +436,12 @@ export default function AvieraAIWidget() {
               {chatMessages.length > 0 && (
                 <div className="space-y-3">
                   {chatMessages.map((msg, idx) => (
-                    <div 
+                    <div
                       key={idx}
-                      className={`rounded-xl text-sm ${
-                        msg.role === 'user' 
-                          ? 'p-3 bg-[rgba(0,217,255,0.1)] border border-[rgba(0,217,255,0.2)] text-white ml-6' 
-                          : 'p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] text-gray-300 mr-4'
-                      }`}
+                      className={`rounded-xl text-sm ${msg.role === 'user'
+                        ? 'p-3 bg-[#00D9FF] border border-[#00D9FF] text-white ml-6'
+                        : 'p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] text-gray-300 mr-4'
+                        }`}
                     >
                       {msg.role === 'assistant' && (
                         <div className="flex items-center gap-1.5 mb-2">
@@ -453,7 +454,7 @@ export default function AvieraAIWidget() {
                       </div>
                     </div>
                   ))}
-                  
+
                   {isChatLoading && (
                     <div className="p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] mr-4">
                       <div className="flex items-center gap-1.5 mb-2">
@@ -467,7 +468,7 @@ export default function AvieraAIWidget() {
                       </div>
                     </div>
                   )}
-                  
+
                   <button
                     onClick={() => setChatMessages([])}
                     className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
@@ -500,7 +501,7 @@ export default function AvieraAIWidget() {
                     border: '1px solid rgba(255, 255, 255, 0.08)',
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+                    e.currentTarget.style.borderColor = '#00D9FF';
                   }}
                   onBlur={(e) => {
                     e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -517,7 +518,7 @@ export default function AvieraAIWidget() {
                   disabled={isChatLoading || !chatInput.trim()}
                   className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 disabled:opacity-40"
                   style={{
-                    background: chatInput.trim() ? '#00d9ff' : 'rgba(0, 217, 255, 0.2)',
+                    background: chatInput.trim() ? '#00d9ff' : '#00D9FF',
                   }}
                 >
                   <Send size={16} className={chatInput.trim() ? 'text-[#001018]' : 'text-[#00d9ff]'} />

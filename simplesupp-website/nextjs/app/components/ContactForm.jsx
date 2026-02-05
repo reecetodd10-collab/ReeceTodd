@@ -70,7 +70,12 @@ export default function ContactForm() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className="glass rounded-3xl p-8 md:p-12 shadow-premium"
+        className="rounded-2xl p-8 md:p-12 transition-all duration-300"
+        style={{
+          background: '#ffffff',
+          border: '1px solid #e0e0e0',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+        }}
       >
         {isSubmitted ? (
           <motion.div
@@ -79,22 +84,21 @@ export default function ContactForm() {
             className="text-center py-8"
           >
             <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-xl">
-                <CheckCircle className="text-white" size={40} />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'rgba(0, 217, 255, 0.1)' }}>
+                <CheckCircle style={{ color: '#00d9ff' }} size={40} />
               </div>
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-[var(--txt)] mb-3">
+            <h3 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Montserrat, sans-serif', color: '#1a1a1a' }}>
               Message Sent!
             </h3>
-            <p className="text-[#d1d5db] text-lg">
+            <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
               We'll get back to you as soon as possible.
             </p>
           </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="name" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
                 Name
               </label>
               <input
@@ -103,21 +107,30 @@ export default function ContactForm() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
-                  errors.name
-                    ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
-                }`}
+                className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none"
+                style={{
+                  background: '#f9fafb',
+                  border: `1px solid ${errors.name ? '#ef4444' : '#e0e0e0'}`,
+                  color: '#1a1a1a',
+                  fontSize: '16px',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = errors.name ? '#ef4444' : '#00d9ff';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = errors.name ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
                 placeholder="Your name"
               />
               {errors.name && (
-                <p className="mt-2 text-sm text-red-400">{errors.name}</p>
+                <p className="mt-2 text-sm" style={{ color: '#ef4444' }}>{errors.name}</p>
               )}
             </div>
 
-            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
                 Email
               </label>
               <input
@@ -126,21 +139,30 @@ export default function ContactForm() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none text-[var(--txt)] placeholder-[#6b7280] ${
-                  errors.email
-                    ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
-                }`}
+                className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none"
+                style={{
+                  background: '#f9fafb',
+                  border: `1px solid ${errors.email ? '#ef4444' : '#e0e0e0'}`,
+                  color: '#1a1a1a',
+                  fontSize: '16px',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = errors.email ? '#ef4444' : '#00d9ff';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = errors.email ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
                 placeholder="your.email@example.com"
               />
               {errors.email && (
-                <p className="mt-2 text-sm text-red-400">{errors.email}</p>
+                <p className="mt-2 text-sm" style={{ color: '#ef4444' }}>{errors.email}</p>
               )}
             </div>
 
-            {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-semibold text-[var(--txt)] mb-2">
+              <label htmlFor="message" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
                 Message
               </label>
               <textarea
@@ -149,24 +171,38 @@ export default function ContactForm() {
                 value={formData.message}
                 onChange={handleChange}
                 rows="5"
-                className={`w-full px-4 py-3 bg-[#1a1a1a] border-2 rounded-xl transition-all duration-200 focus:outline-none resize-none text-[var(--txt)] placeholder-[#6b7280] ${
-                  errors.message
-                    ? 'border-red-400 focus:border-red-500'
-                    : 'border-[var(--glass-border)] focus:border-[#00d9ff]'
-                }`}
+                className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none resize-none"
+                style={{
+                  background: '#f9fafb',
+                  border: `1px solid ${errors.message ? '#ef4444' : '#e0e0e0'}`,
+                  color: '#1a1a1a',
+                  fontSize: '16px',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = errors.message ? '#ef4444' : '#00d9ff';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = errors.message ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
                 placeholder="How can we help you?"
               />
               {errors.message && (
-                <p className="mt-2 text-sm text-red-400">{errors.message}</p>
+                <p className="mt-2 text-sm" style={{ color: '#ef4444' }}>{errors.message}</p>
               )}
             </div>
 
-            {/* Submit Button */}
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full px-8 py-4 bg-gradient-to-r from-[var(--acc)] to-[var(--acc-2)] text-white rounded-xl font-semibold text-lg shadow-premium hover:shadow-premium-lg transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300"
+              style={{
+                background: '#00d9ff',
+                color: '#ffffff',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
+              }}
             >
               <span>Send Message</span>
               <Send size={20} />

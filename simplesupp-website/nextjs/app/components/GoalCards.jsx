@@ -64,52 +64,42 @@ export default function GoalCards() {
             whileHover={{ transition: { duration: 0.3 } }}
             className="card-premium"
           >
-            <div 
+            <div
               className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
               style={{
-                background: 'rgba(15, 15, 15, 0.85)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
-                boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
+                background: '#ffffff',
+                border: '1px solid rgba(0, 217, 255, 0.2)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 217, 255, 0.25), 0 0 20px rgba(0, 217, 255, 0.15)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.5)';
-                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
               }}
             >
-              {/* Icon - Charcoal rounded square with accent glow */}
               <div className="flex justify-center mb-6">
-                <div className="relative">
-                  {/* Subtle glow effect */}
-                  <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-2xl"></div>
-                  {/* Icon container */}
-                  <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center shadow-premium border border-[var(--border)] icon-aivra">
-                    <Icon className="text-white" size={goal.iconSize} strokeWidth={2} />
-                  </div>
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(0, 217, 255, 0.1)' }}>
+                  <Icon style={{ color: '#00d9ff' }} size={goal.iconSize} strokeWidth={2} />
                 </div>
               </div>
 
-              {/* Title */}
-              <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] mb-3 text-center">
+              <h3 className="text-xl md:text-2xl font-bold mb-3 text-center" style={{ fontFamily: 'Montserrat, sans-serif', color: '#1a1a1a' }}>
                 {goal.title}
               </h3>
 
-              {/* Description */}
-              <p className="text-[#d1d5db] text-base md:text-lg leading-relaxed mb-6 text-center flex-grow">
+              <p className="text-base md:text-lg leading-relaxed mb-6 text-center flex-grow font-light" style={{ color: '#4a4a4a' }}>
                 {goal.description}
               </p>
 
-              {/* Features */}
               <ul className="space-y-2">
                 {goal.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-center text-sm text-[#e5e5e5]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#00d9ff] mr-2" />
+                  <li key={featureIndex} className="flex items-center text-sm font-light" style={{ color: '#6b7280' }}>
+                    <div className="w-1.5 h-1.5 rounded-full mr-2" style={{ background: '#00d9ff' }} />
                     {feature}
                   </li>
                 ))}

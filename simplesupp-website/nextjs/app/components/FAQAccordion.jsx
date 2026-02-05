@@ -63,25 +63,27 @@ export default function FAQAccordion() {
           viewport={{ once: true }}
           className="rounded-2xl overflow-hidden transition-all duration-300"
           style={{
-            background: 'rgba(30, 30, 30, 0.9)',
-            border: '1px solid rgba(0, 217, 255, 0.3)',
-            borderRadius: '16px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+            background: '#ffffff',
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)';
-            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
+            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
-            e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+            e.currentTarget.style.borderColor = '#e0e0e0';
           }}
         >
           <button
             onClick={() => toggleFAQ(index)}
-            className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors duration-200"
+            className="w-full px-6 md:px-8 py-5 md:py-6 flex items-center justify-between text-left transition-colors duration-200"
+            style={{ background: 'transparent' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0, 217, 255, 0.03)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span className="text-lg md:text-xl font-bold text-white pr-4">
+            <span className="text-lg md:text-xl font-bold pr-4" style={{ color: '#1a1a1a' }}>
               {faq.question}
             </span>
             <motion.div
@@ -90,9 +92,8 @@ export default function FAQAccordion() {
               className="flex-shrink-0"
             >
               <ChevronDown
-                className={`w-6 h-6 transition-colors duration-300 ${
-                  openIndex === index ? 'text-[var(--acc)]' : 'text-[var(--txt-muted)]'
-                }`}
+                className="w-6 h-6 transition-colors duration-300"
+                style={{ color: openIndex === index ? '#00d9ff' : '#6b7280' }}
               />
             </motion.div>
           </button>
@@ -107,7 +108,7 @@ export default function FAQAccordion() {
                 className="overflow-hidden"
               >
                 <div className="px-6 md:px-8 pb-5 md:pb-6 pt-2">
-                  <p className="text-[var(--txt-muted)] leading-relaxed text-base md:text-lg font-light">
+                  <p className="leading-relaxed text-base md:text-lg font-light" style={{ color: '#4a4a4a' }}>
                     {faq.answer}
                   </p>
                 </div>

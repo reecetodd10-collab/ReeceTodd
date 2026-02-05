@@ -14,9 +14,9 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(
-    tabParam === 'stacks' ? 'stacks' : 
-    tabParam === 'apparel' ? 'apparel' : 
-    'products'
+    tabParam === 'stacks' ? 'stacks' :
+      tabParam === 'apparel' ? 'apparel' :
+        'products'
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -94,9 +94,9 @@ function ShopContent() {
                 suggestedUse: p.suggestedUse || '',
               };
             });
-          
+
           const localProducts = await Promise.all(localProductsPromises);
-          
+
           // Merge Shopify products with local products
           const allProducts = [...shopifyProds, ...localProducts];
           setShopifyProducts(allProducts);
@@ -115,7 +115,7 @@ function ShopContent() {
       initializeShopifyCart()
         .then(async (client) => {
           setShopifyCartInitialized(true);
-          
+
           // Get or create cart to ensure we have a cart ID
           let cart = null;
           try {
@@ -143,11 +143,11 @@ function ShopContent() {
               console.error('Error creating cart:', createError);
             }
           }
-          
+
           // NOTE: If cart errors persist, restart Next.js dev server (Ctrl+C, npm run dev)
           // BEFORE LAUNCH: Test full checkout with Shopify test card (4242 4242 4242 4242)
           // Configure Shopify Payments in Admin → Settings → Payments
-          
+
           // Suppress Shopify SDK console errors
           const originalError = console.error;
           console.error = (...args) => {
@@ -157,7 +157,7 @@ function ShopContent() {
             }
             originalError(...args);
           };
-          
+
           // Initialize cart UI components - wait for DOM to be ready
           setTimeout(() => {
             try {
@@ -363,7 +363,7 @@ function ShopContent() {
   return (
     <div className="min-h-screen relative py-16 overflow-hidden">
       {/* Background */}
-      <div 
+      <div
         style={{
           position: 'fixed',
           top: 0,
@@ -371,12 +371,7 @@ function ShopContent() {
           right: 0,
           bottom: 0,
           zIndex: -1,
-          backgroundImage: 'url(/images/shop/shop-background.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(4px)',
-          WebkitFilter: 'blur(4px)',
-          opacity: 0.25,
+          background: '#ffffff',
         }}
       />
 
@@ -384,7 +379,7 @@ function ShopContent() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div 
+          <div
             className="inline-block px-8 py-6 rounded-2xl mb-4 relative transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
             style={{
               background: 'rgba(30, 30, 30, 0.85)',
@@ -402,20 +397,20 @@ function ShopContent() {
             }}
           >
             <h1 className="text-5xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
-            Aviera Shop
-          </h1>
+              Aviera Shop
+            </h1>
           </div>
-          <p className="text-xl text-[var(--txt-muted)] mb-3 font-light leading-relaxed">
+          <p className="text-xl mb-3 font-light leading-relaxed" style={{ color: '#1a1a1a' }}>
             Premium Supplements for Premium Goals
           </p>
-          <p className="text-sm text-[var(--txt-muted)]/80 font-light tracking-wide">
-            {activeTab === 'products' 
-              ? isLoadingProducts 
-                ? 'Loading products...' 
+          <p className="text-sm font-light tracking-wide" style={{ color: '#1a1a1a' }}>
+            {activeTab === 'products'
+              ? isLoadingProducts
+                ? 'Loading products...'
                 : `${filteredShopifyProducts.length}+ products available`
               : activeTab === 'apparel'
-              ? 'Coming soon...'
-              : '6 pre-made stacks available'}
+                ? 'Coming soon...'
+                : '6 pre-made stacks available'}
           </p>
         </div>
 
@@ -423,31 +418,28 @@ function ShopContent() {
         <div className="flex justify-center mb-8 gap-4">
           <button
             onClick={() => setActiveTab('apparel')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${
-              activeTab === 'apparel'
-                ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-                : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-            }`}
+            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'apparel'
+              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
+              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
+              }`}
           >
             Aviera Apparel
           </button>
           <button
             onClick={() => setActiveTab('products')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${
-              activeTab === 'products'
-                ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-                : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-            }`}
+            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'products'
+              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
+              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
+              }`}
           >
             Browse Products
           </button>
           <button
             onClick={() => setActiveTab('stacks')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${
-              activeTab === 'stacks'
-                ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-                : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-            }`}
+            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'stacks'
+              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
+              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
+              }`}
           >
             Aviera Stacks
           </button>
@@ -456,47 +448,47 @@ function ShopContent() {
         {/* Search and Filters - Only show for products tab */}
         {activeTab === 'products' && (
           <div className="glass-card p-6 mb-10">
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] font-normal"
-              />
-            </div>
+                />
+              </div>
 
-            {/* Category Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+              {/* Category Filter */}
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] appearance-none font-normal"
                 >
                   {Object.entries(CATEGORIES).map(([key, label]) => (
                     <option key={key} value={key}>
                       {label} {key !== 'all' && `(${categoryCounts[key] || 0})`}
-                  </option>
-                ))}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] appearance-none font-normal"
+              >
+                <option value="name">Sort: Name (A-Z)</option>
+                <option value="price-low">Sort: Price (Low to High)</option>
+                <option value="price-high">Sort: Price (High to Low)</option>
               </select>
             </div>
-
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] appearance-none font-normal"
-            >
-              <option value="name">Sort: Name (A-Z)</option>
-              <option value="price-low">Sort: Price (Low to High)</option>
-              <option value="price-high">Sort: Price (High to Low)</option>
-            </select>
           </div>
-        </div>
         )}
 
         {/* Aviera Apparel Section */}
@@ -518,14 +510,14 @@ function ShopContent() {
                 <p className="text-[var(--txt-muted)] text-lg font-light">Loading products...</p>
               </div>
             ) : filteredShopifyProducts.length === 0 ? (
-          <div className="text-center py-12">
+              <div className="text-center py-12">
                 <p className="text-[var(--txt-muted)] text-lg font-light">No products found matching your search.</p>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredShopifyProducts.map((product) => (
                   <ShopifyProductCard key={product.id} product={product} />
-            ))}
+                ))}
               </div>
             )}
           </div>
@@ -557,33 +549,33 @@ export default function Shop() {
 // - Array with alternatives: first try all, then try any (e.g., ['beta-alanine', 'beta alanine', 'bcaa'])
 function findProductByName(products, searchTerms) {
   if (!products || products.length === 0) return null;
-  
+
   const searchLower = searchTerms.map(term => term.toLowerCase());
-  
+
   // First pass: Try to match ALL terms (most specific)
   for (const product of products) {
     const titleLower = product.title.toLowerCase();
     const descriptionLower = (product.description || '').toLowerCase();
     const tagsLower = (product.tags || []).map(tag => tag.toLowerCase()).join(' ');
     const allText = `${titleLower} ${descriptionLower} ${tagsLower}`;
-    
+
     // Check if ALL search terms are found
-    const allTermsFound = searchLower.every(term => 
+    const allTermsFound = searchLower.every(term =>
       allText.includes(term)
     );
-    
+
     if (allTermsFound) {
       return product;
     }
   }
-  
+
   // Second pass: Try matching any term (for alternatives like "beta-alanine" OR "bcaa")
   for (const product of products) {
     const titleLower = product.title.toLowerCase();
     const descriptionLower = (product.description || '').toLowerCase();
     const tagsLower = (product.tags || []).map(tag => tag.toLowerCase()).join(' ');
     const allText = `${titleLower} ${descriptionLower} ${tagsLower}`;
-    
+
     // Check if any search term matches
     for (const term of searchLower) {
       if (allText.includes(term)) {
@@ -591,7 +583,7 @@ function findProductByName(products, searchTerms) {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -617,7 +609,7 @@ function AvieraApparelSection() {
   return (
     <div>
       {/* Coming Soon Banner */}
-      <div 
+      <div
         className="glass-card p-8 mb-10 text-center transition-all duration-300"
         style={{
           background: 'rgba(30, 30, 30, 0.95)',
@@ -640,7 +632,7 @@ function AvieraApparelSection() {
         <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--acc)]/20 rounded-full mb-6">
           <Sparkles className="text-[var(--acc)]" size={48} />
         </div>
-        <h2 
+        <h2
           className="text-3xl md:text-4xl font-normal text-[var(--acc)] mb-4"
           style={{
             textShadow: '0 0 20px rgba(0, 217, 255, 0.6)',
@@ -667,7 +659,7 @@ function AvieraApparelSection() {
               boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
               transition: 'all 0.3s ease'
             }}
-            whileHover={{ 
+            whileHover={{
               y: -4
             }}
             onMouseEnter={(e) => {
@@ -689,7 +681,7 @@ function AvieraApparelSection() {
               </div>
               {/* Coming Soon Badge */}
               <div className="absolute top-4 right-4 z-10">
-                <span 
+                <span
                   className="px-3 py-1 text-xs font-normal rounded-full"
                   style={{
                     background: 'rgba(0, 217, 255, 0.2)',
@@ -885,11 +877,11 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
       const productsToAdd = [];
       const foundProducts = [];
       const missingProducts = [];
-      
+
       for (let i = 0; i < stack.productSearchTerms.length; i++) {
         const searchTerms = stack.productSearchTerms[i];
         const product = findProductByName(shopifyProducts, searchTerms);
-        
+
         if (product && product.variantId && product.available) {
           productsToAdd.push({
             variantId: product.variantId,
@@ -952,7 +944,7 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
               boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
               transition: 'all 0.3s ease'
             }}
-            whileHover={{ 
+            whileHover={{
               y: -2
             }}
             onMouseEnter={(e) => {
@@ -967,7 +959,7 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
             {/* Stack Header with Icon */}
             <div className="p-6 bg-[var(--bg-elev-1)] border-b border-[var(--border)]">
               <div className="flex items-center gap-4 mb-4">
-                <div 
+                <div
                   className="relative transition-all duration-300 ease-in-out flex items-center justify-center"
                   style={{
                     background: 'rgba(30, 30, 30, 0.9)',
@@ -991,8 +983,8 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <Icon 
-                    className="text-white" 
+                  <Icon
+                    className="text-white"
                     size={32}
                     style={{
                       filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.5))'
@@ -1018,11 +1010,12 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
                     const searchTerms = stack.productSearchTerms[idx] || [];
                     const product = findProductByName(shopifyProducts, searchTerms);
                     const isHovered = hoveredSupplement === `${stack.id}-${idx}`;
-                    
+
                     return (
-                      <li 
-                        key={idx} 
-                        className="text-sm text-[var(--txt)] flex items-start font-light relative"
+                      <li
+                        key={idx}
+                        className="text-sm flex items-start relative"
+                        style={{ color: '#1a1a1a', fontWeight: 700 }}
                         onMouseEnter={() => {
                           setHoveredSupplement(`${stack.id}-${idx}`);
                           if (product) setHoveredProduct(product);
@@ -1032,7 +1025,7 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
                           setHoveredProduct(null);
                         }}
                       >
-                        <Check size={14} className="text-[var(--acc)] mr-2 mt-0.5 flex-shrink-0" />
+                        <Check size={16} className="text-[var(--acc)] mr-2 mt-0.5 flex-shrink-0" strokeWidth={2.5} />
                         <span className="relative">
                           {supplement}
                           {/* Product Image Tooltip */}
@@ -1180,7 +1173,7 @@ function ProductCard({ product }) {
       style={{
         boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
       }}
-      whileHover={{ 
+      whileHover={{
         y: -4
       }}
       onMouseEnter={(e) => {
@@ -1193,7 +1186,7 @@ function ProductCard({ product }) {
       {/* Category Badge */}
       <div className="relative">
         <div className="absolute top-3 left-3 z-10">
-            <span className="px-3 py-1 bg-[var(--acc)] text-[#001018] text-xs font-normal rounded-full">
+          <span className="px-3 py-1 bg-[var(--acc)] text-[#001018] text-xs font-normal rounded-full">
             {product.category}
           </span>
         </div>
@@ -1201,7 +1194,7 @@ function ProductCard({ product }) {
         {/* Priority Badge */}
         {product.priority === 'essential' && (
           <div className="absolute top-3 right-3 z-10">
-              <span className="px-3 py-1 bg-green-500 text-white text-xs font-normal rounded-full flex items-center gap-1">
+            <span className="px-3 py-1 bg-green-500 text-white text-xs font-normal rounded-full flex items-center gap-1">
               <Check size={12} /> Essential
             </span>
           </div>
@@ -1285,12 +1278,12 @@ function ProductCard({ product }) {
         )}
 
         {/* CTA Button */}
-          <button
-            disabled
-            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed font-normal"
-          >
-            Coming Soon
-          </button>
+        <button
+          disabled
+          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed font-normal"
+        >
+          Coming Soon
+        </button>
 
         {/* Supliful ID (hidden - for integration) */}
         <p className="text-xs text-[var(--txt-muted)]/40 mt-2 text-center">

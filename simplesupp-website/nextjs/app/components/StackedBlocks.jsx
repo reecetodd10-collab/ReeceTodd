@@ -13,10 +13,10 @@ import { Dumbbell, Flame, Brain, Zap, ArrowRight, Check, Pill } from 'lucide-rea
  */
 export default function StackedBlocks() {
   const previewGoals = [
-    { icon: Dumbbell, label: 'Build Muscle', color: 'text-white' },
-    { icon: Flame, label: 'Burn Fat', color: 'text-white' },
-    { icon: Brain, label: 'Focus', color: 'text-white' },
-    { icon: Zap, label: 'Energy', color: 'text-white' },
+    { icon: Dumbbell, label: 'Build Muscle' },
+    { icon: Flame, label: 'Burn Fat' },
+    { icon: Brain, label: 'Focus' },
+    { icon: Zap, label: 'Energy' },
   ];
 
   const sampleSupplements = [
@@ -45,71 +45,66 @@ export default function StackedBlocks() {
             }}
           />
           
-          {/* Card container - consistent card styling */}
-          <div 
+          {/* Card container */}
+          <div
             className="relative rounded-2xl p-6 transition-all duration-300"
             style={{
-              background: 'rgba(15, 15, 15, 0.85)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(0, 217, 255, 0.25)',
-              boxShadow: '0 0 20px rgba(0, 217, 255, 0.15)',
+              background: '#ffffff',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 217, 255, 0.25)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.4)';
+              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.25)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
+              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
             }}
           >
-            {/* Header - Aviera Stack branding (matching SupplementQuiz exactly) */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                {/* Pill icon container with cyan glow */}
-                <div className="relative group/pill">
-                  <div 
+                <div className="relative">
+                  <div
                     className="absolute inset-0 rounded-xl blur-xl transition-all duration-300"
                     style={{
                       background: 'rgba(0, 217, 255, 0.3)',
                       animation: 'pulse-glow 3s ease-in-out infinite',
                     }}
                   ></div>
-                  <div 
-                    className="relative rounded-xl flex items-center justify-center shadow-premium transition-all duration-300"
+                  <div
+                    className="relative rounded-xl flex items-center justify-center"
                     style={{
-                      background: 'var(--charcoal-light)',
+                      background: '#1a1a1a',
                       padding: '10px',
                       border: '1px solid rgba(0, 217, 255, 0.3)',
                       boxShadow: '0 0 15px rgba(0, 217, 255, 0.25)',
                     }}
                   >
-                    <Pill 
-                      className="text-white fill-current" 
-                      size={28} 
-                      style={{ filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.8))' }} 
+                    <Pill
+                      className="text-white fill-current"
+                      size={28}
+                      style={{ filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.8))' }}
                     />
                   </div>
                 </div>
-                <h3 
-                  className="text-white font-bold text-xl"
-                  style={{ 
+                <h3
+                  className="font-bold text-xl"
+                  style={{
                     fontFamily: 'Montserrat, sans-serif',
-                    textShadow: '0 0 15px rgba(0, 217, 255, 0.4)'
+                    color: '#1a1a1a',
                   }}
                 >
                   Aviera Stack
                 </h3>
               </div>
-              {/* Find Your Stack button - styled like Add to Cart */}
-              <div 
-                className="px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-semibold transition-all duration-300"
+              <div
+                className="px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-semibold"
                 style={{
-                  background: 'rgba(20, 20, 20, 0.9)',
+                  background: 'rgba(0, 217, 255, 0.1)',
                   color: '#00d9ff',
-                  border: '1px solid rgba(0, 217, 255, 0.4)',
-                  boxShadow: '0 0 12px rgba(0, 217, 255, 0.15)',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
                 }}
               >
                 <ArrowRight size={14} />
@@ -128,45 +123,35 @@ export default function StackedBlocks() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.3 }}
                     viewport={{ once: true }}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200 group-hover:bg-[rgba(0,217,255,0.05)]"
+                    className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200"
                   >
-                    {/* Icon with cyan glow */}
-                    <div className="relative">
-                      <div 
-                        className="absolute inset-0 rounded-lg blur-md"
-                        style={{
-                          background: 'rgba(0, 217, 255, 0.2)',
-                        }}
-                      ></div>
-                      <div 
-                        className="relative w-9 h-9 rounded-lg flex items-center justify-center"
-                        style={{
-                          background: 'rgba(15, 15, 15, 0.9)',
-                          border: '1px solid rgba(0, 217, 255, 0.25)',
-                          boxShadow: '0 0 10px rgba(0, 217, 255, 0.15)',
-                        }}
-                      >
-                        <Icon size={16} className={goal.color} />
-                      </div>
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center"
+                      style={{
+                        background: 'rgba(0, 217, 255, 0.1)',
+                        border: '1px solid rgba(0, 217, 255, 0.2)',
+                      }}
+                    >
+                      <Icon size={16} style={{ color: '#00d9ff' }} />
                     </div>
-                    <span className="text-[10px] text-gray-400 text-center leading-tight">{goal.label}</span>
+                    <span className="text-[10px] text-center leading-tight" style={{ color: '#6b7280' }}>{goal.label}</span>
                   </motion.div>
                 );
               })}
             </div>
 
             {/* Sample Stack Preview */}
-            <div 
+            <div
               className="rounded-xl p-4 mb-5"
               style={{
-                background: 'rgba(0, 0, 0, 0.3)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                background: '#f9fafb',
+                border: '1px solid #e0e0e0',
               }}
             >
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-3">Sample Stack Includes</p>
+              <p className="text-[10px] uppercase tracking-wider mb-3" style={{ color: '#6b7280' }}>Sample Stack Includes</p>
               <div className="space-y-2">
                 {sampleSupplements.map((supp, idx) => (
-                  <motion.div 
+                  <motion.div
                     key={idx}
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -174,37 +159,36 @@ export default function StackedBlocks() {
                     viewport={{ once: true }}
                     className="flex items-center gap-2"
                   >
-                    <div className="w-4 h-4 rounded-full bg-[#00d9ff] flex items-center justify-center flex-shrink-0">
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#00d9ff' }}>
                       <Check size={10} className="text-[#001018]" strokeWidth={3} />
                     </div>
-                    <span className="text-gray-300 text-xs">{supp}</span>
+                    <span className="text-xs" style={{ color: '#4a4a4a' }}>{supp}</span>
                   </motion.div>
                 ))}
-                <div className="flex items-center gap-2 text-gray-500 text-xs mt-2">
+                <div className="text-xs mt-2" style={{ color: '#6b7280' }}>
                   <span>+ personalized recommendations...</span>
                 </div>
               </div>
             </div>
 
-            {/* CTA Button - Exact same style as Add to Cart */}
-            <div 
-              className="w-full flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out group-hover:translate-y-[-3px]"
+            {/* CTA Button */}
+            <div
+              className="w-full flex items-center justify-center gap-2 transition-all duration-300 ease-in-out group-hover:translate-y-[-3px]"
               style={{
-                background: 'rgba(30, 30, 30, 0.9)',
-                border: '1px solid rgba(0, 217, 255, 0.4)',
+                background: '#00d9ff',
+                color: '#ffffff',
                 borderRadius: '12px',
                 padding: '14px 28px',
                 fontSize: '16px',
                 fontWeight: 600,
-                boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
               }}
             >
               <ArrowRight size={18} />
               <span>Build My Stack</span>
             </div>
 
-            {/* Bottom text */}
-            <p className="text-center text-gray-500 text-[10px] mt-3">
+            <p className="text-center text-[10px] mt-3" style={{ color: '#6b7280' }}>
               Free • 2 minutes • No account required
             </p>
           </div>

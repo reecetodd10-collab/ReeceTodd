@@ -20,7 +20,7 @@ export default function ShopifyProductCard({ product }) {
   // Use actual product images from Shopify if available, otherwise duplicate main image
   const productImages = product.images && product.images.length >= 2
     ? product.images // Use actual images from Shopify (front, supplement facts, ingredients)
-    : product.image 
+    : product.image
       ? [product.image, product.image, product.image] // Fallback: duplicate main image 3 times
       : [];
 
@@ -32,7 +32,7 @@ export default function ShopifyProductCard({ product }) {
       alert('This product will be available for purchase soon. Please check back later!');
       return;
     }
-    
+
     if (!product.variantId || !product.available) return;
 
     setIsAdding(true);
@@ -75,16 +75,16 @@ export default function ShopifyProductCard({ product }) {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe && hasMultipleImages) {
-      goToNextImage({ stopPropagation: () => {} });
+      goToNextImage({ stopPropagation: () => { } });
     }
     if (isRightSwipe && hasMultipleImages) {
-      goToPreviousImage({ stopPropagation: () => {} });
+      goToPreviousImage({ stopPropagation: () => { } });
     }
   };
 
@@ -96,7 +96,7 @@ export default function ShopifyProductCard({ product }) {
         boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
         transition: 'all 0.3s ease'
       }}
-      whileHover={{ 
+      whileHover={{
         y: -2
       }}
       onMouseEnter={(e) => {
@@ -109,7 +109,7 @@ export default function ShopifyProductCard({ product }) {
       }}
     >
       {/* Product Image Carousel */}
-      <div 
+      <div
         className="relative w-full h-64 bg-gradient-to-b from-[var(--bg-elev-1)] to-[var(--bg)] flex items-center justify-center overflow-hidden"
         onMouseEnter={() => hasMultipleImages && setShowArrows(true)}
         onMouseLeave={() => setShowArrows(false)}
@@ -142,16 +142,15 @@ export default function ShopifyProductCard({ product }) {
             </AnimatePresence>
             {/* Subtle dark overlay to blend with dark card */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 pointer-events-none"></div>
-            
+
             {/* Navigation Arrows */}
             {hasMultipleImages && (
               <>
                 {/* Left Arrow */}
                 <button
                   onClick={goToPreviousImage}
-                  className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${
-                    showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
-                  }`}
+                  className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
+                    }`}
                   style={{
                     width: '40px',
                     height: '40px',
@@ -180,9 +179,8 @@ export default function ShopifyProductCard({ product }) {
                 {/* Right Arrow */}
                 <button
                   onClick={goToNextImage}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${
-                    showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
-                  }`}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
+                    }`}
                   style={{
                     width: '40px',
                     height: '40px',
@@ -225,8 +223,8 @@ export default function ShopifyProductCard({ product }) {
                       width: currentImageIndex === index ? '24px' : '8px',
                       height: '8px',
                       borderRadius: '4px',
-                      background: currentImageIndex === index 
-                        ? 'rgba(0, 217, 255, 1)' 
+                      background: currentImageIndex === index
+                        ? 'rgba(0, 217, 255, 1)'
                         : 'rgba(255, 255, 255, 0.4)',
                       border: 'none',
                       cursor: 'pointer',
@@ -263,17 +261,16 @@ export default function ShopifyProductCard({ product }) {
       {/* Product Content */}
       <div className="p-6">
         {/* Product Title */}
-        <h3 className="text-lg font-normal text-white mb-3 line-clamp-2 min-h-[3.5rem]">
+        <h3 className="text-lg font-normal mb-3 line-clamp-2 min-h-[3.5rem]" style={{ color: '#1a1a1a' }}>
           {product.title}
         </h3>
 
         {/* Product Description (expandable) */}
         {product.description && (
           <div className="mb-4">
-            <p 
-              className={`text-sm text-[var(--txt-muted)] font-light leading-relaxed transition-all duration-300 ${
-                isDescriptionExpanded ? '' : 'line-clamp-2'
-              }`}
+            <p
+              className={`text-sm text-[var(--txt-muted)] font-light leading-relaxed transition-all duration-300 ${isDescriptionExpanded ? '' : 'line-clamp-2'
+                }`}
               style={{
                 display: isDescriptionExpanded ? 'block' : '-webkit-box',
                 WebkitLineClamp: isDescriptionExpanded ? 'none' : 2,
@@ -320,11 +317,11 @@ export default function ShopifyProductCard({ product }) {
           disabled={(!product.available || isAdding || added) && !product.isLocalProduct}
           className="w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out"
           style={{
-            background: added 
-              ? 'rgba(16, 185, 129, 0.9)' 
+            background: added
+              ? 'rgba(16, 185, 129, 0.9)'
               : 'rgba(30, 30, 30, 0.9)',
-            border: added 
-              ? '1px solid rgba(16, 185, 129, 0.4)' 
+            border: added
+              ? '1px solid rgba(16, 185, 129, 0.4)'
               : '1px solid rgba(0, 217, 255, 0.4)',
             borderRadius: '12px',
             padding: '14px 28px',

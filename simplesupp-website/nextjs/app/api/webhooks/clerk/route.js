@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
-import { createUser, getUserByClerkId } from '@/lib/supabase';
+import { createUser, getUserByClerkId, updateUserEmail, deleteUser } from '@/lib/supabase';
 
 export async function POST(request) {
   try {
@@ -96,6 +96,53 @@ export async function POST(request) {
         console.error('Error creating user in Supabase:', error);
         return NextResponse.json(
           { error: 'Failed to create user in Supabase', details: error.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Handle user.updated event - sync email changes
+    if (eventType === 'user.updated') {
+      const { id, email_addresses } = evt.data;
+
+      const primaryEmail = email_addresses?.find(email => email.id === evt.data.primary_email_address_id)?.email_address
+        || email_addresses?.[0]?.email_address;
+
+      if (primaryEmail) {
+        try {
+          const user = await updateUserEmail(id, primaryEmail);
+          console.log('User email updated in Supabase:', id);
+
+          return NextResponse.json(
+            { message: 'User updated successfully', user },
+            { status: 200 }
+          );
+        } catch (error) {
+          console.error('Error updating user in Supabase:', error);
+          return NextResponse.json(
+            { error: 'Failed to update user in Supabase', details: error.message },
+            { status: 500 }
+          );
+        }
+      }
+    }
+
+    // Handle user.deleted event - remove user from Supabase
+    if (eventType === 'user.deleted') {
+      const { id } = evt.data;
+
+      try {
+        await deleteUser(id);
+        console.log('User deleted from Supabase:', id);
+
+        return NextResponse.json(
+          { message: 'User deleted successfully' },
+          { status: 200 }
+        );
+      } catch (error) {
+        console.error('Error deleting user from Supabase:', error);
+        return NextResponse.json(
+          { error: 'Failed to delete user from Supabase', details: error.message },
           { status: 500 }
         );
       }

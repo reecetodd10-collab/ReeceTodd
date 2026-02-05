@@ -338,7 +338,7 @@ export default function Navigation() {
     <nav className="sticky top-0 z-50 glass-dark shadow-premium transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center" style={{ background: 'none', border: 'none', boxShadow: 'none' }}>
             <PillLogo size="small" />
           </Link>
 

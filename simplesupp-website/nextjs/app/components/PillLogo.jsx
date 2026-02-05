@@ -1,64 +1,51 @@
 'use client';
 
 import React from 'react';
-import { Pill } from 'lucide-react';
-
-// New Aviera "A" logo - two angled lines meeting at top (no crossbar)
-const AvieraA = ({ size = 40, className = "" }) => {
-  const strokeWidth = size > 32 ? 3 : 2.5;
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 40 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      {/* Left angled line */}
-      <path
-        d="M 8 36 L 8 20 L 20 4"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Right angled line */}
-      <path
-        d="M 32 36 L 32 20 L 20 4"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
+import Image from 'next/image';
 
 export default function PillLogo({ size = 'large', shimmer = false }) {
   const sizes = {
-    small: { pill: 24, text: 'text-xl', container: 'w-10 h-10 p-2', icon: 20 },
-    large: { pill: 48, text: 'text-5xl md:text-7xl', container: 'w-20 h-20 p-4', icon: 40 }
+    small: {
+      icon: 40,
+      text: 'text-xl',
+      showText: true
+    },
+    large: {
+      icon: 80,
+      text: 'text-5xl md:text-7xl',
+      showText: true
+    }
   };
 
   const config = sizes[size];
 
   return (
-    <div className="flex items-center gap-3 md:gap-4">
-      <div className="relative">
-        {/* Subtle glow effect - accent color */}
-        <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
-
-        {/* Pill container - Charcoal rounded square with new "A" icon */}
-        <div className={`relative bg-[var(--charcoal-light)] ${config.container} rounded-2xl shadow-premium border border-[var(--border)] icon-aivra flex items-center justify-center`}>
-          <AvieraA size={config.icon} className="text-white relative" />
-        </div>
-      </div>
+    <div
+      className="flex items-center gap-3 md:gap-4"
+      style={{ background: 'transparent', border: 'none', padding: 0 }}
+    >
+      {/* Neon Aviera Icon - matches AI widget styling */}
+      <Image
+        src="/aviera-icon-glow.png"
+        alt="Aviera"
+        width={config.icon}
+        height={config.icon}
+        className="object-cover rounded-full"
+        style={{
+          filter: 'drop-shadow(0 0 12px rgba(0, 217, 255, 0.6))',
+          background: 'none',
+          border: 'none',
+          boxShadow: 'none',
+        }}
+        priority
+      />
 
       {/* Wordmark - Clean Aviera branding */}
-      <h1 className={`${config.text} font-normal uppercase text-[var(--txt)]`} style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-        Aviera
-      </h1>
+      {config.showText && (
+        <h1 className={`${config.text} font-normal uppercase text-[var(--txt)]`} style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+          Aviera
+        </h1>
+      )}
     </div>
   );
 }

@@ -134,13 +134,63 @@ export async function createUser(clerkUserId, email) {
 // Get or create user (useful for ensuring user exists)
 export async function getOrCreateUser(clerkUserId, email) {
   let user = await getUserByClerkId(clerkUserId);
-  
+
   if (!user && email) {
     user = await createUser(clerkUserId, email);
   } else if (!user) {
     throw new Error('User does not exist and email is required to create one');
   }
-  
+
   return user;
+}
+
+// Update user email in Supabase (server-side only)
+export async function updateUserEmail(clerkUserId, newEmail) {
+  try {
+    console.log('Updating user email in Supabase:', { clerkUserId, newEmail });
+    const supabase = createSupabaseAdmin();
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({ email: newEmail })
+      .eq('clerk_user_id', clerkUserId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating user in Supabase:', error);
+      throw error;
+    }
+
+    console.log('User email updated successfully:', data?.id);
+    return data;
+  } catch (error) {
+    console.error('updateUserEmail error:', error);
+    throw error;
+  }
+}
+
+// Delete user from Supabase (server-side only)
+export async function deleteUser(clerkUserId) {
+  try {
+    console.log('Deleting user from Supabase:', clerkUserId);
+    const supabase = createSupabaseAdmin();
+
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('clerk_user_id', clerkUserId);
+
+    if (error) {
+      console.error('Error deleting user from Supabase:', error);
+      throw error;
+    }
+
+    console.log('User deleted successfully from Supabase');
+    return true;
+  } catch (error) {
+    console.error('deleteUser error:', error);
+    throw error;
+  }
 }
 

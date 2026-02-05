@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
  *
  * Vertical navigation dots that show current section and allow quick navigation.
  * Fixed to the right side of the viewport.
- * Highlights active section based on scroll position.
+ * All dots visible at low opacity, active dot at full opacity with cyan glow.
  */
 export default function SectionIndicators({ sections, activeSection }) {
   const scrollToSection = (sectionId) => {
@@ -29,26 +29,52 @@ export default function SectionIndicators({ sections, activeSection }) {
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
-              className="group relative flex items-center"
+              className="group relative flex items-center cursor-pointer"
               aria-label={`Go to ${section.label}`}
             >
-              {/* Dot */}
-              <div className={`rounded-full transition-all duration-300 ${
-                isActive
-                  ? 'w-3 h-3 bg-[var(--acc)] scale-125'
-                  : 'w-2 h-2 bg-[var(--txt-muted)]/40 hover:bg-[var(--txt-muted)]/60 hover:scale-110'
-              }`} 
-              style={isActive ? {
-                boxShadow: '0 0 12px rgba(6, 182, 212, 0.6), 0 0 24px rgba(6, 182, 212, 0.3)'
-              } : {}} />
+              {/* Dot - All visible, active has full opacity and glow */}
+              <div
+                className="rounded-full transition-all duration-300"
+                style={isActive ? {
+                  width: '12px',
+                  height: '12px',
+                  background: '#00d9ff',
+                  boxShadow: '0 0 12px rgba(0, 217, 255, 0.8), 0 0 24px rgba(0, 217, 255, 0.4)',
+                  transform: 'scale(1.1)'
+                } : {
+                  width: '8px',
+                  height: '8px',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  opacity: 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = '#00d9ff';
+                    e.currentTarget.style.opacity = '0.7';
+                    e.currentTarget.style.transform = 'scale(1.2)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.opacity = '1';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
+                }}
+              />
 
               {/* Label tooltip */}
               <motion.span
                 initial={{ opacity: 0, x: 10 }}
                 whileHover={{ opacity: 1, x: 0 }}
-                className={`absolute right-full mr-3 px-3 py-1 bg-[var(--bg)] border border-[var(--border)] text-[var(--txt)] text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none ${
-                  isActive ? 'opacity-100' : 'opacity-0'
-                } group-hover:opacity-100 transition-opacity glass`}
+                className="absolute right-full mr-3 px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none transition-opacity duration-200"
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid rgba(0, 217, 255, 0.3)',
+                  color: '#1a1a1a',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  opacity: isActive ? 1 : 0
+                }}
               >
                 {section.label}
               </motion.span>
