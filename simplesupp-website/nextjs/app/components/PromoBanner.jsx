@@ -15,6 +15,9 @@ export default function PromoBanner() {
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [discountCode, setDiscountCode] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Check if user previously dismissed banner (client-side only)
@@ -30,17 +33,38 @@ export default function PromoBanner() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
-      // TODO: Connect to backend email capture API
-      console.log('Email captured:', email);
-      setIsSubmitted(true);
+    if (!email || isLoading) return;
 
-      // Show success message then dismiss after 3 seconds
-      setTimeout(() => {
-        handleDismiss();
-      }, 3000);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/promo/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'promo_banner' }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setDiscountCode(data.discountCode);
+        setIsSubmitted(true);
+
+        // Dismiss after 5 seconds (longer to see code)
+        setTimeout(() => {
+          handleDismiss();
+        }, 5000);
+      } else {
+        setError(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      console.error('Promo subscribe error:', err);
+      setError('Failed to subscribe. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,11 +102,13 @@ export default function PromoBanner() {
                       />
                       <button
                         type="submit"
-                        className="btn-primary text-sm whitespace-nowrap"
+                        disabled={isLoading}
+                        className="btn-primary text-sm whitespace-nowrap disabled:opacity-50"
                       >
-                        Get Discount
+                        {isLoading ? 'Saving...' : 'Get Discount'}
                       </button>
                     </form>
+                    {error && <span className="text-red-400 text-xs">{error}</span>}
                   </div>
 
                   {/* Mobile Layout */}
@@ -104,17 +130,19 @@ export default function PromoBanner() {
                       />
                       <button
                         type="submit"
-                        className="btn-primary text-sm"
+                        disabled={isLoading}
+                        className="btn-primary text-sm disabled:opacity-50"
                       >
-                        Get Code
+                        {isLoading ? '...' : 'Get Code'}
                       </button>
                     </form>
+                    {error && <span className="text-red-400 text-xs">{error}</span>}
                   </div>
                 </>
               ) : (
-                <div className="flex items-center justify-center flex-1 py-1">
+                <div className="flex items-center justify-center flex-1 py-1 gap-2">
                   <span className="font-semibold text-sm lg:text-base">
-                    🎉 Success! Check your email for your 10% discount code.
+                    Your 10% code: <span className="bg-white/20 px-2 py-1 rounded font-mono">{discountCode}</span>
                   </span>
                 </div>
               )}
