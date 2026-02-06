@@ -214,6 +214,8 @@ export async function POST(request) {
     const { data, error } = await resend.emails.send({
       from: 'Aviera <orders@avierafit.com>',
       to: email,
+      bcc: 'info@avierafit.com', // Send a copy to yourself
+      replyTo: 'info@avierafit.com', // Replies go to your inbox
       subject: `Order Confirmed! 🎉 #${order_number || 'Your Order'}`,
       html: emailHtml,
     });
