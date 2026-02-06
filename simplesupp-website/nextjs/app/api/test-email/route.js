@@ -3,47 +3,45 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Shopify webhook for order confirmation
-export async function POST(request) {
+// Test endpoint to preview order confirmation email
+export async function GET() {
   try {
-    const order = await request.json();
-
-    // Extract order details
-    const {
-      email,
-      name,
-      order_number,
-      total_price,
-      currency,
-      line_items,
-      shipping_address,
-      created_at,
-    } = order;
-
-    if (!email) {
-      console.log('No email in order, skipping');
-      return NextResponse.json({ message: 'No email provided' }, { status: 200 });
-    }
+    // Sample order data for preview
+    const sampleOrder = {
+      order_number: '1042',
+      name: 'Reece Todd',
+      total_price: '92.72',
+      currency: 'USD',
+      line_items: [
+        { name: 'Advanced 100% Whey Protein Isolate (Chocolate)', quantity: 1, price: '42.74' },
+        { name: 'Creatine Monohydrate', quantity: 2, price: '24.99' },
+      ],
+      shipping_address: {
+        name: 'Reece Todd',
+        address1: '123 Main Street',
+        address2: 'Apt 4B',
+        city: 'New York',
+        province: 'NY',
+        zip: '10001',
+        country: 'United States',
+      },
+    };
 
     // Format order items for email
-    const itemsList = line_items?.map(item => `
+    const itemsList = sampleOrder.line_items.map(item => `
       <tr>
         <td style="padding: 12px 0; border-bottom: 1px solid rgba(0, 217, 255, 0.2);">
-          <div style="display: flex; align-items: center;">
-            ${item.image?.src ? `<img src="${item.image.src}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 12px;" />` : ''}
-            <div>
-              <p style="margin: 0; color: #ffffff; font-weight: 500;">${item.name}</p>
-              <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 14px;">Qty: ${item.quantity}</p>
-            </div>
+          <div>
+            <p style="margin: 0; color: #ffffff; font-weight: 500;">${item.name}</p>
+            <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 14px;">Qty: ${item.quantity}</p>
           </div>
         </td>
         <td style="padding: 12px 0; border-bottom: 1px solid rgba(0, 217, 255, 0.2); text-align: right; color: #00d9ff; font-weight: 600;">
           $${parseFloat(item.price).toFixed(2)}
         </td>
       </tr>
-    `).join('') || '';
+    `).join('');
 
-    // Create the branded email HTML
     const emailHtml = `
 <!DOCTYPE html>
 <html>
@@ -77,14 +75,14 @@ export async function POST(request) {
                 <!-- Success Icon & Title -->
                 <tr>
                   <td style="padding: 40px 32px 24px 32px; text-align: center;">
-                    <div style="width: 80px; height: 80px; margin: 0 auto 24px auto; background: linear-gradient(135deg, #00d9ff, #00b8d4); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                      <span style="font-size: 40px; line-height: 80px;">✓</span>
+                    <div style="width: 80px; height: 80px; margin: 0 auto 24px auto; background: linear-gradient(135deg, #00d9ff, #00b8d4); border-radius: 50%; line-height: 80px; text-align: center;">
+                      <span style="font-size: 40px; color: #001018;">✓</span>
                     </div>
                     <h2 style="margin: 0 0 8px 0; color: #ffffff; font-size: 28px; font-weight: 600;">
                       Thank You for Your Order!
                     </h2>
                     <p style="margin: 0; color: #9ca3af; font-size: 16px;">
-                      Order #${order_number || 'N/A'}
+                      Order #${sampleOrder.order_number}
                     </p>
                   </td>
                 </tr>
@@ -93,7 +91,7 @@ export async function POST(request) {
                 <tr>
                   <td style="padding: 0 32px 32px 32px;">
                     <p style="margin: 0; color: #e5e7eb; font-size: 16px; line-height: 1.6; text-align: center;">
-                      Hey${name ? ` ${name.split(' ')[0]}` : ''}! 🎉 Your order is confirmed and we're getting it ready.
+                      Hey Reece! 🎉 Your order is confirmed and we're getting it ready.
                       You're one step closer to reaching your fitness goals with Aviera.
                     </p>
                   </td>
@@ -120,7 +118,7 @@ export async function POST(request) {
                         </td>
                         <td style="padding: 20px 0 0 0; text-align: right;">
                           <p style="margin: 0; color: #00d9ff; font-size: 24px; font-weight: 700;">
-                            $${parseFloat(total_price || 0).toFixed(2)} ${currency || 'USD'}
+                            $${sampleOrder.total_price} ${sampleOrder.currency}
                           </p>
                         </td>
                       </tr>
@@ -128,7 +126,6 @@ export async function POST(request) {
                   </td>
                 </tr>
 
-                ${shipping_address ? `
                 <!-- Shipping Address -->
                 <tr>
                   <td style="padding: 0 32px 32px 32px;">
@@ -137,16 +134,15 @@ export async function POST(request) {
                         Shipping To
                       </h4>
                       <p style="margin: 0; color: #e5e7eb; font-size: 14px; line-height: 1.6;">
-                        ${shipping_address.name || ''}<br>
-                        ${shipping_address.address1 || ''}<br>
-                        ${shipping_address.address2 ? shipping_address.address2 + '<br>' : ''}
-                        ${shipping_address.city || ''}, ${shipping_address.province || ''} ${shipping_address.zip || ''}<br>
-                        ${shipping_address.country || ''}
+                        ${sampleOrder.shipping_address.name}<br>
+                        ${sampleOrder.shipping_address.address1}<br>
+                        ${sampleOrder.shipping_address.address2}<br>
+                        ${sampleOrder.shipping_address.city}, ${sampleOrder.shipping_address.province} ${sampleOrder.shipping_address.zip}<br>
+                        ${sampleOrder.shipping_address.country}
                       </p>
                     </div>
                   </td>
                 </tr>
-                ` : ''}
 
                 <!-- What's Next -->
                 <tr>
@@ -199,6 +195,9 @@ export async function POST(request) {
               <p style="margin: 0; color: #4b5563; font-size: 12px;">
                 © ${new Date().getFullYear()} Aviera. All rights reserved.
               </p>
+              <p style="margin: 8px 0 0 0; color: #4b5563; font-size: 11px; font-style: italic;">
+                This is a test email - no actual order was placed.
+              </p>
             </td>
           </tr>
 
@@ -210,26 +209,27 @@ export async function POST(request) {
 </html>
     `;
 
-    // Send the email via Resend
+    // Send test email
     const { data, error } = await resend.emails.send({
       from: 'Aviera <info@avierafit.com>',
-      to: email,
-      bcc: 'info@avierafit.com', // Send a copy to yourself
-      replyTo: 'info@avierafit.com', // Replies go to your inbox
-      subject: `Order Confirmed! 🎉 #${order_number || 'Your Order'}`,
+      to: 'reecetodd10@gmail.com',
+      subject: '🎉 Order Confirmed! #1042 (TEST EMAIL)',
       html: emailHtml,
     });
 
     if (error) {
       console.error('Resend error:', error);
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    console.log('Order confirmation email sent:', data?.id);
-    return NextResponse.json({ success: true, emailId: data?.id }, { status: 200 });
+    return NextResponse.json({
+      success: true,
+      message: 'Test email sent to reecetodd10@gmail.com',
+      emailId: data?.id
+    });
 
   } catch (error) {
-    console.error('Shopify webhook error:', error);
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    console.error('Test email error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
