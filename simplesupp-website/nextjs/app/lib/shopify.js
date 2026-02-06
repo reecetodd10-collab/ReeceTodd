@@ -220,6 +220,7 @@ export async function fetchProductById(productId) {
           productId: shopifyProductId,
         },
       }),
+      cache: 'no-store', // Always fetch fresh inventory data
     });
 
     if (!response.ok) {
@@ -289,6 +290,7 @@ export async function fetchShopifyProducts() {
           first: 50, // Fetch up to 50 products
         },
       }),
+      cache: 'no-store', // Always fetch fresh inventory data
     });
 
     if (!response.ok) {
