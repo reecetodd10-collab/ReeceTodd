@@ -260,16 +260,16 @@ export default function AvieraAIWidget() {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button - positioned to not conflict with mobile cart */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1, type: 'spring', stiffness: 200 }}
-        className="fixed bottom-6 right-6 z-[100] flex flex-col items-center"
+        className="fixed bottom-6 left-6 z-[100] flex flex-col items-center lg:left-auto lg:right-6"
       >
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className={`w-16 h-16 rounded-full flex items-center justify-center relative`}
+          className="w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center relative"
           style={{
             background: 'transparent',
             border: 'none',
@@ -290,8 +290,8 @@ export default function AvieraAIWidget() {
               height={64}
               className="object-contain"
               style={{
-                width: '64px',
-                height: '64px',
+                width: '100%',
+                height: '100%',
               }}
               priority
             />
@@ -299,14 +299,12 @@ export default function AvieraAIWidget() {
         </button>
         {!isChatOpen && (
           <span
-            className="mt-2 text-[10px] font-semibold tracking-wider"
+            className="mt-1 text-[9px] lg:text-[10px] font-semibold tracking-wider"
             style={{ color: '#00D9FF', textShadow: '0 0 8px #00D9FF' }}
           >
             Aviera AI
           </span>
         )}
-
-
       </motion.div>
 
       {/* Chat Panel */}
@@ -317,13 +315,27 @@ export default function AvieraAIWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 z-[99] w-[380px] max-w-[calc(100vw-48px)] rounded-2xl overflow-hidden"
+            className="fixed bottom-24 left-4 right-4 z-[99] lg:left-auto lg:right-6 lg:w-[380px] rounded-2xl overflow-hidden"
             style={{
               background: 'rgba(12, 12, 12, 0.98)',
               border: '1px solid #00D9FF',
-
+              maxWidth: '100%',
             }}
           >
+            {/* Prominent Close Button - Always visible */}
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+              style={{
+                background: 'rgba(0, 0, 0, 0.8)',
+                border: '2px solid #00D9FF',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
+              }}
+              aria-label="Close chat"
+            >
+              <X size={20} className="text-[#00D9FF]" />
+            </button>
+
             {/* Header */}
             <div
               className="px-4 py-3 border-b border-[rgba(255,255,255,0.08)]"
@@ -331,7 +343,7 @@ export default function AvieraAIWidget() {
                 background: 'rgba(0, 0, 0, 0.3)',
               }}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 pr-12">
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center"
                   style={{
@@ -345,12 +357,6 @@ export default function AvieraAIWidget() {
                   <h4 className="text-white font-semibold text-sm">Aviera AI</h4>
                   <p className="text-[10px] text-gray-500">Your Personal Fitness Expert</p>
                 </div>
-                <button
-                  onClick={() => setIsChatOpen(false)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all"
-                >
-                  <X size={16} />
-                </button>
               </div>
             </div>
 
