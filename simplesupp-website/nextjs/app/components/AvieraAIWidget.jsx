@@ -271,38 +271,28 @@ export default function AvieraAIWidget() {
           onClick={() => setIsChatOpen(!isChatOpen)}
           className="w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center relative"
           style={{
-            background: 'transparent',
-            border: 'none',
-            boxShadow: 'none',
-            filter: 'none',
+            background: 'rgba(0, 0, 0, 0.9)',
+            border: '2px solid #00D9FF',
+            boxShadow: '0 0 20px rgba(0, 217, 255, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3)',
             cursor: 'pointer',
           }}
         >
           {isChatOpen ? (
-            <div className="w-full h-full rounded-full bg-black flex items-center justify-center border-2 border-[#00D9FF]">
-              <X size={24} className="text-[#00D9FF]" />
-            </div>
+            <X size={28} className="text-[#00D9FF]" />
           ) : (
-            <Image
-              src="/Aviera_Final_Transparent.png"
-              alt="Aviera AI"
-              width={64}
-              height={64}
-              className="object-contain"
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              priority
-            />
+            <AvieraLogo size={28} className="text-[#00D9FF]" />
           )}
         </button>
         {!isChatOpen && (
           <span
-            className="mt-1 text-[9px] lg:text-[10px] font-semibold tracking-wider"
-            style={{ color: '#00D9FF', textShadow: '0 0 8px #00D9FF' }}
+            className="mt-2 text-[10px] lg:text-[11px] font-bold tracking-wider px-2 py-1 rounded-full"
+            style={{
+              color: '#ffffff',
+              background: 'rgba(0, 217, 255, 0.9)',
+              boxShadow: '0 0 10px rgba(0, 217, 255, 0.5)'
+            }}
           >
-            Aviera AI
+            AI
           </span>
         )}
       </motion.div>
@@ -325,15 +315,15 @@ export default function AvieraAIWidget() {
             {/* Prominent Close Button - Always visible */}
             <button
               onClick={() => setIsChatOpen(false)}
-              className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+              className="absolute top-2 right-2 z-10 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200"
               style={{
-                background: 'rgba(0, 0, 0, 0.8)',
-                border: '2px solid #00D9FF',
-                boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
+                background: '#00D9FF',
+                border: '3px solid #ffffff',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.6), 0 4px 10px rgba(0,0,0,0.3)',
               }}
               aria-label="Close chat"
             >
-              <X size={20} className="text-[#00D9FF]" />
+              <X size={24} className="text-[#001018]" strokeWidth={3} />
             </button>
 
             {/* Header */}

@@ -736,7 +736,12 @@ export default function Navigation() {
                 <Link
                   href="/sign-up"
                   onClick={() => setIsOpen(false)}
-                  className="block px-4 py-3 bg-[var(--acc)] text-[#001018] rounded-lg font-semibold text-center hover:bg-blue-600 hover:text-white transition"
+                  className="block px-4 py-3 rounded-lg font-semibold text-center transition"
+                  style={{
+                    background: '#00d9ff',
+                    color: '#ffffff',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                  }}
                 >
                   Get Started
                 </Link>

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Newspaper, Mail, Sparkles, Calendar, ArrowRight, CheckCircle, TrendingUp, BookOpen, Zap, Check } from 'lucide-react';
 import Link from 'next/link';
 import PillLogo from '../components/PillLogo';
-import CyanWavyLines from '../components/CyanWavyLines';
+// CyanWavyLines removed for mobile performance
 
 export default function NewsPage() {
   const [email, setEmail] = useState('');
@@ -116,8 +116,7 @@ export default function NewsPage() {
         background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
       }}
     >
-      {/* Animated Background - Cyan Wavy Lines */}
-      {isMounted && <CyanWavyLines duration={10} />}
+      {/* Background decoration removed for mobile performance */}
 
       {/* Header - White bar with AVIERA branding */}
       <header
