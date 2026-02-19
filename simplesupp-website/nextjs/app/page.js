@@ -15,7 +15,8 @@ import FAQAccordion from './components/FAQAccordion';
 import ContactForm from './components/ContactForm';
 import GlassCard from './components/shared/GlassCard';
 import OptimizedImage from './components/OptimizedImage';
-import CyanWavyLines from './components/CyanWavyLines';
+// CyanWavyLines removed for performance optimization
+// import CyanWavyLines from './components/CyanWavyLines';
 import { useActiveSection } from './hooks/useScrollAnimation';
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 import { fetchShopifyProducts } from './lib/shopify';
@@ -213,8 +214,7 @@ export default function Home() {
       {/* Section Indicators */}
       <SectionIndicators sections={sections} activeSection={activeSection} />
 
-      {/* Cyan Wavy Lines Background - spans full page height */}
-      {isMounted && <CyanWavyLines />}
+      {/* Cyan Wavy Lines removed for performance optimization */}
 
       <div className="scroll-snap-container relative z-10">
         {/* ========================================

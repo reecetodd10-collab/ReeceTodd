@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Grid3X3, Layers, Truck, MessageCircle, Send, Bot } from 'lucide-react';
 import { products, PRODUCT_CATEGORIES } from '../data/products';
-import { fetchShopifyProducts } from '../lib/shopify';
+import { fetchShopifyProducts, addMultipleToCart } from '../lib/shopify';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -53,10 +53,12 @@ const fuzzyMatchProduct = (aiName) => {
     'whey protein': 'Whey Protein Isolate (Chocolate)',
     'protein': 'Whey Protein Isolate (Chocolate)',
     'whey protein isolate': 'Whey Protein Isolate (Chocolate)',
+    'whey isolate': 'Whey Protein Isolate (Chocolate)',
     'plant protein': 'Plant Protein (Chocolate)',
     'vegan protein': 'Plant Protein (Chocolate)',
     'plant-based protein': 'Plant Protein (Chocolate)',
-    
+    'pea protein': 'Plant Protein (Chocolate)',
+
     // Performance
     'creatine': 'Creatine Monohydrate',
     'creatine monohydrate': 'Creatine Monohydrate',
@@ -67,81 +69,159 @@ const fuzzyMatchProduct = (aiName) => {
     'bcaa': 'BCAAs',
     'bcaas': 'BCAAs',
     'branch chain amino acids': 'BCAAs',
+    'branched chain amino acids': 'BCAAs',
     'amino acids': 'BCAAs',
+    'eaas': 'BCAAs',
+    'essential amino acids': 'BCAAs',
     'glutamine': 'L-Glutamine',
     'l-glutamine': 'L-Glutamine',
     'alpha energy': 'Alpha Energy',
-    
-    // Health & Wellness
+    'beta-alanine': 'Pre-Workout Formula',
+    'beta alanine': 'Pre-Workout Formula',
+    'citrulline': 'Pre-Workout Formula',
+    'l-citrulline': 'Pre-Workout Formula',
+
+    // Health & Wellness - Omega-3 variants (including vegan alternatives)
     'omega-3': 'Omega-3 Fish Oil',
     'omega 3': 'Omega-3 Fish Oil',
     'fish oil': 'Omega-3 Fish Oil',
     'omega-3 fish oil': 'Omega-3 Fish Oil',
+    'algal oil': 'Omega-3 Fish Oil',
+    'algae oil': 'Omega-3 Fish Oil',
+    'vegan omega': 'Omega-3 Fish Oil',
+    'vegan omega-3': 'Omega-3 Fish Oil',
+    'omega-3 algal': 'Omega-3 Fish Oil',
+    'dha': 'Omega-3 Fish Oil',
+    'epa': 'Omega-3 Fish Oil',
+    'dha/epa': 'Omega-3 Fish Oil',
+    'epa/dha': 'Omega-3 Fish Oil',
+
+    // Vitamins
     'multivitamin': 'Complete MultiVitamin',
     'multi-vitamin': 'Complete MultiVitamin',
-    'vitamin d': 'Complete MultiVitamin',
+    'multi vitamin': 'Complete MultiVitamin',
+    'vitamin d': 'Vitamin D3',
+    'vitamin d3': 'Vitamin D3',
+    'd3': 'Vitamin D3',
     'vitamins': 'Complete MultiVitamin',
+    'daily vitamin': 'Complete MultiVitamin',
+    'vitamin b': 'Complete MultiVitamin',
+    'vitamin b12': 'Complete MultiVitamin',
+    'b-complex': 'Complete MultiVitamin',
+    'b complex': 'Complete MultiVitamin',
+    'vitamin c': 'Vitamin C',
+    'zinc': 'Zinc',
+
+    // Other Health
     'coq10': 'CoQ10',
     'co-q10': 'CoQ10',
+    'coenzyme q10': 'CoQ10',
     'ubiquinone': 'CoQ10',
+    'ubiquinol': 'CoQ10',
     'turmeric': 'Platinum Turmeric',
     'curcumin': 'Platinum Turmeric',
+    'turmeric curcumin': 'Platinum Turmeric',
     'probiotics': 'Probiotics 40 Billion',
     'probiotic': 'Probiotics 40 Billion',
     'gut bacteria': 'Probiotics 40 Billion',
+    'digestive enzymes': 'Probiotics 40 Billion',
     'fiber': 'Fiber Supplement (Gut Health)',
     'gut health': 'Fiber Supplement (Gut Health)',
     'digestive health': 'Fiber Supplement (Gut Health)',
+    'psyllium': 'Fiber Supplement (Gut Health)',
     'apple cider vinegar': 'Apple Cider Vinegar',
     'acv': 'Apple Cider Vinegar',
-    
+
     // Hydration
     'electrolytes': 'Electrolyte Formula (Lemonade)',
     'electrolyte': 'Electrolyte Formula (Lemonade)',
     'hydration': 'Electrolyte Formula (Lemonade)',
+    'electrolyte powder': 'Electrolyte Formula (Lemonade)',
     'beetroot': 'Beetroot',
     'beet root': 'Beetroot',
     'beetroot powder': 'Beetroot Powder',
+    'beet powder': 'Beetroot Powder',
     'green tea': 'Green Tea Extract',
     'green tea extract': 'Green Tea Extract',
     'matcha': 'Green Tea Extract',
-    
+    'egcg': 'Green Tea Extract',
+
     // Weight Loss
     'fat burner': 'Fat Burner with MCT',
     'thermogenic': 'Fat Burner with MCT',
     'mct': 'Fat Burner with MCT',
+    'mct oil': 'Fat Burner with MCT',
+    'metabolism booster': 'Fat Burner with MCT',
     'keto': 'Keto BHB',
     'keto bhb': 'Keto BHB',
     'ketones': 'Keto BHB',
+    'exogenous ketones': 'Keto BHB',
+    'bhb': 'Keto BHB',
     'keto-5': 'Keto-5',
     'keto 5': 'Keto-5',
-    
+    'l-carnitine': 'Fat Burner with MCT',
+    'carnitine': 'Fat Burner with MCT',
+    'cla': 'Fat Burner with MCT',
+
     // Sleep & Recovery
     'magnesium': 'Magnesium Glycinate',
     'magnesium glycinate': 'Magnesium Glycinate',
+    'mag glycinate': 'Magnesium Glycinate',
+    'magnesium citrate': 'Magnesium Glycinate',
     'melatonin': 'Sleep Support (Melatonin)',
     'sleep support': 'Sleep Support (Melatonin)',
     'sleep aid': 'Sleep Support (Melatonin)',
+    'sleep formula': 'Sleep Support (Melatonin)',
+    'sleep supplement': 'Sleep Support (Melatonin)',
     'ashwagandha': 'Ashwagandha',
+    'ksm-66': 'Ashwagandha',
+    'ksm 66': 'Ashwagandha',
     'adaptogen': 'Ashwagandha',
     'stress relief': 'Ashwagandha',
-    
+    'stress support': 'Ashwagandha',
+    'cortisol support': 'Ashwagandha',
+    'rhodiola': 'Ashwagandha',
+    'rhodiola rosea': 'Ashwagandha',
+    'zma': 'Magnesium Glycinate',
+
     // Focus & Cognition
     'lion\'s mane': "Lion's Mane Mushroom",
     'lions mane': "Lion's Mane Mushroom",
     'lion mane': "Lion's Mane Mushroom",
+    "lion's mane mushroom": "Lion's Mane Mushroom",
     'nootropic': "Lion's Mane Mushroom",
+    'nootropics': "Lion's Mane Mushroom",
+    'brain supplement': "Lion's Mane Mushroom",
+    'cognitive support': "Lion's Mane Mushroom",
+    'focus supplement': "Lion's Mane Mushroom",
     'flow state': 'Flow State Nootropic (Sour Candy)',
+    'flow state nootropic': 'Flow State Nootropic (Sour Candy)',
     'energy powder': 'Energy Powder (Fruit Punch)',
     'energy drink': 'Energy Powder (Fruit Punch)',
+    'energy supplement': 'Energy Powder (Fruit Punch)',
+    'caffeine': 'Energy Powder (Fruit Punch)',
+    'caffeine supplement': 'Energy Powder (Fruit Punch)',
     'methylene blue': 'Methylene Blue Drops',
-    
+    'l-theanine': "Lion's Mane Mushroom",
+    'theanine': "Lion's Mane Mushroom",
+    'alpha-gpc': "Lion's Mane Mushroom",
+    'alpha gpc': "Lion's Mane Mushroom",
+
     // Beauty
     'collagen': 'Collagen Peptides',
     'collagen peptides': 'Collagen Peptides',
     'collagen powder': 'Collagen Peptides',
+    'marine collagen': 'Collagen Peptides',
+    'collagen protein': 'Collagen Peptides',
+    'type i collagen': 'Collagen Peptides',
+    'type ii collagen': 'Collagen Peptides',
     'hyaluronic acid': 'Hyaluronic Acid Serum',
     'vitamin serum': 'Vitamin Glow Serum',
+    'biotin': 'Collagen Peptides',
+    'hair skin nails': 'Collagen Peptides',
+    'skin health': 'Collagen Peptides',
+    'anti-aging': 'Collagen Peptides',
+    'anti aging': 'Collagen Peptides',
   };
   
   // Check direct mappings first
@@ -552,9 +632,60 @@ export default function SupplementAdvisor() {
     }).filter(item => item.quantity > 0));
   };
 
-  const addAllToCart = () => {
-    if (recommendations && recommendations.stack) {
-      recommendations.stack.forEach(supp => addToCart(supp.name));
+  const [isAddingToShopify, setIsAddingToShopify] = useState(false);
+  const [addedToShopify, setAddedToShopify] = useState(false);
+
+  const addAllToCart = async () => {
+    if (!recommendations || !recommendations.stack || recommendations.stack.length === 0) {
+      return;
+    }
+
+    setIsAddingToShopify(true);
+
+    try {
+      // Build list of items to add to Shopify cart
+      const itemsToAdd = [];
+
+      for (const supp of recommendations.stack) {
+        // First, try to get the matched product name
+        const matchedName = fuzzyMatchProduct(supp.name);
+        const supplement = SUPPLEMENT_DATABASE[matchedName] || SUPPLEMENT_DATABASE[supp.name];
+
+        if (supplement && supplement.suplifulName) {
+          // Find matching Shopify product by suplifulName
+          const shopifyProduct = shopifyProducts.find(p =>
+            p.title.toLowerCase() === supplement.suplifulName.toLowerCase() ||
+            p.title.toLowerCase().includes(supplement.suplifulName.toLowerCase()) ||
+            supplement.suplifulName.toLowerCase().includes(p.title.toLowerCase())
+          );
+
+          if (shopifyProduct && shopifyProduct.variantId) {
+            itemsToAdd.push({
+              variantId: shopifyProduct.variantId,
+              quantity: 1
+            });
+          } else {
+            console.warn(`[SupplementQuiz] No Shopify match for: ${supp.name} -> ${supplement.suplifulName}`);
+          }
+        } else {
+          console.warn(`[SupplementQuiz] No supplement data for: ${supp.name}`);
+        }
+      }
+
+      if (itemsToAdd.length > 0) {
+        await addMultipleToCart(itemsToAdd);
+        setAddedToShopify(true);
+        setTimeout(() => setAddedToShopify(false), 3000);
+        console.log(`[SupplementQuiz] Added ${itemsToAdd.length} items to Shopify cart`);
+      } else {
+        console.warn('[SupplementQuiz] No items could be matched to Shopify products');
+        alert('Some products could not be added. Please try adding them individually from the shop.');
+      }
+    } catch (error) {
+      console.error('[SupplementQuiz] Error adding to Shopify cart:', error);
+      alert('Failed to add products to cart. Please try again.');
+    } finally {
+      setIsAddingToShopify(false);
     }
   };
 
@@ -1558,8 +1689,6 @@ export default function SupplementAdvisor() {
                     const supplement = SUPPLEMENT_DATABASE[supp.name];
                     return sum + (supplement?.price || 0);
                   }, 0);
-                  const discountedPrice = (totalPrice * 0.9).toFixed(2);
-                  const savings = (totalPrice * 0.1).toFixed(2);
 
                   return (
                     <div 
@@ -1729,33 +1858,53 @@ export default function SupplementAdvisor() {
                       {/* Pricing Section */}
                       <div className="px-6 pb-4 pt-4 border-t border-[rgba(255,255,255,0.1)]">
                         <div className="flex items-baseline gap-3 mb-1">
-                          <span className="text-3xl font-bold text-[#00d9ff]">${discountedPrice}</span>
-                          <span className="text-lg text-gray-500 line-through">${totalPrice.toFixed(2)}</span>
+                          <span className="text-3xl font-bold text-[#00d9ff]">${totalPrice.toFixed(2)}</span>
                           <span className="text-sm text-gray-400">USD</span>
                         </div>
                         <p className="text-sm text-[#00d9ff] mb-4">
-                          Save ${savings} (10% bundle discount)
+                          Free shipping on all orders
                         </p>
 
                         {/* Add Stack Button */}
-                        <button 
-                          onClick={addAllToCart} 
-                          className="w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+                        <button
+                          onClick={addAllToCart}
+                          disabled={isAddingToShopify || addedToShopify}
+                          className="w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:cursor-not-allowed"
                           style={{
-                            background: '#00d9ff',
-                            boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
+                            background: addedToShopify ? '#10B981' : '#00d9ff',
+                            boxShadow: addedToShopify
+                              ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
+                              : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            if (!isAddingToShopify && !addedToShopify) {
+                              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                            }
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
+                            e.currentTarget.style.boxShadow = addedToShopify
+                              ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
+                              : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
                             e.currentTarget.style.transform = 'translateY(0)';
                           }}
                         >
-                          <ShoppingCart size={18} />
-                          Add Stack to Cart
+                          {addedToShopify ? (
+                            <>
+                              <Check size={18} />
+                              Added to Cart!
+                            </>
+                          ) : isAddingToShopify ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Adding...
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart size={18} />
+                              Add Stack to Cart
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>

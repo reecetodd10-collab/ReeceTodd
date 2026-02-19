@@ -284,11 +284,11 @@ export default function AvieraAIWidget() {
             </div>
           ) : (
             <Image
-              src="/aviera-icon-glow.png"
+              src="/Aviera_Final_Transparent.png"
               alt="Aviera AI"
               width={64}
               height={64}
-              className="object-cover rounded-full"
+              className="object-contain"
               style={{
                 width: '64px',
                 height: '64px',

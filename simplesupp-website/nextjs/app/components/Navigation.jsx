@@ -78,11 +78,11 @@ export default function Navigation() {
 
   // Main navigation links - always visible
   const mainNavLinks = [
-    { name: 'Aviera Stack', sectionId: 'aviera-stack', isHomeSection: true },
-    { name: 'Aviera Fit', sectionId: 'aviera-fit', isHomeSection: true },
-    { name: 'Aviera Shop', sectionId: 'aviera-shop', isHomeSection: true },
+    { name: 'Aviera Stack', href: '/smartstack-ai' },
+    { name: 'Aviera Fit', href: '/smartfitt' },
+    { name: 'Aviera Shop', href: '/shop' },
     { name: 'Aviera News', href: '/news', isCyan: true },
-    { name: 'About', sectionId: 'about', isHomeSection: true },
+    { name: 'About', href: '/about' },
   ];
 
   // Other page links (only show if not on homepage)
