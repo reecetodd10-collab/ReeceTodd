@@ -399,9 +399,13 @@ export default function Navigation() {
                       link.isCyan
                         ? 'text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10'
                         : isActive(link.href)
-                        ? 'bg-[var(--acc)] text-[#001018] shadow-accent'
+                        ? 'text-[#00D9FF] font-semibold'
                         : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] hover:text-[var(--acc-2)]'
                     }`}
+                    style={isActive(link.href) && !link.isCyan ? {
+                      background: 'rgba(0, 217, 255, 0.15)',
+                      border: '1px solid rgba(0, 217, 255, 0.3)',
+                    } : {}}
                   >
                     {link.name}
                   </Link>

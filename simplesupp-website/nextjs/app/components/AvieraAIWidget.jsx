@@ -269,30 +269,37 @@ export default function AvieraAIWidget() {
       >
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center relative"
+          className="w-16 h-16 lg:w-18 lg:h-18 rounded-full flex items-center justify-center relative overflow-hidden"
           style={{
-            background: 'rgba(0, 0, 0, 0.9)',
+            background: 'rgba(0, 0, 0, 0.95)',
             border: '2px solid #00D9FF',
-            boxShadow: '0 0 20px rgba(0, 217, 255, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 0 25px rgba(0, 217, 255, 0.6), 0 4px 15px rgba(0, 0, 0, 0.4)',
             cursor: 'pointer',
           }}
         >
           {isChatOpen ? (
             <X size={28} className="text-[#00D9FF]" />
           ) : (
-            <AvieraLogo size={28} className="text-[#00D9FF]" />
+            <Image
+              src="/Aviera_Final_Transparent.png"
+              alt="Aviera AI"
+              width={56}
+              height={56}
+              className="object-contain"
+              priority
+            />
           )}
         </button>
         {!isChatOpen && (
           <span
-            className="mt-2 text-[10px] lg:text-[11px] font-bold tracking-wider px-2 py-1 rounded-full"
+            className="mt-2 text-[10px] lg:text-[11px] font-bold tracking-wider px-3 py-1 rounded-full"
             style={{
-              color: '#ffffff',
-              background: 'rgba(0, 217, 255, 0.9)',
-              boxShadow: '0 0 10px rgba(0, 217, 255, 0.5)'
+              color: '#001018',
+              background: '#00D9FF',
+              boxShadow: '0 0 15px rgba(0, 217, 255, 0.6)'
             }}
           >
-            AI
+            Aviera AI
           </span>
         )}
       </motion.div>

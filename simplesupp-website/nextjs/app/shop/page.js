@@ -1094,11 +1094,11 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
               {/* Pricing */}
               <div className="mb-6 pt-4 border-t border-[var(--border)]">
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-3xl font-normal text-[var(--acc)]">${stack.discountedPrice.toFixed(2)}</span>
-                  <span className="text-sm text-[var(--txt-muted)]/60 line-through font-light">${stack.originalPrice.toFixed(2)}</span>
+                  <span className="text-3xl font-normal text-[var(--acc)]">${stack.originalPrice.toFixed(2)}</span>
+                  <span className="text-sm text-[var(--txt-muted)] font-light">USD</span>
                 </div>
                 <p className="text-xs text-[var(--acc)] font-light">
-                  Save ${(stack.originalPrice - stack.discountedPrice).toFixed(2)} ({Math.round(((stack.originalPrice - stack.discountedPrice) / stack.originalPrice) * 100)}% off)
+                  Free shipping on all orders
                 </p>
               </div>
 
