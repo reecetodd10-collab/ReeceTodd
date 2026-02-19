@@ -540,17 +540,80 @@ export default function Navigation() {
             )}
           </div>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-3 rounded-lg hover:bg-[var(--bg-elev-1)] transition min-w-[48px] min-h-[48px] flex items-center justify-center"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} className="text-[var(--txt)]" /> : <Menu size={24} className="text-[var(--txt)]" />}
-          </button>
+          {/* Mobile Cart + Menu buttons */}
+          <div className="lg:hidden flex items-center gap-2">
+            {/* Mobile Cart Button - Always visible */}
+            <button
+              onClick={openCustomCartModal}
+              className="relative flex items-center justify-center p-3 rounded-lg transition-all duration-300"
+              style={{
+                background: 'rgba(30, 30, 30, 0.9)',
+                border: '1px solid rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.3)',
+              }}
+              aria-label="Shopping cart"
+            >
+              <ShoppingCart size={22} className="text-[#00d9ff]" />
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 flex items-center justify-center text-xs font-bold text-white"
+                  style={{
+                    minWidth: '20px',
+                    height: '20px',
+                    padding: '0 5px',
+                    background: '#00d9ff',
+                    borderRadius: '10px',
+                    boxShadow: '0 0 10px rgba(0, 217, 255, 0.6)',
+                  }}
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </button>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-3 rounded-lg hover:bg-[var(--bg-elev-1)] transition min-w-[48px] min-h-[48px] flex items-center justify-center"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} className="text-[var(--txt)]" /> : <Menu size={24} className="text-[var(--txt)]" />}
+            </button>
+          </div>
         </div>
 
         {isOpen && (
           <div className="lg:hidden py-4 space-y-2 border-t border-[var(--border)]">
+            {/* Shopping Cart - Prominent at top of mobile menu */}
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                openCustomCartModal();
+              }}
+              className="flex items-center justify-between w-full px-4 py-4 rounded-xl font-semibold transition-all duration-300"
+              style={{
+                background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 217, 255, 0.05))',
+                border: '1px solid rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 0 20px rgba(0, 217, 255, 0.2)',
+              }}
+            >
+              <span className="flex items-center gap-3 text-[#00d9ff]">
+                <ShoppingCart size={22} />
+                View Cart
+              </span>
+              {cartCount > 0 && (
+                <span
+                  className="flex items-center justify-center text-sm font-bold text-white px-3 py-1"
+                  style={{
+                    background: '#00d9ff',
+                    borderRadius: '20px',
+                  }}
+                >
+                  {cartCount} {cartCount === 1 ? 'item' : 'items'}
+                </span>
+              )}
+            </button>
+
             {/* Main navigation links - always visible */}
             {mainNavLinks.map((link) => {
               // Handle homepage sections (scroll to section)
@@ -683,6 +746,28 @@ export default function Navigation() {
         )}
       </div>
     </nav>
+
+    {/* Floating Mobile Cart Button - Always visible when cart has items */}
+    {cartCount > 0 && (
+      <button
+        onClick={openCustomCartModal}
+        className="lg:hidden fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-full transition-all duration-300"
+        style={{
+          background: 'linear-gradient(135deg, #00d9ff, #00b8d4)',
+          boxShadow: '0 4px 20px rgba(0, 217, 255, 0.5), 0 0 40px rgba(0, 217, 255, 0.3)',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+        }}
+        aria-label="View cart"
+      >
+        <ShoppingCart size={24} className="text-[#001018]" />
+        <span className="text-[#001018] font-bold text-lg">
+          {cartCount}
+        </span>
+        <span className="text-[#001018] font-semibold">
+          View Cart
+        </span>
+      </button>
+    )}
 
     {/* Waitlist Modal */}
     <WaitlistModal
