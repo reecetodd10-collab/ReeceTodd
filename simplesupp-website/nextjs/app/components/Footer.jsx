@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
             <h3 className="text-[var(--txt)] font-bold mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><Link href="/smartstack-ai" className="hover:text-[var(--acc)] transition">Aviera Stack</Link></li>
+              <li><Link href="/supplement-optimization-score" className="hover:text-[var(--acc)] transition">Aviera Stack</Link></li>
               <li><Link href="/learn" className="hover:text-[var(--acc)] transition">Learn</Link></li>
               <li><Link href="/reviews" className="hover:text-[var(--acc)] transition">Reviews</Link></li>
             </ul>

@@ -552,7 +552,7 @@ export default function About() {
                         Get your personalized supplement stack in 2 minutes.
                     </p>
                     <Link
-                        href="/smartstack-ai"
+                        href="/supplement-optimization-score"
                         className="btn-primary inline-flex items-center px-10 py-4 text-lg"
                         style={{ boxShadow: '0 0 25px rgba(0, 217, 255, 0.5)' }}
                     >

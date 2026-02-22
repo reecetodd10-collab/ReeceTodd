@@ -78,7 +78,7 @@ export default function Navigation() {
 
   // Main navigation links - always visible
   const mainNavLinks = [
-    { name: 'Aviera Stack', href: '/smartstack-ai' },
+    { name: 'Aviera Stack', href: '/supplement-optimization-score' },
     { name: 'Aviera Fit', href: '/smartfitt' },
     { name: 'Aviera Shop', href: '/shop' },
     { name: 'Aviera News', href: '/news', isCyan: true },

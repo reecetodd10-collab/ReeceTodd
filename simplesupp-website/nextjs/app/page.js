@@ -482,7 +482,7 @@ export default function Home() {
                 </div>
 
                 <Link
-                  href="/smartstack-ai"
+                  href="/supplement-optimization-score"
                   className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300"
                   style={{
                     background: '#00d9ff',
