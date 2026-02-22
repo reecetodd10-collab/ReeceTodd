@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, Check, ShoppingCart, Mail,
   Dumbbell, Flame, Moon, Brain, Zap, Activity,
-  BedDouble, Battery, Heart, Target, Calendar
+  BedDouble, Battery, Heart, Target, Calendar, Info,
+  TrendingUp, TrendingDown, Minus, Sparkles, Plus,
+  ChevronDown, ChevronUp, ExternalLink
 } from 'lucide-react';
 import Image from 'next/image';
-import { fetchShopifyProducts, addMultipleToCart } from '../lib/shopify';
+import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
 
 // Goal icons mapping
 const GOAL_ICONS = {
@@ -28,6 +31,16 @@ const TRAINING_ICONS = {
   'Sports Performance': Target,
   'General Fitness': Heart,
   'Sedentary': BedDouble,
+};
+
+// Population averages (hardcoded benchmarks)
+const POPULATION_AVERAGES = {
+  sleep: 15,      // /25
+  energy: 12,     // /20
+  stress: 12,     // /20
+  goalAlignment: 12, // /20
+  trainingLoad: 8,   // /15
+  total: 60,      // /100 (6.0/10)
 };
 
 export default function SupplementOptimizationScore() {
@@ -64,10 +77,12 @@ export default function SupplementOptimizationScore() {
   // Results state
   const [scores, setScores] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const [aiInsights, setAiInsights] = useState([]);
+  const [specialAIPick, setSpecialAIPick] = useState(null);
+  const [aiInsights, setAiInsights] = useState(null);
   const [shopifyProducts, setShopifyProducts] = useState([]);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [addedIndividual, setAddedIndividual] = useState({});
 
   // Email capture
   const [email, setEmail] = useState('');
@@ -331,7 +346,7 @@ export default function SupplementOptimizationScore() {
     const recs = generateRecommendations(responses, shopifyProducts);
     setRecommendations(recs);
 
-    // Get AI insights
+    // Get AI insights (enhanced)
     try {
       const insightsResponse = await fetch('/api/ai/optimization-insights', {
         method: 'POST',
@@ -340,6 +355,7 @@ export default function SupplementOptimizationScore() {
           responses,
           scores: calculatedScores,
           recommendations: recs.map(r => r.title),
+          shopifyProducts: shopifyProducts.map(p => ({ title: p.title, price: p.price })),
         }),
       });
 
@@ -348,15 +364,45 @@ export default function SupplementOptimizationScore() {
         if (data.insights) {
           setAiInsights(data.insights);
         }
+        if (data.specialPick) {
+          // Find the product from shopify
+          const specialProduct = findProduct(shopifyProducts, [data.specialPick.productKeyword]);
+          if (specialProduct) {
+            setSpecialAIPick({
+              ...specialProduct,
+              reasoning: data.specialPick.reasoning,
+            });
+          }
+        }
+        // Update recommendations with personalized reasons
+        if (data.productReasons && recs.length > 0) {
+          const updatedRecs = recs.map((rec, idx) => ({
+            ...rec,
+            reasoning: data.productReasons[idx] || rec.reasoning,
+          }));
+          setRecommendations(updatedRecs);
+        }
       }
     } catch (error) {
       console.error('Error getting AI insights:', error);
       // Fallback insights
-      setAiInsights([
-        `Your sleep quality score of ${responses.sleepQuality}/5 indicates room for recovery optimization.`,
-        `With ${responses.trainingFrequency} training, your supplement timing should align with recovery windows.`,
-        `Focus on addressing your primary gap to unlock ${100 - totalScore}% more potential.`,
-      ]);
+      setAiInsights({
+        overallAssessment: totalScore >= 75 ? 'above' : totalScore >= 50 ? 'average' : 'below',
+        biggestStrength: {
+          category: 'Training Consistency',
+          text: `Your training frequency shows strong commitment to your fitness goals.`,
+        },
+        primaryGap: {
+          category: 'Sleep Recovery',
+          text: `Your sleep quality score of ${responses.sleepQuality}/5 indicates room for optimization.`,
+        },
+        keyOpportunity: `Improving sleep could boost your score by an estimated ${Math.min(2.5, (5 - responses.sleepQuality) * 0.5).toFixed(1)} points.`,
+        insights: [
+          `Your sleep quality score of ${responses.sleepQuality}/5 indicates room for recovery optimization.`,
+          `With ${responses.trainingFrequency} training, your supplement timing should align with recovery windows.`,
+          `Focus on addressing your primary gap to unlock ${100 - totalScore}% more potential.`,
+        ],
+      });
     }
 
     // Simulate loading for premium feel
@@ -368,17 +414,21 @@ export default function SupplementOptimizationScore() {
 
   // Add recommended products to cart
   const handleAddToCart = async () => {
-    if (recommendations.length === 0) return;
+    if (recommendations.length === 0 && !specialAIPick) return;
 
     setIsAddingToCart(true);
 
     try {
-      const itemsToAdd = recommendations
-        .filter(rec => rec.variantId)
-        .map(rec => ({
+      const itemsToAdd = [
+        ...recommendations.filter(rec => rec.variantId).map(rec => ({
           variantId: rec.variantId,
           quantity: 1,
-        }));
+        })),
+      ];
+
+      if (specialAIPick?.variantId) {
+        itemsToAdd.push({ variantId: specialAIPick.variantId, quantity: 1 });
+      }
 
       if (itemsToAdd.length > 0) {
         await addMultipleToCart(itemsToAdd);
@@ -389,6 +439,18 @@ export default function SupplementOptimizationScore() {
       alert('Failed to add products to cart. Please try again.');
     } finally {
       setIsAddingToCart(false);
+    }
+  };
+
+  // Add individual product to cart
+  const handleAddIndividual = async (product) => {
+    if (!product.variantId || addedIndividual[product.title]) return;
+
+    try {
+      await addToCart(product.variantId, 1);
+      setAddedIndividual(prev => ({ ...prev, [product.title]: true }));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
     }
   };
 
@@ -408,10 +470,13 @@ export default function SupplementOptimizationScore() {
         scores={scores}
         responses={responses}
         recommendations={recommendations}
+        specialAIPick={specialAIPick}
         aiInsights={aiInsights}
         onAddToCart={handleAddToCart}
+        onAddIndividual={handleAddIndividual}
         isAddingToCart={isAddingToCart}
         addedToCart={addedToCart}
+        addedIndividual={addedIndividual}
         email={email}
         setEmail={setEmail}
         emailSubmitted={emailSubmitted}
@@ -425,15 +490,41 @@ export default function SupplementOptimizationScore() {
   }
 
   return (
-    <div className="min-h-screen bg-bg py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen relative py-8 px-4">
+      {/* Background Image */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/stack/stack-background.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+            style={{
+              background: 'rgba(0, 217, 255, 0.1)',
+              border: '1px solid rgba(0, 217, 255, 0.2)',
+            }}
+          >
+            <Sparkles size={16} className="text-accent" />
+            <span className="text-accent text-sm font-medium">AI-Powered Analysis</span>
+          </motion.div>
           <h1 className="text-3xl md:text-4xl font-bold text-txt mb-2">
             Supplement Optimization Score
           </h1>
           <p className="text-txt-muted text-sm">
-            AI-Powered Performance Diagnostics for Your Supplement Stack
+            Discover your personalized supplement stack in 60 seconds
           </p>
         </div>
 
@@ -445,10 +536,11 @@ export default function SupplementOptimizationScore() {
           </div>
           <div className="h-2 bg-bg-elevated rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-accent"
+              className="h-full bg-gradient-to-r from-accent to-cyan-400"
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
               transition={{ duration: 0.3 }}
+              style={{ boxShadow: '0 0 10px rgba(0, 217, 255, 0.5)' }}
             />
           </div>
         </div>
@@ -478,8 +570,9 @@ export default function SupplementOptimizationScore() {
             transition={{ duration: 0.2 }}
             className="glass-card p-6 mb-6"
             style={{
-              background: 'rgba(30, 30, 30, 0.9)',
-              border: '1px solid rgba(0, 217, 255, 0.3)',
+              background: 'rgba(20, 20, 25, 0.9)',
+              border: '1px solid rgba(0, 217, 255, 0.2)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 217, 255, 0.1) inset',
             }}
           >
             <QuestionRenderer
@@ -506,7 +599,7 @@ export default function SupplementOptimizationScore() {
             disabled={!isCurrentAnswered()}
             className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              background: isCurrentAnswered() ? '#00d9ff' : 'rgba(0, 217, 255, 0.3)',
+              background: isCurrentAnswered() ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(0, 217, 255, 0.3)',
               color: isCurrentAnswered() ? '#001018' : 'rgba(255, 255, 255, 0.5)',
               boxShadow: isCurrentAnswered() ? '0 0 20px rgba(0, 217, 255, 0.4)' : 'none',
             }}
@@ -562,7 +655,7 @@ function QuestionRenderer({ question, value, onChange }) {
                 onClick={() => onChange(opt)}
                 className="px-4 py-3 rounded-xl font-medium transition-all"
                 style={{
-                  background: value === opt ? '#00d9ff' : 'rgba(30, 30, 30, 0.8)',
+                  background: value === opt ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(30, 30, 30, 0.8)',
                   color: value === opt ? '#001018' : '#ffffff',
                   border: value === opt ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.3)',
                   boxShadow: value === opt ? '0 0 15px rgba(0, 217, 255, 0.4)' : 'none',
@@ -591,7 +684,7 @@ function QuestionRenderer({ question, value, onChange }) {
                   onClick={() => onChange(opt)}
                   className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium transition-all text-left"
                   style={{
-                    background: isSelected ? '#00d9ff' : 'rgba(30, 30, 30, 0.8)',
+                    background: isSelected ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(30, 30, 30, 0.8)',
                     color: isSelected ? '#001018' : '#ffffff',
                     border: isSelected ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.3)',
                     boxShadow: isSelected ? '0 0 15px rgba(0, 217, 255, 0.4)' : 'none',
@@ -622,7 +715,7 @@ function QuestionRenderer({ question, value, onChange }) {
                   onClick={() => onChange(opt)}
                   className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium transition-all text-left"
                   style={{
-                    background: isSelected ? '#00d9ff' : 'rgba(30, 30, 30, 0.8)',
+                    background: isSelected ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(30, 30, 30, 0.8)',
                     color: isSelected ? '#001018' : '#ffffff',
                     border: isSelected ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.3)',
                     boxShadow: isSelected ? '0 0 15px rgba(0, 217, 255, 0.4)' : 'none',
@@ -653,7 +746,7 @@ function QuestionRenderer({ question, value, onChange }) {
                 onClick={() => onChange(num)}
                 className="flex-1 py-4 rounded-xl font-bold transition-all flex flex-col items-center gap-1"
                 style={{
-                  background: value === num ? '#00d9ff' : 'rgba(30, 30, 30, 0.8)',
+                  background: value === num ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(30, 30, 30, 0.8)',
                   color: value === num ? '#001018' : '#ffffff',
                   border: value === num ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.3)',
                   boxShadow: value === num ? '0 0 15px rgba(0, 217, 255, 0.4)' : 'none',
@@ -685,7 +778,7 @@ function QuestionRenderer({ question, value, onChange }) {
                 onClick={() => onChange(val)}
                 className="px-6 py-4 rounded-xl font-semibold transition-all"
                 style={{
-                  background: value === val ? '#00d9ff' : 'rgba(30, 30, 30, 0.8)',
+                  background: value === val ? 'linear-gradient(135deg, #00d9ff, #00b8d4)' : 'rgba(30, 30, 30, 0.8)',
                   color: value === val ? '#001018' : '#ffffff',
                   border: value === val ? '1px solid #00d9ff' : '1px solid rgba(0, 217, 255, 0.3)',
                   boxShadow: value === val ? '0 0 15px rgba(0, 217, 255, 0.4)' : 'none',
@@ -764,6 +857,7 @@ function LoadingScreen() {
     const texts = [
       'Analyzing performance baseline...',
       'Calculating recovery metrics...',
+      'Comparing to population data...',
       'Generating personalized recommendations...',
     ];
     let index = 0;
@@ -771,21 +865,39 @@ function LoadingScreen() {
     const interval = setInterval(() => {
       index = (index + 1) % texts.length;
       setLoadingText(texts[index]);
-    }, 800);
+    }, 600);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
-      <div className="text-center">
-        <div className="relative w-20 h-20 mx-auto mb-6">
+    <div className="min-h-screen relative flex items-center justify-center px-4">
+      {/* Background Image */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/stack/stack-background.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      <div className="text-center relative z-10">
+        <div className="relative w-24 h-24 mx-auto mb-6">
           <div
-            className="absolute inset-0 rounded-full border-4 border-accent/20"
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'conic-gradient(from 0deg, transparent, #00d9ff, transparent)',
+              animation: 'spin 1.5s linear infinite',
+            }}
           />
-          <div
-            className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent animate-spin"
-          />
+          <div className="absolute inset-2 rounded-full bg-bg flex items-center justify-center">
+            <Sparkles className="text-accent" size={32} />
+          </div>
         </div>
         <p className="text-txt-muted text-lg animate-pulse">
           {loadingText}
@@ -800,30 +912,38 @@ function ResultsPage({
   scores,
   responses,
   recommendations,
+  specialAIPick,
   aiInsights,
   onAddToCart,
+  onAddIndividual,
   isAddingToCart,
   addedToCart,
+  addedIndividual,
   email,
   setEmail,
   emailSubmitted,
   onEmailSubmit,
 }) {
   const [animatedScore, setAnimatedScore] = useState(0);
+  const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const scoreRef = useRef(null);
+
+  // Convert score to 0-10 scale
+  const displayScore = (scores.total / 10).toFixed(1);
+  const avgDisplayScore = (POPULATION_AVERAGES.total / 10).toFixed(1);
 
   // Animate score count-up
   useEffect(() => {
     const duration = 1500;
     const startTime = Date.now();
-    const targetScore = scores.total;
+    const targetScore = parseFloat(displayScore);
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const easeOut = 1 - Math.pow(1 - progress, 3);
 
-      setAnimatedScore(Math.round(targetScore * easeOut));
+      setAnimatedScore((targetScore * easeOut).toFixed(1));
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -831,57 +951,95 @@ function ResultsPage({
     };
 
     requestAnimationFrame(animate);
-  }, [scores.total]);
+  }, [displayScore]);
 
   // Get score label
   const getScoreLabel = (score) => {
-    if (score <= 40) return 'High Optimization Potential';
-    if (score <= 60) return 'Moderate Optimization Needed';
-    if (score <= 75) return 'Good Foundation';
-    if (score <= 85) return 'Strong Profile';
+    if (score < 5.0) return 'High Optimization Potential';
+    if (score < 6.0) return 'Moderate Optimization Needed';
+    if (score < 7.5) return 'Good Foundation';
+    if (score < 8.5) return 'Strong Profile';
     return 'Elite Optimization';
   };
 
-  // Calculate untapped potential
-  const untappedPotential = 100 - scores.total;
+  // Get comparison status
+  const getComparisonStatus = (userScore, avgScore, threshold = 3) => {
+    if (userScore > avgScore + threshold) return { text: 'Above Average', color: '#10b981', icon: TrendingUp };
+    if (userScore < avgScore - threshold) return { text: 'Below Average', color: '#f59e0b', icon: TrendingDown };
+    return { text: 'Average', color: '#6b7280', icon: Minus };
+  };
+
+  // Overall assessment
+  const overallAssessment = aiInsights?.overallAssessment || (scores.total >= 75 ? 'above' : scores.total >= 50 ? 'average' : 'below');
+
+  const assessmentConfig = {
+    above: { text: 'Above Average', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+    average: { text: 'Average', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+    below: { text: 'Below Average', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+  };
+
+  const assessment = assessmentConfig[overallAssessment];
+
+  // Calculate percentile (simplified)
+  const percentile = Math.min(99, Math.max(1, Math.round(scores.total * 0.9 + 10)));
 
   return (
-    <div className="min-h-screen bg-bg py-8 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen relative py-8 px-4">
+      {/* Background Image */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/stack/stack-background.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      <div className="max-w-3xl mx-auto relative z-10">
         {/* Score Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
+          className="text-center mb-8"
         >
           <p className="text-accent text-sm font-medium uppercase tracking-wider mb-2">
             Your Supplement Optimization Score
           </p>
 
           {/* Circular Score Display */}
-          <div className="relative w-48 h-48 mx-auto mb-4">
+          <div className="relative w-52 h-52 mx-auto mb-4">
             <svg className="w-full h-full transform -rotate-90">
               <circle
-                cx="96"
-                cy="96"
-                r="88"
+                cx="104"
+                cy="104"
+                r="94"
                 fill="none"
                 stroke="rgba(0, 217, 255, 0.1)"
-                strokeWidth="8"
+                strokeWidth="10"
               />
               <circle
-                cx="96"
-                cy="96"
-                r="88"
+                cx="104"
+                cy="104"
+                r="94"
                 fill="none"
-                stroke="#00d9ff"
-                strokeWidth="8"
-                strokeDasharray={`${(animatedScore / 100) * 553} 553`}
+                stroke="url(#scoreGradient)"
+                strokeWidth="10"
+                strokeDasharray={`${(scores.total / 100) * 590} 590`}
                 strokeLinecap="round"
                 style={{
                   filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.5))',
                 }}
               />
+              <defs>
+                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#00d9ff" />
+                  <stop offset="100%" stopColor="#00b8d4" />
+                </linearGradient>
+              </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span
@@ -891,99 +1049,209 @@ function ResultsPage({
               >
                 {animatedScore}
               </span>
-              <span className="text-txt-muted text-lg">/100</span>
+              <span className="text-txt-muted text-xl">/10</span>
             </div>
           </div>
 
           <p className="text-xl font-semibold text-txt mb-2">
-            {getScoreLabel(scores.total)}
+            {getScoreLabel(parseFloat(displayScore))}
           </p>
-          <p className="text-accent">
-            You're leaving <span className="font-bold">{untappedPotential}%</span> of your recovery potential untapped.
+          <p className="text-txt-secondary text-sm mb-3">
+            Population average: <span className="text-accent font-medium">{avgDisplayScore}/10</span>
           </p>
+
+          {/* How is this calculated? */}
+          <button
+            onClick={() => setShowScoreExplanation(!showScoreExplanation)}
+            className="inline-flex items-center gap-1 text-accent text-sm hover:underline"
+          >
+            <Info size={14} />
+            How is this calculated?
+            {showScoreExplanation ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+
+          {/* Score Explanation Dropdown */}
+          <AnimatePresence>
+            {showScoreExplanation && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 text-left"
+              >
+                <div
+                  className="p-4 rounded-xl text-sm"
+                  style={{
+                    background: 'rgba(30, 30, 30, 0.9)',
+                    border: '1px solid rgba(0, 217, 255, 0.2)',
+                  }}
+                >
+                  <h4 className="font-semibold text-txt mb-3">Your Score Breakdown</h4>
+                  <div className="space-y-2 text-txt-muted">
+                    <p>Total Score: <span className="text-txt font-medium">{displayScore}/10</span></p>
+                    <div className="pl-2 border-l-2 border-accent/30 space-y-1">
+                      <p>Sleep & Recovery: {scores.sleep}/25 pts ({responses.sleepQuality}/5 input)</p>
+                      <p>Energy Output: {scores.energy}/20 pts ({responses.energyLevel}/5 input)</p>
+                      <p>Stress Management: {scores.stress}/20 pts ({responses.stressLevel}/5 stress, inverted)</p>
+                      <p>Goal Alignment: {scores.goalAlignment}/20 pts (goal + training match)</p>
+                      <p>Training Load: {scores.trainingLoad}/15 pts ({responses.trainingFrequency})</p>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-glass-border">
+                      <p>You're in the <span className="text-accent font-medium">{percentile}th percentile</span></p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Performance Breakdown */}
+        {/* Quick Analysis Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="glass-card p-6 mb-8"
           style={{
-            background: 'rgba(30, 30, 30, 0.9)',
-            border: '1px solid rgba(0, 217, 255, 0.3)',
+            background: 'rgba(20, 20, 25, 0.9)',
+            border: '1px solid rgba(0, 217, 255, 0.2)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          <h3 className="text-lg font-semibold text-txt mb-4 flex items-center gap-2">
+            <Zap size={20} className="text-accent" />
+            Your Quick Analysis
+          </h3>
+
+          <div className="space-y-4">
+            {/* Overall Assessment Badge */}
+            <div className="flex items-center justify-between">
+              <span className="text-txt-muted">Overall Assessment</span>
+              <span
+                className="px-4 py-1.5 rounded-full font-semibold text-sm"
+                style={{ background: assessment.bg, color: assessment.color }}
+              >
+                {assessment.text}
+              </span>
+            </div>
+
+            {/* Biggest Strength */}
+            <div className="p-3 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp size={16} className="text-green-400" />
+                <span className="text-green-400 font-medium text-sm">Biggest Strength</span>
+              </div>
+              <p className="text-txt text-sm">
+                {aiInsights?.biggestStrength?.text || `Your ${findBiggestStrength(scores)} is your biggest asset, keeping you ahead of the curve.`}
+              </p>
+            </div>
+
+            {/* Primary Gap */}
+            <div className="p-3 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingDown size={16} className="text-orange-400" />
+                <span className="text-orange-400 font-medium text-sm">Primary Gap</span>
+              </div>
+              <p className="text-txt text-sm">
+                {aiInsights?.primaryGap?.text || `${findPrimaryGap(scores, responses)} is limiting your recovery potential and adaptation.`}
+              </p>
+            </div>
+
+            {/* Key Opportunity */}
+            <div className="p-3 rounded-lg" style={{ background: 'rgba(0, 217, 255, 0.1)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles size={16} className="text-accent" />
+                <span className="text-accent font-medium text-sm">Key Opportunity</span>
+              </div>
+              <p className="text-txt text-sm">
+                {aiInsights?.keyOpportunity || `Addressing your primary gap could boost your score by an estimated ${calculatePotentialGain(scores, responses)} points.`}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Performance Breakdown with Population Comparisons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-card p-6 mb-8"
+          style={{
+            background: 'rgba(20, 20, 25, 0.9)',
+            border: '1px solid rgba(0, 217, 255, 0.2)',
           }}
         >
           <h3 className="text-lg font-semibold text-txt mb-4">Performance Breakdown</h3>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             {[
-              { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25 },
-              { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20 },
-              { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20 },
-              { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20 },
-              { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15 },
-            ].map(({ icon: Icon, label, score, max }) => (
-              <div key={label} className="flex items-center gap-4">
-                <Icon size={20} className="text-accent flex-shrink-0" />
-                <div className="flex-1">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-txt-muted">{label}</span>
-                    <span className="text-txt font-medium">{score}/{max}</span>
+              { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep },
+              { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy },
+              { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress },
+              { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment },
+              { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad },
+            ].map(({ icon: Icon, label, score, max, avg }) => {
+              const userPercent = (score / max) * 100;
+              const avgPercent = (avg / max) * 100;
+              const status = getComparisonStatus(score, avg, max * 0.15);
+              const StatusIcon = status.icon;
+
+              return (
+                <div key={label}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon size={18} className="text-accent" />
+                      <span className="text-txt-muted text-sm">{label}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-txt font-medium text-sm">{score}/{max}</span>
+                      <span
+                        className="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded"
+                        style={{ color: status.color, background: `${status.color}20` }}
+                      >
+                        <StatusIcon size={12} />
+                        {status.text}
+                      </span>
+                    </div>
                   </div>
-                  <div className="h-2 bg-bg-elevated rounded-full overflow-hidden">
+                  <div className="relative h-3 bg-bg-elevated rounded-full overflow-hidden">
+                    {/* User score bar */}
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${(score / max) * 100}%` }}
-                      transition={{ duration: 0.8, delay: 0.5 }}
-                      className="h-full bg-accent rounded-full"
-                      style={{ boxShadow: '0 0 10px rgba(0, 217, 255, 0.5)' }}
+                      animate={{ width: `${userPercent}%` }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      className="absolute h-full rounded-full"
+                      style={{
+                        background: 'linear-gradient(90deg, #00d9ff, #00b8d4)',
+                        boxShadow: '0 0 10px rgba(0, 217, 255, 0.5)',
+                      }}
+                    />
+                    {/* Population average marker */}
+                    <div
+                      className="absolute top-0 bottom-0 w-0.5"
+                      style={{
+                        left: `${avgPercent}%`,
+                        background: '#10b981',
+                        boxShadow: '0 0 4px #10b981',
+                      }}
                     />
                   </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-[10px] text-txt-muted">Your score</span>
+                    <span className="text-[10px] text-green-400">Avg: {avg}/{max}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 
-        {/* AI Insights */}
-        {aiInsights.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass-card p-6 mb-8"
-            style={{
-              background: 'rgba(30, 30, 30, 0.9)',
-              border: '1px solid rgba(0, 217, 255, 0.3)',
-            }}
-          >
-            <h3 className="text-lg font-semibold text-txt mb-4 flex items-center gap-2">
-              <Brain size={20} className="text-accent" />
-              AI-Powered Insights
-            </h3>
-
-            <div className="space-y-3">
-              {aiInsights.map((insight, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl bg-bg-elevated border border-glass-border"
-                >
-                  <p className="text-txt-secondary text-sm leading-relaxed">
-                    {insight}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
         {/* Recommended Products */}
-        {recommendations.length > 0 && (
+        {(recommendations.length > 0 || specialAIPick) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.5 }}
             className="mb-8"
           >
             <h3 className="text-xl font-semibold text-txt mb-4 text-center">
@@ -992,43 +1260,31 @@ function ResultsPage({
 
             <div className="space-y-4 mb-6">
               {recommendations.map((product, idx) => (
-                <div
+                <ProductCard
                   key={idx}
-                  className="glass-card p-4 flex items-center gap-4"
-                  style={{
-                    background: 'rgba(30, 30, 30, 0.9)',
-                    border: '1px solid rgba(0, 217, 255, 0.3)',
-                  }}
-                >
-                  {product.image ? (
-                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-white flex-shrink-0">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-contain"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-lg bg-bg-elevated flex items-center justify-center flex-shrink-0">
-                      <span className="text-4xl opacity-30">💊</span>
-                    </div>
-                  )}
-
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-txt truncate">{product.title}</h4>
-                    <p className="text-accent font-bold text-lg">${product.price?.toFixed(2)}</p>
-                    <p className="text-txt-muted text-sm mt-1 line-clamp-2">
-                      {product.reasoning}
-                    </p>
-                  </div>
-                </div>
+                  product={product}
+                  onAddToCart={() => onAddIndividual(product)}
+                  isAdded={addedIndividual[product.title]}
+                />
               ))}
+
+              {/* Special AI Pick */}
+              {specialAIPick && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <SpecialAIPickCard
+                    product={specialAIPick}
+                    onAddToCart={() => onAddIndividual(specialAIPick)}
+                    isAdded={addedIndividual[specialAIPick.title]}
+                  />
+                </motion.div>
+              )}
             </div>
 
-            {/* Add to Cart Button */}
+            {/* Add All to Cart Button */}
             <button
               onClick={onAddToCart}
               disabled={isAddingToCart || addedToCart}
@@ -1049,31 +1305,31 @@ function ResultsPage({
               ) : addedToCart ? (
                 <>
                   <Check size={24} />
-                  Stack Added to Cart!
+                  Full Stack Added to Cart!
                 </>
               ) : (
                 <>
                   <ShoppingCart size={24} />
-                  Add My Stack to Cart
+                  Add Complete Stack to Cart ({recommendations.length + (specialAIPick ? 1 : 0)} items)
                 </>
               )}
             </button>
 
             <p className="text-center text-txt-muted text-sm mt-3">
-              Free shipping on all orders
+              Free shipping on orders over $50
             </p>
           </motion.div>
         )}
 
-        {/* Optional Email Capture */}
-        {!emailSubmitted && (
+        {/* Enhanced Email Capture */}
+        {!emailSubmitted ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
             className="glass-card p-6"
             style={{
-              background: 'rgba(30, 30, 30, 0.9)',
+              background: 'rgba(20, 20, 25, 0.9)',
               border: '1px solid rgba(0, 217, 255, 0.2)',
             }}
           >
@@ -1081,9 +1337,27 @@ function ResultsPage({
               <Mail size={20} className="text-accent" />
               <h3 className="font-semibold text-txt">Want your complete performance report?</h3>
             </div>
-            <p className="text-txt-muted text-sm mb-4">
-              Get your detailed breakdown + supplement timing guide sent to your inbox
-            </p>
+
+            {/* Value Preview */}
+            <div className="mb-4 p-4 rounded-lg" style={{ background: 'rgba(0, 217, 255, 0.05)' }}>
+              <p className="text-accent text-sm font-medium mb-3">Your Complete Report Includes:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  'Detailed score breakdown with explanations',
+                  'Personalized supplement timing guide',
+                  'Progressive 30-day optimization roadmap',
+                  'Comparison to your demographic benchmarks',
+                  'AI-generated training recommendations',
+                  'Exclusive member pricing alerts',
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-txt-muted text-sm">
+                    <Check size={14} className="text-accent flex-shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <form onSubmit={onEmailSubmit} className="flex gap-3">
               <input
                 type="email"
@@ -1096,7 +1370,7 @@ function ResultsPage({
                 type="submit"
                 className="px-6 py-3 rounded-xl font-semibold transition-all"
                 style={{
-                  background: '#00d9ff',
+                  background: 'linear-gradient(135deg, #00d9ff, #00b8d4)',
                   color: '#001018',
                 }}
               >
@@ -1104,9 +1378,7 @@ function ResultsPage({
               </button>
             </form>
           </motion.div>
-        )}
-
-        {emailSubmitted && (
+        ) : (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -1120,6 +1392,329 @@ function ResultsPage({
             <p className="text-txt font-semibold">Report sent to your inbox!</p>
           </motion.div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Product Card Component
+function ProductCard({ product, onAddToCart, isAdded }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className="glass-card p-4 transition-all"
+      style={{
+        background: 'rgba(20, 20, 25, 0.9)',
+        border: '1px solid rgba(0, 217, 255, 0.2)',
+      }}
+    >
+      <div className="flex items-start gap-4">
+        {product.image ? (
+          <div className="w-20 h-20 rounded-lg overflow-hidden bg-white flex-shrink-0">
+            <Image
+              src={product.image}
+              alt={product.title}
+              width={80}
+              height={80}
+              className="w-full h-full object-contain"
+              unoptimized
+            />
+          </div>
+        ) : (
+          <div className="w-20 h-20 rounded-lg bg-bg-elevated flex items-center justify-center flex-shrink-0">
+            <span className="text-4xl opacity-30">💊</span>
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <h4 className="font-semibold text-txt truncate">{product.title}</h4>
+            <span className="text-accent font-bold text-lg whitespace-nowrap">${product.price?.toFixed(2)}</span>
+          </div>
+
+          <div className="mb-3">
+            <p className="text-accent text-xs font-medium mb-1">Perfect For You Because:</p>
+            <p className="text-txt-muted text-sm line-clamp-2">
+              {product.reasoning}
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCart();
+              }}
+              disabled={isAdded}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+              style={{
+                background: isAdded ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 217, 255, 0.2)',
+                color: isAdded ? '#10b981' : '#00d9ff',
+                border: `1px solid ${isAdded ? 'rgba(16, 185, 129, 0.4)' : 'rgba(0, 217, 255, 0.4)'}`,
+              }}
+            >
+              {isAdded ? (
+                <>
+                  <Check size={16} />
+                  Added
+                </>
+              ) : (
+                <>
+                  <Plus size={16} />
+                  Add to Cart
+                </>
+              )}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
+              }}
+              className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-txt-muted hover:text-txt transition-all"
+              style={{
+                background: expanded ? 'rgba(0, 217, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                border: expanded ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              {expanded ? 'Show Less' : 'Learn More'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Details */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div
+              className="mt-4 pt-4"
+              style={{ borderTop: '1px solid rgba(0, 217, 255, 0.15)' }}
+            >
+              {product.description && (
+                <div className="mb-3">
+                  <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Description</p>
+                  <p className="text-txt-muted text-sm leading-relaxed">{product.description}</p>
+                </div>
+              )}
+              {product.ingredients && (
+                <div className="mb-3">
+                  <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Key Ingredients</p>
+                  <p className="text-txt-muted text-sm leading-relaxed">{product.ingredients}</p>
+                </div>
+              )}
+              {product.dosage && (
+                <div className="mb-3">
+                  <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Dosage</p>
+                  <p className="text-txt-muted text-sm leading-relaxed">{product.dosage}</p>
+                </div>
+              )}
+              {product.benefits && (
+                <div className="mb-3">
+                  <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Benefits</p>
+                  <p className="text-txt-muted text-sm leading-relaxed">{product.benefits}</p>
+                </div>
+              )}
+              {!product.description && !product.ingredients && !product.dosage && !product.benefits && (
+                <div className="mb-3">
+                  <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Product Details</p>
+                  <p className="text-txt-muted text-sm leading-relaxed">
+                    {product.reasoning || 'Premium supplement formulated to support your fitness goals.'}
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded(false);
+                }}
+                className="flex items-center gap-1 text-xs text-txt-muted hover:text-accent transition-colors mt-1"
+              >
+                <ChevronUp size={12} />
+                Collapse
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Special AI Pick Card Component
+function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl p-[2px]"
+      style={{
+        background: 'linear-gradient(135deg, #00d9ff, #00b8d4, #00d9ff, #00b8d4)',
+        backgroundSize: '300% 300%',
+        animation: 'shimmer 3s linear infinite',
+      }}
+    >
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
+
+      <div
+        className="rounded-2xl p-4"
+        style={{
+          background: 'rgba(10, 10, 15, 0.95)',
+        }}
+      >
+        {/* Special Badge */}
+        <div className="flex items-center gap-2 mb-4">
+          <span
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 184, 212, 0.2))',
+              color: '#00d9ff',
+              border: '1px solid rgba(0, 217, 255, 0.3)',
+            }}
+          >
+            <Sparkles size={12} />
+            Special AI Recommendation
+          </span>
+        </div>
+
+        <div className="flex items-start gap-4">
+          {product.image ? (
+            <div className="w-24 h-24 rounded-lg overflow-hidden bg-white flex-shrink-0">
+              <Image
+                src={product.image}
+                alt={product.title}
+                width={96}
+                height={96}
+                className="w-full h-full object-contain"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div className="w-24 h-24 rounded-lg bg-bg-elevated flex items-center justify-center flex-shrink-0">
+              <span className="text-5xl opacity-30">💊</span>
+            </div>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h4 className="font-bold text-txt text-lg">{product.title}</h4>
+              <span className="text-accent font-bold text-xl whitespace-nowrap">${product.price?.toFixed(2)}</span>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-accent text-xs font-medium mb-1">AI Selected Because:</p>
+              <p className="text-txt-secondary text-sm">
+                {product.reasoning}
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={onAddToCart}
+                disabled={isAdded}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all"
+                style={{
+                  background: isAdded ? 'rgba(16, 185, 129, 0.9)' : 'linear-gradient(135deg, #00d9ff, #00b8d4)',
+                  color: '#001018',
+                  boxShadow: isAdded ? 'none' : '0 0 20px rgba(0, 217, 255, 0.4)',
+                }}
+              >
+                {isAdded ? (
+                  <>
+                    <Check size={18} />
+                    Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <Plus size={18} />
+                    Add to Cart
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="flex items-center justify-center gap-1 px-4 py-2.5 rounded-lg font-medium text-txt-muted hover:text-txt transition-all"
+                style={{
+                  background: expanded ? 'rgba(0, 217, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  border: expanded ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                {expanded ? <ChevronUp size={16} /> : <Info size={16} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Expanded Details */}
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div
+                className="mt-4 pt-4"
+                style={{ borderTop: '1px solid rgba(0, 217, 255, 0.15)' }}
+              >
+                {product.description && (
+                  <div className="mb-3">
+                    <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Description</p>
+                    <p className="text-txt-muted text-sm leading-relaxed">{product.description}</p>
+                  </div>
+                )}
+                {product.ingredients && (
+                  <div className="mb-3">
+                    <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Key Ingredients</p>
+                    <p className="text-txt-muted text-sm leading-relaxed">{product.ingredients}</p>
+                  </div>
+                )}
+                {product.dosage && (
+                  <div className="mb-3">
+                    <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Dosage</p>
+                    <p className="text-txt-muted text-sm leading-relaxed">{product.dosage}</p>
+                  </div>
+                )}
+                {product.benefits && (
+                  <div className="mb-3">
+                    <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Benefits</p>
+                    <p className="text-txt-muted text-sm leading-relaxed">{product.benefits}</p>
+                  </div>
+                )}
+                {!product.description && !product.ingredients && !product.dosage && !product.benefits && (
+                  <div className="mb-3">
+                    <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Product Details</p>
+                    <p className="text-txt-muted text-sm leading-relaxed">
+                      {product.reasoning || 'Premium supplement formulated to support your fitness goals.'}
+                    </p>
+                  </div>
+                )}
+                <button
+                  onClick={() => setExpanded(false)}
+                  className="flex items-center gap-1 text-xs text-txt-muted hover:text-accent transition-colors mt-1"
+                >
+                  <ChevronUp size={12} />
+                  Collapse
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -1145,6 +1740,45 @@ function generateWeightOptions() {
   return options;
 }
 
+function findBiggestStrength(scores) {
+  const categories = [
+    { name: 'training consistency', score: scores.trainingLoad, max: 15 },
+    { name: 'goal alignment', score: scores.goalAlignment, max: 20 },
+    { name: 'stress management', score: scores.stress, max: 20 },
+    { name: 'energy levels', score: scores.energy, max: 20 },
+    { name: 'sleep quality', score: scores.sleep, max: 25 },
+  ];
+
+  const best = categories.reduce((max, cat) =>
+    (cat.score / cat.max) > (max.score / max.max) ? cat : max
+  );
+
+  return best.name;
+}
+
+function findPrimaryGap(scores, responses) {
+  const categories = [
+    { name: 'Sleep quality', score: scores.sleep, max: 25, input: responses.sleepQuality },
+    { name: 'Energy levels', score: scores.energy, max: 20, input: responses.energyLevel },
+    { name: 'Stress management', score: scores.stress, max: 20, input: 6 - responses.stressLevel },
+  ];
+
+  const worst = categories.reduce((min, cat) =>
+    (cat.score / cat.max) < (min.score / min.max) ? cat : min
+  );
+
+  return worst.name;
+}
+
+function calculatePotentialGain(scores, responses) {
+  const sleepGap = 5 - responses.sleepQuality;
+  const energyGap = 5 - responses.energyLevel;
+  const stressGap = responses.stressLevel - 1;
+
+  const maxGap = Math.max(sleepGap * 0.5, energyGap * 0.4, stressGap * 0.4);
+  return Math.min(2.5, maxGap).toFixed(1);
+}
+
 // Product recommendation logic
 function generateRecommendations(responses, shopifyProducts) {
   const recommendations = [];
@@ -1152,11 +1786,11 @@ function generateRecommendations(responses, shopifyProducts) {
   // Priority-based product selection (1-2 max)
   // Priority 1: Poor Sleep
   if (responses.sleepQuality <= 2) {
-    const sleepProduct = findProduct(shopifyProducts, ['sleep', 'melatonin']);
+    const sleepProduct = findProduct(shopifyProducts, ['sleep', 'melatonin', 'magnesium']);
     if (sleepProduct) {
       recommendations.push({
         ...sleepProduct,
-        reasoning: 'Your low sleep score indicates suboptimal recovery and hormone production. Quality sleep is the foundation of all physical adaptation.',
+        reasoning: `Based on your sleep score of ${responses.sleepQuality}/5, this will help optimize your overnight recovery and REM cycles, which are currently limiting your adaptation.`,
       });
     }
   }
@@ -1166,7 +1800,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (stressProduct) {
       recommendations.push({
         ...stressProduct,
-        reasoning: 'High stress elevates cortisol which impairs muscle recovery and adaptation. Stress management is critical for your goals.',
+        reasoning: `With your stress level at ${responses.stressLevel}/5, cortisol management is critical. This will help regulate your stress response and improve recovery.`,
       });
     }
   }
@@ -1176,15 +1810,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (creatine) {
       recommendations.push({
         ...creatine,
-        reasoning: 'Low energy indicates metabolic inefficiency. Creatine supports ATP production for sustained energy output.',
-      });
-    }
-
-    const multi = findProduct(shopifyProducts, ['multivitamin', 'multi']);
-    if (multi && recommendations.length < 2) {
-      recommendations.push({
-        ...multi,
-        reasoning: 'A comprehensive multivitamin covers potential nutrient gaps that may be contributing to low energy.',
+        reasoning: `Your energy score of ${responses.energyLevel}/5 indicates metabolic inefficiency. Creatine supports ATP production for sustained energy output throughout the day.`,
       });
     }
   }
@@ -1194,15 +1820,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (creatine) {
       recommendations.push({
         ...creatine,
-        reasoning: 'Creatine is the most researched supplement for strength and muscle gains. Essential for your muscle-building goals.',
-      });
-    }
-
-    const protein = findProduct(shopifyProducts, ['whey', 'protein']);
-    if (protein && recommendations.length < 2) {
-      recommendations.push({
-        ...protein,
-        reasoning: 'High-quality protein supports muscle protein synthesis for optimal recovery and growth.',
+        reasoning: `For your muscle-building goal with ${responses.trainingFrequency} training, creatine is the most researched supplement for strength gains.`,
       });
     }
   }
@@ -1212,15 +1830,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (omega) {
       recommendations.push({
         ...omega,
-        reasoning: 'Omega-3s support metabolic function and help maintain muscle mass during caloric deficit.',
-      });
-    }
-
-    const multi = findProduct(shopifyProducts, ['multivitamin', 'multi']);
-    if (multi && recommendations.length < 2) {
-      recommendations.push({
-        ...multi,
-        reasoning: 'Cover nutritional gaps that may occur during reduced calorie intake.',
+        reasoning: `Omega-3s support metabolic function and help maintain muscle mass during your fat loss phase.`,
       });
     }
   }
@@ -1230,15 +1840,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (multi) {
       recommendations.push({
         ...multi,
-        reasoning: 'Essential nutrients support neurotransmitter production and cognitive function.',
-      });
-    }
-
-    const omega = findProduct(shopifyProducts, ['omega', 'fish oil']);
-    if (omega && recommendations.length < 2) {
-      recommendations.push({
-        ...omega,
-        reasoning: 'Omega-3 fatty acids are crucial for brain health and mental clarity.',
+        reasoning: `Essential nutrients support neurotransmitter production and cognitive function for your focus goals.`,
       });
     }
   }
@@ -1248,7 +1850,7 @@ function generateRecommendations(responses, shopifyProducts) {
     if (creatine) {
       recommendations.push({
         ...creatine,
-        reasoning: 'Creatine supports ATP production and cellular energy during sustained activity.',
+        reasoning: `For endurance athletes training ${responses.trainingFrequency}, creatine supports ATP production and cellular energy during sustained activity.`,
       });
     }
   }
@@ -1258,8 +1860,31 @@ function generateRecommendations(responses, shopifyProducts) {
     if (multi) {
       recommendations.push({
         ...multi,
-        reasoning: 'A comprehensive multivitamin covers nutritional gaps for baseline health optimization.',
+        reasoning: `A comprehensive multivitamin covers nutritional gaps for baseline health optimization.`,
       });
+    }
+  }
+
+  // Add second recommendation if we only have one
+  if (recommendations.length === 1) {
+    const existingTitles = recommendations.map(r => r.title.toLowerCase());
+
+    // Try to add complementary product
+    const complementary = [
+      { keywords: ['protein', 'whey'], reasoning: `High-quality protein supports muscle protein synthesis for optimal recovery with your ${responses.trainingFrequency} training schedule.` },
+      { keywords: ['omega', 'fish oil'], reasoning: `Omega-3 fatty acids reduce inflammation and support joint health for your active lifestyle.` },
+      { keywords: ['vitamin d', 'd3'], reasoning: `Vitamin D supports immune function and bone health, especially important for athletes.` },
+    ];
+
+    for (const comp of complementary) {
+      const product = findProduct(shopifyProducts, comp.keywords);
+      if (product && !existingTitles.includes(product.title.toLowerCase())) {
+        recommendations.push({
+          ...product,
+          reasoning: comp.reasoning,
+        });
+        break;
+      }
     }
   }
 
