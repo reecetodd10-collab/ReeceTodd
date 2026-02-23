@@ -22,6 +22,7 @@ import { useScrollAnimation } from './hooks/useScrollAnimation';
 import { fetchShopifyProducts } from './lib/shopify';
 import { addToCart } from './lib/shopify';
 import OptimizationScorePopup from './components/OptimizationScorePopup';
+import NitricPopup from './components/NitricPopup';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -100,6 +101,7 @@ export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)' }}>
       <OptimizationScorePopup />
+      <NitricPopup />
 
       {/* Section Indicators */}
       <SectionIndicators sections={sections} activeSection={activeSection} />
