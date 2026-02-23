@@ -68,7 +68,7 @@ async function sendTestEmail() {
 
   // Create email HTML
   const newsletterDate = new Date(newsletter.published_date);
-  const websiteUrl = 'http://localhost:3001'; // Change to your production URL
+  const websiteUrl = 'https://avierafit.com';
   const newsletterUrl = `${websiteUrl}/news/${newsletter.id}`;
 
   const emailHtml = `<!DOCTYPE html>
