@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import AvieraAIWidget from './AvieraAIWidget';
+import CookieConsent from './CookieConsent';
 
 export default function MarketingLayout({ children }) {
   const pathname = usePathname();
@@ -52,6 +53,7 @@ export default function MarketingLayout({ children }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <AvieraAIWidget />
+      <CookieConsent />
     </div>
   );
 }

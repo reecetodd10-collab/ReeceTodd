@@ -51,12 +51,14 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Policies */}
           <div>
-            <h3 className="text-[var(--txt)] font-bold mb-4">Legal</h3>
+            <h3 className="text-[var(--txt)] font-bold mb-4">Policies</h3>
             <ul className="space-y-2">
               <li><Link href="/privacy" className="hover:text-[var(--acc)] transition">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-[var(--acc)] transition">Terms of Service</Link></li>
+              <li><Link href="/shipping" className="hover:text-[var(--acc)] transition">Shipping Policy</Link></li>
+              <li><Link href="/returns" className="hover:text-[var(--acc)] transition">Returns & Refunds</Link></li>
             </ul>
           </div>
 
