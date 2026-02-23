@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
+import { useUser, SignInButton } from '@clerk/nextjs';
+import { trackEvent } from '@/lib/analytics';
 
 // Goal icons mapping
 const GOAL_ICONS = {
@@ -83,6 +85,8 @@ export default function SupplementOptimizationScore() {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedIndividual, setAddedIndividual] = useState({});
+  const [resultId, setResultId] = useState(null);
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
 
   // Email capture
   const [email, setEmail] = useState('');
@@ -93,6 +97,9 @@ export default function SupplementOptimizationScore() {
     fetchShopifyProducts()
       .then(products => setShopifyProducts(products))
       .catch(err => console.error('Error fetching products:', err));
+
+    // Track quiz started
+    trackEvent('optimization_quiz_started');
   }, []);
 
   // Section definitions
@@ -286,6 +293,7 @@ export default function SupplementOptimizationScore() {
   const calculateResults = async () => {
     setQuizComplete(true);
     setIsCalculating(true);
+    trackEvent('optimization_quiz_completed', { goal: responses.primaryGoal });
 
     // Deterministic scoring
     const sleepScore = (responses.sleepQuality / 5) * 25;
@@ -405,6 +413,32 @@ export default function SupplementOptimizationScore() {
       });
     }
 
+    // Save results to Supabase via API
+    try {
+      const saveResponse = await fetch('/api/optimization-results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email || clerkUser?.primaryEmailAddress?.emailAddress,
+          primary_goal: responses.primaryGoal,
+          optimization_score: totalScore,
+          primary_bottleneck: aiInsights?.primaryGap?.category || findPrimaryGap(calculatedScores, responses),
+          inputs: responses,
+          scores: calculatedScores,
+          recommended_products: recs.map(r => ({ title: r.title, price: r.price })),
+        }),
+      });
+
+      if (saveResponse.ok) {
+        const { id } = await saveResponse.json();
+        setResultId(id);
+        // Track score viewed
+        trackEvent('score_viewed', { score: totalScore, result_id: id });
+      }
+    } catch (saveError) {
+      console.error('Error saving results to database:', saveError);
+    }
+
     // Simulate loading for premium feel
     setTimeout(() => {
       setIsCalculating(false);
@@ -440,6 +474,20 @@ export default function SupplementOptimizationScore() {
     } finally {
       setIsAddingToCart(false);
     }
+
+    // PATCH added_to_cart
+    if (resultId) {
+      try {
+        await fetch('/api/optimization-results', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: resultId, added_to_cart: true }),
+        });
+        trackEvent('add_to_cart_clicked', { type: 'full_stack', result_id: resultId });
+      } catch (patchError) {
+        console.error('Error updating added_to_cart:', patchError);
+      }
+    }
   };
 
   // Add individual product to cart
@@ -449,6 +497,7 @@ export default function SupplementOptimizationScore() {
     try {
       await addToCart(product.variantId, 1);
       setAddedIndividual(prev => ({ ...prev, [product.title]: true }));
+      trackEvent('add_to_cart_clicked', { type: 'individual', product: product.title, result_id: resultId });
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -461,6 +510,7 @@ export default function SupplementOptimizationScore() {
 
     // TODO: Save to database and send email via Resend
     setEmailSubmitted(true);
+    trackEvent('email_submitted', { email });
   };
 
   // Render quiz or results
@@ -481,6 +531,8 @@ export default function SupplementOptimizationScore() {
         setEmail={setEmail}
         emailSubmitted={emailSubmitted}
         onEmailSubmit={handleEmailSubmit}
+        isSignedIn={isSignedIn}
+        resultId={resultId}
       />
     );
   }
@@ -923,6 +975,8 @@ function ResultsPage({
   setEmail,
   emailSubmitted,
   onEmailSubmit,
+  isSignedIn,
+  resultId,
 }) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
@@ -1106,65 +1160,96 @@ function ResultsPage({
           </AnimatePresence>
         </motion.div>
 
-        {/* Quick Analysis Section */}
+        {/* Fastest Performance Win Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass-card p-6 mb-8"
-          style={{
-            background: 'rgba(20, 20, 25, 0.9)',
-            border: '1px solid rgba(0, 217, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          }}
+          className="mb-12"
         >
-          <h3 className="text-lg font-semibold text-txt mb-4 flex items-center gap-2">
-            <Zap size={20} className="text-accent" />
-            Your Quick Analysis
-          </h3>
+          <div
+            className="glass-card p-1 relative overflow-hidden mb-8"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.3), transparent)',
+              borderRadius: '24px'
+            }}
+          >
+            <div className="bg-[#0a0a0f]/95 rounded-[23px] p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-accent/20 rounded-lg">
+                  <Sparkles size={24} className="text-accent" />
+                </div>
+                <h2 className="text-3xl font-bold text-txt">Your Fastest Performance Win</h2>
+              </div>
 
-          <div className="space-y-4">
-            {/* Overall Assessment Badge */}
-            <div className="flex items-center justify-between">
-              <span className="text-txt-muted">Overall Assessment</span>
-              <span
-                className="px-4 py-1.5 rounded-full font-semibold text-sm"
-                style={{ background: assessment.bg, color: assessment.color }}
+              {/* Diagnosis */}
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingDown size={18} className="text-orange-400" />
+                    <span className="text-orange-400 font-bold uppercase text-xs tracking-wider">Primary Bottleneck</span>
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">{aiInsights?.primaryGap?.category || findPrimaryGap(scores, responses)}</h4>
+                  <p className="text-txt-muted text-sm leading-relaxed">
+                    {aiInsights?.primaryGap?.text || `This is the single biggest factor currently limiting your ${responses.primaryGoal.toLowerCase()} potential.`}
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-accent/5 border border-accent/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target size={18} className="text-accent" />
+                    <span className="text-accent font-bold uppercase text-xs tracking-wider">Optimization Target</span>
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">{responses.primaryGoal}</h4>
+                  <p className="text-txt-muted text-sm leading-relaxed">
+                    Addressing your primary bottleneck unlocks up to {calculatePotentialGain(scores, responses)} additional points in this category.
+                  </p>
+                </div>
+              </div>
+
+              {/* Recommendations (The "What" and "Why") */}
+              <div className="space-y-4 mb-8">
+                {recommendations.map((product, idx) => (
+                  <ProductCard
+                    key={idx}
+                    product={product}
+                    onAddToCart={() => onAddIndividual(product)}
+                    isAdded={addedIndividual[product.title]}
+                  />
+                ))}
+
+                {specialAIPick && (
+                  <SpecialAIPickCard
+                    product={specialAIPick}
+                    onAddToCart={() => onAddIndividual(specialAIPick)}
+                    isAdded={addedIndividual[specialAIPick.title]}
+                  />
+                )}
+              </div>
+
+              {/* Primary CTA */}
+              <button
+                onClick={onAddToCart}
+                disabled={isAddingToCart || addedToCart}
+                className="w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: addedToCart
+                    ? 'rgba(16, 185, 129, 0.95)'
+                    : 'linear-gradient(135deg, #00d9ff, #00b8d4)',
+                  color: '#001018',
+                  boxShadow: addedToCart ? 'none' : '0 0 40px rgba(0, 217, 255, 0.4)',
+                }}
               >
-                {assessment.text}
-              </span>
-            </div>
-
-            {/* Biggest Strength */}
-            <div className="p-3 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingUp size={16} className="text-green-400" />
-                <span className="text-green-400 font-medium text-sm">Biggest Strength</span>
-              </div>
-              <p className="text-txt text-sm">
-                {aiInsights?.biggestStrength?.text || `Your ${findBiggestStrength(scores)} is your biggest asset, keeping you ahead of the curve.`}
-              </p>
-            </div>
-
-            {/* Primary Gap */}
-            <div className="p-3 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingDown size={16} className="text-orange-400" />
-                <span className="text-orange-400 font-medium text-sm">Primary Gap</span>
-              </div>
-              <p className="text-txt text-sm">
-                {aiInsights?.primaryGap?.text || `${findPrimaryGap(scores, responses)} is limiting your recovery potential and adaptation.`}
-              </p>
-            </div>
-
-            {/* Key Opportunity */}
-            <div className="p-3 rounded-lg" style={{ background: 'rgba(0, 217, 255, 0.1)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles size={16} className="text-accent" />
-                <span className="text-accent font-medium text-sm">Key Opportunity</span>
-              </div>
-              <p className="text-txt text-sm">
-                {aiInsights?.keyOpportunity || `Addressing your primary gap could boost your score by an estimated ${calculatePotentialGain(scores, responses)} points.`}
+                {isAddingToCart ? (
+                  <div className="w-6 h-6 border-3 border-[#001018] border-t-transparent rounded-full animate-spin" />
+                ) : addedToCart ? (
+                  <><Check size={28} /> Stack Added!</>
+                ) : (
+                  <><ShoppingCart size={28} /> Add My Stack to Cart</>
+                )}
+              </button>
+              <p className="text-center text-txt-muted text-xs mt-4">
+                Guaranteed pharmaceutical grade • 3rd party tested • Free US shipping
               </p>
             </div>
           </div>
@@ -1246,80 +1331,46 @@ function ResultsPage({
           </div>
         </motion.div>
 
-        {/* Recommended Products */}
-        {(recommendations.length > 0 || specialAIPick) && (
+        {/* Track Your Progress (Signed Out Only) */}
+        {!isSignedIn && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mb-8"
+            transition={{ delay: 0.4 }}
+            className="glass-card p-8 mb-8 text-center relative overflow-hidden"
+            style={{
+              background: 'rgba(30, 30, 35, 0.95)',
+              border: '2px solid rgba(0, 217, 255, 0.3)',
+              boxShadow: '0 0 30px rgba(0, 217, 255, 0.2)',
+            }}
           >
-            <h3 className="text-xl font-semibold text-txt mb-4 text-center">
-              Your Personalized Stack
-            </h3>
-
-            <div className="space-y-4 mb-6">
-              {recommendations.map((product, idx) => (
-                <ProductCard
-                  key={idx}
-                  product={product}
-                  onAddToCart={() => onAddIndividual(product)}
-                  isAdded={addedIndividual[product.title]}
-                />
-              ))}
-
-              {/* Special AI Pick */}
-              {specialAIPick && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <SpecialAIPickCard
-                    product={specialAIPick}
-                    onAddToCart={() => onAddIndividual(specialAIPick)}
-                    isAdded={addedIndividual[specialAIPick.title]}
-                  />
-                </motion.div>
-              )}
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Activity size={120} className="text-accent" />
             </div>
 
-            {/* Add All to Cart Button */}
-            <button
-              onClick={onAddToCart}
-              disabled={isAddingToCart || addedToCart}
-              className="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all"
-              style={{
-                background: addedToCart
-                  ? 'rgba(16, 185, 129, 0.9)'
-                  : 'linear-gradient(135deg, #00d9ff, #00b8d4)',
-                color: '#001018',
-                boxShadow: '0 0 30px rgba(0, 217, 255, 0.5)',
-              }}
-            >
-              {isAddingToCart ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-[#001018] border-t-transparent rounded-full animate-spin" />
-                  Adding to Cart...
-                </>
-              ) : addedToCart ? (
-                <>
-                  <Check size={24} />
-                  Full Stack Added to Cart!
-                </>
-              ) : (
-                <>
-                  <ShoppingCart size={24} />
-                  Add Complete Stack to Cart ({recommendations.length + (specialAIPick ? 1 : 0)} items)
-                </>
-              )}
-            </button>
-
-            <p className="text-center text-txt-muted text-sm mt-3">
-              Free shipping on orders over $50
-            </p>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold text-txt mb-3">Track Your Progress</h3>
+              <p className="text-txt-muted mb-6 max-w-lg mx-auto">
+                Create an account to save your score history, unlock your detailed performance roadmap, and track how your optimization improves over time.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href={`/sign-up?redirect_url=/dashboard/optimization-history&metadata=${resultId ? `{"last_result_id":"${resultId}"}` : ''}`}
+                  className="px-8 py-3 bg-[var(--acc)] text-[#001018] rounded-xl font-bold hover:bg-[var(--acc-hover)] transition shadow-accent"
+                >
+                  Create Free Account
+                </Link>
+                <SignInButton mode="modal">
+                  <button className="px-8 py-3 bg-white/5 text-txt border border-white/10 rounded-xl font-medium hover:bg-white/10 transition">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </div>
+            </div>
           </motion.div>
         )}
+
+
 
         {/* Enhanced Email Capture */}
         {!emailSubmitted ? (

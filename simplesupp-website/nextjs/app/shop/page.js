@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 import GlassCard from '../components/shared/GlassCard';
 import ShopifyProductCard from '../components/ShopifyProductCard';
+import OptimizationScorePopup from '../components/OptimizationScorePopup';
 import { fetchShopifyProducts, fetchProductById, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
 
 // Component that handles URL params
@@ -362,6 +363,7 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen relative py-16 overflow-hidden">
+      <OptimizationScorePopup />
       {/* Background */}
       <div
         style={{

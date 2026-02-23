@@ -21,50 +21,11 @@ import { useActiveSection } from './hooks/useScrollAnimation';
 import { useScrollAnimation } from './hooks/useScrollAnimation';
 import { fetchShopifyProducts } from './lib/shopify';
 import { addToCart } from './lib/shopify';
+import OptimizationScorePopup from './components/OptimizationScorePopup';
 
 export default function Home() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [showQuizModal, setShowQuizModal] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
-
-  // Show quiz modal on first visit (after 2 seconds)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // Check if user has dismissed the modal before
-    const hasSeenModal = localStorage.getItem('aviera_quiz_modal_dismissed');
-
-    if (!hasSeenModal) {
-      const timer = setTimeout(() => {
-        setShowQuizModal(true);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleDismissModal = () => {
-    setShowQuizModal(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('aviera_quiz_modal_dismissed', 'true');
-    }
-  };
-
-  const handleGetStarted = () => {
-    handleDismissModal();
-    if (typeof window !== 'undefined') {
-      const element = document.getElementById('aviera-stack');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-  };
-
   // Fetch featured products for shop section
   useEffect(() => {
     const loadFeaturedProducts = async () => {
@@ -138,78 +99,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)' }}>
-      {/* Quiz Modal Popup */}
-      <AnimatePresence>
-        {showQuizModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{
-              background: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(8px)',
-            }}
-            onClick={handleDismissModal}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', duration: 0.5 }}
-              className="glass-card p-8 max-w-md w-full text-center relative"
-              style={{
-                boxShadow: '0 0 40px rgba(0, 217, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.5)',
-                border: '1px solid rgba(0, 217, 255, 0.2)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close Button */}
-              <button
-                onClick={handleDismissModal}
-                className="absolute top-4 right-4 text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors"
-                aria-label="Close"
-              >
-                <X size={24} />
-              </button>
-
-              {/* Icon */}
-              <div className="mb-6">
-                <div className="relative inline-block">
-                  <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
-                  <div className="relative w-20 h-20 bg-[var(--charcoal-light)] rounded-2xl flex items-center justify-center border border-[var(--border)]">
-                    <Sparkles className="text-[var(--acc)]" size={40} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <h2 className="text-3xl font-normal text-[var(--txt)] mb-3">
-                Discover Your Perfect Supplement Stack
-              </h2>
-              <p className="text-lg text-[var(--txt-muted)] font-light mb-8">
-                Take our 2-minute quiz
-              </p>
-
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={handleGetStarted}
-                  className="flex-1 px-6 py-3 bg-[var(--acc)] text-[#001018] rounded-lg font-semibold hover:bg-[var(--acc-hover)] transition shadow-accent"
-                >
-                  Get Started
-                </button>
-                <button
-                  onClick={handleDismissModal}
-                  className="px-6 py-3 bg-[var(--bg-elev-1)] text-[var(--txt-muted)] rounded-lg font-normal hover:bg-[var(--bg-elev-2)] hover:text-[var(--txt)] transition border border-[var(--border)]"
-                >
-                  Maybe Later
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <OptimizationScorePopup />
 
       {/* Section Indicators */}
       <SectionIndicators sections={sections} activeSection={activeSection} />
@@ -288,11 +178,9 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-                <motion.button
-                  onClick={() => scrollToSection('aviera-stack')}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-[var(--acc)] via-cyan-500 to-blue-500 text-white font-normal rounded-xl shadow-lg shadow-[var(--acc)]/30 hover:shadow-xl hover:shadow-[var(--acc)]/40 transition-all duration-300 border border-white/20 hover:border-white/30"
+                <Link
+                  href="/supplement-optimization-score"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[var(--acc)] via-cyan-500 to-blue-500 text-white font-normal rounded-xl shadow-lg shadow-[var(--acc)]/30 hover:shadow-xl hover:shadow-[var(--acc)]/40 transition-all duration-300 border border-white/20 hover:border-white/30 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <span className="relative z-10 flex items-center gap-2 text-lg">
                     Start My 60-Second Quiz
@@ -300,7 +188,7 @@ export default function Home() {
                   </span>
                   {/* Glowing border effect */}
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--acc)] via-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 -z-10"></div>
-                </motion.button>
+                </Link>
 
                 <motion.button
                   onClick={() => scrollToSection('aviera-shop')}
