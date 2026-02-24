@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Newspaper, Mail, Sparkles, Calendar, ArrowRight, CheckCircle, TrendingUp, BookOpen, Zap, Check } from 'lucide-react';
+import { Newspaper, Mail, Calendar, ArrowRight, CheckCircle, Dumbbell, Pill, Heart, Check } from 'lucide-react';
 import Link from 'next/link';
 import PillLogo from '../components/PillLogo';
 // CyanWavyLines removed for mobile performance
@@ -209,7 +209,7 @@ export default function NewsPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            THE LATEST IN FITNESS
+            THIS WEEK IN PERFORMANCE
           </motion.p>
 
           <motion.p
@@ -219,7 +219,7 @@ export default function NewsPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Get the latest fitness and supplement insights delivered to your inbox every week.
+            Three focused insights on fitness, supplements, and health. Every week. No fluff.
           </motion.p>
 
           {/* Email Subscription Form */}
@@ -252,7 +252,7 @@ export default function NewsPage() {
                 Subscribe to Aviera News
               </h2>
               <p className="text-lg mb-8 font-light" style={{ color: '#4a4a4a' }}>
-                Join thousands of fitness enthusiasts getting weekly AI-curated insights.
+                Three things that matter each week. No fluff. Just results.
               </p>
 
               <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
@@ -470,7 +470,7 @@ export default function NewsPage() {
         </div>
       </section>
 
-      {/* What to Expect Section */}
+      {/* What You Get Section - 3 Focused Categories */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -481,15 +481,15 @@ export default function NewsPage() {
                 color: '#1a1a1a'
               }}
             >
-              What to Expect
+              Three Things That Matter
             </h2>
             <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
-              Every issue is packed with valuable insights
+              Focused. Actionable. Under 2 minutes to read.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {/* Feature 1 */}
+            {/* Section 1: Fitness */}
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
@@ -512,7 +512,7 @@ export default function NewsPage() {
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
                 style={{ background: 'rgba(0, 217, 255, 0.1)' }}
               >
-                <TrendingUp style={{ color: '#00d9ff' }} size={32} />
+                <Dumbbell style={{ color: '#00d9ff' }} size={32} />
               </div>
               <h3
                 className="text-xl font-bold mb-3"
@@ -521,14 +521,14 @@ export default function NewsPage() {
                   color: '#1a1a1a'
                 }}
               >
-                Weekly Research Roundup
+                Fitness
               </h3>
               <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                AI-curated summaries of the latest fitness and supplement research published each week.
+                One actionable training insight to improve your performance this week.
               </p>
             </div>
 
-            {/* Feature 2 */}
+            {/* Section 2: Supplements & Peptides */}
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
@@ -551,7 +551,7 @@ export default function NewsPage() {
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
                 style={{ background: 'rgba(0, 217, 255, 0.1)' }}
               >
-                <BookOpen style={{ color: '#00d9ff' }} size={32} />
+                <Pill style={{ color: '#00d9ff' }} size={32} />
               </div>
               <h3
                 className="text-xl font-bold mb-3"
@@ -560,14 +560,14 @@ export default function NewsPage() {
                   color: '#1a1a1a'
                 }}
               >
-                Expert Insights
+                Supplements & Peptides
               </h3>
               <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                Deep dives into supplement science, workout optimization, and nutrition strategies.
+                The latest research and what actually works, without the hype.
               </p>
             </div>
 
-            {/* Feature 3 */}
+            {/* Section 3: Health & Lifestyle */}
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
@@ -590,7 +590,7 @@ export default function NewsPage() {
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
                 style={{ background: 'rgba(0, 217, 255, 0.1)' }}
               >
-                <Zap style={{ color: '#00d9ff' }} size={32} />
+                <Heart style={{ color: '#00d9ff' }} size={32} />
               </div>
               <h3
                 className="text-xl font-bold mb-3"
@@ -599,10 +599,10 @@ export default function NewsPage() {
                   color: '#1a1a1a'
                 }}
               >
-                Industry Trends
+                Health & Lifestyle
               </h3>
               <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                Stay ahead with analysis of emerging trends in fitness, wellness, and supplementation.
+                Sleep, recovery, and mental focus tips you can use immediately.
               </p>
             </div>
           </div>
@@ -712,10 +712,10 @@ export default function NewsPage() {
                   color: '#1a1a1a'
                 }}
               >
-                Ready to Stay Informed?
+                Train Hard. Recover Smarter.
               </h2>
               <p className="text-lg mb-8 font-light max-w-2xl mx-auto" style={{ color: '#4a4a4a' }}>
-                Join our community and never miss the latest insights in fitness and supplementation.
+                Get the insights that matter. No information overload. Just what you need to perform.
               </p>
               <Link
                 href="#"
