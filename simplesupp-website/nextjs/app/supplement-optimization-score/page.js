@@ -1356,7 +1356,8 @@ function ResultsPage({
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href={`/sign-up?redirect_url=/dashboard/optimization-history&metadata=${resultId ? `{"last_result_id":"${resultId}"}` : ''}`}
-                  className="px-8 py-3 bg-[var(--acc)] text-[#001018] rounded-xl font-bold hover:bg-[var(--acc-hover)] transition shadow-accent"
+                  className="px-8 py-3 bg-[var(--acc)] text-white rounded-xl font-bold hover:bg-[var(--acc-hover)] transition shadow-accent"
+                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
                 >
                   Create Free Account
                 </Link>
