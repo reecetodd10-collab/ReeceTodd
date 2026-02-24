@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import PillLogo from '../components/PillLogo';
-import { fetchProductById, addToCart, initializeShopifyCart } from '../lib/shopify';
-import { ArrowRight, Check, Brain, Zap, Heart, Dumbbell, Shield, Truck, Award } from 'lucide-react';
+import { fetchProductById, addToCart, initializeShopifyCart, getCheckoutUrl } from '../lib/shopify';
+import { ArrowRight, Check, Brain, Zap, Heart, Dumbbell, Shield, Truck, Award, ShoppingCart } from 'lucide-react';
 
 export default function NitricOxidePage() {
   const [variantId, setVariantId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [checkoutUrl, setCheckoutUrl] = useState(null);
 
   const SHOPIFY_PRODUCT_ID = '8645601657022';
   const PRODUCT_IMAGE = 'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734704-generated-label-image-0.jpg?v=1766350977';
@@ -48,7 +49,9 @@ export default function NitricOxidePage() {
     try {
       await addToCart(variantId, 1);
       setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
+      // Get checkout URL after adding to cart
+      const url = await getCheckoutUrl();
+      setCheckoutUrl(url);
     } catch (error) {
       console.error('Failed to add to cart:', error);
       alert('Failed to add product to cart. Please try again.');
@@ -191,6 +194,30 @@ export default function NitricOxidePage() {
                   </>
                 )}
               </button>
+
+              {/* View Cart Button - appears after adding */}
+              {added && checkoutUrl && (
+                <a
+                  href={checkoutUrl}
+                  className="w-full md:w-auto md:min-w-[280px] px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2 mt-3"
+                  style={{
+                    background: 'transparent',
+                    border: '2px solid #00d9ff',
+                    color: '#00d9ff',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(0, 217, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <ShoppingCart size={20} />
+                  <span>View Cart & Checkout</span>
+                </a>
+              )}
 
               {/* Trust Line */}
               <div className="mt-6 flex items-center justify-center md:justify-start gap-2 text-sm" style={{ color: '#4a4a4a' }}>
@@ -622,6 +649,30 @@ export default function NitricOxidePage() {
               </>
             )}
           </button>
+
+          {/* View Cart Button - appears after adding */}
+          {added && checkoutUrl && (
+            <a
+              href={checkoutUrl}
+              className="w-full md:w-auto md:min-w-[320px] px-8 py-5 rounded-xl font-semibold text-xl transition-all duration-300 ease-in-out flex items-center justify-center gap-2 mx-auto mb-8"
+              style={{
+                background: 'transparent',
+                border: '2px solid #00d9ff',
+                color: '#00d9ff',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 217, 255, 0.1)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <ShoppingCart size={24} />
+              <span>View Cart & Checkout</span>
+            </a>
+          )}
 
           {/* Trust Badges - Small Below Button */}
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm" style={{ color: '#4a4a4a' }}>
