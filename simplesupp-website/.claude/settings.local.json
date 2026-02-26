@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"c:\\\\Users\\\\reece\\\\ReeceTodd\\\\simplesupp-website\\\\mockups\\\\aviera-mobile-mockups.html\")",
+      "Bash(powershell -Command:*)",
+      "Bash(start \"\" \"c:\\\\Users\\\\reece\\\\ReeceTodd\\\\simplesupp-website\\\\mockups\\\\PASTE-INTO-CLAUDE.md\")",
+      "Bash(ipconfig:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

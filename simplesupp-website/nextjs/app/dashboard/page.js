@@ -74,9 +74,14 @@ export default function DashboardPage() {
 
               <div className="text-center mb-8">
                 <Crown className="text-[#00d9ff] mx-auto mb-6" size={64} />
-                <h1 className="text-4xl md:text-5xl font-normal text-white mb-4">
-                  Aviera Pro Dashboard
-                </h1>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <h1 className="text-4xl md:text-5xl font-normal text-white">
+                    Aviera Pro Dashboard
+                  </h1>
+                  <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-[#00d9ff]/20 text-[#00d9ff] border border-[#00d9ff]/40">
+                    Beta
+                  </span>
+                </div>
                 <h2 className="text-2xl md:text-3xl font-light text-[#00d9ff] mb-6">
                   Coming Soon
                 </h2>
