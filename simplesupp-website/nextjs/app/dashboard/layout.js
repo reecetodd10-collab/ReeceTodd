@@ -25,7 +25,7 @@ import AIChat from '../components/premium/AIChat';
 import Reassessment from '../components/premium/Reassessment';
 import PillLogo from '../components/PillLogo';
 import Button from '../components/shared/Button';
-import DashboardBlockingModal from '../components/DashboardBlockingModal';
+
 import { hasPremiumAccess, TESTING_MODE } from '../lib/config';
 
 // TODO: Add Clerk authentication here
@@ -44,10 +44,6 @@ export default function DashboardLayout({ children }) {
   const userIsPremium = false; // User's actual premium status from backend
   const isPremium = hasPremiumAccess(userIsPremium); // Respects testing mode
 
-  // Block all dashboard routes - show coming soon modal
-  // In production, this will always be false, so dashboard is blocked
-  // In development with TESTING_MODE, users can access dashboard
-  const shouldBlockDashboard = !TESTING_MODE || process.env.NODE_ENV === 'production';
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
@@ -186,14 +182,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        {/* Block all dashboard routes if not in testing mode */}
-        {shouldBlockDashboard ? (
-          <DashboardBlockingModal
-            isOpen={true}
-            onClose={() => router.push('/')}
-          />
-        ) : (
-          <>
+        <>
             {/* Testing Mode Indicator - Top Right (only in development) */}
             {process.env.NODE_ENV === 'development' && TESTING_MODE && (
               <div className="fixed top-4 right-4 z-50 px-3 py-1.5 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400 flex items-center gap-1.5 shadow-lg">
@@ -249,7 +238,6 @@ export default function DashboardLayout({ children }) {
               {children}
             </div>
           </>
-        )}
       </main>
 
       {/* Mobile Sidebar Overlay */}

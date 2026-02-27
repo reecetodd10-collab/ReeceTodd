@@ -72,9 +72,9 @@ export default function ContactForm() {
         viewport={{ once: true }}
         className="rounded-2xl p-8 md:p-12 transition-all duration-300"
         style={{
-          background: '#ffffff',
-          border: '1px solid #e0e0e0',
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
         }}
       >
         {isSubmitted ? (
@@ -88,17 +88,17 @@ export default function ContactForm() {
                 <CheckCircle style={{ color: '#00d9ff' }} size={40} />
               </div>
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Montserrat, sans-serif', color: '#1a1a1a' }}>
+            <h3 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Montserrat, sans-serif', color: 'var(--txt)' }}>
               Message Sent!
             </h3>
-            <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
+            <p className="text-lg font-light" style={{ color: 'var(--txt-muted)' }}>
               We'll get back to you as soon as possible.
             </p>
           </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
+              <label htmlFor="name" className="block text-sm font-semibold mb-2" style={{ color: 'var(--txt)' }}>
                 Name
               </label>
               <input
@@ -109,9 +109,9 @@ export default function ContactForm() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none"
                 style={{
-                  background: '#f9fafb',
-                  border: `1px solid ${errors.name ? '#ef4444' : '#e0e0e0'}`,
-                  color: '#1a1a1a',
+                  background: 'var(--bg-elev-1)',
+                  border: `1px solid ${errors.name ? '#ef4444' : 'var(--border)'}`,
+                  color: 'var(--txt)',
                   fontSize: '16px',
                 }}
                 onFocus={(e) => {
@@ -119,7 +119,7 @@ export default function ContactForm() {
                   e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = errors.name ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.borderColor = errors.name ? '#ef4444' : 'var(--border)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
                 placeholder="Your name"
@@ -130,7 +130,7 @@ export default function ContactForm() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
+              <label htmlFor="email" className="block text-sm font-semibold mb-2" style={{ color: 'var(--txt)' }}>
                 Email
               </label>
               <input
@@ -141,9 +141,9 @@ export default function ContactForm() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none"
                 style={{
-                  background: '#f9fafb',
-                  border: `1px solid ${errors.email ? '#ef4444' : '#e0e0e0'}`,
-                  color: '#1a1a1a',
+                  background: 'var(--bg-elev-1)',
+                  border: `1px solid ${errors.email ? '#ef4444' : 'var(--border)'}`,
+                  color: 'var(--txt)',
                   fontSize: '16px',
                 }}
                 onFocus={(e) => {
@@ -151,7 +151,7 @@ export default function ContactForm() {
                   e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = errors.email ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.borderColor = errors.email ? '#ef4444' : 'var(--border)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
                 placeholder="your.email@example.com"
@@ -162,7 +162,7 @@ export default function ContactForm() {
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-semibold mb-2" style={{ color: '#1a1a1a' }}>
+              <label htmlFor="message" className="block text-sm font-semibold mb-2" style={{ color: 'var(--txt)' }}>
                 Message
               </label>
               <textarea
@@ -173,9 +173,9 @@ export default function ContactForm() {
                 rows="5"
                 className="w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none resize-none"
                 style={{
-                  background: '#f9fafb',
-                  border: `1px solid ${errors.message ? '#ef4444' : '#e0e0e0'}`,
-                  color: '#1a1a1a',
+                  background: 'var(--bg-elev-1)',
+                  border: `1px solid ${errors.message ? '#ef4444' : 'var(--border)'}`,
+                  color: 'var(--txt)',
                   fontSize: '16px',
                 }}
                 onFocus={(e) => {
@@ -183,7 +183,7 @@ export default function ContactForm() {
                   e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = errors.message ? '#ef4444' : '#e0e0e0';
+                  e.currentTarget.style.borderColor = errors.message ? '#ef4444' : 'var(--border)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
                 placeholder="How can we help you?"

@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
 import GlassCard from '../components/shared/GlassCard';
 import ShopifyProductCard from '../components/ShopifyProductCard';
-import OptimizationScorePopup from '../components/OptimizationScorePopup';
 import { fetchShopifyProducts, fetchProductById, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
 
 // Component that handles URL params
@@ -361,176 +360,123 @@ function ShopContent() {
   }, [shopifyProducts]);
 
 
+  // Chip-style categories for filter row
+  const chipCategories = [
+    { key: 'all', label: 'All' },
+    { key: 'Performance', label: 'Performance' },
+    { key: 'Weight Management', label: 'Weight Mgmt' },
+    { key: 'Health & Wellness', label: 'Health' },
+    { key: 'Recovery & Sleep', label: 'Recovery' },
+    { key: 'Focus & Energy', label: 'Focus' },
+    { key: 'Beauty & Anti-Aging', label: 'Beauty' },
+  ];
+
+  // Tab options
+  const tabs = [
+    { key: 'products', label: 'Products' },
+    { key: 'stacks', label: 'Stacks' },
+    { key: 'apparel', label: 'Apparel' },
+  ];
+
   return (
-    <div className="min-h-screen relative py-16 overflow-hidden">
-      <OptimizationScorePopup />
-      {/* Background */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: -1,
-          background: '#ffffff',
-        }}
-      />
+    <div className="relative min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* Cyan glow backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div
-            className="inline-block px-8 py-6 rounded-2xl mb-4 relative transition-all duration-300 ease-in-out hover:scale-[1.02] cursor-default"
-            style={{
-              background: 'rgba(30, 30, 30, 0.85)',
-              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-              border: '1px solid rgba(0, 217, 255, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-            }}
-          >
-            <h1 className="text-5xl md:text-6xl font-normal text-[var(--txt)] tracking-tight">
-              Aviera Shop
-            </h1>
+      <div className="relative z-10">
+        {/* Search bar */}
+        <div className="sticky top-0 z-20 px-5 pt-3 pb-2" style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(12px)' }}>
+          <div className="relative max-w-7xl mx-auto">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2" size={16} style={{ color: 'var(--txt-dim, #52525b)' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search supplements..."
+              className="w-full pl-10 pr-4 py-3 rounded-[10px] text-[14px] outline-none transition-colors"
+              style={{
+                background: 'var(--bg-elev-1)',
+                border: '1px solid var(--border)',
+                color: 'var(--txt)',
+                minHeight: '44px',
+              }}
+            />
           </div>
-          <p className="text-xl mb-3 font-light leading-relaxed" style={{ color: '#1a1a1a' }}>
-            Premium Supplements for Premium Goals
-          </p>
-          <p className="text-sm font-light tracking-wide" style={{ color: '#1a1a1a' }}>
-            {activeTab === 'products'
-              ? isLoadingProducts
-                ? 'Loading products...'
-                : `${filteredShopifyProducts.length}+ products available`
-              : activeTab === 'apparel'
-                ? 'Coming soon...'
-                : '6 pre-made stacks available'}
-          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex justify-center mb-8 gap-4">
-          <button
-            onClick={() => setActiveTab('apparel')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'apparel'
-              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-              }`}
-          >
-            Aviera Apparel
-          </button>
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'products'
-              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-              }`}
-          >
-            Browse Products
-          </button>
-          <button
-            onClick={() => setActiveTab('stacks')}
-            className={`px-8 py-3 rounded-xl font-normal transition-all duration-300 ${activeTab === 'stacks'
-              ? 'bg-[var(--acc)] text-[#001018] shadow-lg shadow-[var(--acc)]/30'
-              : 'bg-[var(--bg-elev-1)] text-[var(--txt-muted)] border-2 border-[var(--border)] hover:border-[var(--acc)]/50'
-              }`}
-          >
-            Aviera Stacks
-          </button>
+        {/* Tab chips row */}
+        <div className="flex gap-2 overflow-x-auto px-5 py-2 scrollbar-hide max-w-7xl mx-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className="flex-shrink-0 px-4 py-[7px] rounded-full text-[12px] font-medium whitespace-nowrap transition-all"
+              style={{
+                background: activeTab === tab.key ? '#00d9ff' : 'transparent',
+                color: activeTab === tab.key ? '#09090b' : 'var(--txt-muted)',
+                border: activeTab === tab.key ? '1px solid #00d9ff' : '1px solid var(--border)',
+                fontWeight: activeTab === tab.key ? 600 : 500,
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* Search and Filters - Only show for products tab */}
+        {/* Category filter chips - only for products tab */}
         {activeTab === 'products' && (
-          <div className="glass-card p-6 mb-10">
-            <div className="grid md:grid-cols-3 gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] font-normal"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-muted)]" size={20} />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] appearance-none font-normal"
-                >
-                  {Object.entries(CATEGORIES).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label} {key !== 'all' && `(${categoryCounts[key] || 0})`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-elev-1)] border-2 border-[var(--border)] text-[var(--txt)] focus:border-[var(--acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] appearance-none font-normal"
+          <div className="flex gap-2 overflow-x-auto px-5 pb-3 pt-1 scrollbar-hide max-w-7xl mx-auto">
+            {chipCategories.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setSelectedCategory(cat.key)}
+                className="flex-shrink-0 px-3.5 py-[7px] rounded-full text-[12px] font-medium whitespace-nowrap transition-all"
+                style={{
+                  background: selectedCategory === cat.key ? '#00d9ff' : 'transparent',
+                  color: selectedCategory === cat.key ? '#09090b' : 'var(--txt-muted)',
+                  border: selectedCategory === cat.key ? '1px solid #00d9ff' : '1px solid var(--border)',
+                  fontWeight: selectedCategory === cat.key ? 600 : 500,
+                }}
               >
-                <option value="name">Sort: Name (A-Z)</option>
-                <option value="price-low">Sort: Price (Low to High)</option>
-                <option value="price-high">Sort: Price (High to Low)</option>
-              </select>
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="max-w-7xl mx-auto px-5">
+          {/* Aviera Apparel Section */}
+          {activeTab === 'apparel' && <AvieraApparelSection />}
+
+          {/* Aviera Stacks Section */}
+          {activeTab === 'stacks' && <AvieraStacksSection shopifyProducts={shopifyProducts} />}
+
+          {/* Product Grid */}
+          {activeTab === 'products' && (
+            <div>
+              {isLoadingProducts ? (
+                <div className="text-center py-12">
+                  <div className="inline-block w-10 h-10 border-3 border-[#00d9ff] border-t-transparent rounded-full animate-spin mb-3" />
+                  <p className="text-[13px]" style={{ color: 'var(--txt-muted)' }}>Loading products...</p>
+                </div>
+              ) : filteredShopifyProducts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-[13px]" style={{ color: 'var(--txt-muted)' }}>No products found matching your search.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] pb-8">
+                  {filteredShopifyProducts.map((product) => (
+                    <ShopifyProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Aviera Apparel Section */}
-        {activeTab === 'apparel' && (
-          <AvieraApparelSection />
-        )}
-
-        {/* Aviera Stacks Section */}
-        {activeTab === 'stacks' && (
-          <AvieraStacksSection shopifyProducts={shopifyProducts} />
-        )}
-
-        {/* Custom Shopify Product Cards - Only show for products tab */}
-        {activeTab === 'products' && (
-          <div>
-            {isLoadingProducts ? (
-              <div className="text-center py-12">
-                <div className="inline-block w-12 h-12 border-4 border-[var(--acc)] border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-[var(--txt-muted)] text-lg font-light">Loading products...</p>
-              </div>
-            ) : filteredShopifyProducts.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-[var(--txt-muted)] text-lg font-light">No products found matching your search.</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredShopifyProducts.map((product) => (
-                  <ShopifyProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Shopify Cart Toggle Button - Floating button */}
-        <div id="shopify-cart-toggle" className="fixed bottom-8 right-8 z-50"></div>
-
-        {/* Shopify Cart Overlay */}
-        <div id="shopify-cart"></div>
-
+        {/* Shopify Cart Toggle Button */}
+        <div id="shopify-cart-toggle" className="fixed bottom-20 md:bottom-8 right-4 md:right-8 z-50" />
+        <div id="shopify-cart" />
       </div>
     </div>
   );
@@ -649,7 +595,7 @@ function AvieraApparelSection() {
       </div>
 
       {/* Apparel Cards Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {apparelItems.map((item) => (
           <motion.div
             key={item.id}
@@ -933,7 +879,7 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
   };
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10">
       {stacks.map((stack) => {
         const Icon = stack.icon;
 
@@ -1017,7 +963,7 @@ function AvieraStacksSection({ shopifyProducts = [] }) {
                       <li
                         key={idx}
                         className="text-sm flex items-start relative"
-                        style={{ color: '#1a1a1a', fontWeight: 700 }}
+                        style={{ color: 'var(--txt)', fontWeight: 700 }}
                         onMouseEnter={() => {
                           setHoveredSupplement(`${stack.id}-${idx}`);
                           if (product) setHoveredProduct(product);

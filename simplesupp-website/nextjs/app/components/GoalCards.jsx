@@ -47,7 +47,7 @@ export default function GoalCards() {
   ];
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
       {goals.map((goal, index) => {
         const Icon = goal.icon;
         return (
@@ -65,11 +65,11 @@ export default function GoalCards() {
             className="card-premium"
           >
             <div
-              className="rounded-2xl p-8 h-full flex flex-col transition-all duration-300"
+              className="rounded-2xl p-5 sm:p-8 h-full flex flex-col transition-all duration-300"
               style={{
-                background: '#ffffff',
+                background: 'var(--bg-card)',
                 border: '1px solid rgba(0, 217, 255, 0.2)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 217, 255, 0.25), 0 0 20px rgba(0, 217, 255, 0.15)';
@@ -77,7 +77,7 @@ export default function GoalCards() {
                 e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4)';
                 e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.2)';
                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
               }}
@@ -88,17 +88,17 @@ export default function GoalCards() {
                 </div>
               </div>
 
-              <h3 className="text-xl md:text-2xl font-bold mb-3 text-center" style={{ fontFamily: 'Montserrat, sans-serif', color: '#1a1a1a' }}>
+              <h3 className="text-xl md:text-2xl font-bold mb-3 text-center" style={{ fontFamily: 'Montserrat, sans-serif', color: 'var(--txt)' }}>
                 {goal.title}
               </h3>
 
-              <p className="text-base md:text-lg leading-relaxed mb-6 text-center flex-grow font-light" style={{ color: '#4a4a4a' }}>
+              <p className="text-base md:text-lg leading-relaxed mb-6 text-center flex-grow font-light" style={{ color: 'var(--txt-muted)' }}>
                 {goal.description}
               </p>
 
               <ul className="space-y-2">
                 {goal.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-center text-sm font-light" style={{ color: '#6b7280' }}>
+                  <li key={featureIndex} className="flex items-center text-sm font-light" style={{ color: 'var(--txt-muted)' }}>
                     <div className="w-1.5 h-1.5 rounded-full mr-2" style={{ background: '#00d9ff' }} />
                     {feature}
                   </li>

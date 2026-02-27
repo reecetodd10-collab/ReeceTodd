@@ -1,33 +1,22 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Check, X } from 'lucide-react';
 import { addToCart } from '../lib/shopify';
 import Image from 'next/image';
 
 export default function ShopifyProductCard({ product }) {
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showArrows, setShowArrows] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const imageContainerRef = useRef(null);
+  const [showDetail, setShowDetail] = useState(false);
 
-  // TODO: Upload supplement facts and ingredients images to Shopify
-  // Use actual product images from Shopify if available, otherwise duplicate main image
-  const productImages = product.images && product.images.length >= 2
-    ? product.images // Use actual images from Shopify (front, supplement facts, ingredients)
-    : product.image
-      ? [product.image, product.image, product.image] // Fallback: duplicate main image 3 times
-      : [];
+  const mainImage = product.images && product.images.length > 0
+    ? product.images[0]
+    : product.image || null;
 
-  const hasMultipleImages = productImages.length > 1;
+  const handleAddToCart = async (e) => {
+    if (e) e.stopPropagation();
 
-  const handleAddToCart = async () => {
-    // Handle local products without variant IDs
     if (product.isLocalProduct && !product.variantId) {
       alert('This product will be available for purchase soon. Please check back later!');
       return;
@@ -48,323 +37,186 @@ export default function ShopifyProductCard({ product }) {
     }
   };
 
-  // Image carousel functions
-  const goToPreviousImage = (e) => {
-    e.stopPropagation();
-    if (productImages.length === 0) return;
-    setCurrentImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1));
-  };
-
-  const goToNextImage = (e) => {
-    e.stopPropagation();
-    if (productImages.length === 0) return;
-    setCurrentImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
-  };
-
-  // Touch swipe handlers
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && hasMultipleImages) {
-      goToNextImage({ stopPropagation: () => { } });
-    }
-    if (isRightSwipe && hasMultipleImages) {
-      goToPreviousImage({ stopPropagation: () => { } });
-    }
-  };
+  const category = product.category || (product.tags && product.tags[0]) || 'Supplement';
 
   return (
-    <motion.div
-      className="glass-card overflow-hidden transition-all group"
-      style={{
-        border: '1px solid rgba(0, 217, 255, 0.3)',
-        boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-        transition: 'all 0.3s ease'
-      }}
-      whileHover={{
-        y: -2
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-        e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-      }}
-    >
-      {/* Product Image Carousel */}
+    <>
       <div
-        className="relative w-full h-64 bg-gradient-to-b from-[var(--bg-elev-1)] to-[var(--bg)] flex items-center justify-center overflow-hidden"
-        onMouseEnter={() => hasMultipleImages && setShowArrows(true)}
-        onMouseLeave={() => setShowArrows(false)}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        ref={imageContainerRef}
+        className="overflow-hidden transition-all"
+        style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '14px',
+        }}
       >
-        {productImages.length > 0 ? (
-          <div className="relative w-full h-full">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentImageIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 w-full h-full"
-              >
-                <Image
-                  src={productImages[currentImageIndex]}
-                  alt={product.imageAlt || product.title}
-                  width={400}
-                  height={400}
-                  className="w-full h-full object-contain p-4"
-                  style={{ mixBlendMode: 'normal' }}
-                  unoptimized
-                />
-              </motion.div>
-            </AnimatePresence>
-            {/* Subtle dark overlay to blend with dark card */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 pointer-events-none"></div>
+        {/* Square product image */}
+        <div className="relative w-full bg-[var(--bg-elev-1)]" style={{ aspectRatio: '1' }}>
+          {mainImage ? (
+            <Image
+              src={mainImage}
+              alt={product.imageAlt || product.title}
+              fill
+              className="object-contain p-3"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              unoptimized
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-20">💊</div>
+          )}
 
-            {/* Navigation Arrows */}
-            {hasMultipleImages && (
-              <>
-                {/* Left Arrow */}
-                <button
-                  onClick={goToPreviousImage}
-                  className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
-                    }`}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'rgba(0, 217, 255, 0.8)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    backdropFilter: 'blur(4px)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(0, 217, 255, 1)';
-                    e.currentTarget.style.transform = 'scale(1.1) translateY(-50%)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(0, 217, 255, 0.8)';
-                    e.currentTarget.style.transform = 'scale(1) translateY(-50%)';
-                  }}
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft size={20} className="text-[#001018]" strokeWidth={2.5} />
-                </button>
-
-                {/* Right Arrow */}
-                <button
-                  onClick={goToNextImage}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 ${showArrows ? 'opacity-100' : 'opacity-100 md:opacity-0'
-                    }`}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'rgba(0, 217, 255, 0.8)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    backdropFilter: 'blur(4px)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(0, 217, 255, 1)';
-                    e.currentTarget.style.transform = 'scale(1.1) translateY(-50%)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(0, 217, 255, 0.8)';
-                    e.currentTarget.style.transform = 'scale(1) translateY(-50%)';
-                  }}
-                  aria-label="Next image"
-                >
-                  <ChevronRight size={20} className="text-[#001018]" strokeWidth={2.5} />
-                </button>
-              </>
-            )}
-
-            {/* Image Indicator Dots */}
-            {hasMultipleImages && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-                {productImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                    className="transition-all duration-300"
-                    style={{
-                      width: currentImageIndex === index ? '24px' : '8px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      background: currentImageIndex === index
-                        ? 'rgba(0, 217, 255, 1)'
-                        : 'rgba(255, 255, 255, 0.4)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentImageIndex !== index) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.6)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentImageIndex !== index) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.4)';
-                      }
-                    }}
-                    aria-label={`Go to image ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="text-6xl opacity-20">💊</div>
-        )}
-        {!product.available && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
-            <span className="text-white font-normal px-4 py-2 bg-red-500/80 rounded-lg">
-              Out of Stock
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Product Content */}
-      <div className="p-6">
-        {/* Product Title */}
-        <h3 className="text-lg font-normal mb-3 line-clamp-2 min-h-[3.5rem]" style={{ color: '#1a1a1a' }}>
-          {product.title}
-        </h3>
-
-        {/* Product Description (expandable) */}
-        {product.description && (
-          <div className="mb-4">
-            <p
-              className={`text-sm text-[var(--txt-muted)] font-light leading-relaxed transition-all duration-300 ${isDescriptionExpanded ? '' : 'line-clamp-2'
-                }`}
+          {product.badge && (
+            <span
+              className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold"
               style={{
-                display: isDescriptionExpanded ? 'block' : '-webkit-box',
-                WebkitLineClamp: isDescriptionExpanded ? 'none' : 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: isDescriptionExpanded ? 'visible' : 'hidden',
+                background: product.badge === 'Sale' ? 'rgba(239,68,68,0.85)' : 'rgba(0,217,255,0.15)',
+                color: product.badge === 'Sale' ? '#fff' : '#00d9ff',
+                border: product.badge === 'Sale' ? 'none' : '1px solid rgba(0,217,255,0.3)',
               }}
             >
-              {product.description.replace(/<[^>]*>/g, '')}
-            </p>
+              {product.badge}
+            </span>
+          )}
+
+          {!product.available && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+              <span className="text-white text-[11px] font-medium px-3 py-1 bg-red-500/80 rounded-full">
+                Out of Stock
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Product info */}
+        <div className="px-3 pt-2.5 pb-3">
+          <h3
+            className="font-semibold leading-tight line-clamp-2 mb-0.5"
+            style={{ fontSize: '12px', color: 'var(--txt)' }}
+          >
+            {product.title}
+          </h3>
+
+          <p
+            className="mb-2 leading-tight"
+            style={{ fontSize: '10px', color: 'var(--txt-dim, #52525b)' }}
+          >
+            {category}
+          </p>
+
+          {/* Price row + add button */}
+          <div className="flex items-center justify-between">
+            <span className="font-bold" style={{ fontSize: '13px', color: '#00d9ff' }}>
+              ${product.price.toFixed(2)}
+            </span>
+
             <button
-              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-              className="text-sm text-[#00d9ff] hover:text-[#00f0ff] font-normal mt-2 transition-colors duration-300 flex items-center gap-1"
+              onClick={handleAddToCart}
+              disabled={(!product.available || isAdding || added) && !product.isLocalProduct}
+              className="flex items-center justify-center transition-all disabled:opacity-40"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: added ? 'rgba(16,185,129,0.2)' : 'rgba(0,217,255,0.1)',
+                border: added ? '1px solid rgba(16,185,129,0.4)' : '1px solid rgba(0,217,255,0.3)',
+                flexShrink: 0,
+              }}
+              aria-label={added ? 'Added to cart' : 'Add to cart'}
             >
-              {isDescriptionExpanded ? (
-                <>
-                  View Less
-                  <ChevronUp size={14} />
-                </>
+              {added ? (
+                <Check size={14} style={{ color: '#10b981' }} strokeWidth={2.5} />
+              ) : isAdding ? (
+                <div className="w-3 h-3 border-2 border-[#00d9ff] border-t-transparent rounded-full animate-spin" />
               ) : (
-                <>
-                  View More
-                  <ChevronDown size={14} />
-                </>
+                <Plus size={14} style={{ color: '#00d9ff' }} strokeWidth={2.5} />
               )}
             </button>
           </div>
-        )}
 
-        {/* Price */}
-        <div className="mb-6 pt-4 border-t border-[var(--border)]">
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-[#00d9ff]">
-              ${product.price.toFixed(2)}
-            </span>
-            <span className="text-sm text-[var(--txt-muted)] font-light">
-              {product.currencyCode}
-            </span>
+          {/* More Info link */}
+          <button
+            onClick={() => setShowDetail(true)}
+            className="mt-1.5 text-[10px] font-medium"
+            style={{ color: 'var(--txt-muted)' }}
+          >
+            More Info
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom sheet / detail panel */}
+      {showDetail && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end justify-center md:items-center"
+          onClick={() => setShowDetail(false)}
+        >
+          <div className="absolute inset-0 bg-black/60" />
+          <div
+            className="relative z-10 w-full max-w-md rounded-t-[20px] md:rounded-[20px] max-h-[80vh] overflow-y-auto"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowDetail(false)}
+              className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: 'var(--bg-elev-1)' }}
+            >
+              <X size={16} style={{ color: 'var(--txt-muted)' }} />
+            </button>
+
+            {/* Product image */}
+            <div className="w-full aspect-square flex items-center justify-center relative" style={{ background: 'var(--bg-elev-1)' }}>
+              {mainImage ? (
+                <Image
+                  src={mainImage}
+                  alt={product.imageAlt || product.title}
+                  fill
+                  className="object-contain p-6"
+                  unoptimized
+                />
+              ) : (
+                <span className="text-5xl opacity-20">💊</span>
+              )}
+            </div>
+
+            <div className="p-5">
+              <h3 className="text-[16px] font-bold mb-1" style={{ color: 'var(--txt)' }}>{product.title}</h3>
+              <p className="text-[15px] font-bold mb-3" style={{ color: '#00d9ff' }}>${product.price.toFixed(2)}</p>
+
+              {product.description && (
+                <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'var(--txt-muted)' }}>
+                  {product.description.replace(/<[^>]*>/g, '')}
+                </p>
+              )}
+
+              {/* Supplement Facts — use LAST image (nutrition label) */}
+              {product.images && product.images.length > 1 && (
+                <div className="mb-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.8px] mb-2" style={{ color: 'var(--txt-dim)' }}>
+                    Supplement Facts
+                  </p>
+                  <img
+                    src={product.images[product.images.length - 1]}
+                    alt={`${product.title} supplement facts`}
+                    className="w-full rounded-[10px]"
+                    style={{ background: '#fff' }}
+                  />
+                </div>
+              )}
+
+              {/* Full Add to Cart button */}
+              <button
+                onClick={() => { handleAddToCart(); setShowDetail(false); }}
+                disabled={!product.available && !product.isLocalProduct}
+                className="w-full py-3.5 rounded-[10px] text-[14px] font-semibold transition-all disabled:opacity-40"
+                style={{ background: '#00d9ff', color: '#09090b' }}
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Add to Cart Button - Matches "Get Aviera Pro" style */}
-        <button
-          onClick={handleAddToCart}
-          disabled={(!product.available || isAdding || added) && !product.isLocalProduct}
-          className="w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out"
-          style={{
-            background: added
-              ? 'rgba(16, 185, 129, 0.9)'
-              : 'rgba(30, 30, 30, 0.9)',
-            border: added
-              ? '1px solid rgba(16, 185, 129, 0.4)'
-              : '1px solid rgba(0, 217, 255, 0.4)',
-            borderRadius: '12px',
-            padding: '14px 28px',
-            fontSize: '16px',
-            fontWeight: 600,
-            boxShadow: added
-              ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
-              : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-          }}
-          onMouseEnter={(e) => {
-            if (!added && !isAdding && product.available) {
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
-              e.currentTarget.style.transform = 'translateY(-3px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!added) {
-              e.currentTarget.style.boxShadow = added
-                ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
-                : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }
-          }}
-        >
-          {added ? (
-            <>
-              <Check size={18} />
-              Added to Cart
-            </>
-          ) : isAdding ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Adding...
-            </>
-          ) : (
-            <>
-              <ShoppingCart size={18} />
-              Add to Cart
-            </>
-          )}
-        </button>
-      </div>
-    </motion.div>
+      )}
+    </>
   );
 }
-

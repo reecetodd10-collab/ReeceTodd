@@ -1,15 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Define protected routes
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-]);
+// Dashboard routes are open during development — re-enable protection before launch
+// const isProtectedRoute = createRouteMatcher(['/dashboard(.*)']);
 
 export default clerkMiddleware(
   async (auth, req) => {
-    if (isProtectedRoute(req)) {
-      await auth.protect();
-    }
+    // Auth protection temporarily disabled for development
   },
   {
     publicRoutes: [
@@ -18,6 +14,7 @@ export default clerkMiddleware(
       '/api/pro-waitlist',
       '/api/ai/supplement-recommendation',
       '/smartstack-ai',
+      '/dashboard(.*)',
     ],
   }
 );

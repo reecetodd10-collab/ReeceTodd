@@ -542,20 +542,9 @@ export default function SupplementOptimizationScore() {
   }
 
   return (
-    <div className="min-h-screen relative py-8 px-4">
-      {/* Background Image */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: 'url(/images/stack/stack-background.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-        <div className="absolute inset-0 bg-black/60" />
-      </div>
+    <div className="min-h-screen relative py-8 px-4" style={{ background: 'var(--bg)' }}>
+      {/* Cyan glow backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
 
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Header */}
@@ -923,20 +912,9 @@ function LoadingScreen() {
   }, []);
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4">
-      {/* Background Image */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: 'url(/images/stack/stack-background.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-        <div className="absolute inset-0 bg-black/60" />
-      </div>
+    <div className="min-h-screen relative flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
+      {/* Cyan glow backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
 
       <div className="text-center relative z-10">
         <div className="relative w-24 h-24 mx-auto mb-6">
@@ -1038,20 +1016,9 @@ function ResultsPage({
   const percentile = Math.min(99, Math.max(1, Math.round(scores.total * 0.9 + 10)));
 
   return (
-    <div className="min-h-screen relative py-8 px-4">
-      {/* Background Image */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: 'url(/images/stack/stack-background.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-        <div className="absolute inset-0 bg-black/60" />
-      </div>
+    <div className="min-h-screen relative py-8 px-4" style={{ background: 'var(--bg)' }}>
+      {/* Cyan glow backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
 
       <div className="max-w-3xl mx-auto relative z-10">
         {/* Score Hero */}

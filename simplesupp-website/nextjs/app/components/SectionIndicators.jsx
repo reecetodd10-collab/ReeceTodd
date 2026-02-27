@@ -44,7 +44,7 @@ export default function SectionIndicators({ sections, activeSection }) {
                 } : {
                   width: '8px',
                   height: '8px',
-                  background: 'rgba(0, 0, 0, 0.3)',
+                  background: 'rgba(255, 255, 255, 0.3)',
                   opacity: 1
                 }}
                 onMouseEnter={(e) => {
@@ -56,7 +56,7 @@ export default function SectionIndicators({ sections, activeSection }) {
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
                     e.currentTarget.style.opacity = '1';
                     e.currentTarget.style.transform = 'scale(1)';
                   }
@@ -69,10 +69,10 @@ export default function SectionIndicators({ sections, activeSection }) {
                 whileHover={{ opacity: 1, x: 0 }}
                 className="absolute right-full mr-3 px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap pointer-events-none transition-opacity duration-200"
                 style={{
-                  background: '#ffffff',
+                  background: 'var(--bg-card)',
                   border: '1px solid rgba(0, 217, 255, 0.3)',
-                  color: '#1a1a1a',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  color: 'var(--txt)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
                   opacity: isActive ? 1 : 0
                 }}
               >

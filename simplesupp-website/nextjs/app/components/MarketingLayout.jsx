@@ -4,8 +4,10 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import BottomNav from './BottomNav';
 import AvieraAIWidget from './AvieraAIWidget';
 import CookieConsent from './CookieConsent';
+import PWAInstallPrompt from './PWAInstallPrompt';
 
 export default function MarketingLayout({ children }) {
   const pathname = usePathname();
@@ -41,7 +43,8 @@ export default function MarketingLayout({ children }) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navigation />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-16 md:pb-0">{children}</main>
+        <BottomNav />
         <AvieraAIWidget />
       </div>
     );
@@ -50,10 +53,12 @@ export default function MarketingLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-16 md:pb-0">{children}</main>
       <Footer />
+      <BottomNav />
       <AvieraAIWidget />
       <CookieConsent />
+      <PWAInstallPrompt />
     </div>
   );
 }

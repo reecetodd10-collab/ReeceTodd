@@ -122,7 +122,7 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <motion.div

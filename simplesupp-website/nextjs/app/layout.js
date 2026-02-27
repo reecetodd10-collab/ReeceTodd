@@ -10,9 +10,24 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#09090b',
+};
+
 export const metadata = {
   title: "Aviera | Stop Guessing. Start Progressing.",
   description: "Stop Guessing. Start Progressing. Aviera is your AI-powered supplement and fitness advisor — get personalized supplement stacks and workout plans based on your goals. Science-backed, personalized, results-driven.",
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Aviera',
+  },
+  icons: {
+    apple: '/Aviera_Filled_Center.png',
+  },
 };
 
 export default function RootLayout({ children }) {

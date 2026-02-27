@@ -101,6 +101,13 @@ export default function AvieraAIWidget() {
   const hoverTimeoutRef = useRef(null);
   const pathname = usePathname();
 
+  // Listen for external open events (e.g. from home page AI card)
+  useEffect(() => {
+    const handleOpen = () => setIsChatOpen(true);
+    window.addEventListener('open-aviera-ai', handleOpen);
+    return () => window.removeEventListener('open-aviera-ai', handleOpen);
+  }, []);
+
   // Don't show on landing page
   if (pathname === '/landing') return null;
 
@@ -265,7 +272,7 @@ export default function AvieraAIWidget() {
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1, type: 'spring', stiffness: 200 }}
-        className="fixed bottom-6 left-6 z-[100] flex flex-col items-center lg:left-auto lg:right-6"
+        className="fixed bottom-20 md:bottom-6 left-6 z-[100] flex flex-col items-center lg:left-auto lg:right-6"
       >
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
@@ -312,7 +319,7 @@ export default function AvieraAIWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 left-4 right-4 z-[99] lg:left-auto lg:right-6 lg:w-[380px] rounded-2xl overflow-hidden"
+            className="fixed bottom-36 md:bottom-24 left-4 right-4 z-[99] lg:left-auto lg:right-6 lg:w-[380px] rounded-2xl overflow-hidden"
             style={{
               background: 'rgba(12, 12, 12, 0.98)',
               border: '1px solid #00D9FF',

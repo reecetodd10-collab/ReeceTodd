@@ -4,27 +4,19 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { Menu, X, LayoutDashboard, Crown, ShoppingCart, Trash2 } from 'lucide-react';
+import { LayoutDashboard, Crown, ShoppingCart, Trash2 } from 'lucide-react';
 import PillLogo from './PillLogo';
 import WaitlistModal from './WaitlistModal';
-import DashboardBlockingModal from './DashboardBlockingModal';
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [cartCount, setCartCount] = useState(0);
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
-  const [showDashboardModal, setShowDashboardModal] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === '/';
   const { isSignedIn } = useUser();
 
-  // Intercept Dashboard navigation
-  const handleDashboardClick = (e) => {
-    e.preventDefault();
-    setShowDashboardModal(true);
-  };
 
   // Listen for cart updates
   useEffect(() => {
@@ -130,7 +122,6 @@ export default function Navigation() {
       const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setIsOpen(false);
       }
     } else {
       // Navigate to homepage then scroll
@@ -141,7 +132,6 @@ export default function Navigation() {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
-      setIsOpen(false);
     }
   };
 
@@ -414,13 +404,13 @@ export default function Navigation() {
               })}
 
               {/* Dashboard link - always visible (in cyan) */}
-              <button
-                onClick={handleDashboardClick}
+              <Link
+                href="/dashboard"
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10"
               >
                 <LayoutDashboard size={16} />
                 Dashboard
-              </button>
+              </Link>
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
@@ -542,7 +532,7 @@ export default function Navigation() {
               )}
             </div>
 
-            {/* Mobile Cart + Menu buttons */}
+            {/* Mobile Cart Button */}
             <div className="lg:hidden flex items-center gap-2">
               {/* Mobile Cart Button - Always visible */}
               <button
@@ -573,181 +563,9 @@ export default function Navigation() {
                 )}
               </button>
 
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="p-3 rounded-lg hover:bg-[var(--bg-elev-1)] transition min-w-[48px] min-h-[48px] flex items-center justify-center"
-                aria-label="Toggle menu"
-              >
-                {isOpen ? <X size={24} className="text-[var(--txt)]" /> : <Menu size={24} className="text-[var(--txt)]" />}
-              </button>
             </div>
           </div>
 
-          {isOpen && (
-            <div className="lg:hidden py-4 space-y-2 border-t border-[var(--border)]">
-              {/* Shopping Cart - Prominent at top of mobile menu */}
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  openCustomCartModal();
-                }}
-                className="flex items-center justify-between w-full px-4 py-4 rounded-xl font-semibold transition-all duration-300"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 217, 255, 0.05))',
-                  border: '1px solid rgba(0, 217, 255, 0.4)',
-                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.2)',
-                }}
-              >
-                <span className="flex items-center gap-3 text-[#00d9ff]">
-                  <ShoppingCart size={22} />
-                  View Cart
-                </span>
-                {cartCount > 0 && (
-                  <span
-                    className="flex items-center justify-center text-sm font-bold text-white px-3 py-1"
-                    style={{
-                      background: '#00d9ff',
-                      borderRadius: '20px',
-                    }}
-                  >
-                    {cartCount} {cartCount === 1 ? 'item' : 'items'}
-                  </span>
-                )}
-              </button>
-
-              {/* Main navigation links - always visible */}
-              {mainNavLinks.map((link) => {
-                // Handle homepage sections (scroll to section)
-                if (link.isHomeSection && link.sectionId) {
-                  return (
-                    <button
-                      key={link.sectionId}
-                      onClick={() => {
-                        scrollToSection(link.sectionId);
-                        setIsOpen(false);
-                      }}
-                      className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${activeSection === link.sectionId
-                          ? 'bg-[var(--acc)] text-[#001018]'
-                          : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-                        }`}
-                    >
-                      {link.name}
-                    </button>
-                  );
-                }
-
-                // Handle regular links (like Aviera News)
-                if (link.href) {
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${link.isCyan
-                          ? 'text-[var(--acc)] hover:bg-[var(--acc)]/10'
-                          : isActive(link.href)
-                            ? 'bg-[var(--acc)] text-[#001018]'
-                            : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-                        }`}
-                    >
-                      {link.name}
-                    </Link>
-                  );
-                }
-
-                return null;
-              })}
-
-
-              {/* Other page links */}
-              {!isHomePage && pageLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${isActive(link.path)
-                      ? 'bg-[var(--acc)] text-[#001018]'
-                      : 'text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)]'
-                    }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              {/* Dashboard link - always visible in mobile (in cyan) */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpen(false);
-                  setShowDashboardModal(true);
-                }}
-                className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all w-full text-left text-[var(--acc)] hover:bg-[var(--acc)]/10"
-              >
-                <LayoutDashboard size={18} />
-                Dashboard
-              </button>
-
-              {/* Auth links - mobile */}
-              {isSignedIn ? (
-                <>
-                  <button
-                    onClick={() => {
-                      setIsOpen(false);
-                      setShowWaitlistModal(true);
-                    }}
-                    className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 w-full text-left"
-                    style={{
-                      background: 'rgba(30, 30, 30, 0.9)',
-                      boxShadow: '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                      border: '1px solid rgba(0, 217, 255, 0.2)',
-                      color: '#00E5FF'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                    }}
-                  >
-                    <Crown size={18} />
-                    Get Aviera Pro
-                  </button>
-                  <div className="px-4 py-3 flex items-center justify-center">
-                    <UserButton
-                      appearance={{
-                        elements: {
-                          avatarBox: "w-10 h-10",
-                        },
-                      }}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/sign-in"
-                    onClick={() => setIsOpen(false)}
-                    className="block px-4 py-3 rounded-lg font-medium text-[var(--txt-muted)] hover:bg-[var(--bg-elev-1)] transition text-center"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    onClick={() => setIsOpen(false)}
-                    className="block px-4 py-3 rounded-lg font-semibold text-center transition"
-                    style={{
-                      background: '#00d9ff',
-                      color: '#ffffff',
-                      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
-            </div>
-          )}
         </div>
       </nav>
 
@@ -755,7 +573,7 @@ export default function Navigation() {
       {cartCount > 0 && (
         <button
           onClick={openCustomCartModal}
-          className="lg:hidden fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-full transition-all duration-300"
+          className="lg:hidden fixed bottom-20 md:bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-full transition-all duration-300"
           style={{
             background: 'linear-gradient(135deg, #00d9ff, #00b8d4)',
             boxShadow: '0 4px 20px rgba(0, 217, 255, 0.5), 0 0 40px rgba(0, 217, 255, 0.3)',
@@ -779,11 +597,6 @@ export default function Navigation() {
         onClose={() => setShowWaitlistModal(false)}
       />
 
-      {/* Dashboard Blocking Modal */}
-      <DashboardBlockingModal
-        isOpen={showDashboardModal}
-        onClose={() => setShowDashboardModal(false)}
-      />
     </>
   );
 }

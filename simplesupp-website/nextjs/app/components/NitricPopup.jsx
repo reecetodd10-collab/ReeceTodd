@@ -44,9 +44,11 @@ export default function NitricPopup() {
     if (isDismissed) return null;
 
     return (
+        <>
         <AnimatePresence>
             {isVisible && (
                 <motion.div
+                    key="nitric-popup"
                     initial={{ x: 400, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 400, opacity: 0 }}
@@ -167,15 +169,16 @@ export default function NitricPopup() {
                     </div>
                 </motion.div>
             )}
-
-            {/* Keyframe animation */}
-            <style jsx global>{`
-                @keyframes nitricShimmer {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-                }
-            `}</style>
         </AnimatePresence>
+
+        {/* Keyframe animation */}
+        <style jsx global>{`
+            @keyframes nitricShimmer {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `}</style>
+        </>
     );
 }

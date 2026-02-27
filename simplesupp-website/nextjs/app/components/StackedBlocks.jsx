@@ -49,7 +49,7 @@ export default function StackedBlocks() {
           <div
             className="relative rounded-2xl p-6 transition-all duration-300"
             style={{
-              background: '#ffffff',
+              background: 'var(--bg-card)',
               border: '1px solid rgba(0, 217, 255, 0.3)',
               boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
             }}
@@ -93,7 +93,7 @@ export default function StackedBlocks() {
                   className="font-bold text-xl"
                   style={{
                     fontFamily: 'Montserrat, sans-serif',
-                    color: '#1a1a1a',
+                    color: 'var(--txt)',
                   }}
                 >
                   Aviera Stack
@@ -134,7 +134,7 @@ export default function StackedBlocks() {
                     >
                       <Icon size={16} style={{ color: '#00d9ff' }} />
                     </div>
-                    <span className="text-[10px] text-center leading-tight" style={{ color: '#6b7280' }}>{goal.label}</span>
+                    <span className="text-[10px] text-center leading-tight" style={{ color: 'var(--txt-muted)' }}>{goal.label}</span>
                   </motion.div>
                 );
               })}
@@ -144,11 +144,11 @@ export default function StackedBlocks() {
             <div
               className="rounded-xl p-4 mb-5"
               style={{
-                background: '#f9fafb',
-                border: '1px solid #e0e0e0',
+                background: 'var(--bg-elev-1)',
+                border: '1px solid var(--border)',
               }}
             >
-              <p className="text-[10px] uppercase tracking-wider mb-3" style={{ color: '#6b7280' }}>Sample Stack Includes</p>
+              <p className="text-[10px] uppercase tracking-wider mb-3" style={{ color: 'var(--txt-muted)' }}>Sample Stack Includes</p>
               <div className="space-y-2">
                 {sampleSupplements.map((supp, idx) => (
                   <motion.div
@@ -162,10 +162,10 @@ export default function StackedBlocks() {
                     <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#00d9ff' }}>
                       <Check size={10} className="text-[#001018]" strokeWidth={3} />
                     </div>
-                    <span className="text-xs" style={{ color: '#4a4a4a' }}>{supp}</span>
+                    <span className="text-xs" style={{ color: 'var(--txt-muted)' }}>{supp}</span>
                   </motion.div>
                 ))}
-                <div className="text-xs mt-2" style={{ color: '#6b7280' }}>
+                <div className="text-xs mt-2" style={{ color: 'var(--txt-muted)' }}>
                   <span>+ personalized recommendations...</span>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function StackedBlocks() {
               <span>Build My Stack</span>
             </div>
 
-            <p className="text-center text-[10px] mt-3" style={{ color: '#6b7280' }}>
+            <p className="text-center text-[10px] mt-3" style={{ color: 'var(--txt-muted)' }}>
               Free • 2 minutes • No account required
             </p>
           </div>

@@ -60,16 +60,16 @@ export default function NewsletterDetailPage() {
     <div
       className="min-h-screen relative overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
+        background: 'var(--bg)',
       }}
     >
       {/* Animated lines removed for performance */}
       {/* Header */}
       <header
-        className="relative z-20 px-4 sm:px-6 lg:px-8 py-6"
+        className="relative z-20 px-5 sm:px-6 lg:px-8 py-6"
         style={{
-          background: '#ffffff',
-          borderBottom: '1px solid #e0e0e0',
+          background: 'var(--bg-card)',
+          borderBottom: '1px solid var(--border)',
         }}
       >
         <div className="max-w-7xl mx-auto flex items-center gap-3">
@@ -81,7 +81,7 @@ export default function NewsletterDetailPage() {
               className="text-2xl font-bold"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}
             >
               AVIERA
@@ -90,7 +90,7 @@ export default function NewsletterDetailPage() {
         </div>
       </header>
 
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative z-10 px-5 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <Link
@@ -107,22 +107,22 @@ export default function NewsletterDetailPage() {
           {isLoading ? (
             <div className="text-center py-20">
               <Loader className="animate-spin mx-auto mb-4" size={40} style={{ color: '#00d9ff' }} />
-              <p className="text-lg" style={{ color: '#6b7280' }}>Loading newsletter...</p>
+              <p className="text-lg" style={{ color: 'var(--txt-muted)' }}>Loading newsletter...</p>
             </div>
           ) : error ? (
             <div
               className="rounded-2xl p-8 md:p-12 text-center"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               }}
             >
               <h2
                 className="text-2xl font-bold mb-4"
                 style={{
                   fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
+                  color: 'var(--txt)'
                 }}
               >
                 {error}
@@ -143,17 +143,17 @@ export default function NewsletterDetailPage() {
             <article>
               {/* Newsletter Header */}
               <header className="mb-8">
-                <div className="flex items-center gap-2 mb-4 text-sm" style={{ color: '#6b7280' }}>
+                <div className="flex items-center gap-2 mb-4 text-sm" style={{ color: 'var(--txt-muted)' }}>
                   <Calendar size={16} />
                   <time dateTime={newsletter.published_date}>
                     {formatDate(newsletter.published_date)}
                   </time>
                 </div>
                 <h1
-                  className="text-4xl md:text-5xl font-bold mb-4"
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
                   style={{
                     fontFamily: 'Montserrat, sans-serif',
-                    color: '#1a1a1a'
+                    color: 'var(--txt)'
                   }}
                 >
                   {newsletter.title}
@@ -161,7 +161,7 @@ export default function NewsletterDetailPage() {
                 {newsletter.excerpt && (
                   <p
                     className="text-xl font-light leading-relaxed"
-                    style={{ color: '#4a4a4a' }}
+                    style={{ color: 'var(--txt-muted)' }}
                   >
                     {newsletter.excerpt}
                   </p>
@@ -172,15 +172,15 @@ export default function NewsletterDetailPage() {
               <div
                 className="rounded-2xl p-8 md:p-12"
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #e0e0e0',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
                 }}
               >
                 <div
                   className="newsletter-content prose prose-lg max-w-none"
                   style={{
-                    color: '#1a1a1a',
+                    color: 'var(--txt)',
                     lineHeight: '1.8'
                   }}
                   dangerouslySetInnerHTML={{ __html: newsletter.content }}

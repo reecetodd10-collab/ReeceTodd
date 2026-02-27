@@ -39,7 +39,7 @@ export default function SmartFitt() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-8">
             <div className="relative">
               <div className="absolute inset-0 bg-[var(--acc)]/20 rounded-2xl blur-xl"></div>
@@ -96,7 +96,7 @@ export default function SmartFitt() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-12">
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-center">
           {/* Body Type Toggle */}

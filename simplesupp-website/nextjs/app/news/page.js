@@ -1,27 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Newspaper, Mail, Calendar, ArrowRight, CheckCircle, Dumbbell, Pill, Heart, Check } from 'lucide-react';
+import { Mail, Calendar, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
-import PillLogo from '../components/PillLogo';
-// CyanWavyLines removed for mobile performance
 
 export default function NewsPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [latestNewsletter, setLatestNewsletter] = useState(null);
-  const [newsletterArchive, setNewsletterArchive] = useState([]);
+  const [newsletters, setNewsletters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
 
-  // Prevent hydration mismatch for animated elements
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Check if user is already subscribed
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const subscribedEmail = localStorage.getItem('aviera_news_subscribed');
@@ -32,28 +22,13 @@ export default function NewsPage() {
     }
   }, []);
 
-  // Fetch newsletters from API
   useEffect(() => {
     const fetchNewsletters = async () => {
       try {
-        // Fetch latest newsletter
-        const latestResponse = await fetch('/api/newsletters?latest=true');
-        const latestData = await latestResponse.json();
-
-        if (latestData.newsletter) {
-          setLatestNewsletter(latestData.newsletter);
-        }
-
-        // Fetch archive (excluding the latest one)
-        const archiveResponse = await fetch('/api/newsletters?limit=10');
-        const archiveData = await archiveResponse.json();
-
-        if (archiveData.newsletters && archiveData.newsletters.length > 0) {
-          // Skip the first one if we already have it as latest
-          const archive = latestData.newsletter
-            ? archiveData.newsletters.slice(1)
-            : archiveData.newsletters;
-          setNewsletterArchive(archive);
+        const response = await fetch('/api/newsletters?limit=20');
+        const data = await response.json();
+        if (data.newsletters && data.newsletters.length > 0) {
+          setNewsletters(data.newsletters);
         }
       } catch (error) {
         console.error('Error fetching newsletters:', error);
@@ -61,701 +36,261 @@ export default function NewsPage() {
         setIsLoading(false);
       }
     };
-
     fetchNewsletters();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
-      try {
-        // Send to backend API endpoint
-        const response = await fetch('/api/newsletter/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          // Store email in localStorage
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('aviera_news_subscribed', email);
-            setIsSubscribed(true);
-            setSubmitted(true);
-            setTimeout(() => setSubmitted(false), 3000);
-          }
-        } else {
-          // Handle error response
-          console.error('Subscription error:', data.error);
-          alert(data.error || 'Failed to subscribe. Please try again.');
+    if (!email) return;
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('aviera_news_subscribed', email);
+          setIsSubscribed(true);
+          setSubmitted(true);
+          setTimeout(() => setSubmitted(false), 3000);
         }
-      } catch (error) {
-        console.error('Network error:', error);
-        alert('Network error. Please check your connection and try again.');
+      } else {
+        alert(data.error || 'Failed to subscribe. Please try again.');
       }
+    } catch (error) {
+      alert('Network error. Please check your connection and try again.');
     }
   };
 
-  // Helper function to format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'Coming Soon';
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const tabs = [
+    { key: 'all', label: 'All' },
+    { key: 'fitness', label: 'Fitness' },
+    { key: 'supplements', label: 'Supplements' },
+    { key: 'health', label: 'Health & Lifestyle' },
+  ];
+
+  // Category emoji mapping
+  const getCategoryEmoji = (newsletter) => {
+    const title = (newsletter.title || '').toLowerCase();
+    const category = (newsletter.category || '').toLowerCase();
+    const tags = (newsletter.tags || []).map(t => t.toLowerCase());
+    const all = `${title} ${category} ${tags.join(' ')}`;
+
+    if (all.includes('fitness') || all.includes('workout') || all.includes('training') || all.includes('muscle')) return '💪';
+    if (all.includes('supplement') || all.includes('creatine') || all.includes('vitamin') || all.includes('protein')) return '⚡';
+    if (all.includes('health') || all.includes('sleep') || all.includes('recovery') || all.includes('lifestyle')) return '❤️';
+    return '⚡'; // default
+  };
+
+  // Category label for tag
+  const getCategoryLabel = (newsletter) => {
+    const emoji = getCategoryEmoji(newsletter);
+    if (emoji === '💪') return 'Fitness';
+    if (emoji === '❤️') return 'Health & Lifestyle';
+    return 'Supplements';
+  };
+
+  // Filter by tab
+  const filteredNewsletters = activeTab === 'all'
+    ? newsletters
+    : newsletters.filter(n => {
+        const label = getCategoryLabel(n).toLowerCase();
+        if (activeTab === 'fitness') return label === 'fitness';
+        if (activeTab === 'supplements') return label === 'supplements';
+        if (activeTab === 'health') return label.includes('health');
+        return true;
+      });
+
+  const hasNewsletters = newsletters.length > 0;
+
   return (
-    <div
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
-      }}
-    >
-      {/* Background decoration removed for mobile performance */}
+    <div className="relative min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* Cyan glow backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
 
-      {/* Header - White bar with AVIERA branding */}
-      <header
-        className="relative z-20 px-4 sm:px-6 lg:px-8 py-6"
-        style={{
-          background: '#ffffff',
-          borderBottom: '1px solid #e0e0e0',
-        }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center gap-3">
-          <Link href="/home" className="inline-flex items-center gap-3">
-            <div className="[&_h1]:hidden">
-              <PillLogo size="small" />
-            </div>
-            <span
-              className="text-2xl font-bold"
+      <div className="relative z-10 px-5 pt-8 pb-24 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="font-bold mb-1" style={{ fontSize: '22px', color: 'var(--txt)' }}>
+            Newsletter Hub
+          </h1>
+          <p style={{ fontSize: '13px', color: 'var(--txt-muted)' }}>
+            Weekly insights on fitness, supplements & health. Every Sunday.
+          </p>
+        </div>
+
+        {/* Subscribe bar */}
+        {!isSubscribed ? (
+          <form onSubmit={handleSubmit} className="flex gap-2 mb-6">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email"
+              required
+              className="flex-1 px-4 py-2.5 rounded-[10px] outline-none"
               style={{
-                fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                fontSize: '13px',
+                background: 'var(--bg-elev-1)',
+                border: '1px solid var(--border)',
+                color: 'var(--txt)',
+                minHeight: '44px',
               }}
+            />
+            <button
+              type="submit"
+              className="px-5 py-2.5 rounded-[10px] font-semibold flex items-center gap-1.5 flex-shrink-0"
+              style={{ fontSize: '13px', background: '#00d9ff', color: '#09090b', minHeight: '44px' }}
             >
-              AVIERA
+              <Mail size={14} />
+              Subscribe
+            </button>
+          </form>
+        ) : (
+          <div
+            className="flex items-center gap-2 mb-6 px-4 py-3 rounded-[10px]"
+            style={{ background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.2)' }}
+          >
+            <CheckCircle size={16} style={{ color: '#00d9ff' }} />
+            <span style={{ fontSize: '13px', color: 'var(--txt-muted)' }}>
+              Subscribed as <span style={{ color: '#00d9ff' }}>{email}</span>
             </span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Hero Section with Subscription Form */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Standalone Newsletter Icon Box - EXACTLY Like Flag Icon */}
-          <motion.div
-            className="flex justify-center mb-6"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="relative">
-              {/* Subtle glow effect */}
-              <div className="absolute inset-0 bg-[#00d9ff]/20 rounded-3xl blur-2xl"></div>
-              {/* Icon container - EXACT same as flag icon with icon-aivra class */}
-              <div className="relative w-28 h-28 bg-[#1a1a1a] rounded-3xl flex items-center justify-center shadow-premium-lg border border-[var(--border)] icon-aivra">
-                <Newspaper className="text-white" size={56} strokeWidth={1.5} />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Bordered Title Container - Exactly Like About Page "Our Mission" */}
-          <motion.div
-            className="inline-block mb-6"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div
-              className="inline-block px-8 py-6 rounded-2xl relative transition-all duration-300 ease cursor-default"
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <h1
-                className="text-4xl md:text-6xl font-normal tracking-tight"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a',
-                }}
-              >
-                Aviera News
-              </h1>
-            </div>
-          </motion.div>
-
-          <motion.p
-            className="text-xl md:text-2xl mb-4 font-light tracking-wider"
-            style={{ color: '#00d9ff' }}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            THIS WEEK IN PERFORMANCE
-          </motion.p>
-
-          <motion.p
-            className="text-lg md:text-xl mb-12 font-light max-w-2xl mx-auto"
-            style={{ color: '#4a4a4a' }}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            Three focused insights on fitness, supplements, and health. Every week. No fluff.
-          </motion.p>
-
-          {/* Email Subscription Form */}
-          {!isSubscribed ? (
-            <div
-              className="rounded-2xl p-8 md:p-10 mb-16 transition-all duration-300 cursor-default"
-              style={{
-                background: '#ffffff',
-                border: '1px solid rgba(0, 217, 255, 0.3)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.4), 0 4px 16px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <h2
-                className="text-2xl md:text-3xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Subscribe to Aviera News
-              </h2>
-              <p className="text-lg mb-8 font-light" style={{ color: '#4a4a4a' }}>
-                Three things that matter each week. No fluff. Just results.
-              </p>
-
-              <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    required
-                    className="flex-1 rounded-xl font-normal transition-all duration-300"
-                    style={{
-                      height: '56px',
-                      fontSize: '16px',
-                      padding: '16px 20px',
-                      background: '#f9fafb',
-                      border: '1px solid #e0e0e0',
-                      color: '#1a1a1a',
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = '#00d9ff';
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 217, 255, 0.1)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = '#e0e0e0';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    className="px-8 py-3 h-[56px] flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold text-white transition-all duration-300"
-                    style={{
-                      background: '#00d9ff',
-                      boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.5)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.3)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <Mail size={20} />
-                    Subscribe
-                  </button>
-                </div>
-                {submitted && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 text-center text-sm font-light flex items-center justify-center gap-2"
-                    style={{ color: '#10b981' }}
-                  >
-                    <CheckCircle size={16} />
-                    Thanks! You're subscribed. Check your email for confirmation.
-                  </motion.p>
-                )}
-              </form>
-            </div>
-          ) : (
-            <div
-              className="rounded-2xl p-8 md:p-10 mb-16 text-center transition-all duration-300"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-              }}
-            >
-              <div
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
-                style={{ background: 'rgba(0, 217, 255, 0.1)' }}
-              >
-                <CheckCircle style={{ color: '#00d9ff' }} size={40} />
-              </div>
-              <h2
-                className="text-3xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                You're Subscribed!
-              </h2>
-              <p className="text-lg font-light mb-6" style={{ color: '#4a4a4a' }}>
-                We'll send you weekly newsletters at <span style={{ color: '#00d9ff', fontWeight: '500' }}>{email}</span>
-              </p>
-              <button
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    localStorage.removeItem('aviera_news_subscribed');
-                    setIsSubscribed(false);
-                    setEmail('');
-                  }
-                }}
-                className="text-sm transition-colors"
-                style={{ color: '#6b7280' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#00d9ff'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-              >
-                Unsubscribe
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Latest Newsletter Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-8">
-            <h2
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
-              }}
-            >
-              Latest Edition
-            </h2>
-            <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
-              Our most recent newsletter
-            </p>
           </div>
+        )}
 
-          {isLoading ? (
-            <div className="text-center py-12" style={{ color: '#6b7280' }}>
-              Loading newsletters...
-            </div>
-          ) : latestNewsletter ? (
-            <div
-              className="rounded-2xl p-8 md:p-12 transition-all duration-300"
+        {submitted && (
+          <div className="flex items-center gap-2 mb-4 px-4 py-2 rounded-[10px]" style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+            <CheckCircle size={14} style={{ color: '#10b981' }} />
+            <span style={{ fontSize: '12px', color: '#10b981' }}>You&apos;re subscribed!</span>
+          </div>
+        )}
+
+        {/* Tab chips */}
+        <div className="flex gap-2 overflow-x-auto mb-5 scrollbar-hide">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className="flex-shrink-0 px-4 py-[7px] rounded-full whitespace-nowrap transition-all"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 217, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
-                e.currentTarget.style.transform = 'translateY(0)';
+                fontSize: '12px',
+                fontWeight: activeTab === tab.key ? 600 : 500,
+                background: activeTab === tab.key ? '#00d9ff' : 'transparent',
+                color: activeTab === tab.key ? '#09090b' : 'var(--txt-muted)',
+                border: activeTab === tab.key ? '1px solid #00d9ff' : '1px solid var(--border)',
               }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider"
-                  style={{
-                    background: 'rgba(0, 217, 255, 0.1)',
-                    color: '#00d9ff',
-                  }}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-2 border-[#00d9ff] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : !hasNewsletters ? (
+          /* Empty state */
+          <div
+            className="rounded-[14px] p-6 text-center"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+          >
+            <p className="text-4xl mb-3">📰</p>
+            <h3 className="text-[15px] font-bold mb-1" style={{ color: 'var(--txt)' }}>
+              No articles yet — check back Sunday!
+            </h3>
+            <p className="text-[12px] mb-5" style={{ color: 'var(--txt-muted)' }}>
+              Our first newsletter drops this Sunday. Subscribe to get it.
+            </p>
+            {!isSubscribed && (
+              <form onSubmit={handleSubmit} className="flex gap-2 max-w-sm mx-auto">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email"
+                  required
+                  className="flex-1 px-3.5 py-2.5 rounded-[10px] outline-none text-[13px]"
+                  style={{ background: 'var(--bg-elev-1)', border: '1px solid var(--border)', color: 'var(--txt)', minHeight: '44px' }}
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 rounded-[10px] text-[13px] font-semibold flex-shrink-0"
+                  style={{ background: '#00d9ff', color: '#09090b', minHeight: '44px' }}
                 >
-                  Latest
-                </span>
-                <span className="flex items-center gap-2 text-sm font-light" style={{ color: '#6b7280' }}>
-                  <Calendar size={16} />
-                  {formatDate(latestNewsletter.published_date)}
-                </span>
-              </div>
-
-              <h3
-                className="text-2xl md:text-3xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                {latestNewsletter.title}
-              </h3>
-
-              <p className="text-lg font-light mb-6 leading-relaxed" style={{ color: '#4a4a4a' }}>
-                {latestNewsletter.excerpt}
-              </p>
-
-              <Link
-                href={`/news/${latestNewsletter.id}`}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
-                style={{
-                  background: '#00d9ff',
-                  color: '#ffffff',
-                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.5)';
-                  e.currentTarget.style.transform = 'translateX(4px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.3)';
-                  e.currentTarget.style.transform = 'translateX(0)';
-                }}
-              >
-                Read Full Newsletter
-                <ArrowRight size={20} />
-              </Link>
-            </div>
-          ) : (
-            <div
-              className="rounded-2xl p-8 md:p-12 text-center"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-              }}
-            >
-              <p className="text-lg font-light mb-4" style={{ color: '#4a4a4a' }}>
-                No newsletters published yet. Subscribe to be notified when the first edition drops!
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* What You Get Section - 3 Focused Categories */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
-              style={{
-                fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
-              }}
-            >
-              Three Things That Matter
-            </h2>
-            <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
-              Focused. Actionable. Under 2 minutes to read.
+                  Subscribe
+                </button>
+              </form>
+            )}
+          </div>
+        ) : filteredNewsletters.length === 0 ? (
+          <div
+            className="rounded-[14px] p-6 text-center"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+          >
+            <p className="text-[13px]" style={{ color: 'var(--txt-muted)' }}>
+              No articles in this category yet.
             </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {/* Section 1: Fitness */}
-            <div
-              className="rounded-2xl p-6 md:p-8 transition-all duration-300"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                style={{ background: 'rgba(0, 217, 255, 0.1)' }}
-              >
-                <Dumbbell style={{ color: '#00d9ff' }} size={32} />
-              </div>
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Fitness
-              </h3>
-              <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                One actionable training insight to improve your performance this week.
-              </p>
-            </div>
-
-            {/* Section 2: Supplements & Peptides */}
-            <div
-              className="rounded-2xl p-6 md:p-8 transition-all duration-300"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                style={{ background: 'rgba(0, 217, 255, 0.1)' }}
-              >
-                <Pill style={{ color: '#00d9ff' }} size={32} />
-              </div>
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Supplements & Peptides
-              </h3>
-              <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                The latest research and what actually works, without the hype.
-              </p>
-            </div>
-
-            {/* Section 3: Health & Lifestyle */}
-            <div
-              className="rounded-2xl p-6 md:p-8 transition-all duration-300"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(-4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                style={{ background: 'rgba(0, 217, 255, 0.1)' }}
-              >
-                <Heart style={{ color: '#00d9ff' }} size={32} />
-              </div>
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Health & Lifestyle
-              </h3>
-              <p className="font-light leading-relaxed" style={{ color: '#4a4a4a' }}>
-                Sleep, recovery, and mental focus tips you can use immediately.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Archive Section */}
-      {newsletterArchive.length > 0 && (
-        <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h2
-                className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Newsletter Archive
-              </h2>
-              <p className="text-lg font-light" style={{ color: '#4a4a4a' }}>
-                Browse past editions
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {newsletterArchive.map((newsletter, index) => (
+        ) : (
+          /* Article list */
+          <div className="space-y-3">
+            {filteredNewsletters.map((newsletter) => {
+              const emoji = getCategoryEmoji(newsletter);
+              const categoryLabel = getCategoryLabel(newsletter);
+              return (
                 <Link
                   key={newsletter.id}
                   href={`/news/${newsletter.id}`}
-                  className="block rounded-2xl p-6 md:p-8 transition-all duration-300 cursor-pointer"
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #e0e0e0',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                    e.currentTarget.style.transform = 'translateX(8px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                    e.currentTarget.style.borderColor = '#e0e0e0';
-                    e.currentTarget.style.transform = 'translateX(0)';
-                  }}
+                  className="flex gap-3 rounded-[14px] p-3 transition-all"
+                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span
-                          className="text-sm font-light"
-                          style={{ color: '#00d9ff' }}
-                        >
-                          {formatDate(newsletter.published_date)}
-                        </span>
-                        <span style={{ color: '#6b7280' }}>•</span>
-                        <span
-                          className="text-sm font-light"
-                          style={{ color: '#6b7280' }}
-                        >
-                          Edition #{newsletterArchive.length - index + 1}
-                        </span>
-                      </div>
-                      <h3
-                        className="text-xl md:text-2xl font-bold mb-2"
-                        style={{
-                          fontFamily: 'Montserrat, sans-serif',
-                          color: '#1a1a1a'
-                        }}
+                  {/* Emoji thumbnail */}
+                  <div
+                    className="flex-shrink-0 rounded-[10px] flex items-center justify-center"
+                    style={{ width: '88px', height: '88px', background: 'var(--bg-elev-1)', fontSize: '36px' }}
+                  >
+                    {emoji}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span
+                        className="px-1.5 py-0.5 rounded font-medium"
+                        style={{ fontSize: '9px', background: 'rgba(0,217,255,0.1)', color: '#00d9ff' }}
                       >
-                        {newsletter.title}
-                      </h3>
-                      <p className="font-light" style={{ color: '#4a4a4a' }}>
-                        {newsletter.excerpt}
-                      </p>
+                        {categoryLabel}
+                      </span>
+                      <span style={{ fontSize: '10px', color: 'var(--txt-dim)' }}>
+                        {formatDate(newsletter.published_date)}
+                      </span>
                     </div>
-                    <ArrowRight
-                      className="flex-shrink-0 transition-transform duration-300"
-                      style={{ color: '#00d9ff' }}
-                      size={24}
-                    />
+                    <h4
+                      className="font-semibold line-clamp-2 mb-0.5"
+                      style={{ fontSize: '13px', color: 'var(--txt)' }}
+                    >
+                      {newsletter.title}
+                    </h4>
+                    <p className="line-clamp-2" style={{ fontSize: '11px', color: 'var(--txt-muted)' }}>
+                      {newsletter.excerpt}
+                    </p>
                   </div>
                 </Link>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </section>
-      )}
-
-      {/* Final CTA Section */}
-      {!isSubscribed && (
-        <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="max-w-4xl mx-auto text-center">
-            <div
-              className="rounded-2xl p-8 md:p-12 transition-all duration-300"
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-              }}
-            >
-              <h2
-                className="text-3xl md:text-4xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
-                }}
-              >
-                Train Hard. Recover Smarter.
-              </h2>
-              <p className="text-lg mb-8 font-light max-w-2xl mx-auto" style={{ color: '#4a4a4a' }}>
-                Get the insights that matter. No information overload. Just what you need to perform.
-              </p>
-              <Link
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.querySelector('input[type="email"]')?.focus();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300"
-                style={{
-                  background: '#00d9ff',
-                  color: '#ffffff',
-                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.5)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.3)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                Subscribe Now
-                <ArrowRight size={20} />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+        )}
+      </div>
     </div>
   );
 }
-
-/*
-========================================
-BACKUP: Original Vertical Lines Animation
-========================================
-To restore this animation, replace lines 113-266 with the code below.
-
-Original animated background code (vertical breathing lines):
-Lines 113-266 contain 4 vertical lines on each side with traveling glow orbs
-*/

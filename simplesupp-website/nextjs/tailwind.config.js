@@ -14,9 +14,10 @@ module.exports = {
 
         // Background colors - dark canvas system
         bg: {
-          DEFAULT: 'var(--bg)',           // #0a0a0a - main background
-          elevated: 'var(--bg-elev-1)',   // #1a1a1a - cards, elevated surfaces
-          elevated2: 'var(--bg-elev-2)',  // #242424 - higher elevation
+          DEFAULT: 'var(--bg)',           // #09090b - main background
+          card: 'var(--bg-card)',         // #0f0f12 - card background
+          elevated: 'var(--bg-elev-1)',   // #18181b - elevated surfaces
+          elevated2: 'var(--bg-elev-2)',  // #27272a - higher elevation
         },
 
         // Text colors - white-based hierarchy

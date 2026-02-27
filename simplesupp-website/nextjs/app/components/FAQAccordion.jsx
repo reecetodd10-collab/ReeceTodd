@@ -63,17 +63,17 @@ export default function FAQAccordion() {
           viewport={{ once: true }}
           className="rounded-2xl overflow-hidden transition-all duration-300"
           style={{
-            background: '#ffffff',
-            border: '1px solid #e0e0e0',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
             e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-            e.currentTarget.style.borderColor = '#e0e0e0';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+            e.currentTarget.style.borderColor = 'var(--border)';
           }}
         >
           <button
@@ -83,7 +83,7 @@ export default function FAQAccordion() {
             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0, 217, 255, 0.03)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span className="text-lg md:text-xl font-bold pr-4" style={{ color: '#1a1a1a' }}>
+            <span className="text-lg md:text-xl font-bold pr-4" style={{ color: 'var(--txt)' }}>
               {faq.question}
             </span>
             <motion.div
@@ -93,7 +93,7 @@ export default function FAQAccordion() {
             >
               <ChevronDown
                 className="w-6 h-6 transition-colors duration-300"
-                style={{ color: openIndex === index ? '#00d9ff' : '#6b7280' }}
+                style={{ color: openIndex === index ? '#00d9ff' : 'var(--txt-muted)' }}
               />
             </motion.div>
           </button>
@@ -108,7 +108,7 @@ export default function FAQAccordion() {
                 className="overflow-hidden"
               >
                 <div className="px-6 md:px-8 pb-5 md:pb-6 pt-2">
-                  <p className="leading-relaxed text-base md:text-lg font-light" style={{ color: '#4a4a4a' }}>
+                  <p className="leading-relaxed text-base md:text-lg font-light" style={{ color: 'var(--txt-muted)' }}>
                     {faq.answer}
                   </p>
                 </div>

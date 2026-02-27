@@ -55,6 +55,8 @@ export default function SmartStackAI() {
         <div className="absolute inset-0 bg-black/60"></div>
         {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70"></div>
+        {/* Subtle cyan glow at top */}
+        <div className="absolute top-0 left-0 right-0 h-[500px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.08) 0%, transparent 60%)' }} />
       </div>
 
       {/* Hero Header */}
@@ -92,7 +94,7 @@ export default function SmartStackAI() {
           ))}
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
           {/* Icon - Charcoal rounded square with Sparkles */}
           <div className="flex justify-center mb-8">
             <div className="relative">

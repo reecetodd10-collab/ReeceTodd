@@ -2,24 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ========================================
    AVIERA UNIFIED DESIGN SYSTEM TOKENS
    $100K Professional Quality
    ======================================== */
 :root {
-  /* Base Colors */
-  --bg: #0a0a0a;                    /* Dark canvas */
-  --bg-elev-1: #1a1a1a;             /* Elevated background */
-  --bg-elev-2: #242424;             /* Higher elevation */
-  
+  /* Base Colors - shadcn/ui inspired */
+  --bg: #09090b;                    /* Dark canvas (zinc-950) */
+  --bg-card: #0f0f12;              /* Card background */
+  --bg-elev-1: #18181b;             /* Elevated background (zinc-900) */
+  --bg-elev-2: #27272a;             /* Higher elevation (zinc-800) */
+
   /* Text Colors */
-  --txt: #ffffff;                   /* Primary text - white */
-  --txt-secondary: #e5e5e5;         /* Secondary text */
-  --txt-muted: #a0a0a0;             /* Muted text */
-  
-  /* Accent Colors - Vibrant Cyan/Light Blue */
+  --txt: #fafafa;                   /* Primary text (zinc-50) */
+  --txt-secondary: #d4d4d8;         /* Secondary text (zinc-300) */
+  --txt-muted: #71717a;             /* Muted text (zinc-500) */
+  --txt-dim: #52525b;               /* Dim text (zinc-600) */
+
+  /* Accent Colors - Cyan */
   --acc: #00d9ff;                   /* Primary cyan */
-  --acc-hover: #00b8d4;             /* Hover state */
+  --acc-hover: #00c4e6;             /* Hover state */
   --acc-light: rgba(0, 217, 255, 0.1); /* Light accent */
   --acc-2: #0ea5e9;                 /* Secondary sky blue */
   --ring: rgba(0, 217, 255, 0.35);  /* Focus ring */
@@ -31,16 +43,20 @@
   --info: #00d9ff;                  /* Info cyan */
   
   /* Glass Effects - Standardized */
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-blur: 12px;
   --glass-saturate: 180%;
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.06);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  
-  /* Border Radius - Consistent */
-  --radius-sm: 8px;                 /* Small elements */
-  --radius-md: 12px;                /* Medium cards */
-  --radius-lg: 16px;                /* Large cards */
+
+  /* Border tokens */
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Border Radius - shadcn style */
+  --radius-sm: 6px;                 /* Small elements */
+  --radius-md: 10px;                /* Medium cards */
+  --radius-lg: 14px;                /* Large cards */
   --radius-xl: 20px;                /* Modals */
   --radius-full: 9999px;            /* Pills/badges */
   
@@ -60,7 +76,6 @@
   --shadow: var(--shadow-lg);       /* Default */
   
   /* Legacy Support */
-  --border: var(--glass-border);
   --glass-bright: var(--glass-saturate);
   
   /* Hero Scrim - for readability */
@@ -147,7 +162,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--txt);
   letter-spacing: 0.5px; /* Base letter spacing for body text */
@@ -918,20 +933,24 @@ input:checked + .toggle-slider:before {
     width: 100%;
   }
 
-  /* Improved text readability on mobile */
+  /* Mobile heading scale — matches mockup */
   h1 {
-    font-size: 36px;
-    line-height: 1.2;
+    font-size: 26px;
+    line-height: 1.15;
   }
 
   h2 {
-    font-size: 28px;
-    line-height: 1.3;
+    font-size: 18px;
+    line-height: 1.25;
   }
 
   h3 {
-    font-size: 20px;
+    font-size: 15px;
     line-height: 1.4;
+  }
+
+  p {
+    font-size: 13px;
   }
 
   /* Better spacing on mobile */

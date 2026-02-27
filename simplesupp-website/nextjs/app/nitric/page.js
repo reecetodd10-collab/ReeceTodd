@@ -64,15 +64,15 @@ export default function NitricOxidePage() {
     <div 
       className="min-h-screen relative overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
+        background: 'var(--bg)',
       }}
     >
       {/* Minimal Header */}
       <header 
-        className="relative z-20 px-4 sm:px-6 lg:px-8 py-6"
+        className="relative z-20 px-5 sm:px-6 lg:px-8 py-6"
         style={{
-          background: '#ffffff',
-          borderBottom: '1px solid #e0e0e0',
+          background: 'var(--bg-card)',
+          borderBottom: '1px solid var(--border)',
         }}
       >
         <div className="max-w-7xl mx-auto flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function NitricOxidePage() {
               className="text-2xl font-bold"
               style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}
             >
               AVIERA
@@ -94,7 +94,7 @@ export default function NitricOxidePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-12 md:py-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             
@@ -119,7 +119,7 @@ export default function NitricOxidePage() {
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
                 style={{ 
                   fontFamily: 'Montserrat, sans-serif',
-                  color: '#1a1a1a'
+                  color: 'var(--txt)'
                 }}
               >
                 Better Blood Flow.<br />
@@ -127,7 +127,7 @@ export default function NitricOxidePage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="text-xl md:text-2xl mb-8 font-light" style={{ color: '#4a4a4a' }}>
+              <p className="text-xl md:text-2xl mb-8 font-light" style={{ color: 'var(--txt-muted)' }}>
                 Premium Nitric Oxide for just $19.99
               </p>
 
@@ -220,7 +220,7 @@ export default function NitricOxidePage() {
               )}
 
               {/* Trust Line */}
-              <div className="mt-6 flex items-center justify-center md:justify-start gap-2 text-sm" style={{ color: '#4a4a4a' }}>
+              <div className="mt-6 flex items-center justify-center md:justify-start gap-2 text-sm" style={{ color: 'var(--txt-muted)' }}>
                 <Check size={16} style={{ color: '#10b981' }} />
                 <span>Free shipping over $50</span>
                 <span className="mx-2">·</span>
@@ -256,19 +256,19 @@ export default function NitricOxidePage() {
       </section>
 
       {/* Benefits Grid Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 
               className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
               style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}
             >
               Feel The Difference
             </h2>
-            <p className="text-lg md:text-xl font-light" style={{ color: '#4a4a4a' }}>
+            <p className="text-lg md:text-xl font-light" style={{ color: 'var(--txt-muted)' }}>
               Why thousands are making the switch
             </p>
           </div>
@@ -278,9 +278,9 @@ export default function NitricOxidePage() {
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
@@ -288,8 +288,8 @@ export default function NitricOxidePage() {
                 e.currentTarget.style.transform = 'translateY(-4px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--border)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -300,11 +300,11 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-xl md:text-2xl font-bold mb-3" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Sharper Focus
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 Better blood flow means better oxygen to your brain. Think clearer, work smarter.
               </p>
             </div>
@@ -313,9 +313,9 @@ export default function NitricOxidePage() {
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
@@ -323,8 +323,8 @@ export default function NitricOxidePage() {
                 e.currentTarget.style.transform = 'translateY(-4px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--border)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -335,11 +335,11 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-xl md:text-2xl font-bold mb-3" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Natural Energy
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 No caffeine crashes. Just clean, sustained energy throughout your day.
               </p>
             </div>
@@ -348,9 +348,9 @@ export default function NitricOxidePage() {
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
@@ -358,8 +358,8 @@ export default function NitricOxidePage() {
                 e.currentTarget.style.transform = 'translateY(-4px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--border)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -370,11 +370,11 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-xl md:text-2xl font-bold mb-3" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Heart Health
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 Support healthy circulation and cardiovascular function naturally.
               </p>
             </div>
@@ -383,9 +383,9 @@ export default function NitricOxidePage() {
             <div
               className="rounded-2xl p-6 md:p-8 transition-all duration-300"
               style={{
-                background: '#ffffff',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 217, 255, 0.15)';
@@ -393,8 +393,8 @@ export default function NitricOxidePage() {
                 e.currentTarget.style.transform = 'translateY(-4px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                e.currentTarget.style.borderColor = '#e0e0e0';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--border)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -405,11 +405,11 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-xl md:text-2xl font-bold mb-3" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Better Pumps
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 Enhanced blood flow for fuller muscles and faster recovery.
               </p>
             </div>
@@ -418,14 +418,14 @@ export default function NitricOxidePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 
               className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
               style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}
             >
               How It Works
@@ -448,11 +448,11 @@ export default function NitricOxidePage() {
               </div>
               <h3 className="text-xl md:text-2xl font-bold mb-4" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Take 2 Capsules
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 Just 2 capsules daily with water. Morning or pre-workout.
               </p>
             </div>
@@ -472,11 +472,11 @@ export default function NitricOxidePage() {
               </div>
               <h3 className="text-xl md:text-2xl font-bold mb-4" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Feel The Flow
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 Nitric oxide expands blood vessels for better circulation within days.
               </p>
             </div>
@@ -496,11 +496,11 @@ export default function NitricOxidePage() {
               </div>
               <h3 className="text-xl md:text-2xl font-bold mb-4" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Perform Better
               </h3>
-              <p className="leading-relaxed" style={{ color: '#4a4a4a' }}>
+              <p className="leading-relaxed" style={{ color: 'var(--txt-muted)' }}>
                 More energy, clearer thinking, better workouts. Every day.
               </p>
             </div>
@@ -509,7 +509,7 @@ export default function NitricOxidePage() {
       </section>
 
       {/* Trust & Guarantee Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {/* Trust Badge 1 */}
@@ -521,7 +521,7 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-lg md:text-xl font-semibold mb-2" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 30-Day Money Back Guarantee
               </h3>
@@ -536,7 +536,7 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-lg md:text-xl font-semibold mb-2" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Free Shipping Over $50
               </h3>
@@ -551,7 +551,7 @@ export default function NitricOxidePage() {
               />
               <h3 className="text-lg md:text-xl font-semibold mb-2" style={{ 
                 fontFamily: 'Montserrat, sans-serif',
-                color: '#1a1a1a'
+                color: 'var(--txt)'
               }}>
                 Premium Quality Ingredients
               </h3>
@@ -561,7 +561,7 @@ export default function NitricOxidePage() {
       </section>
 
       {/* Urgency Banner */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-4">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-4">
         <div className="max-w-4xl mx-auto text-center">
           <div 
             className="inline-block px-6 py-3 rounded-full font-semibold text-lg animate-pulse"
@@ -578,19 +578,19 @@ export default function NitricOxidePage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <section className="relative z-10 px-5 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
             style={{ 
               fontFamily: 'Montserrat, sans-serif',
-              color: '#1a1a1a'
+              color: 'var(--txt)'
             }}
           >
             Start Your Journey Today
           </h2>
 
-          <p className="text-lg md:text-xl mb-8 font-light" style={{ color: '#4a4a4a' }}>
+          <p className="text-lg md:text-xl mb-8 font-light" style={{ color: 'var(--txt-muted)' }}>
             Join thousands who feel the difference
           </p>
 
@@ -675,7 +675,7 @@ export default function NitricOxidePage() {
           )}
 
           {/* Trust Badges - Small Below Button */}
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm" style={{ color: '#4a4a4a' }}>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm" style={{ color: 'var(--txt-muted)' }}>
             <div className="flex items-center gap-2">
               <Shield size={20} style={{ color: '#00d9ff' }} />
               <span>30-Day Guarantee</span>
