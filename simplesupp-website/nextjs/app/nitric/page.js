@@ -12,17 +12,22 @@ export default function NitricOxidePage() {
   const [added, setAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState(null);
+  const [productImage, setProductImage] = useState(null);
 
   const SHOPIFY_PRODUCT_ID = '8645601657022';
-  const PRODUCT_IMAGE = 'https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734704-generated-label-image-0.jpg?v=1766350977';
 
-  // Fetch variant ID from Shopify
+  // Fetch variant ID and image from Shopify
   useEffect(() => {
     const fetchVariant = async () => {
       try {
         const product = await fetchProductById(SHOPIFY_PRODUCT_ID);
         if (product && product.variantId) {
           setVariantId(product.variantId);
+        }
+        // Use the first product image from Shopify
+        const img = product?.images?.[0] || product?.image || null;
+        if (img) {
+          setProductImage(img);
         }
       } catch (error) {
         console.error('Error fetching product variant:', error);
@@ -123,7 +128,7 @@ export default function NitricOxidePage() {
                 }}
               >
                 Better Blood Flow.<br />
-                Better Everything.
+                <span style={{ color: '#00d9ff' }}>Better Everything.</span>
               </h1>
 
               {/* Subheadline */}
@@ -239,14 +244,22 @@ export default function NitricOxidePage() {
                     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
                   }}
                 >
-                  <img
-                    src="https://cdn.shopify.com/s/files/1/0731/7209/1070/files/1766350734704-generated-label-image-0.jpg?v=1766350977"
-                    alt="Nitric Oxide Premium Supplement"
-                    className="w-full h-auto max-w-md mx-auto object-contain"
-                    style={{
-                      maxHeight: '600px',
-                    }}
-                  />
+                  {productImage ? (
+                    <img
+                      src={productImage}
+                      alt="Aviera Pump Formula - Nitric Oxide"
+                      className="w-full h-auto max-w-md mx-auto object-contain"
+                      style={{ maxHeight: '600px' }}
+                    />
+                  ) : isLoading ? (
+                    <div className="w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+                      <div className="w-12 h-12 border-2 border-[#00d9ff] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-md mx-auto aspect-square flex items-center justify-center rounded-2xl" style={{ background: 'var(--bg-elev-1)' }}>
+                      <span className="text-6xl">💊</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
