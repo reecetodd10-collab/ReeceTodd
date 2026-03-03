@@ -1,4 +1,4 @@
-import { Montserrat } from "next/font/google";
+import { Montserrat, Oswald, Space_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import MarketingLayout from "./components/MarketingLayout";
@@ -8,6 +8,20 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400"],
   display: "swap",
+});
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-oswald",
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-space-mono",
 });
 
 export const viewport = {
@@ -33,7 +47,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={montserrat.className}>
+      <html lang="en" className={`${montserrat.className} ${oswald.variable} ${spaceMono.variable}`}>
         <body className="bg-[var(--bg)] text-[var(--txt)] antialiased">
           <ErrorBoundary>
             <MarketingLayout>{children}</MarketingLayout>
