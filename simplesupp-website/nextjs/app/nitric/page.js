@@ -66,10 +66,9 @@ export default function FlowStateXPage() {
   };
 
   const ingredients = [
-    { name: 'L-Citrulline', dose: '3,000 mg', desc: 'Vasodilation & blood flow' },
-    { name: 'L-Arginine', dose: '1,500 mg', desc: 'Nitric oxide precursor' },
-    { name: 'Beetroot Extract', dose: '500 mg', desc: 'Natural nitrate source' },
-    { name: 'Vitamin B12', dose: '1,000 mcg', desc: 'Energy & cell production' },
+    { name: 'L-Citrulline DL-Malate', dose: '400 mg', desc: 'Vasodilation & blood flow' },
+    { name: 'L-Arginine Hydrochloride', dose: '350 mg', desc: 'Nitric oxide precursor' },
+    { name: 'L-Arginine Alpha-Ketoglutarate', dose: '50 mg', desc: 'Enhanced NO production' },
   ];
 
   const reviews = [
