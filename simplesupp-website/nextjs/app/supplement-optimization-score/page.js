@@ -350,11 +350,10 @@ export default function SupplementOptimizationScore() {
 
     setScores(calculatedScores);
 
-    // Generate recommendations based on priority rules
-    const recs = generateRecommendations(responses, shopifyProducts);
-    setRecommendations(recs);
+    // Track final recs for Supabase save
+    let finalRecs = [];
 
-    // Get AI insights (enhanced)
+    // Get AI-powered recommendations + insights
     try {
       const insightsResponse = await fetch('/api/ai/optimization-insights', {
         method: 'POST',
@@ -362,7 +361,6 @@ export default function SupplementOptimizationScore() {
         body: JSON.stringify({
           responses,
           scores: calculatedScores,
-          recommendations: recs.map(r => r.title),
           shopifyProducts: shopifyProducts.map(p => ({ title: p.title, price: p.price })),
         }),
       });
@@ -372,8 +370,29 @@ export default function SupplementOptimizationScore() {
         if (data.insights) {
           setAiInsights(data.insights);
         }
+
+        // Use AI-chosen product recommendations
+        if (data.recommendedProducts && data.recommendedProducts.length > 0) {
+          const aiRecs = [];
+          for (const aiProd of data.recommendedProducts) {
+            const matched = findProduct(shopifyProducts, [aiProd.productKeyword]);
+            if (matched) {
+              aiRecs.push({ ...matched, reasoning: aiProd.reasoning });
+            }
+          }
+          if (aiRecs.length > 0) {
+            finalRecs = aiRecs.slice(0, 2);
+            setRecommendations(finalRecs);
+          } else {
+            finalRecs = generateRecommendations(responses, shopifyProducts);
+            setRecommendations(finalRecs);
+          }
+        } else {
+          finalRecs = generateRecommendations(responses, shopifyProducts);
+          setRecommendations(finalRecs);
+        }
+
         if (data.specialPick) {
-          // Find the product from shopify
           const specialProduct = findProduct(shopifyProducts, [data.specialPick.productKeyword]);
           if (specialProduct) {
             setSpecialAIPick({
@@ -382,17 +401,16 @@ export default function SupplementOptimizationScore() {
             });
           }
         }
-        // Update recommendations with personalized reasons
-        if (data.productReasons && recs.length > 0) {
-          const updatedRecs = recs.map((rec, idx) => ({
-            ...rec,
-            reasoning: data.productReasons[idx] || rec.reasoning,
-          }));
-          setRecommendations(updatedRecs);
-        }
+      } else {
+        // API call failed — fall back to rules
+        finalRecs = generateRecommendations(responses, shopifyProducts);
+        setRecommendations(finalRecs);
       }
     } catch (error) {
       console.error('Error getting AI insights:', error);
+      // Fallback to rule-based recommendations
+      finalRecs = generateRecommendations(responses, shopifyProducts);
+      setRecommendations(finalRecs);
       // Fallback insights
       setAiInsights({
         overallAssessment: totalScore >= 75 ? 'above' : totalScore >= 50 ? 'average' : 'below',
@@ -425,7 +443,7 @@ export default function SupplementOptimizationScore() {
           primary_bottleneck: aiInsights?.primaryGap?.category || findPrimaryGap(calculatedScores, responses),
           inputs: responses,
           scores: calculatedScores,
-          recommended_products: recs.map(r => ({ title: r.title, price: r.price })),
+          recommended_products: finalRecs.map(r => ({ title: r.title, price: r.price })),
         }),
       });
 

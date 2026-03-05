@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const SYSTEM_PROMPT = `You are an expert fitness and nutrition analyst for Aviera, a premium supplement company. Generate personalized insights based on the user's optimization quiz results.
+const SYSTEM_PROMPT = `You are an expert fitness and nutrition analyst for Aviera, a premium supplement company. Generate personalized insights AND personalized product recommendations based on the user's optimization quiz results.
 
 TONE: Analytical, confident, coach-like. Think WHOOP meets Huberman Lab - performance-focused, not bro-science.
 
@@ -17,12 +17,18 @@ You will return a JSON object with the following structure:
     "text": "1 sentence about their primary gap"
   },
   "keyOpportunity": "1 sentence about what improving their gap could unlock",
-  "productReasons": [
-    "Personalized reason for product 1 based on their specific scores",
-    "Personalized reason for product 2 based on their specific scores"
+  "recommendedProducts": [
+    {
+      "productKeyword": "keyword to match from available products (e.g., 'creatine', 'whey protein', 'ashwagandha')",
+      "reasoning": "2 sentences explaining why THIS specific user needs this product based on their exact scores, goals, and lifestyle"
+    },
+    {
+      "productKeyword": "keyword for second product",
+      "reasoning": "2 sentences explaining why THIS specific user needs this product"
+    }
   ],
   "specialPick": {
-    "productKeyword": "keyword to search for the special product (e.g., 'vitamin d', 'zinc', 'collagen', 'greens')",
+    "productKeyword": "keyword for a THIRD unique product not in recommendedProducts",
     "reasoning": "2 sentences explaining why this unique supplement would benefit THIS specific user"
   },
   "insights": [
@@ -32,12 +38,20 @@ You will return a JSON object with the following structure:
   ]
 }
 
-RULES:
+RULES FOR PRODUCT SELECTION:
+- Choose exactly 2 products for "recommendedProducts" that are the BEST fit for this specific user
+- Analyze ALL their data: goal, sleep, energy, stress, training frequency, training style, age, diet, injuries, current supplements
+- Do NOT default to the same products for everyone — really think about what THIS person needs
+- If they already take certain supplements, don't recommend those — recommend what's MISSING
+- Consider synergies between the 2 products you pick
+- For specialPick, choose a THIRD product that complements the first two but is different
+- All 3 product keywords must be different from each other
+- Product keywords must match products from the AVAILABLE PRODUCTS list provided
+
+RULES FOR INSIGHTS:
 - Be specific to their data points - reference actual scores
 - Connect metrics to outcomes (e.g., "Your sleep score of 2/5 indicates reduced testosterone and growth hormone production")
 - Frame gaps as opportunities, not failures
-- For specialPick, choose a supplement NOT already recommended that would uniquely benefit them
-- specialPick should be different from the main recommendations - think zinc, vitamin d, collagen, greens, probiotics, etc.
 - Make product reasons SPECIFIC to their profile, not generic
 - Keep all text concise but impactful`;
 
@@ -53,7 +67,7 @@ export async function POST(request) {
       );
     }
 
-    const { responses, scores, recommendations, shopifyProducts } = await request.json();
+    const { responses, scores, shopifyProducts } = await request.json();
 
     if (!responses || !scores) {
       return NextResponse.json(
@@ -107,11 +121,10 @@ CALCULATED SCORES:
 - Goal Alignment: ${scores.goalAlignment}/20 (Population avg: ${populationAverages.goalAlignment}/20)
 - Training Load: ${scores.trainingLoad}/15 (Population avg: ${populationAverages.trainingLoad}/15)
 
-ALREADY RECOMMENDED PRODUCTS: ${recommendations?.join(', ') || 'None yet'}
+AVAILABLE PRODUCTS (choose from these for recommendations):
+${shopifyProducts?.map(p => `- ${p.title} ($${p.price})`).join('\n') || 'Various supplements'}
 
-AVAILABLE PRODUCTS FOR SPECIAL PICK: ${shopifyProducts?.map(p => p.title).join(', ') || 'Various supplements'}
-
-Generate comprehensive personalized insights. For specialPick, choose a product keyword that matches something NOT in the already recommended list. Return as valid JSON.`;
+Choose the 2 BEST products for this specific user from the available products list, plus a 3rd special pick. Consider their goal, sleep, energy, stress, training, age, and current supplements. Each user should get a truly personalized selection. Return as valid JSON.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -176,6 +189,7 @@ Generate comprehensive personalized insights. For specialPick, choose a product 
       success: true,
       insights: insights,
       specialPick: insights.specialPick,
+      recommendedProducts: insights.recommendedProducts || [],
       productReasons: insights.productReasons || [],
     });
 
@@ -195,12 +209,13 @@ Generate comprehensive personalized insights. For specialPick, choose a product 
       recommendations = [];
     }
 
-    const fallbackInsights = generateFallbackInsights(responses, scores, recommendations);
+    const fallbackInsights = generateFallbackInsights(responses, scores, []);
 
     return NextResponse.json({
       success: true,
       insights: fallbackInsights,
       specialPick: fallbackInsights.specialPick,
+      recommendedProducts: fallbackInsights.recommendedProducts || [],
       productReasons: fallbackInsights.productReasons || [],
     });
   }
@@ -234,6 +249,22 @@ function generateFallbackInsights(responses, scores, recommendations) {
     (cat.score / cat.max) < (min.score / min.max) ? cat : min
   );
 
+  // Generate fallback product picks based on their weakest area
+  const fallbackProducts = [];
+  if (sleepQuality <= 2) {
+    fallbackProducts.push({ productKeyword: 'sleep', reasoning: `Your sleep score of ${sleepQuality}/5 is holding back recovery. A sleep support supplement will improve overnight repair and hormone production.` });
+    fallbackProducts.push({ productKeyword: 'magnesium', reasoning: `Magnesium supports both sleep quality and stress resilience — two areas where your profile shows room for improvement.` });
+  } else if (stressLevel >= 4) {
+    fallbackProducts.push({ productKeyword: 'ashwagandha', reasoning: `With stress at ${stressLevel}/5, ashwagandha helps regulate cortisol and supports recovery under high training loads.` });
+    fallbackProducts.push({ productKeyword: 'magnesium', reasoning: `Magnesium pairs with stress management to support nervous system recovery and improve sleep quality.` });
+  } else if (energyLevel <= 2) {
+    fallbackProducts.push({ productKeyword: 'creatine', reasoning: `Your energy score of ${energyLevel}/5 indicates ATP production could be optimized. Creatine directly supports cellular energy output.` });
+    fallbackProducts.push({ productKeyword: 'b complex', reasoning: `B vitamins are essential cofactors in energy metabolism, helping convert food into sustained fuel for your training.` });
+  } else {
+    fallbackProducts.push({ productKeyword: 'creatine', reasoning: `For your ${responses.primaryGoal || 'fitness'} goal with ${trainingFrequency} training, creatine is the most research-backed performance supplement available.` });
+    fallbackProducts.push({ productKeyword: 'omega', reasoning: `Omega-3s reduce inflammation and support recovery — critical for athletes training ${trainingFrequency}.` });
+  }
+
   return {
     overallAssessment,
     biggestStrength: {
@@ -245,11 +276,9 @@ function generateFallbackInsights(responses, scores, recommendations) {
       text: `${worst.name.charAt(0).toUpperCase() + worst.name.slice(1)} is limiting your recovery potential and overall adaptation.`,
     },
     keyOpportunity: `Improving ${worst.name} could boost your score by an estimated ${Math.min(2.5, (worst.max - worst.score) / worst.max * 2.5).toFixed(1)} points.`,
-    productReasons: [
-      `Based on your profile with ${trainingFrequency} training frequency, this supplement directly addresses your optimization needs.`,
-      `With your current health metrics, this will help fill nutritional gaps and support your ${responses.primaryGoal || 'fitness'} goal.`,
-    ],
-    specialPick: generateSpecialPick(responses, scores, recommendations),
+    recommendedProducts: fallbackProducts,
+    productReasons: fallbackProducts.map(p => p.reasoning),
+    specialPick: generateSpecialPick(responses, scores, []),
     insights: [
       sleepQuality <= 2
         ? `Your sleep quality score of ${sleepQuality}/5 indicates significant room for recovery optimization. Poor sleep directly impacts hormone production, muscle repair, and next-day performance.`
