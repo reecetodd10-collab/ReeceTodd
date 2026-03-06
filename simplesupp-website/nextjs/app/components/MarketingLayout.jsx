@@ -19,6 +19,7 @@ export default function MarketingLayout({ children }) {
   const isSmartStackPage = pathname === '/smartstack-ai';
   const isHomePage = pathname === '/home';
   const isTrybePage = pathname === '/trybe';
+  const isShopPage = pathname === '/shop';
 
   // Landing page - no nav or footer or widget
   if (isLandingPage) {
@@ -37,6 +38,11 @@ export default function MarketingLayout({ children }) {
 
   // Trybe page - standalone with its own nav and footer
   if (isTrybePage) {
+    return <>{children}</>;
+  }
+
+  // Shop page - standalone with its own nav and footer
+  if (isShopPage) {
     return <>{children}</>;
   }
   

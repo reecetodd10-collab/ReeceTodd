@@ -1,1244 +1,1189 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Search, Filter, ShoppingCart, Check, Dumbbell, Flame, Zap, Brain, Moon, Heart, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { products, PRODUCT_CATEGORIES, getProductsByCategory } from '../data/products';
-import GlassCard from '../components/shared/GlassCard';
-import ShopifyProductCard from '../components/ShopifyProductCard';
-import { fetchShopifyProducts, fetchProductById, initializeShopifyCart, addMultipleToCart } from '../lib/shopify';
-
-// Component that handles URL params
-function ShopContent() {
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(
-    tabParam === 'stacks' ? 'stacks' :
-      tabParam === 'apparel' ? 'apparel' :
-        'products'
-  );
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
-  const [shopifyProducts, setShopifyProducts] = useState([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [shopifyCartInitialized, setShopifyCartInitialized] = useState(false);
-
-  // Handle URL tab parameter changes (e.g., /shop?tab=stacks)
-  useEffect(() => {
-    if (tabParam === 'stacks') {
-      setActiveTab('stacks');
-    } else if (tabParam === 'products') {
-      setActiveTab('products');
-    }
-  }, [tabParam]);
-
-  // Fetch Shopify products when products tab is active
-  useEffect(() => {
-    if (activeTab === 'products' && shopifyProducts.length === 0) {
-      setIsLoadingProducts(true);
-      fetchShopifyProducts()
-        .then(async (shopifyProds) => {
-          // Transform local products to match Shopify format
-          const localProductsPromises = products
-            .filter(p => p.active && (p.id === 'nitric-oxide' || p.id === 'sleep-formula'))
-            .map(async (p) => {
-              let productImages = p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []);
-              let productImage = p.image || null;
-
-              // Try to fetch images and variant ID from Shopify if product exists there
-              let variantId = null;
-              if (p.shopifyProductId) {
-                try {
-                  const shopifyProduct = await fetchProductById(p.shopifyProductId);
-                  if (shopifyProduct) {
-                    // Use Shopify images if available
-                    if (shopifyProduct.images && shopifyProduct.images.length > 0) {
-                      productImages = shopifyProduct.images;
-                      productImage = shopifyProduct.image || productImages[0] || p.image;
-                      console.log(`Fetched ${p.name} images from Shopify:`, productImages.length);
-                    }
-                    // Get variant ID for checkout
-                    if (shopifyProduct.variantId) {
-                      variantId = shopifyProduct.variantId;
-                    }
-                  }
-                } catch (error) {
-                  console.warn(`Could not fetch ${p.name} from Shopify, using local data:`, error);
-                }
-              }
-
-              return {
-                id: p.id,
-                shopifyId: p.shopifyProductId || p.suplifulId || p.id,
-                variantId: variantId, // Fetched from Shopify if available
-                title: p.name,
-                description: p.description || '',
-                handle: p.id.toLowerCase().replace(/\s+/g, '-'),
-                price: p.price,
-                currencyCode: 'USD',
-                image: productImage,
-                images: productImages,
-                imageAlt: p.name,
-                available: true, // Local products are always available
-                category: p.category,
-                tags: p.tags || [],
-                // Additional fields for local products
-                isLocalProduct: true,
-                benefits: p.benefits || [],
-                ingredients: p.ingredients || '',
-                servingSize: p.servingSize || '',
-                servings: p.servings || 0,
-                productAmount: p.productAmount || '',
-                suggestedUse: p.suggestedUse || '',
-              };
-            });
-
-          const localProducts = await Promise.all(localProductsPromises);
-
-          // Merge Shopify products with local products
-          const allProducts = [...shopifyProds, ...localProducts];
-          setShopifyProducts(allProducts);
-          setIsLoadingProducts(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching Shopify products:', error);
-          setIsLoadingProducts(false);
-        });
-    }
-  }, [activeTab, shopifyProducts.length]);
-
-  // Initialize Shopify cart SDK for cart functionality
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !shopifyCartInitialized) {
-      initializeShopifyCart()
-        .then(async (client) => {
-          setShopifyCartInitialized(true);
-
-          // Get or create cart to ensure we have a cart ID
-          let cart = null;
-          try {
-            // Get existing cart ID from localStorage
-            const cartId = localStorage.getItem('shopify_cart_id');
-            if (cartId) {
-              try {
-                cart = await client.checkout.fetch(cartId);
-              } catch (e) {
-                // Cart doesn't exist, create new one
-                cart = await client.checkout.create();
-                localStorage.setItem('shopify_cart_id', cart.id);
-              }
-            } else {
-              cart = await client.checkout.create();
-              localStorage.setItem('shopify_cart_id', cart.id);
-            }
-          } catch (e) {
-            console.error('Error getting cart:', e);
-            // Create new cart if fetch fails
-            try {
-              cart = await client.checkout.create();
-              localStorage.setItem('shopify_cart_id', cart.id);
-            } catch (createError) {
-              console.error('Error creating cart:', createError);
-            }
-          }
-
-          // NOTE: If cart errors persist, restart Next.js dev server (Ctrl+C, npm run dev)
-          // BEFORE LAUNCH: Test full checkout with Shopify test card (4242 4242 4242 4242)
-          // Configure Shopify Payments in Admin → Settings → Payments
-
-          // Suppress Shopify SDK console errors
-          const originalError = console.error;
-          console.error = (...args) => {
-            const errorMsg = args[0]?.toString() || '';
-            if (errorMsg.includes('componentTypes') || errorMsg.includes('updateComponent') || errorMsg.includes('is not a constructor')) {
-              return; // Suppress Shopify SDK errors
-            }
-            originalError(...args);
-          };
-
-          // Initialize cart UI components - wait for DOM to be ready
-          setTimeout(() => {
-            try {
-              if (!window.ShopifyBuy || !window.ShopifyBuy.UI) {
-                console.warn('ShopifyBuy SDK not loaded. Cart UI will not be available.');
-                return;
-              }
-
-              window.ShopifyBuy.UI.onReady(client).then((ui) => {
-                try {
-                  // Initialize cart toggle button (floating button) - only if it doesn't already exist
-                  const cartToggleNode = document.getElementById('shopify-cart-toggle');
-                  if (cartToggleNode && cart && !cartToggleNode.hasAttribute('data-shopify-component')) {
-                    try {
-                      ui.createComponent('cartToggle', {
-                        node: cartToggleNode,
-                        cart: cart,
-                        options: {
-                          toggle: {
-                            styles: {
-                              toggle: {
-                                'background-color': '#00d9ff',
-                                'border-radius': '50%',
-                                'box-shadow': '0 0 30px rgba(0, 217, 255, 0.6)',
-                              },
-                              count: {
-                                'background-color': '#ffffff',
-                                'color': '#1a1a1a',
-                                'font-weight': '600',
-                              }
-                            }
-                          }
-                        }
-                      }).then(() => {
-                        cartToggleNode.setAttribute('data-shopify-component', 'true');
-                        console.log('Cart toggle initialized successfully');
-                      }).catch((err) => {
-                        console.error('Cart toggle creation failed:', err);
-                        console.warn('Falling back to custom cart implementation');
-                      });
-                    } catch (createError) {
-                      console.error('Error creating cart toggle component:', createError);
-                      console.warn('Falling back to custom cart implementation');
-                    }
-                  } else if (cartToggleNode && cartToggleNode.hasAttribute('data-shopify-component')) {
-                    console.log('Cart toggle already initialized');
-                  } else {
-                    console.warn('Cart toggle node not found or cart is null');
-                  }
-
-                  // Initialize cart overlay (modal) - only if it doesn't already exist
-                  const cartNode = document.getElementById('shopify-cart');
-                  if (cartNode && cart && !cartNode.hasAttribute('data-shopify-component')) {
-                    try {
-                      ui.createComponent('cart', {
-                        node: cartNode,
-                        cart: cart,
-                        options: {
-                          cart: {
-                            styles: {
-                              button: {
-                                'background-color': '#00d9ff',
-                                ':hover': {
-                                  'background-color': '#00c3e6'
-                                },
-                                'border-radius': '12px',
-                                'font-weight': '600',
-                              },
-                              'close-button': {
-                                'color': '#ffffff',
-                              },
-                              'cart': {
-                                'display': 'none', // Hide by default, only show when opened
-                              }
-                            },
-                            text: {
-                              title: 'Shopping Cart',
-                              empty: 'Your cart is empty',
-                              button: 'Checkout',
-                              total: 'Total',
-                              subtotal: 'Subtotal'
-                            },
-                            toggle: {
-                              // Don't auto-open cart
-                              'iframe': false
-                            }
-                          }
-                        }
-                      }).then(() => {
-                        cartNode.setAttribute('data-shopify-component', 'true');
-                        // Hide cart overlay by default and ensure it's closed
-                        setTimeout(() => {
-                          const cartOverlay = cartNode.querySelector('.shopify-buy__cart');
-                          if (cartOverlay) {
-                            cartOverlay.style.display = 'none';
-                            cartOverlay.classList.remove('is-open');
-                            cartOverlay.setAttribute('data-state', 'closed');
-                          }
-                          // Also try to close via Shopify's API if available
-                          if (window.ShopifyBuy && window.ShopifyBuy.UI) {
-                            try {
-                              const cartComponent = ui.components.cart;
-                              if (cartComponent && cartComponent.close) {
-                                cartComponent.close();
-                              }
-                            } catch (e) {
-                              // Ignore errors
-                            }
-                          }
-                        }, 100);
-                        console.log('Cart overlay initialized successfully');
-                      }).catch((err) => {
-                        console.error('Cart overlay creation failed:', err);
-                        console.warn('Falling back to custom cart implementation');
-                      });
-                    } catch (createError) {
-                      console.error('Error creating cart overlay component:', createError);
-                      console.warn('Falling back to custom cart implementation');
-                    }
-                  } else if (cartNode && cartNode.hasAttribute('data-shopify-component')) {
-                    console.log('Cart overlay already initialized');
-                  } else {
-                    console.warn('Cart node not found or cart is null');
-                  }
-                } catch (uiError) {
-                  console.error('Error creating Shopify UI components:', uiError);
-                  console.warn('Falling back to custom cart implementation');
-                }
-              }).catch((error) => {
-                console.error('Error initializing Shopify UI:', error);
-                console.warn('Falling back to custom cart implementation');
-              });
-            } catch (error) {
-              console.error('Error in cart initialization timeout:', error);
-            }
-          }, 100);
-        })
-        .catch((error) => {
-          console.error('Error initializing Shopify cart:', error);
-        });
-    }
-  }, [shopifyCartInitialized]);
-
-  // Category options
-  const CATEGORIES = {
-    all: 'All Products',
-    'Performance': 'Performance',
-    'Health & Wellness': 'Health & Wellness',
-    'Recovery & Sleep': 'Recovery & Sleep',
-    'Focus & Energy': 'Focus & Energy',
-    'Beauty & Anti-Aging': 'Beauty & Anti-Aging',
-    'Weight Management': 'Weight Management',
-  };
-
-  // Filter and sort Shopify products
-  const filteredShopifyProducts = useMemo(() => {
-    let filtered = [...shopifyProducts];
-
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === selectedCategory);
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.title.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query) ||
-        (p.tags && p.tags.some(tag => tag.toLowerCase().includes(query)))
-      );
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'name':
-      default:
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-    }
-
-    return filtered;
-  }, [shopifyProducts, searchQuery, selectedCategory, sortBy]);
-
-  // Category counts from Shopify products
-  const categoryCounts = useMemo(() => {
-    const counts = { all: shopifyProducts.length };
-    Object.keys(CATEGORIES).forEach(cat => {
-      if (cat !== 'all') {
-        counts[cat] = shopifyProducts.filter(p => p.category === cat).length;
-      }
-    });
-    return counts;
-  }, [shopifyProducts]);
-
-
-  // Chip-style categories for filter row
-  const chipCategories = [
-    { key: 'all', label: 'All' },
-    { key: 'Performance', label: 'Performance' },
-    { key: 'Weight Management', label: 'Weight Mgmt' },
-    { key: 'Health & Wellness', label: 'Health' },
-    { key: 'Recovery & Sleep', label: 'Recovery' },
-    { key: 'Focus & Energy', label: 'Focus' },
-    { key: 'Beauty & Anti-Aging', label: 'Beauty' },
-  ];
-
-  // Tab options
-  const tabs = [
-    { key: 'products', label: 'Products' },
-    { key: 'stacks', label: 'Stacks' },
-    { key: 'apparel', label: 'Apparel' },
-  ];
-
-  return (
-    <div className="relative min-h-screen" style={{ background: 'var(--bg)' }}>
-      {/* Cyan glow backdrop */}
-      <div className="absolute top-0 left-0 right-0 h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,217,255,0.06), transparent 60%)' }} />
-
-      <div className="relative z-10">
-        {/* Search bar */}
-        <div className="sticky top-0 z-20 px-5 pt-3 pb-2" style={{ background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(12px)' }}>
-          <div className="relative max-w-7xl mx-auto">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2" size={16} style={{ color: 'var(--txt-dim, #52525b)' }} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search supplements..."
-              className="w-full pl-10 pr-4 py-3 rounded-[10px] text-[14px] outline-none transition-colors"
-              style={{
-                background: 'var(--bg-elev-1)',
-                border: '1px solid var(--border)',
-                color: 'var(--txt)',
-                minHeight: '44px',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Tab chips row */}
-        <div className="flex gap-2 overflow-x-auto px-5 py-2 scrollbar-hide max-w-7xl mx-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className="flex-shrink-0 px-4 py-[7px] rounded-full text-[12px] font-medium whitespace-nowrap transition-all"
-              style={{
-                background: activeTab === tab.key ? '#00d9ff' : 'transparent',
-                color: activeTab === tab.key ? '#09090b' : 'var(--txt-muted)',
-                border: activeTab === tab.key ? '1px solid #00d9ff' : '1px solid var(--border)',
-                fontWeight: activeTab === tab.key ? 600 : 500,
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Category filter chips - only for products tab */}
-        {activeTab === 'products' && (
-          <div className="flex gap-2 overflow-x-auto px-5 pb-3 pt-1 scrollbar-hide max-w-7xl mx-auto">
-            {chipCategories.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setSelectedCategory(cat.key)}
-                className="flex-shrink-0 px-3.5 py-[7px] rounded-full text-[12px] font-medium whitespace-nowrap transition-all"
-                style={{
-                  background: selectedCategory === cat.key ? '#00d9ff' : 'transparent',
-                  color: selectedCategory === cat.key ? '#09090b' : 'var(--txt-muted)',
-                  border: selectedCategory === cat.key ? '1px solid #00d9ff' : '1px solid var(--border)',
-                  fontWeight: selectedCategory === cat.key ? 600 : 500,
-                }}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="max-w-7xl mx-auto px-5">
-          {/* Aviera Apparel Section */}
-          {activeTab === 'apparel' && <AvieraApparelSection />}
-
-          {/* Aviera Stacks Section */}
-          {activeTab === 'stacks' && <AvieraStacksSection shopifyProducts={shopifyProducts} />}
-
-          {/* Product Grid */}
-          {activeTab === 'products' && (
-            <div>
-              {isLoadingProducts ? (
-                <div className="text-center py-12">
-                  <div className="inline-block w-10 h-10 border-3 border-[#00d9ff] border-t-transparent rounded-full animate-spin mb-3" />
-                  <p className="text-[13px]" style={{ color: 'var(--txt-muted)' }}>Loading products...</p>
-                </div>
-              ) : filteredShopifyProducts.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-[13px]" style={{ color: 'var(--txt-muted)' }}>No products found matching your search.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] pb-8">
-                  {filteredShopifyProducts.map((product) => (
-                    <ShopifyProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Shopify Cart Toggle Button */}
-        <div id="shopify-cart-toggle" className="fixed bottom-20 md:bottom-8 right-4 md:right-8 z-50" />
-        <div id="shopify-cart" />
-      </div>
-    </div>
-  );
-}
-
-// Main export with Suspense wrapper for useSearchParams
-export default function Shop() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-[var(--acc)] border-t-transparent rounded-full animate-spin"></div></div>}>
-      <ShopContent />
-    </Suspense>
-  );
-}
-
-// Helper function to find Shopify product by name/keywords
-// searchTerms can be:
-// - Array of strings: all must match (e.g., ['whey', 'protein', 'isolate'])
-// - Array with alternatives: first try all, then try any (e.g., ['beta-alanine', 'beta alanine', 'bcaa'])
-function findProductByName(products, searchTerms) {
-  if (!products || products.length === 0) return null;
-
-  const searchLower = searchTerms.map(term => term.toLowerCase());
-
-  // First pass: Try to match ALL terms (most specific)
-  for (const product of products) {
-    const titleLower = product.title.toLowerCase();
-    const descriptionLower = (product.description || '').toLowerCase();
-    const tagsLower = (product.tags || []).map(tag => tag.toLowerCase()).join(' ');
-    const allText = `${titleLower} ${descriptionLower} ${tagsLower}`;
-
-    // Check if ALL search terms are found
-    const allTermsFound = searchLower.every(term =>
-      allText.includes(term)
-    );
-
-    if (allTermsFound) {
-      return product;
-    }
-  }
-
-  // Second pass: Try matching any term (for alternatives like "beta-alanine" OR "bcaa")
-  for (const product of products) {
-    const titleLower = product.title.toLowerCase();
-    const descriptionLower = (product.description || '').toLowerCase();
-    const tagsLower = (product.tags || []).map(tag => tag.toLowerCase()).join(' ');
-    const allText = `${titleLower} ${descriptionLower} ${tagsLower}`;
-
-    // Check if any search term matches
-    for (const term of searchLower) {
-      if (allText.includes(term)) {
-        return product;
-      }
-    }
-  }
-
-  return null;
-}
-
-// Aviera Apparel Section Component
-function AvieraApparelSection() {
-  const apparelItems = [
-    {
-      id: 'hat',
-      name: 'Aviera Hat',
-      description: 'Premium quality cap featuring the Aviera logo. Perfect for your workouts and everyday wear.',
-      price: 0,
-      image: null,
-    },
-    {
-      id: 'shirt',
-      name: 'Aviera Shirt',
-      description: 'Comfortable and stylish t-shirt with the Aviera brand. Made from high-quality materials.',
-      price: 0,
-      image: null,
-    },
-  ];
-
-  return (
-    <div>
-      {/* Coming Soon Banner */}
-      <div
-        className="glass-card p-8 mb-10 text-center transition-all duration-300"
-        style={{
-          background: 'rgba(30, 30, 30, 0.95)',
-          border: '1px solid rgba(0, 217, 255, 0.3)',
-          borderRadius: '20px',
-          boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-          e.currentTarget.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-          e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-      >
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--acc)]/20 rounded-full mb-6">
-          <Sparkles className="text-[var(--acc)]" size={48} />
-        </div>
-        <h2
-          className="text-3xl md:text-4xl font-normal text-[var(--acc)] mb-4"
-          style={{
-            textShadow: '0 0 20px rgba(0, 217, 255, 0.6)',
-            filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.4))'
-          }}
-        >
-          Coming Soon...
-        </h2>
-        <p className="text-lg text-[var(--txt-muted)] font-light max-w-2xl mx-auto">
-          We're working on bringing you premium Aviera apparel. Stay tuned for updates!
-        </p>
-      </div>
-
-      {/* Apparel Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {apparelItems.map((item) => (
-          <motion.div
-            key={item.id}
-            className="glass-card overflow-hidden transition-all group"
-            style={{
-              background: 'rgba(30, 30, 30, 0.9)',
-              border: '1px solid rgba(0, 217, 255, 0.3)',
-              borderRadius: '20px',
-              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-              transition: 'all 0.3s ease'
-            }}
-            whileHover={{
-              y: -4
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            {/* Product Image Placeholder */}
-            <div className="h-64 bg-[var(--bg-elev-1)] flex items-center justify-center border-b border-[var(--border)] relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--acc)]/10 via-transparent to-[var(--acc)]/5"></div>
-              <div className="text-6xl opacity-20 relative z-10">
-                {item.id === 'hat' ? '🧢' : '👕'}
-              </div>
-              {/* Coming Soon Badge */}
-              <div className="absolute top-4 right-4 z-10">
-                <span
-                  className="px-3 py-1 text-xs font-normal rounded-full"
-                  style={{
-                    background: 'rgba(0, 217, 255, 0.2)',
-                    border: '1px solid rgba(0, 217, 255, 0.5)',
-                    color: '#00d9ff',
-                    boxShadow: '0 0 15px rgba(0, 217, 255, 0.4)',
-                    textShadow: '0 0 10px rgba(0, 217, 255, 0.6)'
-                  }}
-                >
-                  Coming Soon
-                </span>
-              </div>
-            </div>
-
-            {/* Product Info */}
-            <div className="p-6">
-              <h3 className="text-xl font-normal text-[var(--txt)] mb-3">{item.name}</h3>
-              <p className="text-sm text-[var(--txt-muted)] mb-6 leading-relaxed font-light">
-                {item.description}
-              </p>
-
-              {/* Price Placeholder */}
-              <div className="mb-6 pt-4 border-t border-[var(--border)]">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-normal text-[var(--txt-muted)]/50">Price TBD</span>
-                </div>
-              </div>
-
-              {/* CTA Button - Disabled */}
-              <button
-                disabled
-                className="w-full font-semibold flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out cursor-not-allowed opacity-50"
-                style={{
-                  background: 'rgba(30, 30, 30, 0.9)',
-                  border: '1px solid rgba(0, 217, 255, 0.3)',
-                  borderRadius: '12px',
-                  padding: '14px 28px',
-                  fontSize: '16px',
-                  boxShadow: '0 0 15px rgba(0, 217, 255, 0.2)'
-                }}
-              >
-                <ShoppingCart size={18} />
-                Coming Soon
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Aviera Stacks Section Component
-function AvieraStacksSection({ shopifyProducts = [] }) {
-  const [addingStack, setAddingStack] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [hoveredSupplement, setHoveredSupplement] = useState(null);
-  const [hoveredProduct, setHoveredProduct] = useState(null);
-
-  // Stack definitions with product search terms
-  const stacks = [
-    {
-      id: 'muscle',
-      name: 'Muscle Builder Stack',
-      goal: 'Build Muscle & Strength',
-      icon: Dumbbell,
-      supplements: [
-        'Creatine Monohydrate',
-        'Advanced 100% Whey Protein Isolate (Chocolate)',
-        'BCAA Post Workout Powder (Honeydew/Watermelon)',
-        'Nitric Shock Pre-Workout Powder (Fruit Punch)'
-      ],
-      productSearchTerms: [
-        ['creatine', 'monohydrate'],
-        ['whey', 'protein', 'isolate', 'chocolate'],
-        ['bcaa', 'post workout', 'honeydew', 'watermelon'],
-        ['nitric shock', 'pre-workout', 'fruit punch']
-      ],
-      originalPrice: 137.62,
-      discountedPrice: 116.99,
-      description: 'Maximize muscle growth and strength gains with this powerful combination. These supplements work together to enhance power output, support muscle repair, and improve endurance for longer, more intense workouts.',
-    },
-    {
-      id: 'fatloss',
-      name: 'Fat Loss Stack',
-      goal: 'Lose Fat & Get Lean',
-      icon: Flame,
-      supplements: [
-        'Fat Burner with MCT',
-        'Keto BHB',
-        'Apple Cider Vinegar Capsules'
-      ],
-      productSearchTerms: [
-        ['fat burner', 'mct'],
-        ['keto', 'bhb'],
-        ['apple cider vinegar', 'acv']
-      ],
-      originalPrice: 91.88,
-      discountedPrice: 82.99,
-      description: 'Accelerate fat burning and boost metabolism naturally. This stack provides thermogenic effects, transports fat for energy conversion, and increases energy expenditure to help you achieve a leaner physique.',
-    },
-    {
-      id: 'athletic',
-      name: 'Athletic Performance Stack',
-      goal: 'Athletic Performance',
-      icon: Zap,
-      supplements: [
-        'Creatine Monohydrate',
-        'Nitric Shock Pre-Workout Powder (Fruit Punch)',
-        'BCAA Post Workout Powder (Honeydew/Watermelon)',
-        'Hydration Powder (Lemonade)'
-      ],
-      productSearchTerms: [
-        ['creatine', 'monohydrate'],
-        ['nitric shock', 'pre-workout', 'fruit punch'],
-        ['bcaa', 'post workout', 'honeydew', 'watermelon'],
-        ['hydration', 'powder', 'lemonade']
-      ],
-      originalPrice: 118.78,
-      discountedPrice: 100.99,
-      description: 'Enhance speed, endurance, and explosiveness for peak athletic performance. This combination boosts power output, delays fatigue, and maintains optimal hydration during intense training and competition.',
-    },
-    {
-      id: 'focus',
-      name: 'Focus & Energy Stack',
-      goal: 'Focus & Energy',
-      icon: Brain,
-      supplements: [
-        'Alpha Energy',
-        'Flow State Nootropic Powder (Sour Gummi Worm)',
-        'Energy Powder (Fruit Punch)'
-      ],
-      productSearchTerms: [
-        ['alpha energy'],
-        ['flow state', 'nootropic', 'sour gummi worm'],
-        ['energy', 'powder', 'fruit punch']
-      ],
-      originalPrice: 113.38,
-      discountedPrice: 102.99,
-      description: 'Enhance mental clarity and sustained energy throughout your day. This stack provides clean alertness without crashes, reduces stress, and improves cognitive function for maximum productivity.',
-    },
-    {
-      id: 'sleep',
-      name: 'Sleep & Recovery Stack',
-      goal: 'Sleep & Recovery',
-      icon: Moon,
-      supplements: [
-        'Sleep Formula',
-        'Magnesium Glycinate',
-        'Ashwagandha'
-      ],
-      productSearchTerms: [
-        ['sleep formula'],
-        ['magnesium', 'glycinate'],
-        ['ashwagandha']
-      ],
-      originalPrice: 70.95,
-      discountedPrice: 63.99,
-      description: 'Promote deep rest and faster recovery from intense training. This combination supports muscle relaxation, regulates sleep cycles, and reduces stress for optimal rest and repair.',
-    },
-    {
-      id: 'longevity',
-      name: 'Health & Longevity Stack',
-      goal: 'Health & Longevity',
-      icon: Heart,
-      supplements: [
-        'Omega-3 EPA 180mg + DHA 120mg',
-        'CoQ10 Ubiquinone',
-        'Complete Multivitamin'
-      ],
-      productSearchTerms: [
-        ['omega', 'epa', 'dha'],
-        ['coq10', 'ubiquinone'],
-        ['multivitamin', 'complete']
-      ],
-      originalPrice: 84.38,
-      discountedPrice: 75.99,
-      description: 'Support long-term health and disease prevention with essential nutrients. This stack promotes heart and brain health, strengthens immunity, and provides cellular energy and antioxidant protection.',
-    },
-  ];
-
-  const handleAddStack = async (stack) => {
-    if (!shopifyProducts || shopifyProducts.length === 0) {
-      alert('Products are still loading. Please try again in a moment.');
-      return;
-    }
-
-    setAddingStack(stack.id);
-    setSuccessMessage(null);
-
-    try {
-      // Find products for this stack
-      const productsToAdd = [];
-      const foundProducts = [];
-      const missingProducts = [];
-
-      for (let i = 0; i < stack.productSearchTerms.length; i++) {
-        const searchTerms = stack.productSearchTerms[i];
-        const product = findProductByName(shopifyProducts, searchTerms);
-
-        if (product && product.variantId && product.available) {
-          productsToAdd.push({
-            variantId: product.variantId,
-            quantity: 1,
-          });
-          foundProducts.push(stack.supplements[i] || `Product ${i + 1}`);
-        } else {
-          missingProducts.push(stack.supplements[i] || `Product ${i + 1}`);
-        }
-      }
-
-      if (productsToAdd.length === 0) {
-        alert(`Sorry, none of the products in the ${stack.name} are currently available.`);
-        setAddingStack(null);
-        return;
-      }
-
-      if (missingProducts.length > 0) {
-        console.warn(`Some products not found for ${stack.name}:`, missingProducts);
-        // Still add what we found, but show a message
-        if (productsToAdd.length < stack.productSearchTerms.length) {
-          const message = `Added ${productsToAdd.length} of ${stack.productSearchTerms.length} products. Some items may be unavailable.`;
-          console.log(message);
-        }
-      }
-
-      // Add all products to cart
-      await addMultipleToCart(productsToAdd);
-
-      // Show success message
-      setSuccessMessage({
-        stackId: stack.id,
-        count: productsToAdd.length,
-      });
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-
-    } catch (error) {
-      console.error('Error adding stack to cart:', error);
-      alert('Failed to add stack to cart. Please try again.');
-    } finally {
-      setAddingStack(null);
-    }
-  };
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10">
-      {stacks.map((stack) => {
-        const Icon = stack.icon;
-
-        return (
-          <motion.div
-            key={stack.id}
-            className="glass-card overflow-hidden transition-all group"
-            style={{
-              border: '1px solid rgba(0, 217, 255, 0.3)',
-              boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-              transition: 'all 0.3s ease'
-            }}
-            whileHover={{
-              y: -2
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-              e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-            }}
-          >
-            {/* Stack Header with Icon */}
-            <div className="p-6 bg-[var(--bg-elev-1)] border-b border-[var(--border)]">
-              <div className="flex items-center gap-4 mb-4">
-                <div
-                  className="relative transition-all duration-300 ease-in-out flex items-center justify-center"
-                  style={{
-                    background: 'rgba(30, 30, 30, 0.9)',
-                    border: '1px solid rgba(0, 217, 255, 0.3)',
-                    borderRadius: '12px',
-                    padding: '20px',
-                    width: '64px',
-                    height: '64px',
-                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.25)',
-                    cursor: 'default',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.6)';
-                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.5)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0, 217, 255, 0.3)';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.25)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  <Icon
-                    className="text-white"
-                    size={32}
-                    style={{
-                      filter: 'drop-shadow(0 0 8px rgba(0, 217, 255, 0.5))'
-                    }}
-                  />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-normal text-[var(--txt)] mb-1">{stack.name}</h3>
-                  <p className="text-xs text-[var(--txt-muted)] font-light">{stack.goal}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stack Content */}
-            <div className="p-6">
-              {/* Supplements List */}
-              <div className="mb-4 relative">
-                <p className="text-xs font-normal text-[var(--txt-muted)] mb-3 uppercase tracking-wider">
-                  Includes ({stack.supplements.length} Supplements)
-                </p>
-                <ul className="space-y-2">
-                  {stack.supplements.map((supplement, idx) => {
-                    const searchTerms = stack.productSearchTerms[idx] || [];
-                    const product = findProductByName(shopifyProducts, searchTerms);
-                    const isHovered = hoveredSupplement === `${stack.id}-${idx}`;
-
-                    return (
-                      <li
-                        key={idx}
-                        className="text-sm flex items-start relative"
-                        style={{ color: 'var(--txt)', fontWeight: 700 }}
-                        onMouseEnter={() => {
-                          setHoveredSupplement(`${stack.id}-${idx}`);
-                          if (product) setHoveredProduct(product);
-                        }}
-                        onMouseLeave={() => {
-                          setHoveredSupplement(null);
-                          setHoveredProduct(null);
-                        }}
-                      >
-                        <Check size={16} className="text-[var(--acc)] mr-2 mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-                        <span className="relative">
-                          {supplement}
-                          {/* Product Image Tooltip */}
-                          {isHovered && hoveredProduct && hoveredProduct.image && (
-                            <div
-                              className="absolute z-50 pointer-events-none"
-                              style={{
-                                bottom: 'calc(100% + 12px)',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                opacity: 1,
-                                transition: 'opacity 0.2s ease',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  width: '150px',
-                                  height: '150px',
-                                  background: 'rgba(30, 30, 30, 0.95)',
-                                  border: '1px solid rgba(0, 217, 255, 0.5)',
-                                  borderRadius: '8px',
-                                  padding: '8px',
-                                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 217, 255, 0.3)',
-                                  backdropFilter: 'blur(10px)',
-                                }}
-                              >
-                                <img
-                                  src={hoveredProduct.image}
-                                  alt={hoveredProduct.title}
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                    borderRadius: '4px',
-                                  }}
-                                />
-                              </div>
-                              {/* Tooltip arrow */}
-                              <div
-                                style={{
-                                  position: 'absolute',
-                                  bottom: '-6px',
-                                  left: '50%',
-                                  transform: 'translateX(-50%)',
-                                  width: 0,
-                                  height: 0,
-                                  borderLeft: '6px solid transparent',
-                                  borderRight: '6px solid transparent',
-                                  borderTop: '6px solid rgba(0, 217, 255, 0.5)',
-                                }}
-                              />
-                            </div>
-                          )}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-
-              {/* Description */}
-              <p className="text-sm text-[var(--txt-muted)] mb-6 leading-relaxed font-light">
-                {stack.description}
-              </p>
-
-              {/* Pricing */}
-              <div className="mb-6 pt-4 border-t border-[var(--border)]">
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-3xl font-normal text-[var(--acc)]">${stack.originalPrice.toFixed(2)}</span>
-                  <span className="text-sm text-[var(--txt-muted)] font-light">USD</span>
-                </div>
-                <p className="text-xs text-[var(--acc)] font-light">
-                  Free shipping on all orders
-                </p>
-              </div>
-
-              {/* CTA Button */}
-              <button
-                onClick={() => handleAddStack(stack)}
-                disabled={addingStack === stack.id || shopifyProducts.length === 0}
-                className="w-full disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2 text-white transition-all duration-300 ease-in-out"
-                style={{
-                  background: successMessage?.stackId === stack.id
-                    ? 'rgba(16, 185, 129, 0.9)'
-                    : 'rgba(30, 30, 30, 0.9)',
-                  border: successMessage?.stackId === stack.id
-                    ? '1px solid rgba(16, 185, 129, 0.4)'
-                    : '1px solid rgba(0, 217, 255, 0.4)',
-                  borderRadius: '12px',
-                  padding: '14px 28px',
-                  fontSize: '16px',
-                  boxShadow: successMessage?.stackId === stack.id
-                    ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
-                    : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!addingStack && !successMessage?.stackId && shopifyProducts.length > 0) {
-                    e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!successMessage?.stackId) {
-                    e.currentTarget.style.boxShadow = successMessage?.stackId === stack.id
-                      ? '0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)'
-                      : '0 0 20px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {addingStack === stack.id ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Adding...
-                  </>
-                ) : successMessage?.stackId === stack.id ? (
-                  <>
-                    <Check size={18} />
-                    Stack Added! {successMessage.count} items in cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart size={18} />
-                    Add Stack to Cart
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
-
-// Product Card Component
-function ProductCard({ product }) {
-  const [showDetails, setShowDetails] = useState(false);
-
-  const profitMargin = ((product.price - product.costPrice) / product.price * 100).toFixed(0);
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, useInView } from 'framer-motion';
+import Link from 'next/link';
+import { fetchShopifyProducts, addToCart, initializeShopifyCart } from '../lib/shopify';
+
+// ─── Scroll-triggered fade-up wrapper ───
+function FadeInSection({ children, delay = 0, className = '' }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
 
   return (
     <motion.div
-      className="glass-card overflow-hidden transition-all group"
-      style={{
-        boxShadow: '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)'
-      }}
-      whileHover={{
-        y: -4
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.3), 0 8px 20px rgba(0, 0, 0, 0.3)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2)';
-      }}
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.7, delay, ease: 'easeOut' }}
+      className={className}
     >
-      {/* Category Badge */}
-      <div className="relative">
-        <div className="absolute top-3 left-3 z-10">
-          <span className="px-3 py-1 bg-[var(--acc)] text-[#001018] text-xs font-normal rounded-full">
-            {product.category}
-          </span>
-        </div>
-
-        {/* Priority Badge */}
-        {product.priority === 'essential' && (
-          <div className="absolute top-3 right-3 z-10">
-            <span className="px-3 py-1 bg-green-500 text-white text-xs font-normal rounded-full flex items-center gap-1">
-              <Check size={12} /> Essential
-            </span>
-          </div>
-        )}
-
-        {/* Product Image Placeholder */}
-        <div className="h-48 bg-[var(--bg-elev-1)] flex items-center justify-center border-b border-[var(--border)]">
-          <div className="text-6xl opacity-20">💊</div>
-        </div>
-      </div>
-
-      {/* Product Info */}
-      <div className="p-6">
-        <h3 className="text-lg font-normal text-[var(--txt)] mb-2">{product.name}</h3>
-        <p className="text-sm text-[var(--txt-muted)] mb-4 line-clamp-2 font-light">{product.description}</p>
-
-        {/* Price */}
-        <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-2xl font-normal text-[var(--acc)]">${product.price.toFixed(2)}</span>
-          <span className="text-sm text-[var(--txt-muted)]/60 line-through font-light">${(product.price * 1.2).toFixed(2)}</span>
-        </div>
-
-        {/* Benefits Preview */}
-        <div className="mb-4">
-          <p className="text-xs font-normal text-[var(--txt-muted)] mb-2 uppercase tracking-wider">Key Benefits</p>
-          <ul className="space-y-1">
-            {product.benefits.slice(0, 2).map((benefit, i) => (
-              <li key={i} className="text-xs text-[var(--txt-muted)] flex items-start font-light">
-                <Check size={12} className="text-[var(--acc)] mr-1 mt-0.5 flex-shrink-0" />
-                {benefit}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Toggle Details */}
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="text-sm text-[var(--acc)] hover:text-[var(--acc-2)] font-normal mb-4 transition-colors"
-        >
-          {showDetails ? 'Hide Details' : 'Show More'}
-        </button>
-
-        {/* Expanded Details */}
-        {showDetails && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mb-4 pt-4 border-t border-[var(--border)]"
-          >
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1 uppercase tracking-wider">All Benefits</p>
-                <ul className="space-y-1">
-                  {product.benefits.map((benefit, i) => (
-                    <li key={i} className="text-xs text-[var(--txt-muted)] flex items-start font-light">
-                      <Check size={12} className="text-[var(--acc)] mr-1 mt-0.5 flex-shrink-0" />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1 uppercase tracking-wider">Recommended Dosage</p>
-                <p className="text-xs text-[var(--txt-muted)] font-light">{product.dosage}</p>
-              </div>
-
-              <div>
-                <p className="text-xs font-normal text-[var(--txt-muted)] mb-1 uppercase tracking-wider">Best For</p>
-                <div className="flex flex-wrap gap-1">
-                  {product.goals.map((goal, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-[var(--bg-elev-1)] text-[var(--txt-muted)] text-xs rounded-full border border-[var(--border)] font-light">
-                      {goal.replace('_', ' ')}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* CTA Button */}
-        <button
-          disabled
-          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed font-normal"
-        >
-          Coming Soon
-        </button>
-
-        {/* Supliful ID (hidden - for integration) */}
-        <p className="text-xs text-[var(--txt-muted)]/40 mt-2 text-center">
-          ID: {product.id.slice(0, 8)}...
-        </p>
-      </div>
+      {children}
     </motion.div>
   );
 }
 
+// ─── Sticky Navigation ───
+function StickyNav({ menuOpen, setMenuOpen }) {
+  return (
+    <>
+      <nav
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{
+          background: 'rgba(0,0,0,0.95)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <div className="max-w-[430px] mx-auto flex items-center justify-between px-4 py-3">
+          <Link
+            href="/home"
+            className="no-underline"
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '12px',
+              fontWeight: 700,
+              letterSpacing: '0.4em',
+              color: '#00ffcc',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+            }}
+          >
+            ◉ Aviera
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-4">
+            {[
+              { label: 'Shop', href: '/shop', active: true },
+              { label: 'Flow State X', href: '/nitric' },
+              { label: 'Trybe', href: '/trybe' },
+              { label: 'Quiz', href: '/supplement-optimization-score' },
+              { label: 'About', href: '/about' },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                style={{
+                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                  fontSize: '9px',
+                  textTransform: 'uppercase',
+                  color: link.active ? '#00ffcc' : '#666',
+                  textDecoration: 'none',
+                  letterSpacing: '0.08em',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#00ffcc')}
+                onMouseLeave={(e) => {
+                  if (!link.active) e.target.style.color = '#666';
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <span className="block w-5 h-[2px] bg-white" />
+            <span className="block w-5 h-[2px] bg-white" />
+            <span className="block w-5 h-[2px] bg-white" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile overlay */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center"
+          style={{ background: '#000000' }}
+        >
+          <button
+            className="absolute top-4 right-4 bg-transparent border-none cursor-pointer"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '28px',
+              color: '#fff',
+            }}
+          >
+            ✕
+          </button>
+
+          <div className="flex flex-col items-center gap-8">
+            {[
+              { label: 'Shop', href: '/shop' },
+              { label: 'Flow State X', href: '/nitric' },
+              { label: 'Trybe', href: '/trybe' },
+              { label: 'Quiz', href: '/supplement-optimization-score' },
+              { label: 'About', href: '/about' },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ─── Category mapping (granular 9-category) ───
+function mapToShopCategory(product) {
+  const title = (product.title || '').toLowerCase();
+  const desc = (product.description || '').toLowerCase();
+  const tags = (product.tags || []).map((t) => t.toLowerCase()).join(' ');
+  const all = `${title} ${desc} ${tags}`;
+
+  if (all.includes('energy') || all.includes('pre-workout') || all.includes('nitric shock') || all.includes('alpha energy'))
+    return 'Pre-Workout';
+  if (all.includes('protein') || all.includes('whey') || all.includes('plant protein'))
+    return 'Protein';
+  if (all.includes('creatine') || all.includes('glutamine') || all.includes('beetroot') || (all.includes('bcaa') && !all.includes('recovery')))
+    return 'Performance';
+  if (all.includes('bcaa') || all.includes('hydration') || all.includes('recovery'))
+    return 'Recovery';
+  if (all.includes("lion's mane") || all.includes('ashwagandha') || all.includes('nootropic') || all.includes('focus'))
+    return 'Focus';
+  if (all.includes('sleep') || all.includes('melatonin') || all.includes('magnesium'))
+    return 'Sleep';
+  if (all.includes('collagen') || all.includes('hyaluronic') || all.includes('serum') || all.includes('biotin') || all.includes('glow'))
+    return 'Beauty';
+  if (all.includes('keto') || all.includes('fat burner') || all.includes('weight') || all.includes('mct'))
+    return 'Weight';
+  // Health catchall
+  return 'Health';
+}
+
+// ─── Featured product config (The Drop) ───
+const FEATURED_PRODUCTS = [
+  {
+    match: 'flow state x',
+    badge: '50% Off',
+    sub: 'Nitric Oxide Booster',
+    urgency: 'Limited batch — selling fast',
+    tags: ['Pumps', 'Blood Flow', 'No Caffeine'],
+    wasPrice: '$39.99',
+    pct: '−50%',
+  },
+  {
+    match: 'nitric shock',
+    badge: 'New',
+    sub: 'Pre-Workout Powder',
+    urgency: 'Just dropped — Trybe approved',
+    tags: ['Energy', 'Pumps', 'Focus'],
+  },
+  {
+    match: 'nootropic',
+    badge: 'New',
+    sub: 'Cognitive Performance',
+    urgency: 'Creator favorite',
+    tags: ['Focus', 'Clarity', 'Nootropic'],
+  },
+  {
+    match: 'creatine',
+    badge: 'Popular',
+    sub: 'Muscle & Strength',
+    urgency: 'Gym essential — now in The Drop',
+    tags: ['Strength', 'Power', 'Recovery'],
+  },
+];
+
+// ─── Filter tabs config ───
+const TABS = [
+  { id: 'drop', label: '🔥 The Drop', hot: true },
+  { id: 'all', label: 'All' },
+  { id: 'Pre-Workout', label: 'Pre-Workout' },
+  { id: 'Protein', label: 'Protein' },
+  { id: 'Performance', label: 'Performance' },
+  { id: 'Recovery', label: 'Recovery' },
+  { id: 'Focus', label: 'Focus' },
+  { id: 'Sleep', label: 'Sleep' },
+  { id: 'Health', label: 'Health' },
+  { id: 'Weight', label: 'Weight' },
+  { id: 'Beauty', label: 'Beauty' },
+];
+
+// ─── Category display names ───
+const CATEGORY_DISPLAY = {
+  'Pre-Workout': 'Pre-Workout & Energy',
+  Protein: 'Protein',
+  Performance: 'Performance',
+  Recovery: 'Recovery & Hydration',
+  Focus: 'Focus & Cognitive',
+  Sleep: 'Sleep',
+  Health: 'Health & Wellness',
+  Weight: 'Weight Management',
+  Beauty: 'Beauty & Skin',
+};
+
+// ═══════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════
+export default function ShopPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('drop');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState({});
+  const [addingProducts, setAddingProducts] = useState({});
+  const [addedProducts, setAddedProducts] = useState({});
+
+  // Fetch products on mount
+  useEffect(() => {
+    async function load() {
+      try {
+        await initializeShopifyCart();
+        const data = await fetchShopifyProducts();
+        setProducts(data);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  // Categorized products
+  const categorized = useMemo(() => {
+    const map = {};
+    products.forEach((p) => {
+      const cat = mapToShopCategory(p);
+      if (!map[cat]) map[cat] = [];
+      map[cat].push(p);
+    });
+    return map;
+  }, [products]);
+
+  // Category counts
+  const categoryCounts = useMemo(() => {
+    const counts = { all: products.length, drop: FEATURED_PRODUCTS.length };
+    Object.keys(CATEGORY_DISPLAY).forEach((cat) => {
+      counts[cat] = (categorized[cat] || []).length;
+    });
+    return counts;
+  }, [products, categorized]);
+
+  // Filtered products based on search
+  const searchFiltered = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const q = searchQuery.toLowerCase();
+    return products.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q) ||
+        (p.tags || []).some((t) => t.toLowerCase().includes(q))
+    );
+  }, [products, searchQuery]);
+
+  // Featured products (matched from Shopify)
+  const featuredProducts = useMemo(() => {
+    return FEATURED_PRODUCTS.map((fp) => {
+      const match = products.find((p) => p.title.toLowerCase().includes(fp.match));
+      if (!match) return null;
+      return { ...match, ...fp, shopProduct: match };
+    }).filter(Boolean);
+  }, [products]);
+
+  // Handle add to cart
+  async function handleAddToCart(product) {
+    if (!product.variantId || addingProducts[product.id]) return;
+    setAddingProducts((prev) => ({ ...prev, [product.id]: true }));
+    try {
+      await addToCart(product.variantId);
+      setAddedProducts((prev) => ({ ...prev, [product.id]: true }));
+      setTimeout(() => {
+        setAddedProducts((prev) => ({ ...prev, [product.id]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error('Add to cart error:', err);
+    } finally {
+      setAddingProducts((prev) => ({ ...prev, [product.id]: false }));
+    }
+  }
+
+  // Toggle expand category
+  function toggleCategory(cat) {
+    setExpandedCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
+  }
+
+  // ─── RENDER ───
+  return (
+    <div
+      style={{
+        background: '#000000',
+        minHeight: '100vh',
+        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+        color: '#ffffff',
+        overflowX: 'hidden',
+      }}
+    >
+      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+      {/* ═══ HERO ═══ */}
+      <section
+        style={{
+          padding: '80px 16px 20px',
+          background:
+            'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px), #000',
+          maxWidth: '430px',
+          margin: '0 auto',
+        }}
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '52px',
+            lineHeight: 0.9,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            marginBottom: '10px',
+          }}
+        >
+          THE
+          <br />
+          <span style={{ color: '#00ffcc' }}>DROP.</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          style={{
+            fontSize: '11px',
+            color: '#666',
+            lineHeight: 1.6,
+            marginBottom: '16px',
+          }}
+        >
+          New launches. Limited batches. Creator-backed products. This is what&apos;s hot right now.
+        </motion.p>
+      </section>
+
+      <div className="max-w-[430px] mx-auto">
+        {/* ═══ SEARCH ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          style={{ padding: '0 16px 12px', position: 'relative' }}
+        >
+          <span
+            style={{
+              position: 'absolute',
+              left: '28px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#444',
+              fontSize: '14px',
+              pointerEvents: 'none',
+            }}
+          >
+            ⌕
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={`Search ${products.length} supplements...`}
+            style={{
+              width: '100%',
+              padding: '12px 16px 12px 36px',
+              background: '#0a0a0a',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '6px',
+              color: '#fff',
+              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+              fontSize: '11px',
+              outline: 'none',
+            }}
+            onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
+            onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+          />
+        </motion.div>
+        <div
+          style={{
+            fontSize: '8px',
+            color: '#333',
+            padding: '0 16px 4px',
+            textAlign: 'right',
+          }}
+        >
+          Autocomplete as you type
+        </div>
+
+        {/* ═══ FILTER TABS ═══ */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '6px',
+            padding: '8px 16px 16px',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+          className="hide-scrollbar"
+        >
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            const isHot = tab.hot && isActive;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  padding: '7px 12px',
+                  borderRadius: '4px',
+                  border: isActive
+                    ? isHot
+                      ? '1px solid rgba(255,45,85,0.3)'
+                      : '1px solid #00ffcc'
+                    : '1px solid rgba(255,255,255,0.1)',
+                  color: isActive
+                    ? isHot
+                      ? '#ff2d55'
+                      : '#000'
+                    : '#666',
+                  background: isActive
+                    ? isHot
+                      ? 'rgba(255,45,85,0.15)'
+                      : '#00ffcc'
+                    : 'transparent',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  flexShrink: 0,
+                }}
+              >
+                {tab.label}
+                <span style={{ fontSize: '8px', color: isActive && !isHot ? '#000' : '#666', fontWeight: 400 }}>
+                  {categoryCounts[tab.id] || 0}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ═══ LOADING STATE ═══ */}
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '60px 16px' }}>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                border: '2px solid rgba(0,255,204,0.2)',
+                borderTopColor: '#00ffcc',
+                borderRadius: '50%',
+                margin: '0 auto 12px',
+                animation: 'spin 0.8s linear infinite',
+              }}
+            />
+            <p style={{ fontSize: '11px', color: '#666' }}>Loading products...</p>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          </div>
+        )}
+
+        {/* ═══ SEARCH RESULTS MODE ═══ */}
+        {!isLoading && searchQuery.trim() && (
+          <FadeInSection>
+            <div style={{ padding: '0 16px 8px' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '11px',
+                  letterSpacing: '0.3em',
+                  color: '#00ffcc',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px',
+                }}
+              >
+                {searchFiltered.length} result{searchFiltered.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
+              </div>
+            </div>
+            <div style={{ padding: '0 16px 20px' }}>
+              {searchFiltered.map((product) => (
+                <CompactProductCard
+                  key={product.id}
+                  product={product}
+                  adding={addingProducts[product.id]}
+                  added={addedProducts[product.id]}
+                  onAdd={() => handleAddToCart(product)}
+                />
+              ))}
+              {searchFiltered.length === 0 && (
+                <p style={{ fontSize: '11px', color: '#666', textAlign: 'center', padding: '40px 0' }}>
+                  No products match your search.
+                </p>
+              )}
+            </div>
+          </FadeInSection>
+        )}
+
+        {/* ═══ THE DROP (featured tab) ═══ */}
+        {!isLoading && !searchQuery.trim() && activeTab === 'drop' && (
+          <FadeInSection>
+            <div
+              style={{
+                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                fontSize: '11px',
+                letterSpacing: '0.3em',
+                color: '#00ffcc',
+                textTransform: 'uppercase',
+                padding: '16px 16px 8px',
+              }}
+            >
+              🔥 The Drop — Now Live
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 16px 20px' }}>
+              {featuredProducts.map((fp) => (
+                <FeaturedProductCard
+                  key={fp.id}
+                  product={fp}
+                  adding={addingProducts[fp.id]}
+                  added={addedProducts[fp.id]}
+                  onAdd={() => handleAddToCart(fp.shopProduct)}
+                />
+              ))}
+            </div>
+          </FadeInSection>
+        )}
+
+        {/* ═══ CATEGORY BROWSING ═══ */}
+        {!isLoading && !searchQuery.trim() && activeTab !== 'drop' && (
+          <FadeInSection>
+            <div style={{ padding: '20px 16px 8px' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '11px',
+                  letterSpacing: '0.3em',
+                  color: '#00ffcc',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px',
+                }}
+              >
+                Browse by Category
+              </div>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '28px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  lineHeight: 1,
+                  marginBottom: '16px',
+                }}
+              >
+                ALL <span style={{ color: '#00ffcc' }}>PRODUCTS</span>
+              </h2>
+            </div>
+
+            <div style={{ padding: '0 16px 0' }}>
+              {(activeTab === 'all'
+                ? Object.keys(CATEGORY_DISPLAY)
+                : [activeTab]
+              )
+                .filter((cat) => (categorized[cat] || []).length > 0)
+                .map((cat) => {
+                  const catProducts = categorized[cat] || [];
+                  const isExpanded = expandedCategories[cat];
+                  const showLoadMore = catProducts.length > 5 && !isExpanded;
+                  const displayProducts = showLoadMore ? catProducts.slice(0, 5) : catProducts;
+
+                  return (
+                    <div key={cat}>
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                          fontSize: '11px',
+                          letterSpacing: '0.2em',
+                          color: '#ff2d55',
+                          textTransform: 'uppercase',
+                          margin: '20px 0 8px',
+                        }}
+                      >
+                        {CATEGORY_DISPLAY[cat] || cat} · {catProducts.length} product{catProducts.length !== 1 ? 's' : ''}
+                      </div>
+
+                      {displayProducts.map((product) => (
+                        <CompactProductCard
+                          key={product.id}
+                          product={product}
+                          adding={addingProducts[product.id]}
+                          added={addedProducts[product.id]}
+                          onAdd={() => handleAddToCart(product)}
+                        />
+                      ))}
+
+                      {showLoadMore && (
+                        <button
+                          onClick={() => toggleCategory(cat)}
+                          style={{
+                            display: 'block',
+                            width: '100%',
+                            padding: '12px',
+                            background: 'transparent',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '6px',
+                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                            fontSize: '12px',
+                            letterSpacing: '0.1em',
+                            color: '#666',
+                            textTransform: 'uppercase',
+                            fontWeight: 700,
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            marginBottom: '8px',
+                            transition: 'border-color 0.2s, color 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.borderColor = '#00ffcc';
+                            e.target.style.color = '#00ffcc';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.borderColor = 'rgba(255,255,255,0.08)';
+                            e.target.style.color = '#666';
+                          }}
+                        >
+                          Show {catProducts.length - 5} more in {CATEGORY_DISPLAY[cat] || cat} ↓
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </FadeInSection>
+        )}
+
+        {/* ═══ AI QUIZ CTA ═══ */}
+        {!isLoading && (
+          <FadeInSection>
+            <div
+              style={{
+                margin: '20px 16px',
+                padding: '20px 16px',
+                border: '1px solid rgba(0,255,204,0.15)',
+                borderRadius: '8px',
+                background: 'rgba(0,255,204,0.03)',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '20px', marginBottom: '6px' }}>🧠</div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Not sure what to take?
+              </div>
+              <p style={{ fontSize: '10px', color: '#666', lineHeight: 1.5, marginBottom: '12px' }}>
+                Our AI analyzes your goals, training, and lifestyle — then builds your perfect stack in 60 seconds.
+              </p>
+              <Link
+                href="/supplement-optimization-score"
+                style={{
+                  display: 'inline-block',
+                  padding: '10px 24px',
+                  background: '#00ffcc',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '12px',
+                  letterSpacing: '0.1em',
+                  color: '#000',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                }}
+              >
+                Get My Personalized Stack →
+              </Link>
+            </div>
+          </FadeInSection>
+        )}
+
+        {/* ═══ BOTTOM CTA ═══ */}
+        {!isLoading && (
+          <FadeInSection>
+            <section
+              style={{
+                padding: '40px 16px',
+                textAlign: 'center',
+                background:
+                  'radial-gradient(ellipse at 50% 80%, rgba(0,255,204,0.06) 0%, transparent 60%), #000',
+              }}
+            >
+              <h2
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '40px',
+                  lineHeight: 0.9,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  marginBottom: '14px',
+                }}
+              >
+                FUEL
+                <br />
+                YOUR
+                <br />
+                <span style={{ color: '#ff2d55' }}>GRIND.</span>
+              </h2>
+              <Link
+                href="/supplement-optimization-score"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '16px',
+                  background: '#00ffcc',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '18px',
+                  letterSpacing: '0.15em',
+                  color: '#000',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  marginBottom: '10px',
+                }}
+              >
+                Take the Quiz →
+              </Link>
+              <Link
+                href="/trybe"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '14px',
+                  background: 'transparent',
+                  border: '1px solid #00ffcc',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '16px',
+                  letterSpacing: '0.12em',
+                  color: '#00ffcc',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  marginTop: '10px',
+                }}
+              >
+                Join the Trybe — Earn 15%
+              </Link>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  fontSize: '8px',
+                  color: '#666',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginTop: '14px',
+                }}
+              >
+                <span>✓ Free ship $50+</span>
+                <span>✓ 30-day guarantee</span>
+                <span>✓ GMP</span>
+              </div>
+            </section>
+          </FadeInSection>
+        )}
+
+        {/* ═══ FOOTER ═══ */}
+        <footer
+          style={{
+            padding: '20px 16px',
+            textAlign: 'center',
+            fontSize: '9px',
+            color: '#333',
+            lineHeight: 1.6,
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+          }}
+        >
+          <div style={{ marginBottom: '8px' }}>
+            <Link href="/home" style={{ color: '#00ffcc', textDecoration: 'none' }}>Home</Link>
+            {' · '}
+            <Link href="/shop" style={{ color: '#00ffcc', textDecoration: 'none' }}>Shop</Link>
+            {' · '}
+            <Link href="/nitric" style={{ color: '#00ffcc', textDecoration: 'none' }}>Flow State X</Link>
+            {' · '}
+            <Link href="/trybe" style={{ color: '#00ffcc', textDecoration: 'none' }}>Trybe</Link>
+            {' · '}
+            <Link href="/about" style={{ color: '#00ffcc', textDecoration: 'none' }}>About</Link>
+          </div>
+          <p>
+            Manufactured for and Distributed by: AvieraFit · 4437 Lister St, San Diego, CA 92110 USA
+          </p>
+          <p>
+            Questions?{' '}
+            <a href="mailto:info@avierafit.com" style={{ color: '#00ffcc', textDecoration: 'none' }}>
+              info@avierafit.com
+            </a>
+          </p>
+          <p style={{ marginTop: '8px' }}>© 2026 Aviera Fit. All rights reserved.</p>
+          <p style={{ marginTop: '4px', fontSize: '8px' }}>
+            *These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure,
+            or prevent any disease.
+          </p>
+        </footer>
+      </div>
+
+      {/* Hide scrollbar CSS */}
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+      `}</style>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// FEATURED PRODUCT CARD (The Drop)
+// ═══════════════════════════════════════════
+function FeaturedProductCard({ product, adding, added, onAdd }) {
+  return (
+    <div
+      style={{
+        background: '#0a0a0a',
+        border: '1px solid rgba(0,255,204,0.15)',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {/* Badge */}
+      {product.badge && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            fontSize: '8px',
+            color: '#fff',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            background: '#ff2d55',
+            padding: '3px 7px',
+            borderRadius: '2px',
+            zIndex: 5,
+          }}
+        >
+          {product.badge}
+        </div>
+      )}
+
+      {/* Image */}
+      <div
+        style={{
+          width: '100%',
+          height: '140px',
+          background: 'linear-gradient(145deg, #111, #0a0a0a)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.title}
+            style={{ maxHeight: '130px', maxWidth: '90%', objectFit: 'contain' }}
+          />
+        ) : (
+          <span style={{ fontSize: '9px', color: '#333' }}>[ {product.title} ]</span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: '12px 14px' }}>
+        <div
+          style={{
+            fontSize: '9px',
+            color: '#00ffcc',
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            marginBottom: '3px',
+          }}
+        >
+          {product.sub}
+        </div>
+        <h3
+          style={{
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '18px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            marginBottom: '4px',
+            margin: '0 0 4px 0',
+          }}
+        >
+          {product.title}
+        </h3>
+        <p style={{ fontSize: '10px', color: '#666', lineHeight: 1.4, marginBottom: '8px' }}>
+          {product.description}
+        </p>
+
+        {/* Tags */}
+        {product.tags && product.tags.length > 0 && (
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
+            {product.tags.map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  fontSize: '7px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  padding: '2px 6px',
+                  border: '1px solid rgba(0,255,204,0.15)',
+                  borderRadius: '2px',
+                  color: '#00ffcc',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Price */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '24px',
+              fontWeight: 700,
+            }}
+          >
+            ${product.shopProduct?.price?.toFixed(2) || product.price?.toFixed(2)}
+          </span>
+          {product.wasPrice && (
+            <span style={{ fontSize: '12px', color: '#666', textDecoration: 'line-through' }}>
+              {product.wasPrice}
+            </span>
+          )}
+          {product.pct && (
+            <span
+              style={{
+                fontSize: '10px',
+                color: '#ff2d55',
+                fontWeight: 700,
+                background: 'rgba(255,45,85,0.12)',
+                padding: '2px 6px',
+                borderRadius: '3px',
+              }}
+            >
+              {product.pct}
+            </span>
+          )}
+        </div>
+
+        {/* Urgency */}
+        {product.urgency && (
+          <div
+            style={{
+              fontSize: '9px',
+              color: '#ff2d55',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontWeight: 700,
+              marginBottom: '8px',
+            }}
+          >
+            ⚡ {product.urgency}
+          </div>
+        )}
+
+        {/* Add to Cart */}
+        <button
+          onClick={onAdd}
+          disabled={adding}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '12px',
+            background: added ? '#1a1a1a' : '#00ffcc',
+            border: added ? '1px solid #00ffcc' : 'none',
+            borderRadius: '6px',
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '14px',
+            letterSpacing: '0.12em',
+            color: added ? '#00ffcc' : '#000',
+            textTransform: 'uppercase',
+            fontWeight: 700,
+            textAlign: 'center',
+            cursor: adding ? 'wait' : 'pointer',
+            opacity: adding ? 0.7 : 1,
+            transition: 'all 0.2s',
+          }}
+        >
+          {adding ? 'Adding...' : added ? '✓ Added' : 'Add to Cart'}
+        </button>
+
+        {/* Micro trust */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            fontSize: '8px',
+            color: '#666',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginTop: '8px',
+          }}
+        >
+          <span>✓ Free ship $50+</span>
+          <span>✓ 30-day guarantee</span>
+          <span>✓ GMP</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// COMPACT PRODUCT CARD (category browsing)
+// ═══════════════════════════════════════════
+function CompactProductCard({ product, adding, added, onAdd }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: '12px',
+        background: '#0a0a0a',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: '8px',
+        padding: '12px',
+        marginBottom: '8px',
+      }}
+    >
+      {/* Image */}
+      <div
+        style={{
+          width: '60px',
+          height: '60px',
+          background: 'linear-gradient(145deg, #111, #0a0a0a)',
+          borderRadius: '6px',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.title}
+            style={{ maxHeight: '56px', maxWidth: '56px', objectFit: 'contain' }}
+          />
+        ) : (
+          <span style={{ fontSize: '7px', color: '#333' }}>img</span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: '8px',
+            color: '#00ffcc',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: '2px',
+          }}
+        >
+          {mapToShopCategory(product)}
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '13px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            marginBottom: '3px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {product.title}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '16px',
+              fontWeight: 700,
+            }}
+          >
+            ${product.price?.toFixed(2)}
+          </span>
+          <button
+            onClick={onAdd}
+            disabled={adding}
+            style={{
+              display: 'inline-block',
+              padding: '5px 12px',
+              background: added ? '#1a1a1a' : '#00ffcc',
+              border: added ? '1px solid #00ffcc' : 'none',
+              borderRadius: '4px',
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '9px',
+              letterSpacing: '0.08em',
+              color: added ? '#00ffcc' : '#000',
+              textTransform: 'uppercase',
+              fontWeight: 700,
+              cursor: adding ? 'wait' : 'pointer',
+              opacity: adding ? 0.7 : 1,
+              verticalAlign: 'middle',
+              transition: 'all 0.2s',
+            }}
+          >
+            {adding ? '...' : added ? '✓' : 'Add'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
