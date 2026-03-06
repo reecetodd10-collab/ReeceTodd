@@ -18,6 +18,7 @@ export default function MarketingLayout({ children }) {
   const isNitricPage = pathname === '/nitric';
   const isSmartStackPage = pathname === '/smartstack-ai';
   const isHomePage = pathname === '/home';
+  const isTrybePage = pathname === '/trybe';
 
   // Landing page - no nav or footer or widget
   if (isLandingPage) {
@@ -31,6 +32,11 @@ export default function MarketingLayout({ children }) {
 
   // Home page - standalone with its own nav and footer
   if (isHomePage) {
+    return <>{children}</>;
+  }
+
+  // Trybe page - standalone with its own nav and footer
+  if (isTrybePage) {
     return <>{children}</>;
   }
   
