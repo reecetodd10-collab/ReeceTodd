@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { fetchShopifyProducts, addToCart, initializeShopifyCart } from '../lib/shopify';
+import { fetchShopifyProducts, addToCart, initializeShopifyCart, getCheckoutUrl } from '../lib/shopify';
 
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -170,8 +170,34 @@ function mapToShopCategory(product) {
     return 'Beauty';
   if (all.includes('keto') || all.includes('fat burner') || all.includes('weight') || all.includes('mct'))
     return 'Weight';
-  // Health catchall
   return 'Health';
+}
+
+// ─── Formula data for known products ───
+const PRODUCT_FORMULAS = {
+  'flow state x': {
+    rows: [
+      { name: 'L-Citrulline DL-Malate', dose: '400 mg' },
+      { name: 'L-Arginine Hydrochloride', dose: '350 mg' },
+      { name: 'L-Arginine Alpha-Ketoglutarate', dose: '50 mg' },
+    ],
+    other: 'Other: Cellulose (vegetable capsule), Brown Rice Flour · 60 caps / 30 servings',
+  },
+  'creatine': {
+    rows: [{ name: 'Creatine Monohydrate', dose: '5,000 mg' }],
+    other: 'Pure micronized creatine monohydrate · No fillers',
+  },
+};
+
+function getFormula(product) {
+  const title = (product.title || '').toLowerCase();
+  for (const [key, formula] of Object.entries(PRODUCT_FORMULAS)) {
+    if (title.includes(key)) return formula;
+  }
+  return {
+    rows: [{ name: 'Full formula', dose: '—' }],
+    other: 'See product label for full ingredient breakdown',
+  };
 }
 
 // ─── Featured product config (The Drop) ───
@@ -181,30 +207,34 @@ const FEATURED_PRODUCTS = [
     badge: '50% Off',
     sub: 'Nitric Oxide Booster',
     urgency: 'Limited batch — selling fast',
-    tags: ['Pumps', 'Blood Flow', 'No Caffeine'],
+    featTags: ['Pumps', 'Blood Flow', 'No Caffeine'],
     wasPrice: '$39.99',
     pct: '−50%',
+    desc: 'L-Citrulline + dual-form L-Arginine. Skin-splitting pumps, insane vascularity. No stim, no crash.',
   },
   {
     match: 'nitric shock',
     badge: 'New',
     sub: 'Pre-Workout Powder',
     urgency: 'Just dropped — Trybe approved',
-    tags: ['Energy', 'Pumps', 'Focus'],
+    featTags: ['Energy', 'Pumps', 'Focus'],
+    desc: 'Full-send pre-workout. Pumps, energy, and tunnel-vision focus in one scoop.',
   },
   {
     match: 'nootropic',
-    badge: 'New',
+    badge: 'Creator Pick',
     sub: 'Cognitive Performance',
     urgency: 'Creator favorite',
-    tags: ['Focus', 'Clarity', 'Nootropic'],
+    featTags: ['Focus', 'Clarity', 'Nootropic'],
+    desc: 'Lock in mentally. Sour Gummi Worm nootropic powder for focus and flow.',
   },
   {
     match: 'creatine',
-    badge: 'Popular',
+    badge: 'Trending',
     sub: 'Muscle & Strength',
     urgency: 'Gym essential — now in The Drop',
-    tags: ['Strength', 'Power', 'Recovery'],
+    featTags: ['Strength', 'Power', 'Recovery'],
+    desc: 'Most researched supplement ever. Pure creatine for strength, power, and volume. No filler.',
   },
 ];
 
@@ -246,8 +276,11 @@ export default function ShopPage() {
   const [activeTab, setActiveTab] = useState('drop');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [expandedCard, setExpandedCard] = useState(null);
   const [addingProducts, setAddingProducts] = useState({});
   const [addedProducts, setAddedProducts] = useState({});
+  const [checkoutUrl, setCheckoutUrl] = useState(null);
+  const expandedRef = useRef(null);
 
   // Fetch products on mount
   useEffect(() => {
@@ -264,6 +297,13 @@ export default function ShopPage() {
     }
     load();
   }, []);
+
+  // Scroll expanded card into view
+  useEffect(() => {
+    if (expandedCard && expandedRef.current) {
+      expandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [expandedCard]);
 
   // Categorized products
   const categorized = useMemo(() => {
@@ -307,32 +347,122 @@ export default function ShopPage() {
   }, [products]);
 
   // Handle add to cart
-  async function handleAddToCart(product) {
+  const handleAddToCart = useCallback(async (product) => {
     if (!product.variantId || addingProducts[product.id]) return;
     setAddingProducts((prev) => ({ ...prev, [product.id]: true }));
     try {
       await addToCart(product.variantId);
       setAddedProducts((prev) => ({ ...prev, [product.id]: true }));
-      setTimeout(() => {
-        setAddedProducts((prev) => ({ ...prev, [product.id]: false }));
-      }, 2000);
+      // Fetch checkout URL after adding
+      const url = await getCheckoutUrl();
+      setCheckoutUrl(url);
     } catch (err) {
       console.error('Add to cart error:', err);
     } finally {
       setAddingProducts((prev) => ({ ...prev, [product.id]: false }));
     }
-  }
+  }, [addingProducts]);
 
   // Toggle expand category
   function toggleCategory(cat) {
     setExpandedCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
   }
 
+  // Render catalog section (shared between Drop tab and category tabs)
+  function renderCatalog(categoriesToShow) {
+    return (
+      <div style={{ padding: '0 16px 0' }}>
+        {categoriesToShow
+          .filter((cat) => (categorized[cat] || []).length > 0)
+          .map((cat) => {
+            const catProducts = categorized[cat] || [];
+            const isExpanded = expandedCategories[cat];
+            const showLoadMore = catProducts.length > 5 && !isExpanded;
+            const displayProducts = showLoadMore ? catProducts.slice(0, 5) : catProducts;
+
+            return (
+              <div key={cat}>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '11px',
+                    letterSpacing: '0.2em',
+                    color: '#ff2d55',
+                    textTransform: 'uppercase',
+                    margin: '18px 0 8px',
+                  }}
+                >
+                  {CATEGORY_DISPLAY[cat] || cat} · {catProducts.length} product{catProducts.length !== 1 ? 's' : ''}
+                </div>
+
+                {displayProducts.map((product) => (
+                  <React.Fragment key={product.id}>
+                    {expandedCard !== product.id && (
+                      <CompactProductCard
+                        product={product}
+                        adding={addingProducts[product.id]}
+                        added={addedProducts[product.id]}
+                        onAdd={() => handleAddToCart(product)}
+                        onExpand={() => setExpandedCard(product.id)}
+                      />
+                    )}
+                    {expandedCard === product.id && (
+                      <ExpandedProductCard
+                        ref={expandedRef}
+                        product={product}
+                        adding={addingProducts[product.id]}
+                        added={addedProducts[product.id]}
+                        checkoutUrl={checkoutUrl}
+                        onAdd={() => handleAddToCart(product)}
+                        onClose={() => setExpandedCard(null)}
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
+
+                {showLoadMore && (
+                  <button
+                    onClick={() => toggleCategory(cat)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      padding: '10px',
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '6px',
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '11px',
+                      color: '#666',
+                      textTransform: 'uppercase',
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      marginBottom: '12px',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.borderColor = '#00ffcc';
+                      e.target.style.color = '#00ffcc';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.borderColor = 'rgba(255,255,255,0.06)';
+                      e.target.style.color = '#666';
+                    }}
+                  >
+                    Show {catProducts.length - 5} more in {CATEGORY_DISPLAY[cat] || cat} ↓
+                  </button>
+                )}
+              </div>
+            );
+          })}
+      </div>
+    );
+  }
+
   // ─── RENDER ───
   return (
     <div
       style={{
-        background: '#000000',
+        background: 'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px), #000000',
         minHeight: '100vh',
         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
         color: '#ffffff',
@@ -344,9 +474,7 @@ export default function ShopPage() {
       {/* ═══ HERO ═══ */}
       <section
         style={{
-          padding: '80px 16px 20px',
-          background:
-            'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px), #000',
+          padding: '80px 16px 16px',
           maxWidth: '430px',
           margin: '0 auto',
         }}
@@ -361,7 +489,7 @@ export default function ShopPage() {
             lineHeight: 0.9,
             fontWeight: 700,
             textTransform: 'uppercase',
-            marginBottom: '10px',
+            marginBottom: '8px',
           }}
         >
           THE
@@ -375,11 +503,11 @@ export default function ShopPage() {
           style={{
             fontSize: '11px',
             color: '#666',
-            lineHeight: 1.6,
-            marginBottom: '16px',
+            lineHeight: 1.5,
+            marginBottom: '14px',
           }}
         >
-          New launches. Limited batches. Creator-backed products. This is what&apos;s hot right now.
+          New launches. Limited batches. Creator-backed. This is what&apos;s hot right now.
         </motion.p>
       </section>
 
@@ -389,7 +517,7 @@ export default function ShopPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          style={{ padding: '0 16px 12px', position: 'relative' }}
+          style={{ padding: '0 16px 4px', position: 'relative' }}
         >
           <span
             style={{
@@ -408,7 +536,7 @@ export default function ShopPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search ${products.length} supplements...`}
+            placeholder="Search supplements..."
             style={{
               width: '100%',
               padding: '12px 16px 12px 36px',
@@ -426,13 +554,13 @@ export default function ShopPage() {
         </motion.div>
         <div
           style={{
-            fontSize: '8px',
+            fontSize: '7px',
             color: '#333',
-            padding: '0 16px 4px',
+            padding: '2px 16px 0',
             textAlign: 'right',
           }}
         >
-          Autocomplete as you type
+          Results filter as you type
         </div>
 
         {/* ═══ FILTER TABS ═══ */}
@@ -440,7 +568,7 @@ export default function ShopPage() {
           style={{
             display: 'flex',
             gap: '6px',
-            padding: '8px 16px 16px',
+            padding: '10px 16px 14px',
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
@@ -482,14 +610,17 @@ export default function ShopPage() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '3px',
                   flexShrink: 0,
+                  transition: 'all 0.15s',
                 }}
               >
                 {tab.label}
-                <span style={{ fontSize: '8px', color: isActive && !isHot ? '#000' : '#666', fontWeight: 400 }}>
-                  {categoryCounts[tab.id] || 0}
-                </span>
+                {tab.id !== 'drop' && (
+                  <span style={{ fontSize: '7px', opacity: 0.6 }}>
+                    {categoryCounts[tab.id] || 0}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -533,13 +664,28 @@ export default function ShopPage() {
             </div>
             <div style={{ padding: '0 16px 20px' }}>
               {searchFiltered.map((product) => (
-                <CompactProductCard
-                  key={product.id}
-                  product={product}
-                  adding={addingProducts[product.id]}
-                  added={addedProducts[product.id]}
-                  onAdd={() => handleAddToCart(product)}
-                />
+                <React.Fragment key={product.id}>
+                  {expandedCard !== product.id && (
+                    <CompactProductCard
+                      product={product}
+                      adding={addingProducts[product.id]}
+                      added={addedProducts[product.id]}
+                      onAdd={() => handleAddToCart(product)}
+                      onExpand={() => setExpandedCard(product.id)}
+                    />
+                  )}
+                  {expandedCard === product.id && (
+                    <ExpandedProductCard
+                      ref={expandedRef}
+                      product={product}
+                      adding={addingProducts[product.id]}
+                      added={addedProducts[product.id]}
+                      checkoutUrl={checkoutUrl}
+                      onAdd={() => handleAddToCart(product)}
+                      onClose={() => setExpandedCard(null)}
+                    />
+                  )}
+                </React.Fragment>
               ))}
               {searchFiltered.length === 0 && (
                 <p style={{ fontSize: '11px', color: '#666', textAlign: 'center', padding: '40px 0' }}>
@@ -550,36 +696,70 @@ export default function ShopPage() {
           </FadeInSection>
         )}
 
-        {/* ═══ THE DROP (featured tab) ═══ */}
+        {/* ═══ THE DROP TAB — featured cards + full catalog ═══ */}
         {!isLoading && !searchQuery.trim() && activeTab === 'drop' && (
-          <FadeInSection>
-            <div
-              style={{
-                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                fontSize: '11px',
-                letterSpacing: '0.3em',
-                color: '#00ffcc',
-                textTransform: 'uppercase',
-                padding: '16px 16px 8px',
-              }}
-            >
-              🔥 The Drop — Now Live
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 16px 20px' }}>
-              {featuredProducts.map((fp) => (
-                <FeaturedProductCard
-                  key={fp.id}
-                  product={fp}
-                  adding={addingProducts[fp.id]}
-                  added={addedProducts[fp.id]}
-                  onAdd={() => handleAddToCart(fp.shopProduct)}
-                />
-              ))}
-            </div>
-          </FadeInSection>
+          <>
+            <FadeInSection>
+              <div
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '11px',
+                  letterSpacing: '0.3em',
+                  color: '#00ffcc',
+                  textTransform: 'uppercase',
+                  padding: '14px 16px 8px',
+                }}
+              >
+                🔥 The Drop — Now Live
+              </div>
+              <div style={{ padding: '0 16px' }}>
+                {featuredProducts.map((fp) => (
+                  <FeaturedProductCard
+                    key={fp.id}
+                    product={fp}
+                    adding={addingProducts[fp.id]}
+                    added={addedProducts[fp.id]}
+                    checkoutUrl={checkoutUrl}
+                    onAdd={() => handleAddToCart(fp.shopProduct)}
+                  />
+                ))}
+              </div>
+            </FadeInSection>
+
+            {/* Full catalog below The Drop */}
+            <FadeInSection>
+              <div style={{ padding: '20px 16px 8px' }}>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '11px',
+                    letterSpacing: '0.3em',
+                    color: '#00ffcc',
+                    textTransform: 'uppercase',
+                    marginBottom: '8px',
+                  }}
+                >
+                  Browse by Category
+                </div>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '28px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    lineHeight: 1,
+                    marginBottom: '14px',
+                  }}
+                >
+                  ALL <span style={{ color: '#00ffcc' }}>PRODUCTS</span>
+                </h2>
+              </div>
+              {renderCatalog(Object.keys(CATEGORY_DISPLAY))}
+            </FadeInSection>
+          </>
         )}
 
-        {/* ═══ CATEGORY BROWSING ═══ */}
+        {/* ═══ CATEGORY BROWSING (All or specific category) ═══ */}
         {!isLoading && !searchQuery.trim() && activeTab !== 'drop' && (
           <FadeInSection>
             <div style={{ padding: '20px 16px 8px' }}>
@@ -602,87 +782,15 @@ export default function ShopPage() {
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   lineHeight: 1,
-                  marginBottom: '16px',
+                  marginBottom: '14px',
                 }}
               >
                 ALL <span style={{ color: '#00ffcc' }}>PRODUCTS</span>
               </h2>
             </div>
-
-            <div style={{ padding: '0 16px 0' }}>
-              {(activeTab === 'all'
-                ? Object.keys(CATEGORY_DISPLAY)
-                : [activeTab]
-              )
-                .filter((cat) => (categorized[cat] || []).length > 0)
-                .map((cat) => {
-                  const catProducts = categorized[cat] || [];
-                  const isExpanded = expandedCategories[cat];
-                  const showLoadMore = catProducts.length > 5 && !isExpanded;
-                  const displayProducts = showLoadMore ? catProducts.slice(0, 5) : catProducts;
-
-                  return (
-                    <div key={cat}>
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          fontSize: '11px',
-                          letterSpacing: '0.2em',
-                          color: '#ff2d55',
-                          textTransform: 'uppercase',
-                          margin: '20px 0 8px',
-                        }}
-                      >
-                        {CATEGORY_DISPLAY[cat] || cat} · {catProducts.length} product{catProducts.length !== 1 ? 's' : ''}
-                      </div>
-
-                      {displayProducts.map((product) => (
-                        <CompactProductCard
-                          key={product.id}
-                          product={product}
-                          adding={addingProducts[product.id]}
-                          added={addedProducts[product.id]}
-                          onAdd={() => handleAddToCart(product)}
-                        />
-                      ))}
-
-                      {showLoadMore && (
-                        <button
-                          onClick={() => toggleCategory(cat)}
-                          style={{
-                            display: 'block',
-                            width: '100%',
-                            padding: '12px',
-                            background: 'transparent',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '6px',
-                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                            fontSize: '12px',
-                            letterSpacing: '0.1em',
-                            color: '#666',
-                            textTransform: 'uppercase',
-                            fontWeight: 700,
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            marginBottom: '8px',
-                            transition: 'border-color 0.2s, color 0.2s',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.borderColor = '#00ffcc';
-                            e.target.style.color = '#00ffcc';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.borderColor = 'rgba(255,255,255,0.08)';
-                            e.target.style.color = '#666';
-                          }}
-                        >
-                          Show {catProducts.length - 5} more in {CATEGORY_DISPLAY[cat] || cat} ↓
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-            </div>
+            {renderCatalog(
+              activeTab === 'all' ? Object.keys(CATEGORY_DISPLAY) : [activeTab]
+            )}
           </FadeInSection>
         )}
 
@@ -744,7 +852,7 @@ export default function ShopPage() {
                 padding: '40px 16px',
                 textAlign: 'center',
                 background:
-                  'radial-gradient(ellipse at 50% 80%, rgba(0,255,204,0.06) 0%, transparent 60%), #000',
+                  'radial-gradient(ellipse at 50% 80%, rgba(0,255,204,0.06) 0%, transparent 60%)',
               }}
             >
               <h2
@@ -816,12 +924,12 @@ export default function ShopPage() {
                   color: '#666',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  marginTop: '14px',
+                  marginTop: '10px',
                 }}
               >
                 <span>✓ Free ship $50+</span>
                 <span>✓ 30-day guarantee</span>
-                <span>✓ GMP</span>
+                <span>✓ GMP certified</span>
               </div>
             </section>
           </FadeInSection>
@@ -850,18 +958,13 @@ export default function ShopPage() {
             <Link href="/about" style={{ color: '#00ffcc', textDecoration: 'none' }}>About</Link>
           </div>
           <p>
-            Manufactured for and Distributed by: AvieraFit · 4437 Lister St, San Diego, CA 92110 USA
-          </p>
-          <p>
-            Questions?{' '}
+            AvieraFit · 4437 Lister St, San Diego, CA 92110 USA ·{' '}
             <a href="mailto:info@avierafit.com" style={{ color: '#00ffcc', textDecoration: 'none' }}>
               info@avierafit.com
             </a>
           </p>
-          <p style={{ marginTop: '8px' }}>© 2026 Aviera Fit. All rights reserved.</p>
-          <p style={{ marginTop: '4px', fontSize: '8px' }}>
-            *These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure,
-            or prevent any disease.
+          <p style={{ marginTop: '8px' }}>
+            © 2026 Aviera Fit. All rights reserved. · *Not evaluated by the FDA.
           </p>
         </footer>
       </div>
@@ -878,7 +981,9 @@ export default function ShopPage() {
 // ═══════════════════════════════════════════
 // FEATURED PRODUCT CARD (The Drop)
 // ═══════════════════════════════════════════
-function FeaturedProductCard({ product, adding, added, onAdd }) {
+function FeaturedProductCard({ product, adding, added, checkoutUrl, onAdd }) {
+  const formula = getFormula(product);
+
   return (
     <div
       style={{
@@ -887,6 +992,7 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
         borderRadius: '8px',
         overflow: 'hidden',
         position: 'relative',
+        marginBottom: '12px',
       }}
     >
       {/* Badge */}
@@ -900,7 +1006,6 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
             color: '#fff',
             fontWeight: 700,
             textTransform: 'uppercase',
-            letterSpacing: '0.06em',
             background: '#ff2d55',
             padding: '3px 7px',
             borderRadius: '2px',
@@ -915,7 +1020,7 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
       <div
         style={{
           width: '100%',
-          height: '140px',
+          height: '180px',
           background: 'linear-gradient(145deg, #111, #0a0a0a)',
           display: 'flex',
           alignItems: 'center',
@@ -927,7 +1032,7 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
           <img
             src={product.image}
             alt={product.title}
-            style={{ maxHeight: '130px', maxWidth: '90%', objectFit: 'contain' }}
+            style={{ maxHeight: '170px', maxWidth: '90%', objectFit: 'contain' }}
           />
         ) : (
           <span style={{ fontSize: '9px', color: '#333' }}>[ {product.title} ]</span>
@@ -935,7 +1040,7 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
       </div>
 
       {/* Body */}
-      <div style={{ padding: '12px 14px' }}>
+      <div style={{ padding: '14px' }}>
         <div
           style={{
             fontSize: '9px',
@@ -950,30 +1055,28 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
         <h3
           style={{
             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-            fontSize: '18px',
+            fontSize: '20px',
             fontWeight: 700,
             textTransform: 'uppercase',
-            marginBottom: '4px',
-            margin: '0 0 4px 0',
+            margin: '0 0 5px 0',
           }}
         >
           {product.title}
         </h3>
-        <p style={{ fontSize: '10px', color: '#666', lineHeight: 1.4, marginBottom: '8px' }}>
-          {product.description}
+        <p style={{ fontSize: '10px', color: '#666', lineHeight: 1.45, marginBottom: '8px' }}>
+          {product.desc || product.description}
         </p>
 
         {/* Tags */}
-        {product.tags && product.tags.length > 0 && (
+        {product.featTags && product.featTags.length > 0 && (
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            {product.tags.map((tag) => (
+            {product.featTags.map((tag) => (
               <span
                 key={tag}
                 style={{
                   fontSize: '7px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
                   padding: '2px 6px',
                   border: '1px solid rgba(0,255,204,0.15)',
                   borderRadius: '2px',
@@ -987,11 +1090,11 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
         )}
 
         {/* Price */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '6px' }}>
           <span
             style={{
               fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-              fontSize: '24px',
+              fontSize: '28px',
               fontWeight: 700,
             }}
           >
@@ -1041,12 +1144,12 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
           style={{
             display: 'block',
             width: '100%',
-            padding: '12px',
-            background: added ? '#1a1a1a' : '#00ffcc',
+            padding: '14px',
+            background: added ? '#111' : '#00ffcc',
             border: added ? '1px solid #00ffcc' : 'none',
             borderRadius: '6px',
             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-            fontSize: '14px',
+            fontSize: '16px',
             letterSpacing: '0.12em',
             color: added ? '#00ffcc' : '#000',
             textTransform: 'uppercase',
@@ -1055,10 +1158,39 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
             cursor: adding ? 'wait' : 'pointer',
             opacity: adding ? 0.7 : 1,
             transition: 'all 0.2s',
+            marginBottom: '6px',
           }}
         >
-          {adding ? 'Adding...' : added ? '✓ Added' : 'Add to Cart'}
+          {adding ? 'Adding...' : added ? 'Added ✓' : 'Add to Cart'}
         </button>
+
+        {/* Checkout button — appears after adding */}
+        {added && checkoutUrl && (
+          <a
+            href={checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'block',
+              width: '100%',
+              padding: '12px',
+              background: 'transparent',
+              border: '1px solid #ff2d55',
+              borderRadius: '6px',
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '14px',
+              letterSpacing: '0.1em',
+              color: '#ff2d55',
+              textTransform: 'uppercase',
+              fontWeight: 700,
+              textAlign: 'center',
+              textDecoration: 'none',
+              marginBottom: '6px',
+            }}
+          >
+            Checkout →
+          </a>
+        )}
 
         {/* Micro trust */}
         <div
@@ -1074,7 +1206,55 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
         >
           <span>✓ Free ship $50+</span>
           <span>✓ 30-day guarantee</span>
-          <span>✓ GMP</span>
+          <span>✓ GMP certified</span>
+        </div>
+
+        {/* Formula */}
+        <div
+          style={{
+            marginTop: '12px',
+            paddingTop: '12px',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '12px',
+              letterSpacing: '0.2em',
+              color: '#00ffcc',
+              textTransform: 'uppercase',
+              marginBottom: '8px',
+            }}
+          >
+            The Formula
+          </div>
+          {formula.rows.map((row, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '6px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.04)',
+                fontSize: '11px',
+              }}
+            >
+              <span style={{ color: '#ccc' }}>{row.name}</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontWeight: 700,
+                  color: '#00ffcc',
+                }}
+              >
+                {row.dose}
+              </span>
+            </div>
+          ))}
+          <div style={{ fontSize: '9px', color: '#444', marginTop: '6px' }}>
+            {formula.other}
+          </div>
         </div>
       </div>
     </div>
@@ -1084,9 +1264,17 @@ function FeaturedProductCard({ product, adding, added, onAdd }) {
 // ═══════════════════════════════════════════
 // COMPACT PRODUCT CARD (category browsing)
 // ═══════════════════════════════════════════
-function CompactProductCard({ product, adding, added, onAdd }) {
+function CompactProductCard({ product, adding, added, onAdd, onExpand }) {
+  // Truncate description for compact view
+  const shortDesc = useMemo(() => {
+    const d = product.description || '';
+    if (d.length <= 80) return d;
+    return d.substring(0, 77) + '...';
+  }, [product.description]);
+
   return (
     <div
+      onClick={onExpand}
       style={{
         display: 'flex',
         gap: '12px',
@@ -1095,7 +1283,11 @@ function CompactProductCard({ product, adding, added, onAdd }) {
         borderRadius: '8px',
         padding: '12px',
         marginBottom: '8px',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
       }}
+      onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(0,255,204,0.2)')}
+      onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}
     >
       {/* Image */}
       <div
@@ -1129,7 +1321,7 @@ function CompactProductCard({ product, adding, added, onAdd }) {
             fontSize: '8px',
             color: '#00ffcc',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.08em',
             marginBottom: '2px',
           }}
         >
@@ -1141,7 +1333,7 @@ function CompactProductCard({ product, adding, added, onAdd }) {
             fontSize: '13px',
             fontWeight: 700,
             textTransform: 'uppercase',
-            marginBottom: '3px',
+            marginBottom: '2px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -1149,6 +1341,11 @@ function CompactProductCard({ product, adding, added, onAdd }) {
         >
           {product.title}
         </div>
+        {shortDesc && (
+          <div style={{ fontSize: '9px', color: '#666', lineHeight: 1.3, marginBottom: '4px' }}>
+            {shortDesc}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
             style={{
@@ -1160,12 +1357,14 @@ function CompactProductCard({ product, adding, added, onAdd }) {
             ${product.price?.toFixed(2)}
           </span>
           <button
-            onClick={onAdd}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
             disabled={adding}
             style={{
-              display: 'inline-block',
-              padding: '5px 12px',
-              background: added ? '#1a1a1a' : '#00ffcc',
+              padding: '5px 14px',
+              background: added ? '#111' : '#00ffcc',
               border: added ? '1px solid #00ffcc' : 'none',
               borderRadius: '4px',
               fontFamily: 'var(--font-oswald), Oswald, sans-serif',
@@ -1176,14 +1375,262 @@ function CompactProductCard({ product, adding, added, onAdd }) {
               fontWeight: 700,
               cursor: adding ? 'wait' : 'pointer',
               opacity: adding ? 0.7 : 1,
-              verticalAlign: 'middle',
               transition: 'all 0.2s',
             }}
           >
             {adding ? '...' : added ? '✓' : 'Add'}
           </button>
         </div>
+        <div style={{ fontSize: '7px', color: '#333', textAlign: 'right', marginTop: '2px' }}>
+          Tap to expand ↓
+        </div>
       </div>
     </div>
   );
 }
+
+// ═══════════════════════════════════════════
+// EXPANDED PRODUCT CARD (tap to expand)
+// ═══════════════════════════════════════════
+const ExpandedProductCard = React.forwardRef(function ExpandedProductCard(
+  { product, adding, added, checkoutUrl, onAdd, onClose },
+  ref
+) {
+  const formula = getFormula(product);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        background: '#0a0a0a',
+        border: '1px solid rgba(0,255,204,0.15)',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        marginBottom: '8px',
+      }}
+    >
+      {/* Close button */}
+      <div
+        onClick={onClose}
+        style={{
+          fontSize: '9px',
+          color: '#666',
+          textAlign: 'right',
+          cursor: 'pointer',
+          padding: '8px 14px 0',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+        }}
+      >
+        ✕ Close
+      </div>
+
+      {/* Image */}
+      <div
+        style={{
+          width: '100%',
+          height: '160px',
+          background: 'linear-gradient(145deg, #111, #0a0a0a)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.title}
+            style={{ maxHeight: '150px', maxWidth: '90%', objectFit: 'contain' }}
+          />
+        ) : (
+          <span style={{ fontSize: '9px', color: '#333' }}>[ {product.title} ]</span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: '14px' }}>
+        <div
+          style={{
+            fontSize: '9px',
+            color: '#00ffcc',
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            marginBottom: '3px',
+          }}
+        >
+          {mapToShopCategory(product)}
+        </div>
+        <h3
+          style={{
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '20px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            margin: '0 0 5px 0',
+          }}
+        >
+          {product.title}
+        </h3>
+        <p style={{ fontSize: '10px', color: '#666', lineHeight: 1.45, marginBottom: '8px' }}>
+          {product.description}
+        </p>
+
+        {/* Tags from Shopify */}
+        {product.tags && product.tags.length > 0 && (
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
+            {product.tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  fontSize: '7px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  padding: '2px 6px',
+                  border: '1px solid rgba(0,255,204,0.15)',
+                  borderRadius: '2px',
+                  color: '#00ffcc',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Price */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '28px',
+              fontWeight: 700,
+            }}
+          >
+            ${product.price?.toFixed(2)}
+          </span>
+        </div>
+
+        {/* Add to Cart */}
+        <button
+          onClick={onAdd}
+          disabled={adding}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '14px',
+            background: added ? '#111' : '#00ffcc',
+            border: added ? '1px solid #00ffcc' : 'none',
+            borderRadius: '6px',
+            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+            fontSize: '16px',
+            letterSpacing: '0.12em',
+            color: added ? '#00ffcc' : '#000',
+            textTransform: 'uppercase',
+            fontWeight: 700,
+            textAlign: 'center',
+            cursor: adding ? 'wait' : 'pointer',
+            opacity: adding ? 0.7 : 1,
+            transition: 'all 0.2s',
+            marginBottom: '6px',
+          }}
+        >
+          {adding ? 'Adding...' : added ? 'Added ✓' : 'Add to Cart'}
+        </button>
+
+        {/* Checkout button */}
+        {added && checkoutUrl && (
+          <a
+            href={checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'block',
+              width: '100%',
+              padding: '12px',
+              background: 'transparent',
+              border: '1px solid #ff2d55',
+              borderRadius: '6px',
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '14px',
+              letterSpacing: '0.1em',
+              color: '#ff2d55',
+              textTransform: 'uppercase',
+              fontWeight: 700,
+              textAlign: 'center',
+              textDecoration: 'none',
+              marginBottom: '6px',
+            }}
+          >
+            Checkout →
+          </a>
+        )}
+
+        {/* Trust */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            fontSize: '8px',
+            color: '#666',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginTop: '8px',
+          }}
+        >
+          <span>✓ Free ship $50+</span>
+          <span>✓ 30-day guarantee</span>
+          <span>✓ GMP</span>
+        </div>
+
+        {/* Formula */}
+        <div
+          style={{
+            marginTop: '12px',
+            paddingTop: '12px',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '12px',
+              letterSpacing: '0.2em',
+              color: '#00ffcc',
+              textTransform: 'uppercase',
+              marginBottom: '8px',
+            }}
+          >
+            The Formula
+          </div>
+          {formula.rows.map((row, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '6px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.04)',
+                fontSize: '11px',
+              }}
+            >
+              <span style={{ color: '#ccc' }}>{row.name}</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontWeight: 700,
+                  color: '#00ffcc',
+                }}
+              >
+                {row.dose}
+              </span>
+            </div>
+          ))}
+          <div style={{ fontSize: '9px', color: '#444', marginTop: '6px' }}>
+            {formula.other}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
