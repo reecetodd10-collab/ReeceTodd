@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviera Fit — Home Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --accent: #00ffcc;
+    --hot: #ff2d55;
+    --text: #ffffff;
+    --muted: #666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    position: relative;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.015) 40px,
+        rgba(255,255,255,0.015) 41px
+      ),
+      var(--bg);
+  }
+
+  .top-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 20px;
+  }
+
+  .top-strip .logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .top-strip .tag {
+    font-size: 9px;
+    color: var(--hot);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(255,45,85,0.15);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .hero-mega {
+    font-family: 'Oswald', sans-serif;
+    font-size: 72px;
+    line-height: 0.88;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .hero-mega .accent { color: var(--accent); }
+  .hero-mega .dim { color: var(--muted); font-size: 42px; display: block; }
+
+  .hero-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 360px;
+  }
+
+  .hero-desc strong { color: var(--accent); font-weight: 700; }
+
+  /* ── CTA BUTTONS ── */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: #000;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+    transition: all 0.15s;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn-primary:active { opacity: 0.85; transform: scale(0.98); }
+
+  .btn-outline {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.15s;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn-outline:active { opacity: 0.85; }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .micro-trust {
+    display: flex;
+    justify-content: space-around;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── SECTION PATTERNS ── */
+  .section-tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .section-title .accent { color: var(--accent); }
+
+  /* ── FEATURED PRODUCT ── */
+  .featured {
+    padding: 40px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .product-card-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, #111, #0a0a0a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    padding: 20px;
+    position: relative;
+  }
+
+  .product-card-image::after {
+    content: 'FLOW STATE X';
+    position: absolute;
+    bottom: 10px;
+    right: -4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    opacity: 0.2;
+    transform: rotate(-90deg);
+    transform-origin: bottom right;
+  }
+
+  .product-card-body {
+    padding: 16px;
+  }
+
+  .product-card-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .product-card-sub {
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+
+  .product-card-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .price-row .now {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .price-row .was {
+    font-size: 16px;
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .price-row .pct {
+    font-size: 12px;
+    color: var(--hot);
+    font-weight: 700;
+    background: rgba(255,45,85,0.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── PILLARS ── */
+  .pillars {
+    padding: 40px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .pillar-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .pillar-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: rgba(0,255,204,0.12);
+    min-width: 44px;
+    line-height: 1;
+  }
+
+  .pillar-content h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .pillar-content p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── AI SECTION ── */
+  .ai-section {
+    padding: 40px 16px;
+    background: var(--surface);
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .ai-box {
+    border: 1px solid rgba(0,255,204,0.15);
+    border-radius: 8px;
+    padding: 20px 16px;
+    margin-top: 16px;
+    position: relative;
+  }
+
+  .ai-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,255,204,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .ai-box-tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ai-box-tag .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0,255,204,0.6);
+  }
+
+  .ai-steps {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  .ai-steps li {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    display: flex;
+    gap: 8px;
+  }
+
+  .ai-steps li .step-num {
+    font-family: 'Oswald', sans-serif;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 12px;
+    min-width: 20px;
+  }
+
+  /* ── SOCIAL PROOF ── */
+  .social-proof {
+    padding: 40px 16px;
+  }
+
+  .review {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .review-stars { color: var(--accent); font-size: 12px; letter-spacing: 3px; margin-bottom: 6px; }
+  .review q { font-size: 13px; line-height: 1.5; color: #ccc; font-style: italic; }
+  .review cite { display: block; font-size: 10px; color: var(--muted); margin-top: 6px; font-style: normal; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── NEWSLETTER ── */
+  .newsletter {
+    padding: 40px 16px;
+    background: var(--surface);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    text-align: center;
+  }
+
+  .newsletter-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #000;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 10px;
+    outline: none;
+  }
+
+  .newsletter-input::placeholder { color: #444; }
+
+  .newsletter-input:focus { border-color: var(--accent); }
+
+  .newsletter-fine {
+    font-size: 9px;
+    color: #444;
+    margin-top: 8px;
+  }
+
+  /* ── BOTTOM CTA ── */
+  .bottom-cta {
+    padding: 50px 16px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 80%, rgba(0,255,204,0.06) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  .bottom-cta .hero-mega {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 24px 0;
+    margin: 0 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 24px 16px;
+    text-align: center;
+    font-size: 9px;
+    color: #333;
+    line-height: 1.6;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  .mockup-label {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    z-index: 999;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-label">Home — Mockup</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="top-strip">
+    <a href="/home" class="logo" style="text-decoration:none;">◉ Aviera</a>
+    <div class="tag">Launch Sale — 50% Off</div>
+  </div>
+
+  <h1 class="hero-mega">
+    YOUR<br>
+    <span class="accent">BODY.</span><br>
+    <span class="accent">YOUR</span><br>
+    FORMULA.<br>
+    <span class="dim">POWERED BY <span style="color: var(--hot);">AI</span> ///</span>
+  </h1>
+
+  <p class="hero-desc">
+    Premium supplements meets <strong>artificial intelligence</strong>. We don't guess what your body needs — we calculate it. Science-backed formulas. Personalized stacks. Zero filler.
+  </p>
+
+  <div class="btn-group">
+    <a class="btn-primary" href="/shop">Shop Now</a>
+    <a class="btn-outline" href="/supplement-optimization-score">Take the Quiz →</a>
+  </div>
+
+  <div class="micro-trust">
+    <span>✓ Science-backed</span>
+    <span>✓ AI-personalized</span>
+    <span>✓ USA made</span>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats-row">
+  <div class="stat">
+    <div class="stat-num">800mg</div>
+    <div class="stat-label">Total Active<br>Per Serving</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Fillers &<br>Prop Blends</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">30</div>
+    <div class="stat-label">Servings<br>Per Bottle</div>
+  </div>
+</div>
+
+<!-- ═══ FEATURED PRODUCT ═══ -->
+<section class="featured">
+  <div class="section-tag">Our Flagship</div>
+  <h2 class="section-title">FLOW STATE <span class="accent">X</span></h2>
+
+  <div class="product-card">
+    <div class="product-card-image">
+      [ Product Image<br>from Shopify ]
+    </div>
+    <div class="product-card-body">
+      <div class="product-card-sub">Nitric Oxide Booster</div>
+      <h3 class="product-card-name">Flow State X</h3>
+      <p class="product-card-desc">
+        Skin-splitting pumps. Insane vascularity. L-Citrulline + dual-form L-Arginine for maximum blood flow. No stim, no crash, just pump.
+      </p>
+      <div class="price-row">
+        <span class="now">$19.99</span>
+        <span class="was">$39.99</span>
+        <span class="pct">−50%</span>
+      </div>
+      <p style="font-size: 10px; color: var(--hot); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 10px;">⚡ Limited batch — selling fast</p>
+      <button class="btn-primary">Add to Cart</button>
+      <div class="micro-trust" style="margin-top: 10px;">
+        <span>✓ Free shipping $50+</span>
+        <span>✓ 30-day guarantee</span>
+        <span>✓ GMP certified</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BRAND PILLARS ═══ -->
+<section class="pillars">
+  <div class="section-tag">Why Aviera Fit</div>
+  <h2 class="section-title">NOT YOUR<br>AVERAGE <span class="accent">SUPPS</span></h2>
+
+  <div class="pillar-item">
+    <div class="pillar-num">01</div>
+    <div class="pillar-content">
+      <h3>AI-Powered Personalization</h3>
+      <p>Our optimization quiz analyzes your goals, body, and lifestyle to recommend the exact stack your body needs. Not guessing — calculating.</p>
+    </div>
+  </div>
+
+  <div class="pillar-item">
+    <div class="pillar-num">02</div>
+    <div class="pillar-content">
+      <h3>Transparent Labels</h3>
+      <p>Every dose listed. No proprietary blends. No hidden fillers. You see exactly what you're putting in your body.</p>
+    </div>
+  </div>
+
+  <div class="pillar-item">
+    <div class="pillar-num">03</div>
+    <div class="pillar-content">
+      <h3>Clean Formulas</h3>
+      <p>Vegetable capsules. Brown rice flour. That's it for inactive ingredients. No gelatin, no magnesium stearate, no garbage.</p>
+    </div>
+  </div>
+
+  <div class="pillar-item">
+    <div class="pillar-num">04</div>
+    <div class="pillar-content">
+      <h3>GMP Certified, USA Made</h3>
+      <p>Manufactured in FDA-registered, GMP-certified facilities. 3rd party tested for purity. Built in San Diego, shipped nationwide.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI SECTION ═══ -->
+<section class="ai-section">
+  <div class="section-tag">Personalized Supplements</div>
+  <h2 class="section-title">YOUR BODY IS<br><span style="color: var(--hot);">UNIQUE</span></h2>
+
+  <p style="font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;">
+    Most brands sell you a one-size-fits-all bottle and hope for the best. We built an AI system that actually looks at your goals, training style, diet gaps, and lifestyle — then tells you exactly what to take.
+  </p>
+
+  <div class="ai-box">
+    <div class="ai-box-tag"><span class="dot"></span> How It Works</div>
+
+    <ul class="ai-steps">
+      <li>
+        <span class="step-num">01</span>
+        <span>Take our 2-minute optimization quiz — goals, training, diet, sleep</span>
+      </li>
+      <li>
+        <span class="step-num">02</span>
+        <span>Our AI analyzes your inputs against clinical research data</span>
+      </li>
+      <li>
+        <span class="step-num">03</span>
+        <span>Get your personalized supplement stack — ranked by impact</span>
+      </li>
+      <li>
+        <span class="step-num">04</span>
+        <span>Order your stack with one click. Adjust as your goals evolve.</span>
+      </li>
+    </ul>
+  </div>
+
+  <div style="margin-top: 16px;">
+    <a class="btn-primary" href="/supplement-optimization-score">Get My Stack →</a>
+  </div>
+</section>
+
+<!-- ═══ SOCIAL PROOF ═══ -->
+<section class="social-proof">
+  <div class="section-tag">From the Community</div>
+  <h2 class="section-title">REAL <span class="accent">RESULTS</span></h2>
+
+  <div class="review">
+    <div class="review-stars">★★★★★</div>
+    <q>The quiz recommended Flow State X and it's been a game changer. Pumps are insane. Already told my whole gym about it.</q>
+    <cite>— Marcus T. · Verified Buyer</cite>
+  </div>
+
+  <div class="review">
+    <div class="review-stars">★★★★★</div>
+    <q>Finally a brand that doesn't hide behind proprietary blends. I can see every ingredient, every dose. Respect.</q>
+    <cite>— Dylan M. · Verified Buyer</cite>
+  </div>
+
+  <div class="review">
+    <div class="review-stars">★★★★★</div>
+    <q>Took the AI quiz, got my stack, and I'm feeling dialed in. The personalization is what sold me. This is the future.</q>
+    <cite>— Jake R. · Verified Buyer</cite>
+  </div>
+</section>
+
+<!-- ═══ NEWSLETTER ═══ -->
+<section class="newsletter">
+  <div class="section-tag">Stay Locked In</div>
+  <h2 class="section-title">JOIN THE <span class="accent">CREW</span></h2>
+  <p style="font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 16px;">
+    New drops, training tips, exclusive deals. No spam — just gains.
+  </p>
+  <input type="email" class="newsletter-input" placeholder="Your email">
+  <button class="btn-primary">Subscribe</button>
+  <p class="newsletter-fine">Unsubscribe anytime. We respect your inbox.</p>
+</section>
+
+<!-- ═══ BOTTOM CTA ═══ -->
+<section class="bottom-cta">
+  <h2 class="hero-mega">
+    STOP<br>
+    <span class="accent">GUESSING.</span><br>
+    START<br>
+    <span style="color: var(--hot);">PROGRESSING.</span>
+  </h2>
+
+  <div style="padding: 0 16px;">
+    <a class="btn-primary" href="/shop">Shop Supplements</a>
+    <div style="height: 10px;"></div>
+    <a class="btn-outline" href="/supplement-optimization-score">Take the Quiz</a>
+    <div class="micro-trust" style="margin-top: 14px;">
+      <span>✓ Free shipping $50+</span>
+      <span>✓ 30-day guarantee</span>
+      <span>✓ GMP certified</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <a href="/shop">Shop</a> · <a href="/about">About</a> · <a href="/news">News</a> · <a href="/nitric">Flow State X</a><br><br>
+  Manufactured for and Distributed by: AvieraFit<br>
+  4437 Lister St, San Diego, CA 92110 USA<br>
+  Questions? <a href="mailto:info@avierafit.com">info@avierafit.com</a><br><br>
+  © 2026 Aviera Fit. All rights reserved.<br>
+  *These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.
+</footer>
+
+</body>
+</html>
