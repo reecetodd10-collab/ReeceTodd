@@ -20,6 +20,7 @@ const GET_COLLECTION_PRODUCTS = `
             id
             title
             description
+            descriptionHtml
             handle
             tags
             productType
@@ -57,6 +58,7 @@ const GET_PRODUCT_BY_ID = `
       id
       title
       description
+      descriptionHtml
       handle
       tags
       productType
@@ -251,6 +253,7 @@ export async function fetchProductById(productId) {
       variantId: variant?.id,
       title: product.title,
       description: product.description || '',
+      descriptionHtml: product.descriptionHtml || '',
       handle: product.handle,
       price: parseFloat(variant?.price.amount || 0),
       currencyCode: variant?.price.currencyCode || 'USD',
@@ -327,6 +330,7 @@ export async function fetchShopifyProducts() {
         variantId: variant?.id,
         title: product.title,
         description: product.description || '',
+        descriptionHtml: product.descriptionHtml || '',
         handle: product.handle,
         price: parseFloat(variant?.price.amount || 0),
         currencyCode: variant?.price.currencyCode || 'USD',
@@ -505,7 +509,7 @@ export async function addToCart(variantId, quantity = 1) {
 export async function addMultipleToCart(items) {
   try {
     const { client, cart } = await getOrCreateCart();
-    
+
     // Prepare line items
     const lineItemsToAdd = items.map(item => ({
       variantId: item.variantId,
@@ -513,22 +517,22 @@ export async function addMultipleToCart(items) {
     }));
 
     const updatedCart = await client.checkout.addLineItems(cart.id, lineItemsToAdd);
-    
+
     // Update cart in localStorage
     localStorage.setItem('shopify_cart_id', updatedCart.id);
-    
+
     // NOTE: If cart errors persist, restart Next.js dev server (Ctrl+C, npm run dev)
-    
+
     // Cart automatically updates via SDK - no need for updateComponent (doesn't exist in newer SDK versions)
     // Just trigger a custom event for UI updates
     if (typeof window !== 'undefined') {
       const itemCount = updatedCart.lineItems.reduce((sum, item) => sum + item.quantity, 0);
-      window.dispatchEvent(new CustomEvent('shopify:cart:updated', { 
-        detail: { 
+      window.dispatchEvent(new CustomEvent('shopify:cart:updated', {
+        detail: {
           cart: updatedCart,
           itemCount: itemCount,
           lineItems: updatedCart.lineItems
-        } 
+        }
       }));
     }
 
@@ -536,6 +540,75 @@ export async function addMultipleToCart(items) {
   } catch (error) {
     console.error('Error adding multiple items to cart:', error);
     throw error;
+  }
+}
+
+/**
+ * Remove a line item from the cart
+ */
+export async function removeFromCart(lineItemId) {
+  try {
+    const { client, cart } = await getOrCreateCart();
+    const updatedCart = await client.checkout.removeLineItems(cart.id, [lineItemId]);
+
+    localStorage.setItem('shopify_cart_id', updatedCart.id);
+
+    if (typeof window !== 'undefined') {
+      const itemCount = updatedCart.lineItems.reduce((sum, item) => sum + item.quantity, 0);
+      window.dispatchEvent(new CustomEvent('shopify:cart:updated', {
+        detail: { cart: updatedCart, itemCount, lineItems: updatedCart.lineItems }
+      }));
+    }
+
+    return updatedCart;
+  } catch (error) {
+    console.error('Error removing from cart:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update line item quantity in the cart
+ */
+export async function updateCartQuantity(lineItemId, quantity) {
+  try {
+    const { client, cart } = await getOrCreateCart();
+    const updatedCart = await client.checkout.updateLineItems(cart.id, [{ id: lineItemId, quantity }]);
+
+    localStorage.setItem('shopify_cart_id', updatedCart.id);
+
+    if (typeof window !== 'undefined') {
+      const itemCount = updatedCart.lineItems.reduce((sum, item) => sum + item.quantity, 0);
+      window.dispatchEvent(new CustomEvent('shopify:cart:updated', {
+        detail: { cart: updatedCart, itemCount, lineItems: updatedCart.lineItems }
+      }));
+    }
+
+    return updatedCart;
+  } catch (error) {
+    console.error('Error updating cart quantity:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch current cart state
+ */
+export async function fetchCart() {
+  try {
+    if (typeof window === 'undefined') return null;
+
+    const cartId = localStorage.getItem('shopify_cart_id');
+    if (!cartId) return null;
+
+    const client = await initializeShopifyCart();
+    const cart = await client.checkout.fetch(cartId);
+    if (!cart || !cart.id) return null;
+
+    return cart;
+  } catch (error) {
+    console.warn('Error fetching cart:', error);
+    return null;
   }
 }
 
