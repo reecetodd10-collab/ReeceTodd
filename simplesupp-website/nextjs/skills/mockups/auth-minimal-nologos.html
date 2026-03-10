@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviera — Auth Mockups (No Logos)</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --accent: #00ffcc;
+    --hot: #ff2d55;
+    --text: #ffffff;
+    --muted: #666;
+    --dark-muted: #333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: #111;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── MOCKUP SELECTOR ── */
+  .selector {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 16px;
+  }
+  .sel-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sel-btn:first-child { border-radius: 4px 0 0 4px; }
+  .sel-btn:last-child { border-radius: 0 4px 4px 0; }
+  .sel-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+  .sel-btn:not(.active):hover { color: #aaa; }
+
+  .mockup-label {
+    text-align: center;
+    padding: 64px 16px 12px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .mockup-sublabel {
+    text-align: center;
+    font-size: 9px;
+    color: #444;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── PHONE FRAME ── */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 0 16px 60px;
+  }
+  .phone-frame {
+    width: 390px;
+    min-height: 844px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 3px solid #222;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+  }
+
+  /* Notch */
+  .phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 34px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  /* Scanline overlay */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 59px,
+      rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px
+    );
+    border-radius: 37px;
+  }
+
+  .page-content {
+    position: relative;
+    z-index: 10;
+    min-height: 844px;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 24px 24px;
+  }
+
+  .mockup { display: none; }
+  .mockup.active { display: block; }
+
+  /* ── SHARED FORM STYLES ── */
+  .form-label {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input::placeholder { color: #333; }
+  .form-input:focus { border-color: var(--accent); }
+
+  .form-group { margin-bottom: 16px; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,255,204,0.25);
+  }
+
+  .btn-outline {
+    width: 100%;
+    padding: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); }
+  .btn-outline svg { width: 16px; height: 16px; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    gap: 12px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+  .divider span {
+    font-size: 8px;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .auth-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 24px;
+  }
+  .auth-tab {
+    flex: 1;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 12px 0;
+    color: var(--muted);
+    cursor: pointer;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    transition: all 0.2s;
+  }
+  .auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .terms-text {
+    font-size: 8px;
+    color: #333;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .terms-text a { color: var(--accent); text-decoration: none; }
+
+  .forgot-link {
+    font-size: 9px;
+    color: var(--accent);
+    text-decoration: none;
+    text-align: right;
+    display: block;
+    margin-top: 6px;
+  }
+
+  .password-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Google SVG inline */
+  .g-icon path:nth-child(1) { fill: #4285F4; }
+  .g-icon path:nth-child(2) { fill: #34A853; }
+  .g-icon path:nth-child(3) { fill: #FBBC05; }
+  .g-icon path:nth-child(4) { fill: #EA4335; }
+
+
+  /* ════════════════════════════════════════
+     VARIANT A — PURE TEXT MINIMAL
+     ════════════════════════════════════════ */
+  .va .text-mark {
+    text-align: center;
+    padding: 24px 0 8px;
+  }
+  .va .text-mark-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .va .headline {
+    text-align: center;
+    padding: 16px 0 4px;
+  }
+  .va .headline h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .va .headline p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #444;
+    margin-top: 4px;
+  }
+  .va .spacer { height: 24px; }
+  .va .form-input {
+    border-color: rgba(255,255,255,0.06);
+  }
+
+
+  /* ════════════════════════════════════════
+     VARIANT B — TYPOGRAPHIC STATEMENT
+     ════════════════════════════════════════ */
+  .vb .typo-hero {
+    text-align: center;
+    padding: 16px 0 20px;
+  }
+  .vb .typo-hero h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+  }
+  .vb .typo-hero h1 .cyan { color: var(--accent); }
+  .vb .typo-hero p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .vb .cyan-line {
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+    margin: 16px auto 20px;
+    box-shadow: 0 0 8px rgba(0,255,204,0.3);
+  }
+  .vb .social-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .vb .social-row .btn-outline { flex: 1; padding: 13px 8px; }
+  .vb .form-input {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.06);
+  }
+
+
+  /* ════════════════════════════════════════
+     VARIANT C — INLINE BRAND
+     ════════════════════════════════════════ */
+  .vc .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    margin-bottom: 24px;
+  }
+  .vc .top-bar-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #333;
+  }
+  .vc .welcome-block {
+    margin-bottom: 24px;
+  }
+  .vc .welcome-block h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .vc .welcome-block p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .vc .form-input {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 15px 16px;
+  }
+  .vc .form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,255,204,0.1);
+  }
+  .vc .btn-primary {
+    border-radius: 6px;
+    padding: 17px;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    position: relative;
+    overflow: hidden;
+  }
+  .vc .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .vc .social-grid {
+    display: flex;
+    gap: 10px;
+  }
+  .vc .social-grid .btn-outline {
+    flex: 1;
+    border-radius: 6px;
+    padding: 13px;
+    background: rgba(255,255,255,0.02);
+  }
+  .vc .bottom-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .vc .bottom-switch a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .vc .footer-mark {
+    margin-top: auto;
+    padding-top: 24px;
+    text-align: center;
+  }
+  .vc .footer-mark span {
+    font-family: 'Oswald', sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    color: #222;
+    text-transform: uppercase;
+  }
+
+
+  /* ════════════════════════════════════════
+     VARIANT D — ASYMMETRIC EDGE
+     ════════════════════════════════════════ */
+  .vd .page-content {
+    align-items: flex-start;
+  }
+  .vd .dot-mark {
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .vd .section-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .vd .big-welcome {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .vd .big-welcome .cyan { color: var(--accent); }
+  .vd .subtitle-accent {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+    margin-bottom: 28px;
+  }
+  .vd .form-group { width: 100%; }
+  .vd .form-input {
+    border-color: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    transition: border-color 0.2s, border-left 0.2s;
+  }
+  .vd .form-input:focus {
+    border-color: rgba(255,255,255,0.06);
+    border-left: 2px solid var(--accent);
+  }
+  .vd .btn-primary {
+    clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+    border-radius: 0;
+  }
+  .vd .social-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .vd .social-row .btn-outline {
+    flex: 1;
+    border-radius: 2px;
+  }
+  .vd .bottom-switch {
+    text-align: left;
+    margin-top: 20px;
+    font-size: 10px;
+    color: var(--muted);
+    width: 100%;
+  }
+  .vd .bottom-switch a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .vd .terms-text {
+    text-align: left;
+  }
+
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 0.5s ease both; }
+  .d1 { animation-delay: 0.08s; }
+  .d2 { animation-delay: 0.16s; }
+  .d3 { animation-delay: 0.24s; }
+  .d4 { animation-delay: 0.32s; }
+  .d5 { animation-delay: 0.4s; }
+  .d6 { animation-delay: 0.48s; }
+  .d7 { animation-delay: 0.56s; }
+  .d8 { animation-delay: 0.64s; }
+
+</style>
+</head>
+<body>
+
+<!-- Mockup Selector -->
+<div class="selector">
+  <button class="sel-btn active" onclick="show('a', this)">A · Pure Text</button>
+  <button class="sel-btn" onclick="show('b', this)">B · Typographic</button>
+  <button class="sel-btn" onclick="show('c', this)">C · Inline Brand</button>
+  <button class="sel-btn" onclick="show('d', this)">D · Asymmetric</button>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     VARIANT A — PURE TEXT MINIMAL
+     ═══════════════════════════════════════════ -->
+<div class="mockup active" id="mockup-a">
+  <div class="mockup-label">Variant A — Pure Text Minimal</div>
+  <div class="mockup-sublabel">No logo, no image. Just typography and space. Ultra clean.</div>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="scanlines"></div>
+      <div class="page-content va">
+
+        <!-- Text Mark -->
+        <div class="text-mark anim d1">
+          <span class="text-mark-label">&#9673; AVIERA</span>
+        </div>
+
+        <!-- Headline -->
+        <div class="headline anim d1">
+          <h1>Sign in</h1>
+          <p>Welcome back.</p>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs anim d2">
+          <button class="auth-tab active">Sign In</button>
+          <button class="auth-tab">Create Account</button>
+        </div>
+
+        <!-- Form -->
+        <div class="form-group anim d3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="you@email.com">
+        </div>
+        <div class="form-group anim d4">
+          <label class="form-label">Password</label>
+          <div class="password-wrap">
+            <input type="password" class="form-input" placeholder="••••••••">
+            <button class="pw-toggle">Show</button>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <div class="anim d5" style="margin-top:8px;">
+          <button class="btn-primary">Sign In &rarr;</button>
+        </div>
+
+        <div class="divider anim d5"><span>or</span></div>
+
+        <div class="anim d6" style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn-outline">
+            <svg class="g-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continue with Google
+          </button>
+          <button class="btn-outline">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.18 0-.36-.02-.53-.06-.01-.12-.04-.3-.04-.49 0-1.13.535-2.22 1.207-3.01C13.514 1.77 14.802 1.08 15.93 1c.015.14.036.28.036.43zM20.61 17.21c-.27.64-.58 1.23-.96 1.78-.53.76-1.22 1.7-2.09 1.7-.76 0-1.27-.5-2.5-.51-1.26 0-1.81.52-2.63.53-.84.01-1.48-.88-2.01-1.64-1.46-2.11-2.57-5.96-1.07-8.56.74-1.28 2.07-2.1 3.51-2.12 1.03-.02 1.63.55 2.47.55.82 0 1.32-.55 2.5-.55.61 0 2.12.23 3.13 1.76-.08.05-1.87 1.09-1.85 3.26.03 2.59 2.27 3.45 2.3 3.46-.03.09-.36 1.24-.8 2.34z"/></svg>
+            Continue with Apple
+          </button>
+        </div>
+
+        <div style="text-align:center;margin-top:20px;" class="anim d7">
+          <span style="font-size:10px;color:var(--muted);">Don't have an account? </span>
+          <a href="#" style="font-size:10px;color:var(--accent);text-decoration:none;font-weight:700;">Create one &rarr;</a>
+        </div>
+
+        <div class="terms-text anim d7">
+          By continuing you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     VARIANT B — TYPOGRAPHIC STATEMENT
+     ═══════════════════════════════════════════ -->
+<div class="mockup" id="mockup-b">
+  <div class="mockup-label">Variant B — Typographic Statement</div>
+  <div class="mockup-sublabel">Big bold stacked type. No logo. Social auth first.</div>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="scanlines"></div>
+      <div class="page-content vb">
+
+        <!-- Typographic Hero -->
+        <div class="typo-hero anim d1">
+          <h1>YOUR<br><span class="cyan">STACK.</span></h1>
+          <p>Sign in to continue</p>
+        </div>
+
+        <div class="cyan-line anim d2"></div>
+
+        <!-- Social first -->
+        <div class="social-row anim d2">
+          <button class="btn-outline">
+            <svg class="g-icon" viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="btn-outline">
+            <svg viewBox="0 0 24 24" fill="white" style="width:15px;height:15px;"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.18 0-.36-.02-.53-.06-.01-.12-.04-.3-.04-.49 0-1.13.535-2.22 1.207-3.01C13.514 1.77 14.802 1.08 15.93 1c.015.14.036.28.036.43zM20.61 17.21c-.27.64-.58 1.23-.96 1.78-.53.76-1.22 1.7-2.09 1.7-.76 0-1.27-.5-2.5-.51-1.26 0-1.81.52-2.63.53-.84.01-1.48-.88-2.01-1.64-1.46-2.11-2.57-5.96-1.07-8.56.74-1.28 2.07-2.1 3.51-2.12 1.03-.02 1.63.55 2.47.55.82 0 1.32-.55 2.5-.55.61 0 2.12.23 3.13 1.76-.08.05-1.87 1.09-1.85 3.26.03 2.59 2.27 3.45 2.3 3.46-.03.09-.36 1.24-.8 2.34z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="divider anim d3"><span>or sign in with email</span></div>
+
+        <!-- Email form -->
+        <div class="form-group anim d4">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="you@email.com">
+        </div>
+        <div class="form-group anim d5">
+          <label class="form-label">Password</label>
+          <div class="password-wrap">
+            <input type="password" class="form-input" placeholder="••••••••">
+            <button class="pw-toggle">Show</button>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <div class="anim d6" style="margin-top:4px;">
+          <button class="btn-primary">Sign In &rarr;</button>
+        </div>
+
+        <div class="anim d7" style="text-align:center;margin-top:20px;">
+          <span style="font-size:10px;color:var(--muted);">New here? </span>
+          <a href="#" style="font-size:10px;color:var(--accent);text-decoration:none;font-weight:700;">Create Account &rarr;</a>
+        </div>
+
+        <div class="terms-text anim d7">
+          By continuing you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     VARIANT C — INLINE BRAND
+     ═══════════════════════════════════════════ -->
+<div class="mockup" id="mockup-c">
+  <div class="mockup-label">Variant C — Inline Brand</div>
+  <div class="mockup-sublabel">Subtle top bar branding. Rounded inputs. Gradient button. Premium app feel.</div>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="scanlines"></div>
+      <div class="page-content vc">
+
+        <!-- Top bar -->
+        <div class="top-bar anim d1">
+          <span class="top-bar-text">AVIERA</span>
+          <span class="top-bar-text">FIT</span>
+        </div>
+
+        <!-- Welcome -->
+        <div class="welcome-block anim d2">
+          <h1>Welcome back</h1>
+          <p>Sign in to your account</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-group anim d3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="you@email.com">
+        </div>
+        <div class="form-group anim d4">
+          <label class="form-label">Password</label>
+          <div class="password-wrap">
+            <input type="password" class="form-input" placeholder="••••••••">
+            <button class="pw-toggle">Show</button>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <div class="anim d5" style="margin-top:8px;">
+          <button class="btn-primary">Sign In &rarr;</button>
+        </div>
+
+        <div class="divider anim d5"><span>or</span></div>
+
+        <div class="social-grid anim d6">
+          <button class="btn-outline">
+            <svg class="g-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="btn-outline">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.18 0-.36-.02-.53-.06-.01-.12-.04-.3-.04-.49 0-1.13.535-2.22 1.207-3.01C13.514 1.77 14.802 1.08 15.93 1c.015.14.036.28.036.43zM20.61 17.21c-.27.64-.58 1.23-.96 1.78-.53.76-1.22 1.7-2.09 1.7-.76 0-1.27-.5-2.5-.51-1.26 0-1.81.52-2.63.53-.84.01-1.48-.88-2.01-1.64-1.46-2.11-2.57-5.96-1.07-8.56.74-1.28 2.07-2.1 3.51-2.12 1.03-.02 1.63.55 2.47.55.82 0 1.32-.55 2.5-.55.61 0 2.12.23 3.13 1.76-.08.05-1.87 1.09-1.85 3.26.03 2.59 2.27 3.45 2.3 3.46-.03.09-.36 1.24-.8 2.34z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="bottom-switch anim d7">
+          Don't have an account? <a href="#">Create one &rarr;</a>
+        </div>
+
+        <div class="terms-text anim d7">
+          By continuing you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+        </div>
+
+        <div class="footer-mark anim d7">
+          <span>Aviera /// 2025</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     VARIANT D — ASYMMETRIC EDGE
+     ═══════════════════════════════════════════ -->
+<div class="mockup" id="mockup-d">
+  <div class="mockup-label">Variant D — Asymmetric Edge</div>
+  <div class="mockup-sublabel">Left-aligned editorial layout. No logo. Angled button. Left border accents.</div>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="scanlines"></div>
+      <div class="page-content vd">
+
+        <!-- Dot + Label -->
+        <div class="anim d1" style="width:100%;">
+          <div class="dot-mark">&#9679;</div>
+          <div class="section-label">SIGN IN</div>
+        </div>
+
+        <!-- Big Welcome -->
+        <div class="anim d2" style="width:100%;">
+          <div class="big-welcome">Welcome <span class="cyan">back.</span></div>
+          <div class="subtitle-accent">Sign in to your account</div>
+        </div>
+
+        <!-- Form -->
+        <div class="form-group anim d3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="you@email.com">
+        </div>
+        <div class="form-group anim d4">
+          <label class="form-label">Password</label>
+          <div class="password-wrap">
+            <input type="password" class="form-input" placeholder="••••••••">
+            <button class="pw-toggle">Show</button>
+          </div>
+          <a href="#" class="forgot-link" style="text-align:left;">Forgot password?</a>
+        </div>
+
+        <div class="anim d5" style="margin-top:8px;width:100%;">
+          <button class="btn-primary">Sign In &rarr;</button>
+        </div>
+
+        <div class="divider anim d6"><span>or</span></div>
+
+        <div class="social-row anim d6">
+          <button class="btn-outline">
+            <svg class="g-icon" viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="btn-outline">
+            <svg viewBox="0 0 24 24" fill="white" style="width:15px;height:15px;"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.18 0-.36-.02-.53-.06-.01-.12-.04-.3-.04-.49 0-1.13.535-2.22 1.207-3.01C13.514 1.77 14.802 1.08 15.93 1c.015.14.036.28.036.43zM20.61 17.21c-.27.64-.58 1.23-.96 1.78-.53.76-1.22 1.7-2.09 1.7-.76 0-1.27-.5-2.5-.51-1.26 0-1.81.52-2.63.53-.84.01-1.48-.88-2.01-1.64-1.46-2.11-2.57-5.96-1.07-8.56.74-1.28 2.07-2.1 3.51-2.12 1.03-.02 1.63.55 2.47.55.82 0 1.32-.55 2.5-.55.61 0 2.12.23 3.13 1.76-.08.05-1.87 1.09-1.85 3.26.03 2.59 2.27 3.45 2.3 3.46-.03.09-.36 1.24-.8 2.34z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="bottom-switch anim d7">
+          Don't have an account? <a href="#">Create one &rarr;</a>
+        </div>
+
+        <div class="terms-text anim d8" style="text-align:left;">
+          By continuing you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.mockup').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mockup-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

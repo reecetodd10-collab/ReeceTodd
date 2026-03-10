@@ -73,7 +73,8 @@ export default function Navigation() {
     { name: 'Optimization Score', href: '/supplement-optimization-score' },
     { name: 'Aviera Fit', href: '/smartfitt' },
     { name: 'Aviera Shop', href: '/shop' },
-    { name: 'Aviera News', href: '/news', isCyan: true },
+    { name: 'Trybe', href: '/trybe' },
+    { name: 'Latest', href: '/news', isCyan: true },
     { name: 'About', href: '/about' },
   ];
 

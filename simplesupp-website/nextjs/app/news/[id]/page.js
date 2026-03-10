@@ -1,24 +1,154 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'next/navigation';
+import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Loader } from 'lucide-react';
-import { motion } from 'framer-motion';
-import PillLogo from '../../components/PillLogo';
+import { ArrowLeft, Calendar } from 'lucide-react';
+
+// ─── Scroll-triggered fade-up wrapper ───
+function FadeInSection({ children, delay = 0, className = '' }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.7, delay, ease: 'easeOut' }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ─── Sticky Navigation ───
+function StickyNav({ menuOpen, setMenuOpen }) {
+  return (
+    <>
+      <nav
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{
+          background: '#000000',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <div className="max-w-[430px] mx-auto flex items-center justify-between px-4 py-3">
+          <Link
+            href="/home"
+            className="no-underline"
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '12px',
+              fontWeight: 700,
+              letterSpacing: '0.4em',
+              color: '#00ffcc',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+            }}
+          >
+            ◉ Aviera
+          </Link>
+
+          <div className="hidden md:flex items-center gap-5">
+            {[
+              { label: 'Shop', href: '/shop' },
+              { label: 'Flow State X', href: '/nitric' },
+              { label: 'Trybe', href: '/trybe' },
+              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Latest', href: '/news', active: true },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                style={{
+                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  color: link.active ? '#00ffcc' : '#666',
+                  textDecoration: 'none',
+                  letterSpacing: '0.05em',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#00ffcc')}
+                onMouseLeave={(e) => (e.target.style.color = link.active ? '#00ffcc' : '#666')}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <button
+            className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <span className="block w-5 h-[2px] bg-white" />
+            <span className="block w-5 h-[2px] bg-white" />
+            <span className="block w-5 h-[2px] bg-white" />
+          </button>
+        </div>
+      </nav>
+
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center"
+          style={{ background: '#000000' }}
+        >
+          <button
+            className="absolute top-4 right-4 bg-transparent border-none cursor-pointer"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '28px',
+              color: '#fff',
+            }}
+          >
+            ✕
+          </button>
+
+          <div className="flex flex-col items-center gap-8">
+            {[
+              { label: 'Shop', href: '/shop' },
+              { label: 'Flow State X', href: '/nitric' },
+              { label: 'Trybe', href: '/trybe' },
+              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Latest', href: '/news' },
+              { label: 'About', href: '/about' },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function NewsletterDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [newsletter, setNewsletter] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Prevent hydration mismatch for animated elements
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     const fetchNewsletter = async () => {
@@ -57,201 +187,261 @@ export default function NewsletterDetailPage() {
   };
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        background: 'var(--bg)',
-      }}
-    >
-      {/* Animated lines removed for performance */}
-      {/* Header */}
-      <header
-        className="relative z-20 px-5 sm:px-6 lg:px-8 py-6"
+    <div className="min-h-screen relative" style={{ background: '#000000', color: '#ffffff', overflowX: 'hidden' }}>
+      {/* Scan line background */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
         style={{
-          background: 'var(--bg-card)',
-          borderBottom: '1px solid var(--border)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
         }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center gap-3">
-          <Link href="/home" className="inline-flex items-center gap-3">
-            <div className="[&_h1]:hidden">
-              <PillLogo size="small" />
-            </div>
-            <span
-              className="text-2xl font-bold"
+      />
+
+      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+      <div className="relative z-10 pt-20 pb-16 px-6">
+        <div className="max-w-[430px] mx-auto">
+          {/* Back link */}
+          <FadeInSection>
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-2 mb-8"
               style={{
-                fontFamily: 'Montserrat, sans-serif',
-                color: 'var(--txt)'
+                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                color: '#00ffcc',
+                textDecoration: 'none',
+                transition: 'opacity 0.15s',
               }}
             >
-              AVIERA
-            </span>
-          </Link>
-        </div>
-      </header>
-
-      <div className="relative z-10 px-5 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Back Button */}
-          <Link
-            href="/news"
-            className="inline-flex items-center gap-2 mb-8 transition-colors"
-            style={{ color: '#00d9ff' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#0099cc'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#00d9ff'}
-          >
-            <ArrowLeft size={20} />
-            Back to Newsletter List
-          </Link>
+              <ArrowLeft size={14} />
+              Back to News
+            </Link>
+          </FadeInSection>
 
           {isLoading ? (
-            <div className="text-center py-20">
-              <Loader className="animate-spin mx-auto mb-4" size={40} style={{ color: '#00d9ff' }} />
-              <p className="text-lg" style={{ color: 'var(--txt-muted)' }}>Loading newsletter...</p>
+            <div className="flex items-center justify-center py-20">
+              <div
+                className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+                style={{ borderColor: '#00ffcc', borderTopColor: 'transparent' }}
+              />
             </div>
           ) : error ? (
-            <div
-              className="rounded-2xl p-8 md:p-12 text-center"
-              style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-              }}
-            >
-              <h2
-                className="text-2xl font-bold mb-4"
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  color: 'var(--txt)'
-                }}
+            <FadeInSection>
+              <div
+                className="p-8 text-center"
+                style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.06)' }}
               >
-                {error}
-              </h2>
-              <Link
-                href="/news"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300"
-                style={{
-                  background: '#00d9ff',
-                  boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
-                }}
-              >
-                <ArrowLeft size={20} />
-                Back to Newsletters
-              </Link>
-            </div>
-          ) : newsletter ? (
-            <article>
-              {/* Newsletter Header */}
-              <header className="mb-8">
-                <div className="flex items-center gap-2 mb-4 text-sm" style={{ color: 'var(--txt-muted)' }}>
-                  <Calendar size={16} />
-                  <time dateTime={newsletter.published_date}>
-                    {formatDate(newsletter.published_date)}
-                  </time>
-                </div>
-                <h1
-                  className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+                <h2
+                  className="font-bold uppercase mb-4"
                   style={{
-                    fontFamily: 'Montserrat, sans-serif',
-                    color: 'var(--txt)'
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '24px',
+                    color: '#ffffff',
                   }}
                 >
-                  {newsletter.title}
-                </h1>
-                {newsletter.excerpt && (
-                  <p
-                    className="text-xl font-light leading-relaxed"
-                    style={{ color: 'var(--txt-muted)' }}
-                  >
-                    {newsletter.excerpt}
-                  </p>
-                )}
-              </header>
-
-              {/* Newsletter Content */}
-              <div
-                className="rounded-2xl p-8 md:p-12"
-                style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                }}
-              >
-                <div
-                  className="newsletter-content prose prose-lg max-w-none"
-                  style={{
-                    color: 'var(--txt)',
-                    lineHeight: '1.8'
-                  }}
-                  dangerouslySetInnerHTML={{ __html: newsletter.content }}
-                />
-              </div>
-
-              {/* Footer Navigation */}
-              <div className="mt-12 text-center">
+                  {error}
+                </h2>
                 <Link
                   href="/news"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300"
+                  className="inline-flex items-center gap-2 px-6 py-3 font-bold uppercase"
                   style={{
-                    background: '#00d9ff',
-                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 217, 255, 0.5)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 217, 255, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '14px',
+                    letterSpacing: '0.15em',
+                    background: '#00ffcc',
+                    color: '#000000',
+                    textDecoration: 'none',
                   }}
                 >
-                  <ArrowLeft size={20} />
-                  View All Newsletters
+                  <ArrowLeft size={16} />
+                  Back to News
                 </Link>
               </div>
+            </FadeInSection>
+          ) : newsletter ? (
+            <article>
+              {/* Article header */}
+              <FadeInSection>
+                <header className="mb-8">
+                  <div
+                    className="flex items-center gap-2 mb-4"
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '11px',
+                      color: '#666',
+                    }}
+                  >
+                    <Calendar size={14} style={{ color: '#00ffcc' }} />
+                    <time dateTime={newsletter.published_date}>
+                      {formatDate(newsletter.published_date)}
+                    </time>
+                  </div>
+                  <h1
+                    className="font-bold uppercase leading-tight mb-4"
+                    style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '36px',
+                      color: '#ffffff',
+                    }}
+                  >
+                    {newsletter.title}
+                  </h1>
+                  {newsletter.excerpt && (
+                    <p
+                      className="leading-relaxed"
+                      style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '12px',
+                        color: '#999',
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {newsletter.excerpt}
+                    </p>
+                  )}
+                </header>
+              </FadeInSection>
+
+              {/* Article content */}
+              <FadeInSection delay={0.15}>
+                <div
+                  className="p-6"
+                  style={{
+                    background: '#0a0a0a',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                  }}
+                >
+                  <div
+                    className="newsletter-content prose prose-lg max-w-none"
+                    style={{
+                      color: '#cccccc',
+                      lineHeight: '1.8',
+                    }}
+                    dangerouslySetInnerHTML={{ __html: newsletter.content }}
+                  />
+                </div>
+              </FadeInSection>
+
+              {/* Bottom nav */}
+              <FadeInSection delay={0.2}>
+                <div className="mt-10 text-center">
+                  <Link
+                    href="/news"
+                    className="inline-flex items-center gap-2 px-8 py-4 font-bold uppercase"
+                    style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '14px',
+                      letterSpacing: '0.15em',
+                      background: '#00ffcc',
+                      color: '#000000',
+                      textDecoration: 'none',
+                      clipPath: 'polygon(0 0, 100% 0, 96% 100%, 4% 100%)',
+                    }}
+                  >
+                    <ArrowLeft size={16} />
+                    All Articles
+                  </Link>
+                </div>
+              </FadeInSection>
             </article>
           ) : null}
         </div>
       </div>
 
-      {/* Newsletter Content Styling */}
+      {/* ─── Footer ─── */}
+      <footer className="relative z-10 py-12 px-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-[430px] mx-auto text-center">
+          <p
+            className="mb-4"
+            style={{
+              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+              fontSize: '12px',
+              fontWeight: 700,
+              letterSpacing: '0.4em',
+              color: '#00ffcc',
+              textTransform: 'uppercase',
+            }}
+          >
+            ◉ Aviera
+          </p>
+          <p
+            className="mb-2"
+            style={{
+              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+              fontSize: '9px',
+              color: '#444',
+              lineHeight: 1.6,
+            }}
+          >
+            Manufactured in the USA in a GMP-certified facility.
+          </p>
+          <p
+            className="mb-4"
+            style={{
+              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+              fontSize: '9px',
+              color: '#333',
+              lineHeight: 1.6,
+            }}
+          >
+            *These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.
+          </p>
+          <p
+            style={{
+              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+              fontSize: '9px',
+              color: '#333',
+            }}
+          >
+            &copy; {new Date().getFullYear()} Aviera. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
+      {/* Newsletter Content Styling — dark theme */}
       <style jsx global>{`
         .newsletter-content h1,
         .newsletter-content h2,
         .newsletter-content h3 {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-oswald), Oswald, sans-serif;
           font-weight: 700;
-          color: #1a1a1a;
+          text-transform: uppercase;
+          color: #ffffff;
           margin-top: 2rem;
           margin-bottom: 1rem;
         }
 
         .newsletter-content h1 {
-          font-size: 2rem;
+          font-size: 1.75rem;
         }
 
         .newsletter-content h2 {
-          font-size: 1.5rem;
-          color: #00d9ff;
+          font-size: 1.35rem;
+          color: #00ffcc;
         }
 
         .newsletter-content h3 {
-          font-size: 1.25rem;
+          font-size: 1.1rem;
         }
 
         .newsletter-content p {
+          font-family: var(--font-space-mono), Space Mono, monospace;
+          font-size: 12px;
           margin-bottom: 1rem;
-          color: #4a4a4a;
+          color: #999;
+          line-height: 1.7;
         }
 
         .newsletter-content a {
-          color: #00d9ff;
+          color: #00ffcc;
           text-decoration: underline;
-          transition: color 0.2s;
+          transition: opacity 0.2s;
         }
 
         .newsletter-content a:hover {
-          color: #0099cc;
+          opacity: 0.7;
         }
 
         .newsletter-content ul,
@@ -261,44 +451,45 @@ export default function NewsletterDetailPage() {
         }
 
         .newsletter-content li {
+          font-family: var(--font-space-mono), Space Mono, monospace;
+          font-size: 12px;
           margin-bottom: 0.5rem;
-          color: #4a4a4a;
+          color: #999;
+          line-height: 1.7;
         }
 
         .newsletter-content strong {
-          color: #1a1a1a;
+          color: #ffffff;
           font-weight: 600;
         }
 
         .newsletter-content blockquote {
-          border-left: 4px solid #00d9ff;
+          border-left: 3px solid #00ffcc;
           padding-left: 1rem;
           margin: 1.5rem 0;
           font-style: italic;
-          color: #6b7280;
+          color: #666;
         }
 
         .newsletter-content img {
           max-width: 100%;
           height: auto;
-          border-radius: 12px;
           margin: 1.5rem 0;
         }
 
         .newsletter-content code {
-          background: #f3f4f6;
+          background: rgba(255,255,255,0.06);
           padding: 0.2rem 0.4rem;
-          border-radius: 4px;
           font-size: 0.9em;
-          color: #1a1a1a;
+          color: #00ffcc;
         }
 
         .newsletter-content pre {
-          background: #f3f4f6;
+          background: rgba(255,255,255,0.04);
           padding: 1rem;
-          border-radius: 8px;
           overflow-x: auto;
           margin: 1rem 0;
+          border: 1px solid rgba(255,255,255,0.06);
         }
 
         .newsletter-content pre code {

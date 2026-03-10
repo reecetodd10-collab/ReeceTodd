@@ -52,44 +52,38 @@ function StickyNav({ menuOpen, setMenuOpen }) {
             ◉ Aviera
           </Link>
 
-          {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-5">
-            {[
-              { label: 'Shop', href: '/shop' },
-              { label: 'Flow State X', href: '/nitric' },
-              { label: 'Quiz', href: '/supplement-optimization-score' },
-              { label: 'About', href: '/about' },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                  fontSize: '11px',
-                  textTransform: 'uppercase',
-                  color: '#666',
-                  textDecoration: 'none',
-                  letterSpacing: '0.05em',
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={(e) => (e.target.style.color = '#00ffcc')}
-                onMouseLeave={(e) => (e.target.style.color = '#666')}
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Desktop links - hidden */}
+          <div className="hidden">
+            {/* Nav links removed - use hamburger menu */}
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <span className="block w-5 h-[2px] bg-white" />
-            <span className="block w-5 h-[2px] bg-white" />
-            <span className="block w-5 h-[2px] bg-white" />
-          </button>
+          {/* User icon + hamburger */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/auth"
+              className="flex items-center justify-center no-underline"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'transparent',
+                color: '#ffffff',
+                textDecoration: 'none',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </Link>
+            <button
+              className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <span className="block w-5 h-[2px] bg-white" />
+              <span className="block w-5 h-[2px] bg-white" />
+              <span className="block w-5 h-[2px] bg-white" />
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -116,9 +110,12 @@ function StickyNav({ menuOpen, setMenuOpen }) {
             {[
               { label: 'Shop', href: '/shop' },
               { label: 'Flow State X', href: '/nitric' },
-              { label: 'Quiz', href: '/supplement-optimization-score' },
+              { label: 'Trybe', href: '/trybe' },
+              { label: 'O.S.', href: '/supplement-optimization-score' },
               { label: 'About', href: '/about' },
-              { label: 'News', href: '/news' },
+              { label: 'Latest', href: '/news' },
+              { label: 'Dashboard', href: '/dashboard' },
+              { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -278,12 +275,11 @@ export default function HomePage() {
         overflowX: 'hidden',
       }}
     >
-      {/* Scan-line background pattern */}
+      {/* Scanline overlay — REQUIRED on every dark page */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage:
-            'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
         }}
       />
 
@@ -787,7 +783,7 @@ export default function HomePage() {
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '36px',
                     fontWeight: 700,
-                    color: 'rgba(0,255,204,0.12)',
+                    color: i % 2 === 0 ? 'rgba(0,255,204,0.12)' : 'rgba(168,85,247,0.15)',
                     minWidth: '44px',
                     lineHeight: 1,
                   }}
@@ -936,7 +932,7 @@ export default function HomePage() {
                       <span
                         style={{
                           fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          color: '#00ffcc',
+                          color: i % 2 === 0 ? '#00ffcc' : '#a855f7',
                           fontWeight: 700,
                           fontSize: '12px',
                           minWidth: '20px',
@@ -1282,6 +1278,19 @@ export default function HomePage() {
             <Link href="/nitric" style={{ color: '#00ffcc', textDecoration: 'none' }}>
               Flow State X
             </Link>
+          </div>
+          <div className="mb-3">
+            <Link href="/terms" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Terms</Link>
+            {' · '}
+            <Link href="/privacy" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Privacy</Link>
+          </div>
+          <div className="flex justify-center gap-5 mb-4">
+            <a href="https://instagram.com/avierafit" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="https://tiktok.com/@avierafit" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.98a8.21 8.21 0 0 0 4.76 1.52V7.05a4.84 4.84 0 0 1-1-.36z"/></svg>
+            </a>
           </div>
           <p>
             Manufactured for and Distributed by: AvieraFit

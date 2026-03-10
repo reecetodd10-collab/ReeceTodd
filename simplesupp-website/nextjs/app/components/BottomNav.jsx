@@ -3,13 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, ClipboardList, Newspaper, User } from 'lucide-react';
+import { Home, ShoppingBag, ClipboardList, User, Users } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Shop', href: '/shop', icon: ShoppingBag },
-  { label: 'Quiz', href: '/supplement-optimization-score', icon: ClipboardList },
-  { label: 'News', href: '/news', icon: Newspaper },
+  { label: 'Trybe', href: '/trybe', icon: Users },
+  { label: 'O.S.', href: '/supplement-optimization-score', icon: ClipboardList },
   { label: 'Account', href: '/dashboard', icon: User },
 ];
 
