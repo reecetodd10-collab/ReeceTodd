@@ -614,21 +614,6 @@ const FEATURED_PRODUCTS = [
   },
 ];
 
-// ─── Filter tabs config ───
-const TABS = [
-  { id: 'drop', label: '\uD83D\uDD25 The Drop', hot: true },
-  { id: 'all', label: 'All' },
-  { id: 'Pre-Workout', label: 'Pre-Workout' },
-  { id: 'Protein', label: 'Protein' },
-  { id: 'Performance', label: 'Performance' },
-  { id: 'Recovery', label: 'Recovery' },
-  { id: 'Focus', label: 'Focus' },
-  { id: 'Sleep', label: 'Sleep' },
-  { id: 'Health', label: 'Health' },
-  { id: 'Weight', label: 'Weight' },
-  { id: 'Beauty', label: 'Beauty' },
-];
-
 // ─── Category display names ───
 const CATEGORY_DISPLAY = {
   'Pre-Workout': 'Pre-Workout & Energy',
@@ -642,6 +627,19 @@ const CATEGORY_DISPLAY = {
   Beauty: 'Beauty & Skin',
 };
 
+// ─── Category order for accordions ───
+const CATEGORY_ORDER = [
+  'Pre-Workout',
+  'Protein',
+  'Performance',
+  'Recovery',
+  'Focus',
+  'Sleep',
+  'Health',
+  'Weight',
+  'Beauty',
+];
+
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════
@@ -649,9 +647,8 @@ export default function ShopPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('drop');
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedCategories, setExpandedCategories] = useState({});
+  const [openAccordions, setOpenAccordions] = useState({});
   const [expandedCard, setExpandedCard] = useState(null);
   const [addingProducts, setAddingProducts] = useState({});
   const [addedProducts, setAddedProducts] = useState({});
@@ -782,102 +779,9 @@ export default function ShopPage() {
     }
   }, [addingProducts]);
 
-  // Toggle expand category
-  function toggleCategory(cat) {
-    setExpandedCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
-  }
-
-  // Render catalog section (shared between Drop tab and category tabs)
-  function renderCatalog(categoriesToShow) {
-    return (
-      <div style={{ padding: '0 16px 0' }}>
-        {categoriesToShow
-          .filter((cat) => (categorized[cat] || []).length > 0)
-          .map((cat) => {
-            const catProducts = categorized[cat] || [];
-            const isExpanded = expandedCategories[cat];
-            const showLoadMore = catProducts.length > 5 && !isExpanded;
-            const displayProducts = showLoadMore ? catProducts.slice(0, 5) : catProducts;
-
-            return (
-              <div key={cat}>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '11px',
-                    letterSpacing: '0.2em',
-                    color: '#00ffcc',
-                    textTransform: 'uppercase',
-                    margin: '20px 0 10px',
-                    paddingBottom: '6px',
-                    borderBottom: '1px solid rgba(0,255,204,0.1)',
-                  }}
-                >
-                  {CATEGORY_DISPLAY[cat] || cat} · {catProducts.length} product{catProducts.length !== 1 ? 's' : ''}
-                </div>
-
-                {displayProducts.map((product) => (
-                  <React.Fragment key={product.id}>
-                    {expandedCard !== product.id && (
-                      <CompactProductCard
-                        product={product}
-                        adding={addingProducts[product.id]}
-                        added={addedProducts[product.id]}
-                        onAdd={() => handleAddToCart(product)}
-                        onExpand={() => setExpandedCard(product.id)}
-                      />
-                    )}
-                    {expandedCard === product.id && (
-                      <ExpandedProductCard
-                        ref={expandedRef}
-                        product={product}
-                        adding={addingProducts[product.id]}
-                        added={addedProducts[product.id]}
-                        checkoutUrl={checkoutUrl}
-                        onAdd={() => handleAddToCart(product)}
-                        onClose={() => setExpandedCard(null)}
-                        onViewCart={() => setCartOpen(true)}
-                      />
-                    )}
-                  </React.Fragment>
-                ))}
-
-                {showLoadMore && (
-                  <button
-                    onClick={() => toggleCategory(cat)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '10px',
-                      background: 'transparent',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      borderRadius: '6px',
-                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                      fontSize: '11px',
-                      color: '#666',
-                      textTransform: 'uppercase',
-                      fontWeight: 700,
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      marginBottom: '12px',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.borderColor = '#00ffcc';
-                      e.target.style.color = '#00ffcc';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.borderColor = 'rgba(255,255,255,0.06)';
-                      e.target.style.color = '#666';
-                    }}
-                  >
-                    Show {catProducts.length - 5} more in {CATEGORY_DISPLAY[cat] || cat} ↓
-                  </button>
-                )}
-              </div>
-            );
-          })}
-      </div>
-    );
+  // Toggle accordion
+  function toggleAccordion(cat) {
+    setOpenAccordions((prev) => ({ ...prev, [cat]: !prev[cat] }));
   }
 
   // ─── RENDER ───
@@ -891,11 +795,11 @@ export default function ShopPage() {
         overflowX: 'hidden',
       }}
     >
-      {/* Scanline overlay — REQUIRED on every dark page */}
+      {/* Scanline overlay — dashboard-style */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
       <div className="relative z-10">
@@ -943,7 +847,7 @@ export default function ShopPage() {
         >
           THE
           <br />
-          <span style={{ color: '#00ffcc' }}>DROP.</span>
+          <span style={{ color: '#ff2d55' }}>DROP.</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -1012,69 +916,6 @@ export default function ShopPage() {
           Results filter as you type
         </div>
 
-        {/* ═══ FILTER TABS ═══ */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '6px',
-            padding: '8px 16px 10px',
-            overflowX: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
-          className="hide-scrollbar"
-        >
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
-            const isHot = tab.hot && isActive;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  padding: '7px 12px',
-                  borderRadius: '4px',
-                  border: isActive
-                    ? isHot
-                      ? '1px solid rgba(255,45,85,0.3)'
-                      : '1px solid #00ffcc'
-                    : '1px solid rgba(255,255,255,0.1)',
-                  color: isActive
-                    ? isHot
-                      ? '#ff2d55'
-                      : '#000'
-                    : '#666',
-                  background: isActive
-                    ? isHot
-                      ? 'rgba(255,45,85,0.15)'
-                      : '#00ffcc'
-                    : 'transparent',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '3px',
-                  flexShrink: 0,
-                  transition: 'all 0.15s',
-                }}
-              >
-                {tab.label}
-                {tab.id !== 'drop' && (
-                  <span style={{ fontSize: '7px', opacity: 0.6 }}>
-                    {categoryCounts[tab.id] || 0}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
         {/* ═══ LOADING STATE ═══ */}
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '60px 16px' }}>
@@ -1097,13 +938,13 @@ export default function ShopPage() {
         {/* ═══ SEARCH RESULTS MODE ═══ */}
         {!isLoading && searchQuery.trim() && (
           <FadeInSection>
-            <div style={{ padding: '0 16px 8px' }}>
+            <div style={{ padding: '10px 16px 8px' }}>
               <div
                 style={{
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '11px',
                   letterSpacing: '0.3em',
-                  color: '#00ffcc',
+                  color: '#a855f7',
                   textTransform: 'uppercase',
                   marginBottom: '12px',
                 }}
@@ -1132,6 +973,7 @@ export default function ShopPage() {
                       checkoutUrl={checkoutUrl}
                       onAdd={() => handleAddToCart(product)}
                       onClose={() => setExpandedCard(null)}
+                      onViewCart={() => setCartOpen(true)}
                     />
                   )}
                 </React.Fragment>
@@ -1145,85 +987,80 @@ export default function ShopPage() {
           </FadeInSection>
         )}
 
-        {/* ═══ THE DROP TAB — featured cards + full catalog ═══ */}
-        {!isLoading && !searchQuery.trim() && activeTab === 'drop' && (
-          <>
-            <FadeInSection>
-              <div
-                style={{
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '11px',
-                  letterSpacing: '0.3em',
-                  color: '#00ffcc',
-                  textTransform: 'uppercase',
-                  padding: '10px 16px 6px',
-                }}
-              >
-                🔥 The Drop — Now Live
-              </div>
-              <div style={{ padding: '0 16px' }}>
-                {featuredProducts.map((fp) => (
-                  <FeaturedProductCard
-                    key={fp.id}
-                    product={fp}
-                    adding={addingProducts[fp.id]}
-                    added={addedProducts[fp.id]}
-                    checkoutUrl={checkoutUrl}
-                    onAdd={() => handleAddToCart(fp.shopProduct)}
-                    onViewCart={() => setCartOpen(true)}
-                  />
-                ))}
-              </div>
-            </FadeInSection>
-
-            {/* Full catalog below The Drop */}
-            <FadeInSection>
-              <div style={{ padding: '14px 16px 6px' }}>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '11px',
-                    letterSpacing: '0.3em',
-                    color: '#00ffcc',
-                    textTransform: 'uppercase',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Browse By Category
+        {/* ═══ THE DROP — Featured Section (always visible, not collapsible) ═══ */}
+        {!isLoading && !searchQuery.trim() && (
+          <FadeInSection>
+            <div
+              style={{
+                margin: '10px 16px 0',
+                padding: '12px 14px',
+                background: '#0a0a0a',
+                borderRadius: '8px',
+                borderLeft: '3px solid #ff2d55',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      color: '#ff2d55',
+                    }}
+                  >
+                    The Drop
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '8px',
+                      fontWeight: 700,
+                      color: '#fff',
+                      background: '#ff2d55',
+                      padding: '2px 6px',
+                      borderRadius: '3px',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Live Now
+                  </span>
                 </div>
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '28px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    lineHeight: 1,
-                    marginBottom: '10px',
-                  }}
-                >
-                  ALL <span style={{ color: '#00ffcc' }}>PRODUCTS</span>
-                </h2>
+                <span style={{ fontSize: '9px', color: '#ff2d55', fontWeight: 700 }}>
+                  {featuredProducts.length} item{featuredProducts.length !== 1 ? 's' : ''}
+                </span>
               </div>
-              {renderCatalog(Object.keys(CATEGORY_DISPLAY))}
-            </FadeInSection>
-          </>
+              {featuredProducts.map((fp) => (
+                <FeaturedProductCard
+                  key={fp.id}
+                  product={fp}
+                  adding={addingProducts[fp.id]}
+                  added={addedProducts[fp.id]}
+                  checkoutUrl={checkoutUrl}
+                  onAdd={() => handleAddToCart(fp.shopProduct)}
+                  onViewCart={() => setCartOpen(true)}
+                />
+              ))}
+            </div>
+          </FadeInSection>
         )}
 
-        {/* ═══ CATEGORY BROWSING (All or specific category) ═══ */}
-        {!isLoading && !searchQuery.trim() && activeTab !== 'drop' && (
+        {/* ═══ CATEGORY ACCORDIONS ═══ */}
+        {!isLoading && !searchQuery.trim() && (
           <FadeInSection>
-            <div style={{ padding: '20px 16px 8px' }}>
+            <div style={{ padding: '16px 16px 6px' }}>
               <div
                 style={{
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '11px',
                   letterSpacing: '0.3em',
-                  color: '#00ffcc',
+                  color: '#a855f7',
                   textTransform: 'uppercase',
                   marginBottom: '8px',
                 }}
               >
-                Browse by Category
+                Browse By Category
               </div>
               <h2
                 style={{
@@ -1235,12 +1072,118 @@ export default function ShopPage() {
                   marginBottom: '14px',
                 }}
               >
-                ALL <span style={{ color: '#00ffcc' }}>PRODUCTS</span>
+                ALL <span style={{ color: '#a855f7' }}>PRODUCTS</span>
               </h2>
             </div>
-            {renderCatalog(
-              activeTab === 'all' ? Object.keys(CATEGORY_DISPLAY) : [activeTab]
-            )}
+
+            <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {CATEGORY_ORDER
+                .filter((cat) => (categorized[cat] || []).length > 0)
+                .map((cat) => {
+                  const catProducts = categorized[cat] || [];
+                  const isOpen = openAccordions[cat];
+
+                  return (
+                    <div key={cat}>
+                      {/* Accordion Header */}
+                      <button
+                        onClick={() => toggleAccordion(cat)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          padding: '12px 14px',
+                          background: '#0a0a0a',
+                          borderRadius: '8px',
+                          borderLeft: '3px solid #a855f7',
+                          border: 'none',
+                          borderLeftWidth: '3px',
+                          borderLeftStyle: 'solid',
+                          borderLeftColor: '#a855f7',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#111';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#0a0a0a';
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                              fontSize: '14px',
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.08em',
+                              color: '#fff',
+                            }}
+                          >
+                            {CATEGORY_DISPLAY[cat] || cat}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '9px',
+                              fontWeight: 700,
+                              color: '#fff',
+                              background: '#a855f7',
+                              padding: '2px 7px',
+                              borderRadius: '3px',
+                            }}
+                          >
+                            {catProducts.length}
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            color: '#a855f7',
+                            fontSize: '16px',
+                            transition: 'transform 0.2s',
+                            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                            display: 'inline-block',
+                          }}
+                        >
+                          ▾
+                        </span>
+                      </button>
+
+                      {/* Accordion Content */}
+                      {isOpen && (
+                        <div style={{ padding: '6px 0 2px' }}>
+                          {catProducts.map((product) => (
+                            <React.Fragment key={product.id}>
+                              {expandedCard !== product.id && (
+                                <CompactProductCard
+                                  product={product}
+                                  adding={addingProducts[product.id]}
+                                  added={addedProducts[product.id]}
+                                  onAdd={() => handleAddToCart(product)}
+                                  onExpand={() => setExpandedCard(product.id)}
+                                />
+                              )}
+                              {expandedCard === product.id && (
+                                <ExpandedProductCard
+                                  ref={expandedRef}
+                                  product={product}
+                                  adding={addingProducts[product.id]}
+                                  added={addedProducts[product.id]}
+                                  checkoutUrl={checkoutUrl}
+                                  onAdd={() => handleAddToCart(product)}
+                                  onClose={() => setExpandedCard(null)}
+                                  onViewCart={() => setCartOpen(true)}
+                                />
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
           </FadeInSection>
         )}
 
@@ -1980,9 +1923,9 @@ function FeaturedProductCard({ product, adding, added, checkoutUrl, onAdd, onVie
             <span
               style={{
                 fontSize: '10px',
-                color: '#00ffcc',
+                color: '#ff2d55',
                 fontWeight: 700,
-                background: 'rgba(0,255,204,0.12)',
+                background: 'rgba(255,45,85,0.12)',
                 padding: '2px 6px',
                 borderRadius: '3px',
               }}
@@ -1997,7 +1940,7 @@ function FeaturedProductCard({ product, adding, added, checkoutUrl, onAdd, onVie
           <div
             style={{
               fontSize: '9px',
-              color: '#00ffcc',
+              color: '#ff2d55',
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
               fontWeight: 700,
@@ -2258,7 +2201,7 @@ function CompactProductCard({ product, adding, added, onAdd, onExpand }) {
         <div
           style={{
             fontSize: '8px',
-            color: '#00ffcc',
+            color: '#a855f7',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
             marginBottom: '2px',
@@ -2396,7 +2339,7 @@ const ExpandedProductCard = React.forwardRef(function ExpandedProductCard(
         <div
           style={{
             fontSize: '9px',
-            color: '#00ffcc',
+            color: '#a855f7',
             textTransform: 'uppercase',
             letterSpacing: '0.12em',
             marginBottom: '3px',
@@ -2430,9 +2373,9 @@ const ExpandedProductCard = React.forwardRef(function ExpandedProductCard(
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   padding: '2px 6px',
-                  border: '1px solid rgba(0,255,204,0.15)',
+                  border: '1px solid rgba(168,85,247,0.25)',
                   borderRadius: '2px',
-                  color: '#00ffcc',
+                  color: '#a855f7',
                 }}
               >
                 {tag}
