@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from './SupabaseAuthProvider';
 import { LayoutDashboard, Crown, ShoppingCart, Trash2 } from 'lucide-react';
 import PillLogo from './PillLogo';
 import WaitlistModal from './WaitlistModal';
@@ -15,7 +15,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === '/';
-  const { isSignedIn } = useUser();
+  const { user } = useSupabaseUser();
 
 
   // Listen for cart updates
@@ -486,7 +486,7 @@ export default function Navigation() {
                 )}
               </button>
 
-              {isSignedIn ? (
+              {!!user ? (
                 <>
                   <button
                     onClick={() => setShowWaitlistModal(true)}
@@ -507,13 +507,6 @@ export default function Navigation() {
                     <Crown size={16} />
                     Get Aviera Pro
                   </button>
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-10 h-10",
-                      },
-                    }}
-                  />
                 </>
               ) : (
                 <>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '../../components/SupabaseAuthProvider';
 import {
     TrendingUp, TrendingDown, Minus, Calendar,
     Target, Zap, Activity, ChevronRight, Sparkles
@@ -9,26 +9,26 @@ import {
 import Link from 'next/link';
 
 export default function OptimizationHistory() {
-    const { isLoaded, isSignedIn, user } = useUser();
+    const { user, loading } = useSupabaseUser();
     const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
-        if (isSignedIn) {
+        if (!!user) {
             fetch('/api/optimization-results')
                 .then(res => res.json())
                 .then(data => {
                     setResults(data.results || []);
-                    setLoading(false);
+                    setDataLoading(false);
                 })
                 .catch(err => {
                     console.error('Error fetching history:', err);
-                    setLoading(false);
+                    setDataLoading(false);
                 });
         }
-    }, [isSignedIn]);
+    }, [!!user]);
 
-    if (!isLoaded || loading) {
+    if (loading || dataLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
@@ -36,7 +36,7 @@ export default function OptimizationHistory() {
         );
     }
 
-    if (!isSignedIn) {
+    if (!user) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4">
                 <h1 className="text-2xl font-bold mb-4">Please sign in to view your history</h1>

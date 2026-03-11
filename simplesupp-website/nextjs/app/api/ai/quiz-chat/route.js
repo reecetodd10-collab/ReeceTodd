@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { auth } from '@clerk/nextjs/server';
+import { getAuthUser } from '../../../lib/supabase-server';
 import { createClient } from '@supabase/supabase-js';
 
 // System prompt specifically for the quiz chat widget
@@ -72,8 +72,9 @@ export async function POST(request) {
       );
     }
 
-    // Get authenticated user from Clerk
-    const { userId } = await auth();
+    // Get authenticated user from Supabase
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
 
     // Initialize Supabase
     const supabase = createClient(

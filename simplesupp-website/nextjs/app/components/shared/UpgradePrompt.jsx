@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '../SupabaseAuthProvider';
 import { Crown, Zap, Sparkles, Download, MessageCircle } from 'lucide-react';
 import Modal from './Modal';
 import Button from './Button';
@@ -10,7 +10,7 @@ import { TESTING_MODE } from '../../lib/config';
 
 export default function UpgradePrompt({ isOpen, onClose }) {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useSupabaseUser();
   const [isLoading, setIsLoading] = useState(false);
   const features = [
     { icon: Sparkles, text: 'AI-Powered Supplement Stack' },

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '../SupabaseAuthProvider';
 import { X, Send, Sparkles, Zap, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TESTING_MODE, hasPremiumAccess } from '../../lib/config';
@@ -11,7 +11,7 @@ import Button from '../shared/Button';
 
 export default function AIChat({ userIsPremium = false }) {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useSupabaseUser();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');

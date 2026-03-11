@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
-    "@clerk/nextjs": "^6.35.1",
-    "@stripe/stripe-js": "^8.5.1",
+"@stripe/stripe-js": "^8.5.1",
     "@supabase/supabase-js": "^2.81.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
@@ -22,8 +21,7 @@
     "react-dom": "19.2.0",
     "resend": "^6.8.0",
     "stripe": "^19.3.1",
-    "svix": "^1.81.0",
-    "tailwind-merge": "^3.4.0"
+"tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@types/react": "19.2.7",

@@ -1,8 +1,8 @@
 import { Montserrat, Oswald, Space_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import MarketingLayout from "./components/MarketingLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { SupabaseAuthProvider } from "./components/SupabaseAuthProvider";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -46,14 +46,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${montserrat.className} ${oswald.variable} ${spaceMono.variable}`}>
-        <body className="bg-[var(--bg)] text-[var(--txt)] antialiased">
+    <html lang="en" className={`${montserrat.className} ${oswald.variable} ${spaceMono.variable}`}>
+      <body className="text-[var(--txt)] antialiased">
+        <SupabaseAuthProvider>
           <ErrorBoundary>
             <MarketingLayout>{children}</MarketingLayout>
           </ErrorBoundary>
-        </body>
-      </html>
-    </ClerkProvider>
+        </SupabaseAuthProvider>
+      </body>
+    </html>
   );
 }

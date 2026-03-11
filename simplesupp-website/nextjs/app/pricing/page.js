@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { motion } from 'framer-motion';
 import { 
   Check, 
@@ -25,7 +25,7 @@ import { TESTING_MODE } from '../lib/config';
 
 export default function Pricing() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useSupabaseUser();
   const [isLoadingCheckout, setIsLoadingCheckout] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
@@ -121,7 +121,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] py-12">
+    <div className="min-h-screen py-12">
       <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">

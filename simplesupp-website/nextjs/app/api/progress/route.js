@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getAuthUser } from '../../lib/supabase-server';
 import { createSupabaseAdmin, getOrCreateUser } from '@/lib/supabase';
 
 // POST - Save a progress log
 export async function POST(request) {
   try {
-    const { userId } = await auth();
-    
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -24,14 +25,14 @@ export async function POST(request) {
     }
 
     const supabase = createSupabaseAdmin();
-    
+
     // Ensure user exists
-    const user = await getOrCreateUser(userId, null);
-    
+    const dbUser = await getOrCreateUser(userId, null);
+
     const { data, error } = await supabase
       .from('progress_logs')
       .insert({
-        user_id: user.id,
+        user_id: dbUser.id,
         log_type,
         log_data,
       })
@@ -55,8 +56,9 @@ export async function POST(request) {
 // GET - Fetch user's progress logs (optional - filter by type)
 export async function GET(request) {
   try {
-    const { userId } = await auth();
-    
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -68,14 +70,14 @@ export async function GET(request) {
     const logType = searchParams.get('type');
 
     const supabase = createSupabaseAdmin();
-    
+
     // Ensure user exists
-    const user = await getOrCreateUser(userId, null);
-    
+    const dbUser = await getOrCreateUser(userId, null);
+
     let query = supabase
       .from('progress_logs')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', dbUser.id)
       .order('created_at', { ascending: false });
 
     if (logType) {

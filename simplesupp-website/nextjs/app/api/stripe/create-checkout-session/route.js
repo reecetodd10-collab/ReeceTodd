@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getAuthUser } from '../../../lib/supabase-server';
 import Stripe from 'stripe';
 
 // Lazy initialization - only creates Stripe instance when actually called
@@ -15,7 +15,8 @@ const getStripe = () => {
 
 export async function POST(request) {
   try {
-    const { userId } = await auth();
+    const user = await getAuthUser(request);
+    const userId = user?.id;
     
     if (!userId) {
       return NextResponse.json(

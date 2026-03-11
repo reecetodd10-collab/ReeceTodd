@@ -1,30 +1,22 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-// Dashboard routes are open during development — re-enable protection before launch
-// const isProtectedRoute = createRouteMatcher(['/dashboard(.*)']);
+export function middleware(request) {
+  // Protect dashboard routes — redirect to /auth if no Supabase session cookie
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    // Supabase stores auth in cookies prefixed with sb-
+    const cookies = request.cookies.getAll();
+    const hasAuthCookie = cookies.some(
+      (c) => c.name.includes('auth-token') || c.name.includes('sb-')
+    );
 
-export default clerkMiddleware(
-  async (auth, req) => {
-    // Auth protection temporarily disabled for development
-  },
-  {
-    publicRoutes: [
-      '/landing',
-      '/api/waitlist',
-      '/api/pro-waitlist',
-      '/api/ai/supplement-recommendation',
-      '/smartstack-ai',
-      '/dashboard(.*)',
-    ],
+    if (!hasAuthCookie) {
+      return NextResponse.redirect(new URL('/auth', request.url));
+    }
   }
-);
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
+  matcher: ['/dashboard/:path*'],
 };
-

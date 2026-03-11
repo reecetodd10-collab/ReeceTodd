@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getAuthUser } from '../../lib/supabase-server';
 import { createSupabaseAdmin, getOrCreateUser } from '@/lib/supabase';
 
 // GET - Fetch user's workout plans
-export async function GET() {
+export async function GET(request) {
   try {
-    const { userId } = await auth();
-    
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -15,14 +16,14 @@ export async function GET() {
     }
 
     const supabase = createSupabaseAdmin();
-    
+
     // Ensure user exists
-    const user = await getOrCreateUser(userId, null);
-    
+    const dbUser = await getOrCreateUser(userId, null);
+
     const { data, error } = await supabase
       .from('workout_plans')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', dbUser.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -42,8 +43,9 @@ export async function GET() {
 // POST - Save a new workout plan
 export async function POST(request) {
   try {
-    const { userId } = await auth();
-    
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -61,14 +63,14 @@ export async function POST(request) {
     }
 
     const supabase = createSupabaseAdmin();
-    
+
     // Ensure user exists
-    const user = await getOrCreateUser(userId, null);
-    
+    const dbUser = await getOrCreateUser(userId, null);
+
     const { data, error } = await supabase
       .from('workout_plans')
       .insert({
-        user_id: user.id,
+        user_id: dbUser.id,
         name,
         plan_data,
       })

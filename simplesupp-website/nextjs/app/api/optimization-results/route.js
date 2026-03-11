@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getAuthUser } from '../../lib/supabase-server';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
 // POST: Save a new optimization result
 export async function POST(request) {
     try {
-        const { userId } = await auth();
+        const user = await getAuthUser(request);
+        const userId = user?.id;
         const body = await request.json();
 
         const {
@@ -52,7 +53,8 @@ export async function POST(request) {
 // GET: Fetch results history for the authenticated user
 export async function GET(request) {
     try {
-        const { userId } = await auth();
+        const user = await getAuthUser(request);
+        const userId = user?.id;
         const { searchParams } = new URL(request.url);
         const history = searchParams.get('history');
 

@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
-import { auth, clerkClient } from '@clerk/nextjs/server';
-import { createUser, getOrCreateUser, getUserByClerkId } from '@/lib/supabase';
+import { getAuthUser } from '../../../lib/supabase-server';
+import { createSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request) {
   try {
     console.log('POST /api/user/create - Starting...');
-    
-    const { userId } = await auth();
-    
+
+    const user = await getAuthUser(request);
+    const userId = user?.id;
+
     if (!userId) {
       console.log('POST /api/user/create - No userId found');
       return NextResponse.json(
@@ -18,60 +19,60 @@ export async function POST(request) {
 
     console.log('POST /api/user/create - UserId:', userId);
 
-    // Check if user already exists
-    let existingUser;
-    try {
-      existingUser = await getUserByClerkId(userId);
-      if (existingUser) {
-        console.log('POST /api/user/create - User already exists');
-        return NextResponse.json(
-          { message: 'User already exists', user: existingUser },
-          { status: 200 }
-        );
-      }
-    } catch (checkError) {
-      console.error('POST /api/user/create - Error checking existing user:', checkError);
-      // Continue to try creating user
+    const supabase = createSupabaseAdmin();
+
+    // Check if user already exists in our users table
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (existingUser) {
+      console.log('POST /api/user/create - User already exists');
+      return NextResponse.json(
+        { message: 'User already exists', user: existingUser },
+        { status: 200 }
+      );
     }
 
-    // Try to get email from request body first
-    let email;
-    try {
-      const body = await request.json();
-      email = body.email;
-      console.log('POST /api/user/create - Email from request:', email);
-    } catch {
-      // Request body might be empty, that's okay
-      console.log('POST /api/user/create - No request body');
-    }
-
-    // If no email provided, fetch from Clerk
+    // Get email from the authenticated user or request body
+    let email = user.email;
     if (!email) {
       try {
-        console.log('POST /api/user/create - Fetching email from Clerk...');
-        const client = await clerkClient();
-        const clerkUser = await client.users.getUser(userId);
-        email = clerkUser.emailAddresses?.[0]?.emailAddress;
-        console.log('POST /api/user/create - Email from Clerk:', email);
-      } catch (clerkError) {
-        console.error('POST /api/user/create - Error fetching user from Clerk:', clerkError);
+        const body = await request.json();
+        email = body.email;
+      } catch {
+        // Request body might be empty, that's okay
       }
     }
 
     if (!email) {
       console.error('POST /api/user/create - No email available');
       return NextResponse.json(
-        { error: 'Email is required. Please provide email or ensure your Clerk account has an email address.' },
+        { error: 'Email is required. Please ensure your account has an email address.' },
         { status: 400 }
       );
     }
 
-    // Get or create user (idempotent - safe to call multiple times)
+    // Create user in our users table
     console.log('POST /api/user/create - Creating user in Supabase...');
-    const user = await getOrCreateUser(userId, email);
-    console.log('POST /api/user/create - User created successfully:', user.id);
+    const { data: newUser, error } = await supabase
+      .from('users')
+      .upsert({
+        id: userId,
+        email: email,
+      })
+      .select()
+      .single();
 
-    return NextResponse.json({ user }, { status: 200 });
+    if (error) {
+      throw error;
+    }
+
+    console.log('POST /api/user/create - User created successfully:', newUser.id);
+
+    return NextResponse.json({ user: newUser }, { status: 200 });
   } catch (error) {
     console.error('POST /api/user/create - Error:', error);
     console.error('Error details:', {
@@ -82,8 +83,8 @@ export async function POST(request) {
       hint: error.hint,
     });
     return NextResponse.json(
-      { 
-        error: 'Failed to create user', 
+      {
+        error: 'Failed to create user',
         details: error.message,
         type: error.constructor.name,
       },
@@ -93,12 +94,13 @@ export async function POST(request) {
 }
 
 // GET endpoint to check if user exists
-export async function GET() {
+export async function GET(request) {
   try {
     console.log('GET /api/user/create - Checking user...');
-    
-    const { userId } = await auth();
-    
+
+    const user = await getAuthUser(request);
+    const userId = user?.id;
+
     if (!userId) {
       console.log('GET /api/user/create - No userId found');
       return NextResponse.json(
@@ -109,12 +111,18 @@ export async function GET() {
 
     console.log('GET /api/user/create - UserId:', userId);
 
-    // Check Supabase connection
+    const supabase = createSupabaseAdmin();
+
     try {
-      const user = await getUserByClerkId(userId);
-      console.log('GET /api/user/create - User lookup result:', user ? 'found' : 'not found');
-      
-      if (!user) {
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      console.log('GET /api/user/create - User lookup result:', existingUser ? 'found' : 'not found');
+
+      if (!existingUser) {
         return NextResponse.json(
           { exists: false },
           { status: 200 }
@@ -122,7 +130,7 @@ export async function GET() {
       }
 
       return NextResponse.json(
-        { exists: true, user },
+        { exists: true, user: existingUser },
         { status: 200 }
       );
     } catch (supabaseError) {
@@ -139,8 +147,8 @@ export async function GET() {
     console.error('GET /api/user/create - Error:', error);
     console.error('Error stack:', error.stack);
     return NextResponse.json(
-      { 
-        error: 'Failed to check user', 
+      {
+        error: 'Failed to check user',
         details: error.message,
         type: error.constructor.name,
       },
@@ -148,5 +156,3 @@ export async function GET() {
     );
   }
 }
-
-

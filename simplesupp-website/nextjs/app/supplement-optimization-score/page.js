@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
-import { useUser, SignInButton } from '@clerk/nextjs';
+import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { trackEvent } from '@/lib/analytics';
 
 // ─── Design system constants ───
@@ -229,7 +229,8 @@ export default function SupplementOptimizationScore() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedIndividual, setAddedIndividual] = useState({});
   const [resultId, setResultId] = useState(null);
-  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { user: clerkUser } = useSupabaseUser();
+  const isSignedIn = !!clerkUser;
 
   // Email capture
   const [email, setEmail] = useState('');
@@ -1652,23 +1653,23 @@ function ResultsPage({
                     >
                       CREATE FREE ACCOUNT
                     </Link>
-                    <SignInButton mode="modal">
-                      <button
-                        className="px-8 py-4 font-bold uppercase tracking-widest border-2"
-                        style={{
-                          fontFamily: OSWALD,
-                          fontSize: '14px',
-                          letterSpacing: '0.15em',
-                          borderColor: ACCENT,
-                          color: ACCENT,
-                          background: 'transparent',
-                          clipPath: 'polygon(0 0, 100% 0, 96% 100%, 4% 100%)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        SIGN IN
-                      </button>
-                    </SignInButton>
+                    <Link
+                      href="/auth"
+                      className="px-8 py-4 font-bold uppercase tracking-widest border-2 no-underline inline-block text-center"
+                      style={{
+                        fontFamily: OSWALD,
+                        fontSize: '14px',
+                        letterSpacing: '0.15em',
+                        borderColor: ACCENT,
+                        color: ACCENT,
+                        background: 'transparent',
+                        clipPath: 'polygon(0 0, 100% 0, 96% 100%, 4% 100%)',
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      SIGN IN
+                    </Link>
                   </div>
                 </div>
               </section>

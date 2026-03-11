@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '../../components/SupabaseAuthProvider';
 import { CreditCard, Calendar, Download, Settings, Crown, ExternalLink } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import Button from '../../components/shared/Button';
 
 export default function Billing() {
-  const { user } = useUser();
+  const { user } = useSupabaseUser();
   const [isLoadingPortal, setIsLoadingPortal] = useState(false);
   
   // Mock data - would come from backend/Supabase
