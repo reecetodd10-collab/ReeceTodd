@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import BottomNav from '../components/BottomNav';
 
 // ─── Mock supplement data ───
 const SUPPLEMENTS = [
@@ -184,11 +183,13 @@ function StickyNav({ menuOpen, setMenuOpen }) {
             {[
               { label: 'Home', href: '/home' },
               { label: 'Shop', href: '/shop' },
+              { label: 'Flow State X', href: '/nitric' },
               { label: 'Trybe', href: '/trybe' },
               { label: 'O.S.', href: '/supplement-optimization-score' },
-              { label: 'Latest', href: '/news' },
               { label: 'About', href: '/about' },
+              { label: 'Latest', href: '/news' },
               { label: 'Dashboard', href: '/dashboard' },
+              { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -1091,8 +1092,6 @@ export default function DashboardPage() {
         </div>
       </footer>
 
-      {/* Bottom Nav */}
-      <BottomNav />
 
       {/* Install App CTA */}
       <AnimatePresence>

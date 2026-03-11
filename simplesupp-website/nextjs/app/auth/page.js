@@ -7,12 +7,12 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 0, y: 12 },
   visible: (i) => ({
     opacity: 1,
     y: 0,
@@ -75,8 +75,8 @@ function getPasswordStrength(password) {
   if (score <= 1) return { score: 1, label: 'Weak', color: '#ff2d55' };
   if (score === 2) return { score: 2, label: 'Fair', color: '#ff8c00' };
   if (score === 3) return { score: 3, label: 'Good', color: '#ffcc00' };
-  if (score === 4) return { score: 4, label: 'Strong', color: '#ffffff' };
-  return { score: 5, label: 'Locked in', color: '#ffffff' };
+  if (score === 4) return { score: 4, label: 'Strong', color: '#00ffcc' };
+  return { score: 5, label: 'Locked in', color: '#00ffcc' };
 }
 
 export default function AuthPage() {
@@ -217,7 +217,7 @@ export default function AuthPage() {
               fontWeight: 700,
               letterSpacing: '0.4em',
               textTransform: 'uppercase',
-              color: '#ffffff',
+              color: '#00ffcc',
             }}
           >
             Aviera
@@ -230,10 +230,56 @@ export default function AuthPage() {
               color: '#666',
               textTransform: 'uppercase',
               textDecoration: 'none',
+              letterSpacing: '0.08em',
             }}
           >
             &larr; Back to site
           </Link>
+        </motion.div>
+
+        {/* Logo block */}
+        <motion.div
+          custom={step()}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          style={{ textAlign: 'center', marginBottom: 36 }}
+        >
+          <div
+            style={{
+              fontFamily: oswald,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.35em',
+              textTransform: 'uppercase',
+              color: '#666',
+              marginBottom: 4,
+            }}
+          >
+            AVIERA<span style={{ color: '#00ffcc', margin: '0 4px' }}>{'\u2022'}</span>FIT
+          </div>
+          <div
+            style={{
+              fontFamily: spaceMono,
+              fontSize: 8,
+              letterSpacing: '0.2em',
+              color: '#444',
+              textTransform: 'uppercase',
+            }}
+          >
+            Est. 2025 · San Diego, CA
+          </div>
+          {/* Glow line */}
+          <div
+            style={{
+              width: 60,
+              height: 2,
+              background: '#00ffcc',
+              margin: '12px auto 0',
+              boxShadow: '0 0 12px rgba(0,255,204,0.4)',
+              borderRadius: 1,
+            }}
+          />
         </motion.div>
 
         {/* Auth tabs */}
@@ -244,7 +290,8 @@ export default function AuthPage() {
           animate="visible"
           style={{
             display: 'flex',
-            marginBottom: 24,
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            marginBottom: 28,
           }}
         >
           <button
@@ -258,10 +305,10 @@ export default function AuthPage() {
               letterSpacing: '0.2em',
               textAlign: 'center',
               padding: '12px 0',
-              color: isSignIn ? '#fff' : '#666',
+              color: isSignIn ? '#00ffcc' : '#666',
               cursor: 'pointer',
               border: 'none',
-              borderBottom: isSignIn ? '2px solid #fff' : '2px solid transparent',
+              borderBottom: isSignIn ? '2px solid #00ffcc' : '2px solid transparent',
               background: 'none',
               transition: 'all 0.2s',
             }}
@@ -279,10 +326,10 @@ export default function AuthPage() {
               letterSpacing: '0.2em',
               textAlign: 'center',
               padding: '12px 0',
-              color: !isSignIn ? '#fff' : '#666',
+              color: !isSignIn ? '#00ffcc' : '#666',
               cursor: 'pointer',
               border: 'none',
-              borderBottom: !isSignIn ? '2px solid #fff' : '2px solid transparent',
+              borderBottom: !isSignIn ? '2px solid #00ffcc' : '2px solid transparent',
               background: 'none',
               transition: 'all 0.2s',
             }}
@@ -300,16 +347,17 @@ export default function AuthPage() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 18 }}
             >
               <label style={labelStyle}>Full Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={handleChange('name')}
-                placeholder="Your full name"
+                placeholder="Your name"
+                autoComplete="name"
                 style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#fff')}
+                onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
                 onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
               />
             </motion.div>
@@ -321,7 +369,7 @@ export default function AuthPage() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 18 }}
           >
             <label style={labelStyle}>Email</label>
             <input
@@ -329,8 +377,9 @@ export default function AuthPage() {
               value={form.email}
               onChange={handleChange('email')}
               placeholder="you@email.com"
-              style={{ ...inputStyle, '::placeholder': { color: '#333' } }}
-              onFocus={(e) => (e.target.style.borderColor = '#fff')}
+              autoComplete="email"
+              style={inputStyle}
+              onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
               onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
             />
           </motion.div>
@@ -341,7 +390,7 @@ export default function AuthPage() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            style={{ marginBottom: isSignIn ? 0 : 16 }}
+            style={{ marginBottom: isSignIn ? 0 : 18 }}
           >
             <label style={labelStyle}>Password</label>
             <div style={{ position: 'relative' }}>
@@ -350,8 +399,9 @@ export default function AuthPage() {
                 value={form.password}
                 onChange={handleChange('password')}
                 placeholder="••••••••"
+                autoComplete={isSignIn ? 'current-password' : 'new-password'}
                 style={{ ...inputStyle, padding: '14px 60px 14px 16px' }}
-                onFocus={(e) => (e.target.style.borderColor = '#fff')}
+                onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
                 onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
               />
               <button
@@ -377,14 +427,15 @@ export default function AuthPage() {
               </button>
             </div>
             {isSignIn && (
-              <div style={{ textAlign: 'right', marginTop: 6 }}>
+              <div style={{ textAlign: 'right', marginTop: 8 }}>
                 <Link
                   href="#"
                   style={{
                     fontSize: 9,
-                    color: '#fff',
+                    color: '#00ffcc',
                     textDecoration: 'none',
                     fontFamily: spaceMono,
+                    letterSpacing: '0.04em',
                   }}
                 >
                   Forgot password?
@@ -400,7 +451,7 @@ export default function AuthPage() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 18 }}
             >
               <label style={labelStyle}>Confirm Password</label>
               <div style={{ position: 'relative' }}>
@@ -409,8 +460,9 @@ export default function AuthPage() {
                   value={form.confirmPassword}
                   onChange={handleChange('confirmPassword')}
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   style={{ ...inputStyle, padding: '14px 60px 14px 16px' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#fff')}
+                  onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
                   onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
                 />
                 <button
@@ -445,15 +497,16 @@ export default function AuthPage() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 18 }}
             >
               <div
                 style={{
                   width: '100%',
                   height: 2,
-                  background: 'rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.06)',
                   borderRadius: 1,
                   overflow: 'hidden',
+                  marginBottom: 4,
                 }}
               >
                 <div
@@ -462,18 +515,17 @@ export default function AuthPage() {
                     height: '100%',
                     background: strength.color,
                     transition: 'all 0.3s ease',
+                    borderRadius: 1,
                   }}
                 />
               </div>
               <span
                 style={{
                   fontFamily: spaceMono,
-                  fontSize: 9,
+                  fontSize: 8,
                   color: strength.color,
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
-                  marginTop: 4,
-                  display: 'block',
                 }}
               >
                 {strength.label}
@@ -489,7 +541,7 @@ export default function AuthPage() {
               initial="hidden"
               animate="visible"
               style={{
-                marginBottom: 8,
+                marginBottom: 4,
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 10,
@@ -503,8 +555,8 @@ export default function AuthPage() {
                   height: 16,
                   minWidth: 16,
                   borderRadius: 2,
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  background: agreedToTerms ? '#fff' : 'transparent',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  background: agreedToTerms ? '#00ffcc' : '#0a0a0a',
                   cursor: 'pointer',
                   padding: 0,
                   marginTop: 1,
@@ -529,11 +581,11 @@ export default function AuthPage() {
                 }}
               >
                 I agree to the{' '}
-                <Link href="#" style={{ color: '#fff', textDecoration: 'none' }}>
+                <Link href="/terms" style={{ color: '#00ffcc', textDecoration: 'none' }}>
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="#" style={{ color: '#fff', textDecoration: 'none' }}>
+                <Link href="/privacy" style={{ color: '#00ffcc', textDecoration: 'none' }}>
                   Privacy Policy
                 </Link>
               </span>
@@ -561,7 +613,7 @@ export default function AuthPage() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            style={{ marginTop: 16 }}
+            style={{ marginTop: 8 }}
           >
             <button
               type="submit"
@@ -574,16 +626,18 @@ export default function AuthPage() {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.2em',
-                background: loading ? '#666' : '#fff',
+                background: loading ? '#666' : '#00ffcc',
                 color: '#000',
                 border: 'none',
                 borderRadius: 4,
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
+                position: 'relative',
+                overflow: 'hidden',
               }}
               onMouseEnter={(e) => {
                 if (!loading) {
-                  e.target.style.boxShadow = '0 0 30px rgba(255,255,255,0.15)';
+                  e.target.style.boxShadow = '0 0 30px rgba(0,255,204,0.25)';
                   e.target.style.transform = 'translateY(-1px)';
                 }
               }}
@@ -610,7 +664,7 @@ export default function AuthPage() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            margin: '20px 0',
+            margin: '24px 0',
             gap: 12,
           }}
         >
@@ -622,6 +676,7 @@ export default function AuthPage() {
               textTransform: 'uppercase',
               letterSpacing: '0.2em',
               fontFamily: spaceMono,
+              whiteSpace: 'nowrap',
             }}
           >
             or continue with
@@ -635,7 +690,7 @@ export default function AuthPage() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}
         >
           <button
             type="button"
@@ -659,8 +714,8 @@ export default function AuthPage() {
             }}
             onMouseEnter={(e) => {
               if (!loading) {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = '#111';
               }
             }}
             onMouseLeave={(e) => {
@@ -693,8 +748,8 @@ export default function AuthPage() {
             }}
             onMouseEnter={(e) => {
               if (!loading) {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.background = '#111';
               }
             }}
             onMouseLeave={(e) => {
@@ -718,16 +773,16 @@ export default function AuthPage() {
             color: '#444',
             lineHeight: 1.6,
             textAlign: 'center',
-            marginTop: 16,
             fontFamily: spaceMono,
+            padding: '0 16px',
           }}
         >
           By continuing, you agree to Aviera Fit&apos;s{' '}
-          <Link href="#" style={{ color: '#fff', textDecoration: 'none', fontSize: 8 }}>
+          <Link href="/terms" style={{ color: '#00ffcc', textDecoration: 'none', fontSize: 8 }}>
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="#" style={{ color: '#fff', textDecoration: 'none', fontSize: 8 }}>
+          <Link href="/privacy" style={{ color: '#00ffcc', textDecoration: 'none', fontSize: 8 }}>
             Privacy Policy
           </Link>
         </motion.div>
