@@ -24,7 +24,7 @@ export async function POST(request) {
         const { data, error } = await supabase
             .from('supplement_optimization_results')
             .insert({
-                clerk_user_id: userId || null,
+                auth_user_id: userId || null,
                 email: email || null,
                 primary_goal,
                 optimization_score,
@@ -70,15 +70,14 @@ export async function GET(request) {
         let query = supabase
             .from('supplement_optimization_results')
             .select('*')
-            .eq('clerk_user_id', userId)
+            .eq('auth_user_id', userId)
             .order('created_at', { ascending: false });
 
         if (history === 'true') {
-            // Limit to last 10 for history view if needed, or keep all
             query = query.limit(10);
         }
 
-        const { data, error } = await supabase.from('supplement_optimization_results').select('*').eq('clerk_user_id', userId).order('created_at', { ascending: false });
+        const { data, error } = await query;
 
         if (error) {
             throw error;

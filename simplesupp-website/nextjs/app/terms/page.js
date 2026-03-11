@@ -335,7 +335,7 @@ export default function TermsOfService() {
                 When you create an account with Aviera, you are responsible for
                 maintaining the confidentiality of your account credentials and
                 for all activities that occur under your account. We use
-                third-party authentication providers, including Clerk, to manage
+                third-party authentication providers, including Supabase, to manage
                 secure account access. You agree to provide accurate, current,
                 and complete information during registration and to update such
                 information as needed.

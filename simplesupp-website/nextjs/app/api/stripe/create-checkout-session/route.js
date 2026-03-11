@@ -51,11 +51,11 @@ export async function POST(request) {
           quantity: 1,
         },
       ],
-      customer_email: undefined, // Will be set from Clerk user if needed
+      customer_email: user?.email || undefined,
       success_url: `${origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dashboard?canceled=true`,
       metadata: {
-        clerk_user_id: userId,
+        auth_user_id: userId,
       },
     });
 

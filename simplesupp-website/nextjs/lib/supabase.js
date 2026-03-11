@@ -17,126 +17,60 @@ export function createSupabaseAdmin() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl) {
-    console.error('Missing NEXT_PUBLIC_SUPABASE_URL');
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing Supabase environment variables (URL or SERVICE_ROLE_KEY)');
   }
 
-  if (!supabaseServiceKey) {
-    console.error('Missing SUPABASE_SERVICE_ROLE_KEY');
-    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable');
-  }
-
-  // Validate URL format
-  try {
-    new URL(supabaseUrl);
-  } catch (urlError) {
-    console.error('Invalid Supabase URL format:', supabaseUrl);
-    throw new Error(`Invalid Supabase URL format: ${urlError.message}`);
-  }
-
-  console.log('Creating Supabase admin client with URL:', supabaseUrl);
-
-  try {
-    const client = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
-
-    console.log('Supabase admin client created successfully');
-    return client;
-  } catch (clientError) {
-    console.error('Error creating Supabase client:', clientError);
-    throw new Error(`Failed to create Supabase client: ${clientError.message}`);
-  }
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
-// Get user by Clerk user ID (server-side only - uses admin client)
-export async function getUserByClerkId(clerkUserId) {
-  try {
-    const supabase = createSupabaseAdmin();
-    
-    console.log('Querying Supabase for user with clerk_user_id:', clerkUserId);
-    
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('clerk_user_id', clerkUserId)
-      .single();
+// Get user by Supabase auth user ID
+export async function getUserByAuthId(authUserId) {
+  const supabase = createSupabaseAdmin();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // PGRST116 = not found - this is expected for new users
-        console.log('User not found (expected for new users)');
-        return null;
-      }
-      console.error('Error fetching user from Supabase:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
-      throw error;
-    }
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_user_id', authUserId)
+    .single();
 
-    console.log('User found in Supabase:', data?.id);
-    return data;
-  } catch (error) {
-    console.error('getUserByClerkId error:', {
-      message: error.message,
-      type: error.constructor.name,
-      stack: error.stack,
-    });
+  if (error) {
+    if (error.code === 'PGRST116') return null; // not found
     throw error;
   }
+
+  return data;
 }
 
-// Create user in Supabase (server-side only - uses admin client)
-export async function createUser(clerkUserId, email) {
-  try {
-    console.log('Creating user in Supabase:', { clerkUserId, email });
-    const supabase = createSupabaseAdmin();
-    
-    const { data, error } = await supabase
-      .from('users')
-      .insert({
-        clerk_user_id: clerkUserId,
-        email: email,
-        premium_status: false,
-      })
-      .select()
-      .single();
+// Create user in Supabase
+export async function createUser(authUserId, email) {
+  const supabase = createSupabaseAdmin();
 
-    if (error) {
-      console.error('Error creating user in Supabase:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
-      throw error;
-    }
+  const { data, error } = await supabase
+    .from('users')
+    .insert({
+      auth_user_id: authUserId,
+      email: email,
+      premium_status: false,
+    })
+    .select()
+    .single();
 
-    console.log('User created successfully in Supabase:', data?.id);
-    return data;
-  } catch (error) {
-    console.error('createUser error:', {
-      message: error.message,
-      type: error.constructor.name,
-      stack: error.stack,
-    });
-    throw error;
-  }
+  if (error) throw error;
+  return data;
 }
 
-// Get or create user (useful for ensuring user exists)
-export async function getOrCreateUser(clerkUserId, email) {
-  let user = await getUserByClerkId(clerkUserId);
+// Get or create user (ensures user exists in public.users)
+export async function getOrCreateUser(authUserId, email) {
+  let user = await getUserByAuthId(authUserId);
 
   if (!user && email) {
-    user = await createUser(clerkUserId, email);
+    user = await createUser(authUserId, email);
   } else if (!user) {
     throw new Error('User does not exist and email is required to create one');
   }
@@ -144,53 +78,110 @@ export async function getOrCreateUser(clerkUserId, email) {
   return user;
 }
 
-// Update user email in Supabase (server-side only)
-export async function updateUserEmail(clerkUserId, newEmail) {
-  try {
-    console.log('Updating user email in Supabase:', { clerkUserId, newEmail });
-    const supabase = createSupabaseAdmin();
+// Update user email
+export async function updateUserEmail(authUserId, newEmail) {
+  const supabase = createSupabaseAdmin();
 
-    const { data, error } = await supabase
-      .from('users')
-      .update({ email: newEmail })
-      .eq('clerk_user_id', clerkUserId)
-      .select()
-      .single();
+  const { data, error } = await supabase
+    .from('users')
+    .update({ email: newEmail })
+    .eq('auth_user_id', authUserId)
+    .select()
+    .single();
 
-    if (error) {
-      console.error('Error updating user in Supabase:', error);
-      throw error;
-    }
-
-    console.log('User email updated successfully:', data?.id);
-    return data;
-  } catch (error) {
-    console.error('updateUserEmail error:', error);
-    throw error;
-  }
+  if (error) throw error;
+  return data;
 }
 
-// Delete user from Supabase (server-side only)
-export async function deleteUser(clerkUserId) {
-  try {
-    console.log('Deleting user from Supabase:', clerkUserId);
-    const supabase = createSupabaseAdmin();
+// Update user streak data
+export async function updateUserStreak(userId, streak, longestStreak, lastIntakeDate) {
+  const supabase = createSupabaseAdmin();
 
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('clerk_user_id', clerkUserId);
+  const { data, error } = await supabase
+    .from('users')
+    .update({
+      current_streak: streak,
+      longest_streak: longestStreak,
+      last_intake_date: lastIntakeDate,
+    })
+    .eq('id', userId)
+    .select()
+    .single();
 
-    if (error) {
-      console.error('Error deleting user from Supabase:', error);
-      throw error;
-    }
-
-    console.log('User deleted successfully from Supabase');
-    return true;
-  } catch (error) {
-    console.error('deleteUser error:', error);
-    throw error;
-  }
+  if (error) throw error;
+  return data;
 }
 
+// Log supplement intake and update streak
+export async function logIntake(userId, supplementName, notes = null) {
+  const supabase = createSupabaseAdmin();
+
+  // Insert intake log
+  const { data: log, error: logError } = await supabase
+    .from('intake_logs')
+    .insert({
+      user_id: userId,
+      supplement_name: supplementName,
+      notes,
+    })
+    .select()
+    .single();
+
+  if (logError) throw logError;
+
+  // Calculate streak
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+  const { data: user } = await supabase
+    .from('users')
+    .select('current_streak, longest_streak, last_intake_date')
+    .eq('id', userId)
+    .single();
+
+  let newStreak = 1;
+  if (user?.last_intake_date === yesterday) {
+    newStreak = (user.current_streak || 0) + 1;
+  } else if (user?.last_intake_date === today) {
+    newStreak = user.current_streak || 1; // already logged today
+  }
+
+  const newLongest = Math.max(newStreak, user?.longest_streak || 0);
+
+  await updateUserStreak(userId, newStreak, newLongest, today);
+
+  return { log, streak: newStreak, longestStreak: newLongest };
+}
+
+// Record a purchase
+export async function recordPurchase(userId, productName, shopifyProductId, shopifyVariantId, quantity = 1) {
+  const supabase = createSupabaseAdmin();
+
+  const { data, error } = await supabase
+    .from('purchase_history')
+    .insert({
+      user_id: userId,
+      product_name: productName,
+      shopify_product_id: shopifyProductId,
+      shopify_variant_id: shopifyVariantId,
+      quantity,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Get users who need restock reminders
+export async function getUsersNeedingRestock() {
+  const supabase = createSupabaseAdmin();
+
+  const { data, error } = await supabase
+    .from('purchase_history')
+    .select('*, users!inner(email, auth_user_id)')
+    .lte('purchased_at', new Date(Date.now() - 25 * 86400000).toISOString()); // 25+ days ago
+
+  if (error) throw error;
+  return data || [];
+}

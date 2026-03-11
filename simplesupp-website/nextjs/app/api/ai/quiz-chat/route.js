@@ -82,7 +82,7 @@ export async function POST(request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // Build enriched context from Clerk + Supabase
+    // Build enriched context from auth + Supabase
     let contextPrompt = QUIZ_CHAT_SYSTEM_PROMPT;
 
     // If user is authenticated, fetch their data

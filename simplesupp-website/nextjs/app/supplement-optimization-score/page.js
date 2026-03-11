@@ -229,8 +229,8 @@ export default function SupplementOptimizationScore() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedIndividual, setAddedIndividual] = useState({});
   const [resultId, setResultId] = useState(null);
-  const { user: clerkUser } = useSupabaseUser();
-  const isSignedIn = !!clerkUser;
+  const { user: authUser } = useSupabaseUser();
+  const isSignedIn = !!authUser;
 
   // Email capture
   const [email, setEmail] = useState('');
@@ -581,7 +581,7 @@ export default function SupplementOptimizationScore() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: email || clerkUser?.primaryEmailAddress?.emailAddress,
+          email: email || authUser?.email,
           primary_goal: responses.primaryGoal,
           optimization_score: totalScore,
           primary_bottleneck: aiInsights?.primaryGap?.category || findPrimaryGap(calculatedScores, responses),

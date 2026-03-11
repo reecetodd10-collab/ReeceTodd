@@ -4,154 +4,96 @@ import { createSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request) {
   try {
-    console.log('POST /api/user/create - Starting...');
-
-    const user = await getAuthUser(request);
-    const userId = user?.id;
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
 
     if (!userId) {
-      console.log('POST /api/user/create - No userId found');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('POST /api/user/create - UserId:', userId);
 
     const supabase = createSupabaseAdmin();
 
-    // Check if user already exists in our users table
+    // Check if user already exists by auth_user_id
     const { data: existingUser } = await supabase
       .from('users')
       .select('*')
-      .eq('id', userId)
+      .eq('auth_user_id', userId)
       .single();
 
     if (existingUser) {
-      console.log('POST /api/user/create - User already exists');
       return NextResponse.json(
         { message: 'User already exists', user: existingUser },
         { status: 200 }
       );
     }
 
-    // Get email from the authenticated user or request body
-    let email = user.email;
+    // Get email from auth user or request body
+    let email = authUser.email;
     if (!email) {
       try {
         const body = await request.json();
         email = body.email;
       } catch {
-        // Request body might be empty, that's okay
+        // body might be empty
       }
     }
 
     if (!email) {
-      console.error('POST /api/user/create - No email available');
       return NextResponse.json(
-        { error: 'Email is required. Please ensure your account has an email address.' },
+        { error: 'Email is required' },
         { status: 400 }
       );
     }
 
-    // Create user in our users table
-    console.log('POST /api/user/create - Creating user in Supabase...');
+    // Create user record
     const { data: newUser, error } = await supabase
       .from('users')
-      .upsert({
-        id: userId,
+      .insert({
+        auth_user_id: userId,
         email: email,
+        premium_status: false,
       })
       .select()
       .single();
 
-    if (error) {
-      throw error;
-    }
-
-    console.log('POST /api/user/create - User created successfully:', newUser.id);
+    if (error) throw error;
 
     return NextResponse.json({ user: newUser }, { status: 200 });
   } catch (error) {
-    console.error('POST /api/user/create - Error:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    });
+    console.error('POST /api/user/create error:', error);
     return NextResponse.json(
-      {
-        error: 'Failed to create user',
-        details: error.message,
-        type: error.constructor.name,
-      },
+      { error: 'Failed to create user', details: error.message },
       { status: 500 }
     );
   }
 }
 
-// GET endpoint to check if user exists
 export async function GET(request) {
   try {
-    console.log('GET /api/user/create - Checking user...');
-
-    const user = await getAuthUser(request);
-    const userId = user?.id;
+    const authUser = await getAuthUser(request);
+    const userId = authUser?.id;
 
     if (!userId) {
-      console.log('GET /api/user/create - No userId found');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('GET /api/user/create - UserId:', userId);
 
     const supabase = createSupabaseAdmin();
 
-    try {
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_user_id', userId)
+      .single();
 
-      console.log('GET /api/user/create - User lookup result:', existingUser ? 'found' : 'not found');
-
-      if (!existingUser) {
-        return NextResponse.json(
-          { exists: false },
-          { status: 200 }
-        );
-      }
-
-      return NextResponse.json(
-        { exists: true, user: existingUser },
-        { status: 200 }
-      );
-    } catch (supabaseError) {
-      console.error('GET /api/user/create - Supabase error:', supabaseError);
-      console.error('Error details:', {
-        message: supabaseError.message,
-        code: supabaseError.code,
-        details: supabaseError.details,
-        hint: supabaseError.hint,
-      });
-      throw supabaseError;
+    if (!existingUser) {
+      return NextResponse.json({ exists: false }, { status: 200 });
     }
+
+    return NextResponse.json({ exists: true, user: existingUser }, { status: 200 });
   } catch (error) {
-    console.error('GET /api/user/create - Error:', error);
-    console.error('Error stack:', error.stack);
+    console.error('GET /api/user/create error:', error);
     return NextResponse.json(
-      {
-        error: 'Failed to check user',
-        details: error.message,
-        type: error.constructor.name,
-      },
+      { error: 'Failed to check user', details: error.message },
       { status: 500 }
     );
   }

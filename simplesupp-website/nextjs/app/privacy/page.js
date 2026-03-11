@@ -335,7 +335,7 @@ export default function PrivacyPolicy() {
               <DataCard
                 title="B. Account Information"
                 items={[
-                  'Username and authentication credentials (managed through Clerk)',
+                  'Username and authentication credentials (managed through Supabase)',
                   'User preferences and settings',
                   'Dashboard activity history',
                 ]}
@@ -404,7 +404,7 @@ export default function PrivacyPolicy() {
               <DataCard
                 title="A. To Provide Services"
                 items={[
-                  'Create and manage your account via Clerk authentication',
+                  'Create and manage your account via Supabase authentication',
                   'Store quiz responses and optimization results in Supabase',
                   'Display historical performance insights in your dashboard',
                   'Process purchases and fulfill orders through Shopify',
@@ -454,7 +454,7 @@ export default function PrivacyPolicy() {
               <p>
                 We use cookies and similar technologies to operate the website,
                 remember your preferences, and analyze traffic. Our third-party
-                providers (including Shopify, Clerk, and analytics tools) may
+                providers (including Shopify, Supabase, and analytics tools) may
                 also use cookies to support ecommerce functionality, authentication,
                 and usage analytics.
               </p>
@@ -506,7 +506,7 @@ export default function PrivacyPolicy() {
                 }}
               >
                 <p>
-                  <span style={{ color: '#00ffcc' }}>Clerk</span> &mdash;
+                  <span style={{ color: '#00ffcc' }}>Supabase</span> &mdash;
                   authentication and secure account management
                 </p>
               </div>
@@ -626,7 +626,7 @@ export default function PrivacyPolicy() {
               <p>
                 Quiz responses, optimization results, and account data are stored
                 securely in Supabase. Authentication credentials are managed by
-                Clerk. Ecommerce data is managed by Shopify.
+                Supabase. Ecommerce data is managed by Shopify.
               </p>
               <p className="mt-3">
                 We implement reasonable technical and organizational safeguards
