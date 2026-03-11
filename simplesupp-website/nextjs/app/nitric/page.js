@@ -156,7 +156,7 @@ export default function FlowStateXPage() {
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -174,7 +174,7 @@ export default function FlowStateXPage() {
           </div>
           <span
             className="text-xs uppercase tracking-wider px-2 py-1"
-            style={{ color: '#00ffcc', fontFamily: 'var(--font-space-mono), Space Mono, monospace', background: 'rgba(0,255,204,0.1)', fontWeight: 700, letterSpacing: '0.1em', fontSize: '9px' }}
+            style={{ color: '#ffffff', fontFamily: 'var(--font-space-mono), Space Mono, monospace', background: '#ff2d55', fontWeight: 700, letterSpacing: '0.1em', fontSize: '9px' }}
           >
             LIMITED DROP
           </span>
@@ -362,7 +362,7 @@ export default function FlowStateXPage() {
                     className="text-3xl font-bold shrink-0"
                     style={{
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                      color: '#00ffcc',
+                      color: i % 2 === 0 ? '#00ffcc' : '#a855f7',
                       opacity: 0.4,
                     }}
                   >
@@ -395,7 +395,7 @@ export default function FlowStateXPage() {
           <FadeInSection>
             <p
               className="text-xs uppercase tracking-[0.4em] mb-3"
-              style={{ color: '#00ffcc', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
+              style={{ color: '#a855f7', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
             >
               WHAT&apos;S INSIDE
             </p>
@@ -430,7 +430,7 @@ export default function FlowStateXPage() {
                   </div>
                   <span
                     className="text-sm font-bold shrink-0 ml-4"
-                    style={{ color: '#00ffcc', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
+                    style={{ color: '#a855f7', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
                   >
                     {ing.dose}
                   </span>
@@ -456,7 +456,7 @@ export default function FlowStateXPage() {
           <FadeInSection>
             <p
               className="text-xs uppercase tracking-[0.4em] mb-3"
-              style={{ color: '#00ffcc', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
+              style={{ color: '#a855f7', fontFamily: 'var(--font-space-mono), Space Mono, monospace' }}
             >
               REAL TALK
             </p>
@@ -533,7 +533,7 @@ export default function FlowStateXPage() {
 
             <p
               className="text-sm mb-10 max-w-xs mx-auto"
-              style={{ color: '#666', fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '12px' }}
+              style={{ color: '#ff2d55', fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '12px' }}
             >
               Limited batch. Once it&apos;s gone, it&apos;s gone.
               Get yours before we restock at full price.

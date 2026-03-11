@@ -147,21 +147,25 @@ const values = [
     num: '01',
     title: 'Health is Wealth',
     desc: 'A healthy body is the foundation for a happy, successful life. Everything else builds on top of this.',
+    color: '#00ffcc',
   },
   {
     num: '02',
     title: 'Accessibility',
     desc: 'Everyone deserves access to a healthy lifestyle, regardless of where they start or what they know.',
+    color: '#a855f7',
   },
   {
     num: '03',
     title: 'Progress Over Perfection',
     desc: 'Go at your own pace. Your journey, your style. Small steps compound into massive results.',
+    color: '#00ffcc',
   },
   {
     num: '04',
     title: 'Personalization',
     desc: 'One size fits all does not work. Your plan should be as unique as your goals, body, and lifestyle.',
+    color: '#a855f7',
   },
 ];
 
@@ -170,16 +174,19 @@ const timeline = [
     year: '2024',
     title: 'The Problem',
     desc: 'Hundreds of supplement brands. Conflicting advice. Aggressive marketing. No way to know what actually works for you.',
+    color: '#ff2d55',
   },
   {
     year: '2025',
     title: 'The Idea',
     desc: 'What if AI could cut through the noise? Analyze your goals, body, and lifestyle — then recommend the exact stack you need.',
+    color: '#a855f7',
   },
   {
     year: '2026',
     title: 'Aviera Launches',
     desc: 'Clean formulas. Transparent labels. AI-powered personalization. No guessing. No proprietary blends. Just results.',
+    color: '#00ffcc',
   },
 ];
 
@@ -203,7 +210,7 @@ export default function AboutPage() {
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -589,7 +596,7 @@ export default function AboutPage() {
             {/* Timeline line */}
             <div
               className="absolute left-[18px] top-0 bottom-0 w-px"
-              style={{ background: 'rgba(0,255,204,0.15)' }}
+              style={{ background: 'linear-gradient(to bottom, rgba(255,45,85,0.2), rgba(168,85,247,0.2), rgba(0,255,204,0.2))' }}
             />
 
             {timeline.map((item, i) => (
@@ -600,8 +607,8 @@ export default function AboutPage() {
                     className="absolute left-[11px] top-[6px] w-[15px] h-[15px] rounded-full"
                     style={{
                       background: '#000',
-                      border: '2px solid #00ffcc',
-                      boxShadow: '0 0 12px rgba(0,255,204,0.3)',
+                      border: `2px solid ${item.color}`,
+                      boxShadow: `0 0 12px ${item.color}40`,
                     }}
                   />
                   <div
@@ -609,7 +616,7 @@ export default function AboutPage() {
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '36px',
                       fontWeight: 700,
-                      color: '#00ffcc',
+                      color: item.color,
                       lineHeight: 1,
                       marginBottom: '6px',
                     }}
@@ -657,7 +664,7 @@ export default function AboutPage() {
                 style={{
                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                   fontSize: '9px',
-                  color: '#00ffcc',
+                  color: '#a855f7',
                   textTransform: 'uppercase',
                   letterSpacing: '0.15em',
                 }}
@@ -686,7 +693,7 @@ export default function AboutPage() {
             >
               OUR
               <br />
-              <span style={{ color: '#00ffcc' }}>VALUES</span>
+              <span style={{ color: '#a855f7' }}>VALUES</span>
             </h2>
           </FadeInSection>
 
@@ -708,7 +715,7 @@ export default function AboutPage() {
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '48px',
                       fontWeight: 700,
-                      color: 'rgba(0,255,204,0.04)',
+                      color: item.color === '#a855f7' ? 'rgba(168,85,247,0.04)' : 'rgba(0,255,204,0.04)',
                       lineHeight: 1,
                     }}
                   >
@@ -720,7 +727,7 @@ export default function AboutPage() {
                         style={{
                           fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                           fontSize: '10px',
-                          color: '#00ffcc',
+                          color: item.color,
                           fontWeight: 700,
                         }}
                       >
@@ -765,7 +772,7 @@ export default function AboutPage() {
               className="relative overflow-hidden text-center"
               style={{
                 background: '#0a0a0a',
-                border: '1px solid rgba(0,255,204,0.2)',
+                border: '1px solid rgba(255,45,85,0.25)',
                 borderRadius: '8px',
                 padding: '40px 20px',
               }}
@@ -775,7 +782,7 @@ export default function AboutPage() {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    'radial-gradient(ellipse at 50% 0%, rgba(0,255,204,0.08) 0%, transparent 70%)',
+                    'radial-gradient(ellipse at 50% 0%, rgba(255,45,85,0.08) 0%, transparent 70%)',
                 }}
               />
               <div

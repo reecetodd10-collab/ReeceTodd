@@ -21,6 +21,8 @@ const ACCENT_RGB = '0, 255, 204';
 const CARD_BG = '#0a0a0a';
 const CARD_BORDER = 'rgba(255,255,255,0.06)';
 const URGENCY = '#ff2d55';
+const PURPLE = '#a855f7';
+const PURPLE_RGB = '168, 85, 247';
 const OSWALD = 'var(--font-oswald), Oswald, sans-serif';
 const SPACE_MONO = 'var(--font-space-mono), Space Mono, monospace';
 
@@ -710,7 +712,7 @@ export default function SupplementOptimizationScore() {
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -772,7 +774,7 @@ export default function SupplementOptimizationScore() {
           <div className="mb-6">
             <p
               className="text-xs uppercase mb-2"
-              style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+              style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
             >
               SECTION {currentSection + 1} OF {sections.length}
             </p>
@@ -782,7 +784,7 @@ export default function SupplementOptimizationScore() {
             >
               {currentSectionData.title}
             </h2>
-            <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px' }}>
+            <p style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>
               {currentSectionData.subtitle}
             </p>
           </div>
@@ -912,7 +914,7 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <select
             value={value}
@@ -967,21 +969,25 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
-            {question.options.map((opt) => {
+            {question.options.map((opt, idx) => {
               const Icon = GOAL_ICONS[opt] || Target;
               const isSelected = value === opt;
+              const iconColor = isSelected ? '#000000' : (idx % 2 === 1 ? PURPLE : ACCENT);
               return (
                 <button
                   key={opt}
                   onClick={() => onChange(opt)}
                   className="flex items-center gap-3 px-4 py-4 font-medium transition-all text-left"
                   style={{
-                    ...(isSelected ? selectedStyle : unselectedStyle),
+                    ...(isSelected ? selectedStyle : {
+                      ...unselectedStyle,
+                      borderColor: idx % 2 === 1 ? `rgba(${PURPLE_RGB}, 0.2)` : CARD_BORDER,
+                    }),
                     fontFamily: SPACE_MONO,
                     fontSize: '11px',
                   }}
                 >
-                  <Icon size={22} />
+                  <Icon size={22} style={{ color: iconColor }} />
                   <span>{opt}</span>
                 </button>
               );
@@ -997,21 +1003,25 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
-            {question.options.map((opt) => {
+            {question.options.map((opt, idx) => {
               const Icon = TRAINING_ICONS[opt] || Activity;
               const isSelected = value === opt;
+              const iconColor = isSelected ? '#000000' : (idx % 2 === 1 ? PURPLE : ACCENT);
               return (
                 <button
                   key={opt}
                   onClick={() => onChange(opt)}
                   className="flex items-center gap-3 px-4 py-4 font-medium transition-all text-left"
                   style={{
-                    ...(isSelected ? selectedStyle : unselectedStyle),
+                    ...(isSelected ? selectedStyle : {
+                      ...unselectedStyle,
+                      borderColor: idx % 2 === 1 ? `rgba(${PURPLE_RGB}, 0.2)` : CARD_BORDER,
+                    }),
                     fontFamily: SPACE_MONO,
                     fontSize: '11px',
                   }}
                 >
-                  <Icon size={22} />
+                  <Icon size={22} style={{ color: iconColor }} />
                   <span>{opt}</span>
                 </button>
               );
@@ -1027,7 +1037,7 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((num) => (
@@ -1096,7 +1106,7 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <div className="grid grid-cols-2 gap-3">
             {question.options.map((opt) => {
@@ -1175,7 +1185,7 @@ function LoadingScreen({ menuOpen, setMenuOpen }) {
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -1186,7 +1196,7 @@ function LoadingScreen({ menuOpen, setMenuOpen }) {
           <div
             className="absolute inset-0 rounded-full"
             style={{
-              background: `conic-gradient(from 0deg, transparent, ${ACCENT}, transparent)`,
+              background: `conic-gradient(from 0deg, transparent, ${PURPLE}, ${ACCENT}, transparent)`,
               animation: 'spin 1.5s linear infinite',
             }}
           />
@@ -1237,6 +1247,10 @@ function ResultsPage({
   const displayScore = (scores.total / 10).toFixed(1);
   const avgDisplayScore = (POPULATION_AVERAGES.total / 10).toFixed(1);
 
+  // Score-based ring color: red for low, purple for mid, cyan for good
+  const scoreRingColor = scores.total < 40 ? URGENCY : scores.total < 60 ? PURPLE : ACCENT;
+  const scoreRingRGB = scores.total < 40 ? '255, 45, 85' : scores.total < 60 ? PURPLE_RGB : ACCENT_RGB;
+
   // Animate score count-up
   useEffect(() => {
     const duration = 1500;
@@ -1260,18 +1274,18 @@ function ResultsPage({
 
   // Get score label
   const getScoreLabel = (score) => {
-    if (score < 5.0) return 'HUGE UPSIDE AHEAD';
-    if (score < 6.0) return 'SOLID START — LET\'S BUILD';
-    if (score < 7.5) return 'STRONG FOUNDATION';
-    if (score < 8.5) return 'YOU\'RE CRUSHING IT';
-    return 'ELITE — TOP 10%';
+    if (score < 5.0) return { text: 'HUGE UPSIDE AHEAD', color: URGENCY };
+    if (score < 6.0) return { text: 'SOLID START — LET\'S BUILD', color: PURPLE };
+    if (score < 7.5) return { text: 'STRONG FOUNDATION', color: '#ffffff' };
+    if (score < 8.5) return { text: 'YOU\'RE CRUSHING IT', color: ACCENT };
+    return { text: 'ELITE — TOP 10%', color: ACCENT };
   };
 
   // Get comparison status
   const getComparisonStatus = (userScore, avgScore, threshold = 3) => {
     if (userScore > avgScore + threshold) return { text: 'Above Avg', color: '#10b981', icon: TrendingUp };
-    if (userScore < avgScore - threshold) return { text: 'Below Avg', color: '#f59e0b', icon: TrendingDown };
-    return { text: 'Average', color: '#666', icon: Minus };
+    if (userScore < avgScore - threshold) return { text: 'Below Avg', color: URGENCY, icon: TrendingDown };
+    return { text: 'Average', color: PURPLE, icon: Minus };
   };
 
   // Overall assessment
@@ -1279,8 +1293,8 @@ function ResultsPage({
 
   const assessmentConfig = {
     above: { text: 'Outstanding', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-    average: { text: 'Great Start', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
-    below: { text: 'Room to Grow', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+    average: { text: 'Great Start', color: PURPLE, bg: `rgba(${PURPLE_RGB}, 0.15)` },
+    below: { text: 'Room to Grow', color: URGENCY, bg: 'rgba(255, 45, 85, 0.15)' },
   };
 
   const assessment = assessmentConfig[overallAssessment];
@@ -1294,7 +1308,7 @@ function ResultsPage({
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -1308,7 +1322,7 @@ function ResultsPage({
             <div className="text-center mb-10">
               <p
                 className="text-xs uppercase mb-4"
-                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}
+                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}
               >
                 YOUR O.S. IS IN
               </p>
@@ -1329,12 +1343,12 @@ function ResultsPage({
                     cy="104"
                     r="94"
                     fill="none"
-                    stroke={ACCENT}
+                    stroke={scoreRingColor}
                     strokeWidth="10"
                     strokeDasharray={`${(scores.total / 100) * 590} 590`}
                     strokeLinecap="round"
                     style={{
-                      filter: `drop-shadow(0 0 10px rgba(${ACCENT_RGB}, 0.5))`,
+                      filter: `drop-shadow(0 0 10px rgba(${scoreRingRGB}, 0.5))`,
                     }}
                   />
                 </svg>
@@ -1344,7 +1358,7 @@ function ResultsPage({
                     className="text-6xl font-bold"
                     style={{
                       fontFamily: OSWALD,
-                      textShadow: `0 0 20px rgba(${ACCENT_RGB}, 0.3)`,
+                      textShadow: `0 0 20px rgba(${scoreRingRGB}, 0.3)`,
                     }}
                   >
                     {animatedScore}
@@ -1355,9 +1369,9 @@ function ResultsPage({
 
               <h2
                 className="text-2xl font-bold uppercase mb-2"
-                style={{ fontFamily: OSWALD }}
+                style={{ fontFamily: OSWALD, color: getScoreLabel(parseFloat(displayScore)).color }}
               >
-                {getScoreLabel(parseFloat(displayScore))}
+                {getScoreLabel(parseFloat(displayScore)).text}
               </h2>
               <p style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '12px' }}>
                 You&apos;re in the top <span style={{ color: '#ff2d55', fontWeight: 700 }}>{100 - percentile}%</span> of optimizers
@@ -1412,7 +1426,7 @@ function ResultsPage({
             <section className="mb-10" style={{ borderTop: `1px solid ${CARD_BORDER}`, paddingTop: '32px' }}>
               <p
                 className="text-xs uppercase mb-3"
-                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
               >
                 YOUR FASTEST WIN
               </p>
@@ -1520,22 +1534,22 @@ function ResultsPage({
             <section className="mb-10 p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
               <p
                 className="text-xs uppercase mb-3"
-                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
               >
                 BREAKDOWN
               </p>
               <h3 className="text-2xl font-bold uppercase mb-6" style={{ fontFamily: OSWALD }}>
-                PERFORMANCE <span style={{ color: ACCENT }}>METRICS</span>
+                PERFORMANCE <span style={{ color: PURPLE }}>METRICS</span>
               </h3>
 
               <div className="space-y-5">
                 {[
-                  { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep },
-                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy },
-                  { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress },
-                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment },
-                  { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad },
-                ].map(({ icon: Icon, label, score, max, avg }) => {
+                  { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep, iconColor: ACCENT },
+                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy, iconColor: PURPLE },
+                  { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress, iconColor: ACCENT },
+                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment, iconColor: PURPLE },
+                  { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad, iconColor: ACCENT },
+                ].map(({ icon: Icon, label, score, max, avg, iconColor }) => {
                   const userPercent = (score / max) * 100;
                   const avgPercent = (avg / max) * 100;
                   const status = getComparisonStatus(score, avg, max * 0.15);
@@ -1545,7 +1559,7 @@ function ResultsPage({
                     <div key={label}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Icon size={16} style={{ color: ACCENT }} />
+                          <Icon size={16} style={{ color: iconColor }} />
                           <span style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
                         </div>
                         <div className="flex items-center gap-3">
@@ -1610,12 +1624,12 @@ function ResultsPage({
                 <div className="relative z-10">
                   <p
                     className="text-xs uppercase mb-3"
-                    style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                    style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
                   >
                     TRACK PROGRESS
                   </p>
                   <h3 className="text-2xl font-bold uppercase mb-3" style={{ fontFamily: OSWALD }}>
-                    SAVE YOUR <span style={{ color: ACCENT }}>RESULTS</span>
+                    SAVE YOUR <span style={{ color: PURPLE }}>RESULTS</span>
                   </h3>
                   <p className="mb-6 max-w-lg mx-auto" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
                     Create an account to save your score history, unlock your detailed performance roadmap, and track how your optimization improves over time.
@@ -1800,7 +1814,7 @@ function ProductCard({ product, onAddToCart, isAdded }) {
           </div>
 
           <div className="mb-3">
-            <p className="mb-1" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+            <p className="mb-1" style={{ color: PURPLE, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Perfect For You Because:
             </p>
             <p className="line-clamp-2" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
@@ -1926,7 +1940,7 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
     <div
       className="relative overflow-hidden p-[2px]"
       style={{
-        background: `linear-gradient(135deg, ${ACCENT}, #00b8d4, ${ACCENT}, #00b8d4)`,
+        background: `linear-gradient(135deg, ${ACCENT}, ${PURPLE}, ${ACCENT}, ${PURPLE})`,
         backgroundSize: '300% 300%',
         animation: 'shimmer 3s linear infinite',
       }}
@@ -1945,9 +1959,9 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
           <span
             className="flex items-center gap-1.5 px-3 py-1"
             style={{
-              background: `rgba(${ACCENT_RGB}, 0.15)`,
-              color: ACCENT,
-              border: `1px solid rgba(${ACCENT_RGB}, 0.3)`,
+              background: `rgba(${PURPLE_RGB}, 0.15)`,
+              color: PURPLE,
+              border: `1px solid rgba(${PURPLE_RGB}, 0.3)`,
               fontFamily: SPACE_MONO,
               fontSize: '10px',
               fontWeight: 700,
@@ -1985,7 +1999,7 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
             </div>
 
             <div className="mb-4">
-              <p className="mb-1" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+              <p className="mb-1" style={{ color: PURPLE, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
                 AI Selected Because:
               </p>
               <p style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>

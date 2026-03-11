@@ -279,7 +279,7 @@ export default function HomePage() {
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 59px, rgba(255,255,255,0.03) 60px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
         }}
       />
 
@@ -350,7 +350,7 @@ export default function HomePage() {
               <br />
               <span style={{ color: '#00ffcc' }}>BODY.</span>
               <br />
-              <span style={{ color: '#00ffcc' }}>YOUR</span>
+              <span style={{ color: '#a855f7' }}>YOUR</span>
               <br />
               FORMULA.
               <br />
@@ -404,12 +404,12 @@ export default function HomePage() {
                 style={{
                   padding: '16px',
                   background: 'transparent',
-                  border: '1px solid #00ffcc',
+                  border: '1px solid #ff2d55',
                   borderRadius: '6px',
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '18px',
                   letterSpacing: '0.15em',
-                  color: '#00ffcc',
+                  color: '#ff2d55',
                   textTransform: 'uppercase',
                   fontWeight: 700,
                   textDecoration: 'none',
@@ -449,9 +449,9 @@ export default function HomePage() {
         >
           <div className="max-w-[430px] mx-auto w-full flex justify-around">
             {[
-              { num: '800mg', label: 'Total Active\nPer Serving' },
-              { num: '0', label: 'Fillers &\nProp Blends' },
-              { num: '30', label: 'Servings\nPer Bottle' },
+              { num: '800mg', label: 'Total Active\nPer Serving', color: '#00ffcc' },
+              { num: '0', label: 'Fillers &\nProp Blends', color: '#ff2d55' },
+              { num: '30', label: 'Servings\nPer Bottle', color: '#a855f7' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div
@@ -459,7 +459,7 @@ export default function HomePage() {
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '28px',
                     fontWeight: 700,
-                    color: '#00ffcc',
+                    color: stat.color || '#00ffcc',
                   }}
                 >
                   {stat.num}
@@ -512,7 +512,7 @@ export default function HomePage() {
                 lineHeight: 1,
               }}
             >
-              FLOW STATE <span style={{ color: '#00ffcc' }}>X</span>
+              FLOW STATE <span style={{ color: '#ff2d55' }}>X</span>
             </h2>
           </FadeInSection>
 
@@ -578,7 +578,7 @@ export default function HomePage() {
                   className="mb-[10px]"
                   style={{
                     fontSize: '10px',
-                    color: '#00ffcc',
+                    color: '#a855f7',
                     textTransform: 'uppercase',
                     letterSpacing: '0.15em',
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
@@ -698,13 +698,13 @@ export default function HomePage() {
                         className="block w-full text-center"
                         style={{
                           padding: '16px',
-                          background: 'transparent',
-                          border: '1px solid #00ffcc',
+                          background: '#ff2d55',
+                          border: '1px solid #ff2d55',
                           borderRadius: '6px',
                           fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                           fontSize: '18px',
                           letterSpacing: '0.15em',
-                          color: '#00ffcc',
+                          color: '#fff',
                           textTransform: 'uppercase',
                           fontWeight: 700,
                           textDecoration: 'none',
@@ -750,7 +750,7 @@ export default function HomePage() {
                 fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                 fontSize: '11px',
                 letterSpacing: '0.3em',
-                color: '#00ffcc',
+                color: '#a855f7',
                 textTransform: 'uppercase',
               }}
             >
@@ -768,7 +768,7 @@ export default function HomePage() {
             >
               NOT YOUR
               <br />
-              AVERAGE <span style={{ color: '#00ffcc' }}>SUPPS</span>
+              AVERAGE <span style={{ color: '#a855f7' }}>SUPPS</span>
             </h2>
           </FadeInSection>
 
@@ -835,7 +835,7 @@ export default function HomePage() {
                 fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                 fontSize: '11px',
                 letterSpacing: '0.3em',
-                color: '#00ffcc',
+                color: '#a855f7',
                 textTransform: 'uppercase',
               }}
             >
@@ -983,7 +983,7 @@ export default function HomePage() {
                 fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                 fontSize: '11px',
                 letterSpacing: '0.3em',
-                color: '#00ffcc',
+                color: '#a855f7',
                 textTransform: 'uppercase',
               }}
             >
@@ -999,7 +999,7 @@ export default function HomePage() {
                 lineHeight: 1,
               }}
             >
-              REAL <span style={{ color: '#00ffcc' }}>RESULTS</span>
+              REAL <span style={{ color: '#a855f7' }}>RESULTS</span>
             </h2>
           </FadeInSection>
 
@@ -1011,7 +1011,7 @@ export default function HomePage() {
               >
                 <div
                   className="mb-[6px]"
-                  style={{ color: '#00ffcc', fontSize: '12px', letterSpacing: '3px' }}
+                  style={{ color: i % 2 === 0 ? '#00ffcc' : '#a855f7', fontSize: '12px', letterSpacing: '3px' }}
                 >
                   ★★★★★
                 </div>
@@ -1061,7 +1061,7 @@ export default function HomePage() {
                 fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                 fontSize: '11px',
                 letterSpacing: '0.3em',
-                color: '#00ffcc',
+                color: '#a855f7',
                 textTransform: 'uppercase',
               }}
             >
@@ -1077,7 +1077,7 @@ export default function HomePage() {
                 lineHeight: 1,
               }}
             >
-              JOIN THE <span style={{ color: '#00ffcc' }}>CREW</span>
+              JOIN THE <span style={{ color: '#ff2d55' }}>CREW</span>
             </h2>
             <p
               className="mb-4"
@@ -1105,7 +1105,7 @@ export default function HomePage() {
                   style={{
                     padding: '14px 16px',
                     background: '#000',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(168,85,247,0.3)',
                     borderRadius: '6px',
                     color: '#fff',
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
@@ -1118,12 +1118,12 @@ export default function HomePage() {
                   className="w-full border-none cursor-pointer"
                   style={{
                     padding: '18px',
-                    background: '#00ffcc',
+                    background: '#ff2d55',
                     borderRadius: '6px',
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '20px',
                     letterSpacing: '0.15em',
-                    color: '#000',
+                    color: '#fff',
                     textTransform: 'uppercase',
                     fontWeight: 700,
                     opacity: emailLoading ? 0.7 : 1,
@@ -1217,12 +1217,12 @@ export default function HomePage() {
                 style={{
                   padding: '16px',
                   background: 'transparent',
-                  border: '1px solid #00ffcc',
+                  border: '1px solid #a855f7',
                   borderRadius: '6px',
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '18px',
                   letterSpacing: '0.15em',
-                  color: '#00ffcc',
+                  color: '#a855f7',
                   textTransform: 'uppercase',
                   fontWeight: 700,
                   textDecoration: 'none',
