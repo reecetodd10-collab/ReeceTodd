@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import BottomNav from '../components/BottomNav';
 
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -913,6 +914,9 @@ export default function AboutPage() {
           </div>
         </div>
       </footer>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 }

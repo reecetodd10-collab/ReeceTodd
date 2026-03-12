@@ -2,11 +2,19 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { createSupabaseAdmin } from '../../../lib/supabase-server';
 
-webpush.setVapidDetails(
-  'mailto:info@avierafit.com',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+// Configure VAPID lazily (env vars not available at build time)
+let vapidConfigured = false;
+function ensureVapidConfigured() {
+  if (vapidConfigured) return;
+  if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+      'mailto:info@avierafit.com',
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+    vapidConfigured = true;
+  }
+}
 
 // POST - Send push notifications
 // Secured with CRON_SECRET
@@ -18,6 +26,8 @@ export async function POST(request) {
 
   try {
     const { userId, title, body, url, icon } = await request.json();
+
+    ensureVapidConfigured();
 
     if (!title || !body) {
       return NextResponse.json({ error: 'title and body are required' }, { status: 400 });
