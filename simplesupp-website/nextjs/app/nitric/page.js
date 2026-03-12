@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchProductById, addToCart, initializeShopifyCart, getCheckoutUrl } from '../lib/shopify';
 import { motion, useInView } from 'framer-motion';
+import Link from 'next/link';
 
 // Animated section wrapper - fades up when scrolled into view
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -163,7 +164,7 @@ export default function FlowStateXPage() {
       {/* ==================== HEADER ==================== */}
       <header className="relative z-10 py-4 px-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="max-w-[430px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/home" className="flex items-center gap-2 no-underline" style={{ textDecoration: 'none', color: '#ffffff' }}>
             <div className="w-2 h-2 rounded-full" style={{ background: '#00ffcc' }} />
             <span
               className="text-sm font-bold uppercase tracking-[0.3em]"
@@ -171,7 +172,7 @@ export default function FlowStateXPage() {
             >
               AVIERA
             </span>
-          </div>
+          </Link>
           <span
             className="text-xs uppercase tracking-wider px-2 py-1"
             style={{ color: '#ffffff', fontFamily: 'var(--font-space-mono), Space Mono, monospace', background: '#ff2d55', fontWeight: 700, letterSpacing: '0.1em', fontSize: '9px' }}

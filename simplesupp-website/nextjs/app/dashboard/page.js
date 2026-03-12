@@ -11,6 +11,69 @@ import { fetchShopifyProducts } from '../lib/shopify';
 // ─── Max supplement slots ───
 const MAX_SLOTS = 6;
 
+// ─── Category → Color mapping ───
+// Red (#ff2d55) = Strength / Performance
+// Green (#00ffcc) = Recovery / Focus / Sleep
+// Purple (#a855f7) = Weight Management / Skin / Health
+const CATEGORY_COLOR_MAP = {
+  'Performance': '#ff2d55',
+  'Pre-Workout': '#ff2d55',
+  'Protein': '#ff2d55',
+  'Recovery & Sleep': '#00ffcc',
+  'Recovery': '#00ffcc',
+  'Sleep': '#00ffcc',
+  'Focus & Energy': '#00ffcc',
+  'Focus': '#00ffcc',
+  'Weight Management': '#a855f7',
+  'Weight': '#a855f7',
+  'Beauty & Anti-Aging': '#a855f7',
+  'Beauty': '#a855f7',
+  'Health & Wellness': '#a855f7',
+  'Health': '#a855f7',
+};
+
+const CATEGORY_COLOR_RGB = {
+  '#ff2d55': '255, 45, 85',
+  '#00ffcc': '0, 255, 204',
+  '#a855f7': '168, 85, 247',
+};
+
+// Map product name/title to a category using keyword matching
+function getCategoryForProduct(name = '') {
+  const n = name.toLowerCase();
+  // Strength / Performance (Red)
+  if (/protein|whey|creatine|bcaa|pre.?workout|post.?workout|beta.?alanine|performance|muscle|strength|nitric|flow state/i.test(n)) return 'Performance';
+  // Recovery / Sleep (Green)
+  if (/magnesium|melatonin|sleep|recovery|zma|ashwagandha|rest/i.test(n)) return 'Recovery';
+  if (/caffeine|energy|focus|alpha energy|nootropic|rhodiola|cognitive|l.?theanine/i.test(n)) return 'Focus';
+  // Weight / Skin / Health (Purple)
+  if (/fat.?burn|weight|metabolism|thermogenic|l.?carnitine|green tea/i.test(n)) return 'Weight';
+  if (/collagen|biotin|beauty|skin|hair|anti.?aging|vitamin c/i.test(n)) return 'Beauty';
+  if (/omega|vitamin d|coq10|multivitamin|health|wellness|immune/i.test(n)) return 'Health';
+  return 'Health'; // default
+}
+
+function getCategoryColor(name) {
+  const cat = getCategoryForProduct(name);
+  return CATEGORY_COLOR_MAP[cat] || '#a855f7';
+}
+
+function getCategoryLabel(name) {
+  const cat = getCategoryForProduct(name);
+  const labels = {
+    'Performance': 'STRENGTH',
+    'Pre-Workout': 'STRENGTH',
+    'Protein': 'STRENGTH',
+    'Recovery': 'RECOVERY',
+    'Sleep': 'SLEEP',
+    'Focus': 'FOCUS',
+    'Weight': 'WEIGHT',
+    'Beauty': 'BEAUTY',
+    'Health': 'HEALTH',
+  };
+  return labels[cat] || 'HEALTH';
+}
+
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
@@ -761,7 +824,7 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* AI Recommendations */}
+                {/* AI Recommendations — Product Cards */}
                 {recommendedProducts.length > 0 && (
                   <div className="mb-5">
                     <p
@@ -776,64 +839,87 @@ export default function DashboardPage() {
                     >
                       BASED ON YOUR O.S.
                     </p>
-                    <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       {recommendedProducts.slice(0, 4).map((rec, idx) => {
+                        const catColor = getCategoryColor(rec.title || '');
+                        const catLabel = getCategoryLabel(rec.title || '');
+                        const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
                         const alreadyAdded = stackItems.some(
                           (s) => s.name.toLowerCase() === (rec.title || '').toLowerCase()
                         );
                         return (
-                          <div
+                          <motion.div
                             key={idx}
-                            className="flex items-center justify-between rounded-lg"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: idx * 0.08 }}
+                            className="rounded-lg relative overflow-hidden"
                             style={{
                               background: '#0a0a0a',
-                              borderLeft: '3px solid #00ffcc',
-                              padding: '10px 12px',
+                              border: `1px solid rgba(${catRgb}, 0.25)`,
+                              padding: '14px 12px 12px',
+                              minHeight: '110px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between',
                             }}
                           >
-                            <div className="flex-1 min-w-0 mr-3">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p
-                                  style={{
-                                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                                    fontSize: '12px',
-                                    color: '#fff',
-                                    letterSpacing: '0.5px',
-                                    textTransform: 'uppercase',
-                                    lineHeight: 1.2,
-                                  }}
-                                >
-                                  {rec.title}
-                                </p>
-                                <span
-                                  style={{
-                                    background: 'rgba(168, 85, 247, 0.15)',
-                                    border: '1px solid rgba(168, 85, 247, 0.3)',
-                                    color: '#a855f7',
-                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                    fontSize: '7px',
-                                    letterSpacing: '1px',
-                                    padding: '2px 6px',
-                                    borderRadius: '3px',
-                                    whiteSpace: 'nowrap',
-                                  }}
-                                >
-                                  AI RECOMMENDED
-                                </span>
-                              </div>
+                            {/* Top glow line */}
+                            <div style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: '2px',
+                              background: `linear-gradient(90deg, ${catColor}, transparent)`,
+                            }} />
+
+                            <div>
+                              {/* Category badge */}
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  background: `rgba(${catRgb}, 0.12)`,
+                                  border: `1px solid rgba(${catRgb}, 0.3)`,
+                                  color: catColor,
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '7px',
+                                  letterSpacing: '1.5px',
+                                  padding: '2px 6px',
+                                  borderRadius: '3px',
+                                  marginBottom: '8px',
+                                }}
+                              >
+                                {catLabel}
+                              </span>
+
+                              {/* Product name */}
+                              <p
+                                style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '12px',
+                                  color: '#fff',
+                                  letterSpacing: '0.5px',
+                                  textTransform: 'uppercase',
+                                  lineHeight: 1.2,
+                                  marginBottom: '4px',
+                                }}
+                              >
+                                {rec.title}
+                              </p>
+
                               {rec.price && (
-                                <p
-                                  style={{
-                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                    fontSize: '9px',
-                                    color: '#666',
-                                    marginTop: '2px',
-                                  }}
-                                >
+                                <p style={{
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '9px',
+                                  color: '#555',
+                                }}>
                                   ${rec.price}
                                 </p>
                               )}
                             </div>
+
+                            {/* Add button */}
                             <button
                               onClick={() =>
                                 addToStack({
@@ -843,85 +929,121 @@ export default function DashboardPage() {
                                 })
                               }
                               disabled={alreadyAdded || stackItems.length >= MAX_SLOTS}
+                              className="w-full mt-2 rounded cursor-pointer transition-all"
                               style={{
                                 fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                 fontSize: '9px',
-                                letterSpacing: '1px',
-                                color: alreadyAdded ? '#333' : '#00ffcc',
-                                background: 'transparent',
-                                border: `1px solid ${alreadyAdded ? '#222' : 'rgba(0,255,204,0.3)'}`,
-                                borderRadius: '3px',
-                                padding: '5px 10px',
-                                cursor: alreadyAdded ? 'default' : 'pointer',
-                                whiteSpace: 'nowrap',
-                                flexShrink: 0,
+                                letterSpacing: '1.5px',
+                                color: alreadyAdded ? '#333' : catColor,
+                                background: alreadyAdded ? 'transparent' : `rgba(${catRgb}, 0.06)`,
+                                border: `1px solid ${alreadyAdded ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
+                                padding: '6px 8px',
+                                textTransform: 'uppercase',
                               }}
                             >
-                              {alreadyAdded ? 'ADDED' : '+ ADD'}
+                              {alreadyAdded ? 'IN STACK' : '+ ADD'}
                             </button>
-                          </div>
+                          </motion.div>
                         );
                       })}
                     </div>
                   </div>
                 )}
 
-                {/* Stack slots grid */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                {/* Stack slots grid — Product Cards with category colors */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
                   {/* Filled slots */}
-                  {stackItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-lg relative flex flex-col items-center justify-center text-center"
-                      style={{
-                        background: '#0a0a0a',
-                        border: '1px solid rgba(0,255,204,0.15)',
-                        padding: '10px 8px',
-                        minHeight: '80px',
-                      }}
-                    >
-                      <button
-                        onClick={() => removeFromStack(item.id)}
-                        className="absolute top-1 right-1 bg-transparent border-none cursor-pointer"
+                  {stackItems.map((item, idx) => {
+                    const catColor = getCategoryColor(item.name);
+                    const catLabel = getCategoryLabel(item.name);
+                    const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: idx * 0.05 }}
+                        className="rounded-lg relative overflow-hidden"
                         style={{
-                          color: '#444',
-                          fontSize: '10px',
-                          lineHeight: 1,
-                          padding: '2px 4px',
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = '#ff2d55')}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
-                        aria-label={`Remove ${item.name}`}
-                      >
-                        ✕
-                      </button>
-                      <p
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          fontSize: '10px',
-                          color: '#fff',
-                          letterSpacing: '0.3px',
-                          textTransform: 'uppercase',
-                          lineHeight: 1.2,
-                          paddingTop: '8px',
+                          background: '#0a0a0a',
+                          border: `1px solid rgba(${catRgb}, 0.2)`,
+                          padding: '12px 10px 10px',
+                          minHeight: '90px',
                         }}
                       >
-                        {item.name}
-                      </p>
-                      {item.price && (
-                        <p
+                        {/* Top color bar */}
+                        <div style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '2px',
+                          background: catColor,
+                        }} />
+
+                        {/* Remove button */}
+                        <button
+                          onClick={() => removeFromStack(item.id)}
+                          className="absolute top-1 right-1 bg-transparent border-none cursor-pointer"
                           style={{
+                            color: '#444',
+                            fontSize: '10px',
+                            lineHeight: 1,
+                            padding: '2px 4px',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = '#ff2d55')}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
+                          aria-label={`Remove ${item.name}`}
+                        >
+                          ✕
+                        </button>
+
+                        {/* Category badge */}
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            background: `rgba(${catRgb}, 0.12)`,
+                            border: `1px solid rgba(${catRgb}, 0.3)`,
+                            color: catColor,
                             fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                            fontSize: '8px',
-                            color: '#555',
-                            marginTop: '3px',
+                            fontSize: '6px',
+                            letterSpacing: '1.5px',
+                            padding: '2px 5px',
+                            borderRadius: '2px',
+                            marginBottom: '6px',
                           }}
                         >
-                          ${item.price}
+                          {catLabel}
+                        </span>
+
+                        {/* Product name */}
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                            fontSize: '11px',
+                            color: '#fff',
+                            letterSpacing: '0.3px',
+                            textTransform: 'uppercase',
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {item.name}
                         </p>
-                      )}
-                    </div>
-                  ))}
+                        {item.price && (
+                          <p
+                            style={{
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '8px',
+                              color: '#555',
+                              marginTop: '4px',
+                            }}
+                          >
+                            ${item.price}
+                          </p>
+                        )}
+                      </motion.div>
+                    );
+                  })}
 
                   {/* Empty slots */}
                   {Array.from({ length: builderEmptySlots }).map((_, i) => (
@@ -936,8 +1058,8 @@ export default function DashboardPage() {
                       }}
                       className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
                       style={{
-                        border: '1px dashed rgba(255,255,255,0.1)',
-                        minHeight: '80px',
+                        border: '1px dashed rgba(255,255,255,0.08)',
+                        minHeight: '90px',
                         background: 'transparent',
                       }}
                       onMouseEnter={(e) => {
@@ -945,7 +1067,7 @@ export default function DashboardPage() {
                         e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
                         e.currentTarget.style.background = 'transparent';
                       }}
                     >
@@ -1036,48 +1158,69 @@ export default function DashboardPage() {
                           border: '1px solid rgba(255,255,255,0.1)',
                         }}
                       >
-                        {searchResults.map((result) => (
-                          <button
-                            key={result.id}
-                            onClick={() => handleSearchSelect(result)}
-                            className="w-full flex items-center justify-between text-left cursor-pointer"
-                            style={{
-                              padding: '10px 14px',
-                              background: 'transparent',
-                              border: 'none',
-                              borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            }}
-                            onMouseEnter={(e) =>
-                              (e.currentTarget.style.background = 'rgba(0,255,204,0.05)')
-                            }
-                            onMouseLeave={(e) =>
-                              (e.currentTarget.style.background = 'transparent')
-                            }
-                          >
-                            <span
+                        {searchResults.map((result) => {
+                          const rCatColor = getCategoryColor(result.name);
+                          const rCatLabel = getCategoryLabel(result.name);
+                          const rCatRgb = CATEGORY_COLOR_RGB[rCatColor] || '168, 85, 247';
+                          return (
+                            <button
+                              key={result.id}
+                              onClick={() => handleSearchSelect(result)}
+                              className="w-full flex items-center justify-between text-left cursor-pointer"
                               style={{
-                                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                                fontSize: '12px',
-                                color: '#fff',
-                                letterSpacing: '0.5px',
-                                textTransform: 'uppercase',
+                                padding: '10px 14px',
+                                background: 'transparent',
+                                border: 'none',
+                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                borderLeft: `3px solid ${rCatColor}`,
                               }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.background = `rgba(${rCatRgb},0.05)`)
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.background = 'transparent')
+                              }
                             >
-                              {result.name}
-                            </span>
-                            {result.price && (
-                              <span
-                                style={{
-                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                  fontSize: '9px',
-                                  color: '#666',
-                                }}
-                              >
-                                ${result.price}
-                              </span>
-                            )}
-                          </button>
-                        ))}
+                              <div className="flex items-center gap-2">
+                                <span
+                                  style={{
+                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                    fontSize: '6px',
+                                    letterSpacing: '1px',
+                                    color: rCatColor,
+                                    background: `rgba(${rCatRgb},0.1)`,
+                                    padding: '1px 4px',
+                                    borderRadius: '2px',
+                                  }}
+                                >
+                                  {rCatLabel}
+                                </span>
+                                <span
+                                  style={{
+                                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                    fontSize: '12px',
+                                    color: '#fff',
+                                    letterSpacing: '0.5px',
+                                    textTransform: 'uppercase',
+                                  }}
+                                >
+                                  {result.name}
+                                </span>
+                              </div>
+                              {result.price && (
+                                <span
+                                  style={{
+                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                    fontSize: '9px',
+                                    color: '#666',
+                                  }}
+                                >
+                                  ${result.price}
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -1157,109 +1300,130 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* Stack Grid */}
+                {/* Stack Grid — Category-colored product cards */}
                 <div
                   className="grid grid-cols-2 gap-2 mb-6"
                 >
                   {/* Filled Slots */}
-                  {supplements.map((supp) => (
-                    <div
-                      key={supp.id}
-                      className="rounded-lg cursor-pointer transition-colors"
-                      style={{
-                        background: '#0a0a0a',
-                        borderLeft: `3px solid ${supp.tierColor}`,
-                        padding: '12px',
-                        minHeight: '100px',
-                      }}
-                      onClick={() => handleSlotClick(supp)}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = '#0f0f0f')}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = '#0a0a0a')}
-                    >
-                      <p
-                        className="mb-[3px]"
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          fontSize: '11px',
-                          color: '#fff',
-                          letterSpacing: '0.5px',
-                          textTransform: 'uppercase',
-                          lineHeight: 1.2,
-                        }}
-                      >
-                        {supp.name}
-                      </p>
-                      <p
-                        className="mb-1"
-                        style={{
-                          fontSize: '7px',
-                          color: supp.tierColor,
-                          letterSpacing: '1px',
-                          textTransform: 'uppercase',
-                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                        }}
-                      >
-                        {supp.tier}
-                      </p>
-                      {supp.dosage && (
-                        <p
-                          className="mb-[6px]"
-                          style={{
-                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                            fontSize: '9px',
-                            color: '#666',
-                          }}
-                        >
-                          {supp.dosage}
-                        </p>
-                      )}
-                      {/* Progress bar */}
+                  {supplements.map((supp) => {
+                    const catColor = getCategoryColor(supp.name);
+                    const catLabel = getCategoryLabel(supp.name);
+                    const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
+                    return (
                       <div
-                        className="mb-1 overflow-hidden"
+                        key={supp.id}
+                        className="rounded-lg cursor-pointer transition-colors relative overflow-hidden"
                         style={{
-                          height: '4px',
-                          background: '#1a1a1a',
-                          borderRadius: '4px',
+                          background: '#0a0a0a',
+                          border: `1px solid rgba(${catRgb}, 0.2)`,
+                          padding: '12px',
+                          minHeight: '100px',
                         }}
+                        onClick={() => handleSlotClick(supp)}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#0f0f0f')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#0a0a0a')}
                       >
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${supp.progress}%` }}
-                          transition={{ duration: 1, ease: 'easeOut' }}
+                        {/* Top color bar */}
+                        <div style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '2px',
+                          background: catColor,
+                        }} />
+
+                        {/* Category badge */}
+                        <span
                           style={{
-                            height: '100%',
-                            borderRadius: '4px',
-                            background: 'linear-gradient(90deg, #00ffcc, #ff2d55)',
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p style={{ fontSize: '9px', color: '#ff2d55' }}>
-                          {'\u{1F525}'} {supp.streak} days
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleLogIntake(supp.name);
-                          }}
-                          disabled={loggingIntake}
-                          className="bg-transparent border-none cursor-pointer"
-                          style={{
+                            display: 'inline-block',
+                            background: `rgba(${catRgb}, 0.12)`,
+                            border: `1px solid rgba(${catRgb}, 0.3)`,
+                            color: catColor,
                             fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                            fontSize: '8px',
-                            color: '#00ffcc',
-                            padding: '2px 6px',
-                            border: '1px solid rgba(0,255,204,0.3)',
-                            borderRadius: '3px',
-                            opacity: loggingIntake ? 0.5 : 1,
+                            fontSize: '6px',
+                            letterSpacing: '1.5px',
+                            padding: '2px 5px',
+                            borderRadius: '2px',
+                            marginBottom: '6px',
                           }}
-                          title="Log intake"
                         >
-                          LOG
-                        </button>
+                          {catLabel}
+                        </span>
+
+                        <p
+                          className="mb-[3px]"
+                          style={{
+                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                            fontSize: '11px',
+                            color: '#fff',
+                            letterSpacing: '0.5px',
+                            textTransform: 'uppercase',
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {supp.name}
+                        </p>
+                        {supp.dosage && (
+                          <p
+                            className="mb-[6px]"
+                            style={{
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '9px',
+                              color: '#666',
+                            }}
+                          >
+                            {supp.dosage}
+                          </p>
+                        )}
+                        {/* Progress bar */}
+                        <div
+                          className="mb-1 overflow-hidden"
+                          style={{
+                            height: '4px',
+                            background: '#1a1a1a',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${supp.progress}%` }}
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            style={{
+                              height: '100%',
+                              borderRadius: '4px',
+                              background: `linear-gradient(90deg, ${catColor}, ${catColor}88)`,
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p style={{ fontSize: '9px', color: '#ff2d55' }}>
+                            {'\u{1F525}'} {supp.streak} days
+                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLogIntake(supp.name);
+                            }}
+                            disabled={loggingIntake}
+                            className="bg-transparent border-none cursor-pointer"
+                            style={{
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '8px',
+                              color: catColor,
+                              padding: '2px 6px',
+                              border: `1px solid rgba(${catRgb}, 0.3)`,
+                              borderRadius: '3px',
+                              opacity: loggingIntake ? 0.5 : 1,
+                            }}
+                            title="Log intake"
+                          >
+                            LOG
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {/* Empty Slots */}
                   {Array.from({ length: emptySlots }).map((_, i) => (
@@ -1395,22 +1559,29 @@ export default function DashboardPage() {
                 {selectedSupplement.name}
               </h1>
 
-              {/* Badge */}
-              <span
-                className="inline-block mb-6"
-                style={{
-                  background: selectedSupplement.tierColor,
-                  color: '#000',
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '9px',
-                  letterSpacing: '1.5px',
-                  padding: '3px 10px',
-                  borderRadius: '3px',
-                  fontWeight: 600,
-                }}
-              >
-                {selectedSupplement.tier}
-              </span>
+              {/* Category Badge */}
+              {(() => {
+                const detailCatColor = getCategoryColor(selectedSupplement.name);
+                const detailCatLabel = getCategoryLabel(selectedSupplement.name);
+                const detailCatRgb = CATEGORY_COLOR_RGB[detailCatColor] || '168, 85, 247';
+                return (
+                  <span
+                    className="inline-block mb-6"
+                    style={{
+                      background: `rgba(${detailCatRgb}, 0.15)`,
+                      color: detailCatColor,
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '8px',
+                      letterSpacing: '2px',
+                      padding: '4px 10px',
+                      borderRadius: '3px',
+                      border: `1px solid rgba(${detailCatRgb}, 0.3)`,
+                    }}
+                  >
+                    {detailCatLabel}
+                  </span>
+                );
+              })()}
 
               {/* Why It's In Your Stack */}
               {selectedSupplement.aiNote && (
@@ -1634,58 +1805,115 @@ export default function DashboardPage() {
           <AnimatePresence>
             {currentView === 'celebration' && selectedSupplement && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.5 }}
                 className="flex flex-col items-center justify-center text-center relative overflow-hidden"
                 style={{ minHeight: '640px' }}
               >
-                {/* Confetti */}
+                {/* Background glow */}
+                <div
+                  className="absolute pointer-events-none celebration-glow"
+                  style={{
+                    top: '20%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '300px',
+                    height: '300px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,45,85,0.15) 0%, rgba(0,255,204,0.08) 40%, transparent 70%)',
+                    filter: 'blur(40px)',
+                  }}
+                />
+
+                {/* Confetti burst — 40 particles */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {Array.from({ length: 20 }).map((_, i) => (
+                  {Array.from({ length: 40 }).map((_, i) => (
                     <div
                       key={i}
                       className="confetti-particle"
                       style={{
                         position: 'absolute',
-                        width: '6px',
-                        height: '6px',
+                        width: `${4 + Math.random() * 6}px`,
+                        height: `${4 + Math.random() * 6}px`,
                         borderRadius: Math.random() > 0.5 ? '50%' : '1px',
                         background: confettiColors[Math.floor(Math.random() * confettiColors.length)],
                         left: `${Math.random() * 100}%`,
-                        top: `${60 + Math.random() * 40}%`,
-                        animationDuration: `${1.5 + Math.random() * 2}s`,
-                        animationDelay: `${Math.random() * 0.8}s`,
+                        top: `${50 + Math.random() * 50}%`,
+                        animationDuration: `${1.5 + Math.random() * 2.5}s`,
+                        animationDelay: `${Math.random() * 1}s`,
+                        opacity: 0.8 + Math.random() * 0.2,
                       }}
                     />
                   ))}
                 </div>
 
-                {/* Flame */}
+                {/* Animated ring burst */}
                 <motion.div
-                  initial={{ scale: 0.3, y: 40, opacity: 0 }}
-                  animate={{ scale: 1, y: 0, opacity: 1 }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
-                  style={{ fontSize: '48px', marginBottom: '16px' }}
+                  initial={{ scale: 0, opacity: 0.8 }}
+                  animate={{ scale: 3, opacity: 0 }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                  className="absolute"
+                  style={{
+                    top: '25%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    border: '2px solid rgba(0,255,204,0.4)',
+                  }}
+                />
+
+                {/* Fire emoji with bounce */}
+                <motion.div
+                  initial={{ scale: 0, y: 60, opacity: 0 }}
+                  animate={{ scale: [0, 1.3, 1], y: 0, opacity: 1 }}
+                  transition={{ duration: 0.7, ease: 'easeOut', times: [0, 0.7, 1] }}
+                  style={{ fontSize: '64px', marginBottom: '12px' }}
                 >
                   {'\u{1F525}'}
                 </motion.div>
 
+                {/* LOGGED headline */}
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '14px',
+                    color: '#00ffcc',
+                    letterSpacing: '4px',
+                    marginBottom: '8px',
+                    textShadow: '0 0 20px rgba(0, 255, 204, 0.4)',
+                  }}
+                >
+                  INTAKE LOGGED
+                </motion.p>
+
                 {/* Streak count */}
-                <p
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
                   className="streak-glow mb-2"
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '36px',
+                    fontSize: '42px',
                     color: '#ff2d55',
                     letterSpacing: '3px',
                   }}
                 >
-                  STREAK: {currentStreak} DAYS!
-                </p>
+                  {currentStreak} DAY STREAK
+                </motion.p>
 
-                <p
+                {/* Motivational message */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
                   className="mb-2"
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
@@ -1694,10 +1922,21 @@ export default function DashboardPage() {
                     letterSpacing: '1px',
                   }}
                 >
-                  You&apos;re crushing it!
-                </p>
+                  {currentStreak >= 30
+                    ? 'ABSOLUTE MACHINE.'
+                    : currentStreak >= 14
+                    ? 'UNSTOPPABLE.'
+                    : currentStreak >= 7
+                    ? "YOU'RE ON FIRE!"
+                    : currentStreak >= 3
+                    ? 'BUILDING MOMENTUM!'
+                    : "LET'S GO!"}
+                </motion.p>
 
-                <p
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}
                   className="mb-7"
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
@@ -1707,10 +1946,12 @@ export default function DashboardPage() {
                     lineHeight: 1.5,
                   }}
                 >
-                  {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted > 0
+                  {currentStreak >= 7
+                    ? `Top ${Math.max(5, 100 - currentStreak * 3)}% of Aviera users`
+                    : selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted > 0
                     ? `Keep going — only ${selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} servings left`
-                    : 'Keep up the consistency!'}
-                </p>
+                    : 'Consistency is what separates good from great'}
+                </motion.p>
 
                 {/* Progress bar */}
                 <div className="w-[80%] mb-7">
@@ -1734,6 +1975,7 @@ export default function DashboardPage() {
                         height: '100%',
                         borderRadius: '8px',
                         background: 'linear-gradient(90deg, #00ffcc, #ff2d55)',
+                        boxShadow: '0 0 10px rgba(0,255,204,0.3)',
                       }}
                     />
                   </div>
@@ -1751,7 +1993,10 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Dismiss button */}
-                <button
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9, duration: 0.4 }}
                   onClick={handleBackToDashboard}
                   className="rounded-lg cursor-pointer transition-all"
                   style={{
@@ -1763,16 +2008,19 @@ export default function DashboardPage() {
                     letterSpacing: '2px',
                     border: 'none',
                     fontWeight: 600,
+                    boxShadow: '0 0 30px rgba(255, 45, 85, 0.3)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(255, 45, 85, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 0 40px rgba(255, 45, 85, 0.5)';
+                    e.currentTarget.style.transform = 'scale(1.03)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 45, 85, 0.3)';
+                    e.currentTarget.style.transform = 'scale(1)';
                   }}
                 >
                   NICE! &rarr;
-                </button>
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1930,12 +2178,25 @@ export default function DashboardPage() {
         }
         @keyframes confettiFloat {
           0% {
-            transform: translateY(0) rotate(0deg);
+            transform: translateY(0) rotate(0deg) scale(1);
             opacity: 1;
           }
+          50% {
+            opacity: 0.8;
+          }
           100% {
-            transform: translateY(-400px) rotate(720deg);
+            transform: translateY(-500px) rotate(900deg) scale(0.5);
             opacity: 0;
+          }
+        }
+        @keyframes celebrationGlow {
+          0%, 100% {
+            opacity: 0.5;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scale(1.15);
           }
         }
         .streak-glow {
@@ -1943,6 +2204,9 @@ export default function DashboardPage() {
         }
         .confetti-particle {
           animation: confettiFloat linear forwards;
+        }
+        .celebration-glow {
+          animation: celebrationGlow 3s ease-in-out infinite;
         }
       `}</style>
     </div>
