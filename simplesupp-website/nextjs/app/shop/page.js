@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { fetchShopifyProducts, addToCart, initializeShopifyCart, getCheckoutUrl, removeFromCart, updateCartQuantity, fetchCart } from '../lib/shopify';
 import { products as localProducts } from '../data/products';
+import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -26,6 +27,9 @@ function FadeInSection({ children, delay = 0, className = '' }) {
 
 // ─── Sticky Navigation ───
 function StickyNav({ menuOpen, setMenuOpen, cartCount, onCartClick }) {
+  const { user } = useSupabaseUser();
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
   return (
     <>
       <nav
@@ -102,20 +106,12 @@ function StickyNav({ menuOpen, setMenuOpen, cartCount, onCartClick }) {
             </button>
 
             {/* User icon */}
-            <Link
-              href="/auth"
-              className="flex items-center justify-center no-underline"
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                border: '1px solid rgba(255,255,255,0.15)',
-                background: 'transparent',
-                color: '#ffffff',
-                textDecoration: 'none',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <Link href={user ? "/dashboard" : "/auth"} className="flex items-center justify-center no-underline" style={{width: '28px', height: '28px', borderRadius: '50%', border: avatarUrl ? '2px solid #00ffcc' : '1px solid rgba(255,255,255,0.15)', background: 'transparent', overflow: 'hidden'}}>
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" width={28} height={28} style={{borderRadius: '50%', objectFit: 'cover'}} />
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              )}
             </Link>
 
             {/* Hamburger menu */}

@@ -46,6 +46,9 @@ function FadeInSection({ children, delay = 0, className = '' }) {
 
 // ─── Sticky Navigation ───
 function StickyNav({ menuOpen, setMenuOpen }) {
+  const { user } = useSupabaseUser();
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
   return (
     <>
       <nav
@@ -79,20 +82,12 @@ function StickyNav({ menuOpen, setMenuOpen }) {
 
           {/* User icon + hamburger */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/auth"
-              className="flex items-center justify-center no-underline"
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                border: '1px solid rgba(255,255,255,0.15)',
-                background: 'transparent',
-                color: '#ffffff',
-                textDecoration: 'none',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <Link href={user ? "/dashboard" : "/auth"} className="flex items-center justify-center no-underline" style={{width: '28px', height: '28px', borderRadius: '50%', border: avatarUrl ? '2px solid #00ffcc' : '1px solid rgba(255,255,255,0.15)', background: 'transparent', overflow: 'hidden'}}>
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" width={28} height={28} style={{borderRadius: '50%', objectFit: 'cover'}} />
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              )}
             </Link>
             <button
               className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
@@ -1527,6 +1522,44 @@ function ResultsPage({
               <p className="text-center mt-4" style={{ color: '#444', fontFamily: SPACE_MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 Pharmaceutical grade &bull; 3rd party tested &bull; Free US shipping
               </p>
+
+              {/* Secondary CTAs */}
+              <div className="flex flex-col gap-3 mt-6">
+                <button
+                  onClick={async () => {
+                    const { getCheckoutUrl } = await import('../lib/shopify');
+                    const url = await getCheckoutUrl();
+                    window.open(url, '_blank');
+                  }}
+                  className="w-full py-4 px-6 font-bold uppercase flex items-center justify-center gap-2 transition-all"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '16px',
+                    letterSpacing: '0.15em',
+                    background: ACCENT,
+                    color: '#000000',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  VIEW CART &amp; CHECKOUT →
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="w-full py-4 px-6 font-bold uppercase flex items-center justify-center gap-2 no-underline transition-all"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '16px',
+                    letterSpacing: '0.15em',
+                    background: 'transparent',
+                    color: PURPLE,
+                    border: `2px solid ${PURPLE}`,
+                    textDecoration: 'none',
+                  }}
+                >
+                  BUILD YOUR STACK →
+                </Link>
+              </div>
             </section>
           </FadeInSection>
 

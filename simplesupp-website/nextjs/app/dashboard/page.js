@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
+import { fetchShopifyProducts } from '../lib/shopify';
 
 // ─── Max supplement slots ───
 const MAX_SLOTS = 6;
@@ -28,7 +30,9 @@ function FadeInSection({ children, delay = 0, className = '' }) {
 }
 
 // ─── Sticky Navigation ───
-function StickyNav({ menuOpen, setMenuOpen }) {
+function StickyNav({ menuOpen, setMenuOpen, user }) {
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
   return (
     <>
       <nav
@@ -64,13 +68,26 @@ function StickyNav({ menuOpen, setMenuOpen }) {
                 width: '28px',
                 height: '28px',
                 borderRadius: '50%',
-                border: '1px solid rgba(255,255,255,0.15)',
+                border: avatarUrl ? '2px solid #00ffcc' : '1px solid rgba(255,255,255,0.15)',
                 background: 'transparent',
                 color: '#ffffff',
                 textDecoration: 'none',
+                overflow: 'hidden',
+                flexShrink: 0,
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Profile"
+                  width={28}
+                  height={28}
+                  style={{ borderRadius: '50%', objectFit: 'cover', width: '100%', height: '100%' }}
+                  unoptimized
+                />
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              )}
             </Link>
             <button
               className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
@@ -202,6 +219,17 @@ export default function DashboardPage() {
   const [intakeLogs, setIntakeLogs] = useState([]);
   const [loggingIntake, setLoggingIntake] = useState(false);
 
+  // Stack builder state
+  const [stackItems, setStackItems] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [shopifyProducts, setShopifyProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [savingStack, setSavingStack] = useState(false);
+  const [stackSaved, setStackSaved] = useState(false);
+  const searchRef = useRef(null);
+
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -229,6 +257,53 @@ export default function DashboardPage() {
       router.push('/auth');
     }
   }, [authLoading, user, router]);
+
+  // Close search dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch Shopify products for search
+  useEffect(() => {
+    async function loadShopifyProducts() {
+      try {
+        const products = await fetchShopifyProducts();
+        setShopifyProducts(products || []);
+      } catch (err) {
+        console.error('Failed to load Shopify products:', err);
+      }
+    }
+    loadShopifyProducts();
+  }, []);
+
+  // Filter search results as user types
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults([]);
+      setSearchOpen(false);
+      return;
+    }
+    const q = searchQuery.toLowerCase();
+    const filtered = shopifyProducts
+      .filter((p) => {
+        const title = (p.title || p.node?.title || '').toLowerCase();
+        return title.includes(q);
+      })
+      .slice(0, 6)
+      .map((p) => ({
+        id: p.id || p.node?.id || Math.random().toString(),
+        name: p.title || p.node?.title || 'Unknown',
+        price: p.priceRange?.minVariantPrice?.amount || p.node?.priceRange?.minVariantPrice?.amount || '',
+      }));
+    setSearchResults(filtered);
+    setSearchOpen(filtered.length > 0);
+  }, [searchQuery, shopifyProducts]);
 
   // Fetch real data on mount
   const fetchDashboardData = useCallback(async () => {
@@ -280,17 +355,27 @@ export default function DashboardPage() {
             })
           );
           setSupplements(stackSupplements);
+          // Populate stack builder items from saved stack
+          setStackItems(
+            (latestStack.supplements || latestStack.items || []).slice(0, MAX_SLOTS).map((supp, idx) => ({
+              id: supp.id || `saved-${idx}`,
+              name: supp.name || supp.supplement_name || 'Unknown',
+              price: supp.price || '',
+            }))
+          );
         }
       }
 
-      // Process optimization score
+      // Process optimization score and recommended products
       if (optimizationRes.status === 'fulfilled' && optimizationRes.value.ok) {
         const optimizationData = await optimizationRes.value.json();
         const results = optimizationData.results || [];
         if (results.length > 0) {
-          // Use latest result's optimization_score
           const latestResult = results[0];
           setOptimizationScore(latestResult.optimization_score || 0);
+          // Extract recommended products from quiz result
+          const recs = latestResult.recommended_products || [];
+          setRecommendedProducts(Array.isArray(recs) ? recs : []);
         }
       }
     } catch (err) {
@@ -354,6 +439,65 @@ export default function DashboardPage() {
     setCurrentView('dashboard');
   };
 
+  // ─── Stack Builder helpers ───
+  const addToStack = (item) => {
+    if (stackItems.length >= MAX_SLOTS) return;
+    const alreadyIn = stackItems.some(
+      (s) => s.name.toLowerCase() === item.name.toLowerCase()
+    );
+    if (alreadyIn) return;
+    setStackItems((prev) => [
+      ...prev,
+      { id: item.id || `custom-${Date.now()}`, name: item.name, price: item.price || '' },
+    ]);
+    setStackSaved(false);
+  };
+
+  const removeFromStack = (id) => {
+    setStackItems((prev) => prev.filter((s) => s.id !== id));
+    setStackSaved(false);
+  };
+
+  const handleSearchSelect = (product) => {
+    addToStack(product);
+    setSearchQuery('');
+    setSearchOpen(false);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim().length > 0) {
+      addToStack({ id: `custom-${Date.now()}`, name: searchQuery.trim(), price: '' });
+      setSearchQuery('');
+      setSearchOpen(false);
+    }
+  };
+
+  const handleSaveStack = async () => {
+    if (!session?.access_token || stackItems.length === 0) return;
+    setSavingStack(true);
+    try {
+      const res = await fetch('/api/stacks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          name: 'My Stack',
+          supplements: stackItems.map((s) => ({ name: s.name, price: s.price })),
+        }),
+      });
+      if (res.ok) {
+        setStackSaved(true);
+        setTimeout(() => setStackSaved(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to save stack:', err);
+    } finally {
+      setSavingStack(false);
+    }
+  };
+
   // Score ring calculations
   const scoreValue = optimizationScore;
   const radius = 65;
@@ -380,8 +524,11 @@ export default function DashboardPage() {
   // Confetti colors
   const confettiColors = ['#00ffcc', '#ff2d55', '#a855f7'];
 
-  // Empty slot count
+  // Empty slot count for the existing stack display
   const emptySlots = Math.max(0, MAX_SLOTS - supplements.length);
+
+  // Empty slot count for the stack builder
+  const builderEmptySlots = Math.max(0, MAX_SLOTS - stackItems.length);
 
   // Show loading or redirect states
   if (authLoading) {
@@ -390,7 +537,7 @@ export default function DashboardPage() {
         className="relative min-h-screen"
         style={{ background: '#000000', color: '#ffffff' }}
       >
-        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} />
         <main className="relative z-10 pt-[60px] pb-24 px-5">
           <div className="max-w-[430px] mx-auto">
             <DashboardSkeleton />
@@ -422,7 +569,7 @@ export default function DashboardPage() {
         }}
       />
 
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} />
 
       {/* Main content */}
       <main className="relative z-10 pt-[60px] pb-24 px-5">
@@ -581,16 +728,411 @@ export default function DashboardPage() {
                 </FadeInSection>
               )}
 
+              {/* ═══ STACK BUILDER SECTION ═══ */}
+              <FadeInSection delay={0.08}>
+                {/* Section header */}
+                <div
+                  className="mb-5"
+                  style={{
+                    height: '1px',
+                    background: 'rgba(255,255,255,0.06)',
+                  }}
+                />
+                <div className="flex justify-between items-baseline mb-4">
+                  <h2
+                    style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '16px',
+                      color: '#fff',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    YOUR STACK
+                  </h2>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '9px',
+                      color: '#666',
+                    }}
+                  >
+                    {stackItems.length}/{MAX_SLOTS} slots
+                  </span>
+                </div>
+
+                {/* AI Recommendations */}
+                {recommendedProducts.length > 0 && (
+                  <div className="mb-5">
+                    <p
+                      className="mb-3"
+                      style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '8px',
+                        color: '#a855f7',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      BASED ON YOUR O.S.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {recommendedProducts.slice(0, 4).map((rec, idx) => {
+                        const alreadyAdded = stackItems.some(
+                          (s) => s.name.toLowerCase() === (rec.title || '').toLowerCase()
+                        );
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between rounded-lg"
+                            style={{
+                              background: '#0a0a0a',
+                              borderLeft: '3px solid #00ffcc',
+                              padding: '10px 12px',
+                            }}
+                          >
+                            <div className="flex-1 min-w-0 mr-3">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p
+                                  style={{
+                                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                    fontSize: '12px',
+                                    color: '#fff',
+                                    letterSpacing: '0.5px',
+                                    textTransform: 'uppercase',
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  {rec.title}
+                                </p>
+                                <span
+                                  style={{
+                                    background: 'rgba(168, 85, 247, 0.15)',
+                                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                                    color: '#a855f7',
+                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                    fontSize: '7px',
+                                    letterSpacing: '1px',
+                                    padding: '2px 6px',
+                                    borderRadius: '3px',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  AI RECOMMENDED
+                                </span>
+                              </div>
+                              {rec.price && (
+                                <p
+                                  style={{
+                                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                    fontSize: '9px',
+                                    color: '#666',
+                                    marginTop: '2px',
+                                  }}
+                                >
+                                  ${rec.price}
+                                </p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() =>
+                                addToStack({
+                                  id: `rec-${idx}`,
+                                  name: rec.title,
+                                  price: rec.price || '',
+                                })
+                              }
+                              disabled={alreadyAdded || stackItems.length >= MAX_SLOTS}
+                              style={{
+                                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                fontSize: '9px',
+                                letterSpacing: '1px',
+                                color: alreadyAdded ? '#333' : '#00ffcc',
+                                background: 'transparent',
+                                border: `1px solid ${alreadyAdded ? '#222' : 'rgba(0,255,204,0.3)'}`,
+                                borderRadius: '3px',
+                                padding: '5px 10px',
+                                cursor: alreadyAdded ? 'default' : 'pointer',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {alreadyAdded ? 'ADDED' : '+ ADD'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Stack slots grid */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {/* Filled slots */}
+                  {stackItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-lg relative flex flex-col items-center justify-center text-center"
+                      style={{
+                        background: '#0a0a0a',
+                        border: '1px solid rgba(0,255,204,0.15)',
+                        padding: '10px 8px',
+                        minHeight: '80px',
+                      }}
+                    >
+                      <button
+                        onClick={() => removeFromStack(item.id)}
+                        className="absolute top-1 right-1 bg-transparent border-none cursor-pointer"
+                        style={{
+                          color: '#444',
+                          fontSize: '10px',
+                          lineHeight: 1,
+                          padding: '2px 4px',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = '#ff2d55')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
+                        aria-label={`Remove ${item.name}`}
+                      >
+                        ✕
+                      </button>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                          fontSize: '10px',
+                          color: '#fff',
+                          letterSpacing: '0.3px',
+                          textTransform: 'uppercase',
+                          lineHeight: 1.2,
+                          paddingTop: '8px',
+                        }}
+                      >
+                        {item.name}
+                      </p>
+                      {item.price && (
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                            fontSize: '8px',
+                            color: '#555',
+                            marginTop: '3px',
+                          }}
+                        >
+                          ${item.price}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Empty slots */}
+                  {Array.from({ length: builderEmptySlots }).map((_, i) => (
+                    <button
+                      key={`builder-empty-${i}`}
+                      onClick={() => {
+                        setSearchOpen(false);
+                        setSearchQuery('');
+                        setTimeout(() => {
+                          document.getElementById('stack-search-input')?.focus();
+                        }, 50);
+                      }}
+                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
+                      style={{
+                        border: '1px dashed rgba(255,255,255,0.1)',
+                        minHeight: '80px',
+                        background: 'transparent',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#333';
+                        e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.background = 'transparent';
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                          fontSize: '18px',
+                          color: '#333',
+                          marginBottom: '2px',
+                        }}
+                      >
+                        +
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                          fontSize: '7px',
+                          color: '#333',
+                        }}
+                      >
+                        Add
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search bar */}
+                <div ref={searchRef} className="relative mb-4">
+                  <input
+                    id="stack-search-input"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    onFocus={() => {
+                      if (searchResults.length > 0) setSearchOpen(true);
+                    }}
+                    placeholder="Search supplements..."
+                    disabled={stackItems.length >= MAX_SLOTS}
+                    style={{
+                      width: '100%',
+                      background: '#0a0a0a',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      padding: '10px 14px',
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '11px',
+                      color: '#fff',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      opacity: stackItems.length >= MAX_SLOTS ? 0.4 : 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (stackItems.length < MAX_SLOTS)
+                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!e.currentTarget.matches(':focus'))
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                    }}
+                  />
+                  {searchQuery.length > 0 && (
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '8px',
+                        color: '#444',
+                        marginTop: '4px',
+                        paddingLeft: '2px',
+                      }}
+                    >
+                      Press Enter to add &quot;{searchQuery}&quot; as custom
+                    </p>
+                  )}
+
+                  {/* Dropdown results */}
+                  <AnimatePresence>
+                    {searchOpen && searchResults.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute left-0 right-0 z-10 rounded-lg overflow-hidden"
+                        style={{
+                          top: 'calc(100% + 4px)',
+                          background: '#0f0f0f',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        {searchResults.map((result) => (
+                          <button
+                            key={result.id}
+                            onClick={() => handleSearchSelect(result)}
+                            className="w-full flex items-center justify-between text-left cursor-pointer"
+                            style={{
+                              padding: '10px 14px',
+                              background: 'transparent',
+                              border: 'none',
+                              borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.background = 'rgba(0,255,204,0.05)')
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.background = 'transparent')
+                            }
+                          >
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                fontSize: '12px',
+                                color: '#fff',
+                                letterSpacing: '0.5px',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              {result.name}
+                            </span>
+                            {result.price && (
+                              <span
+                                style={{
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '9px',
+                                  color: '#666',
+                                }}
+                              >
+                                ${result.price}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Save Stack button */}
+                {stackItems.length > 0 && (
+                  <button
+                    onClick={handleSaveStack}
+                    disabled={savingStack || stackSaved}
+                    className="w-full rounded-lg cursor-pointer transition-all"
+                    style={{
+                      padding: '13px',
+                      background: stackSaved
+                        ? 'rgba(0,255,204,0.1)'
+                        : savingStack
+                        ? '#0a0a0a'
+                        : 'transparent',
+                      color: stackSaved ? '#00ffcc' : savingStack ? '#666' : '#00ffcc',
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '13px',
+                      letterSpacing: '2px',
+                      border: `1px solid ${stackSaved ? 'rgba(0,255,204,0.4)' : 'rgba(0,255,204,0.3)'}`,
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      marginBottom: '6px',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!savingStack && !stackSaved) {
+                        e.currentTarget.style.background = 'rgba(0,255,204,0.08)';
+                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,255,204,0.15)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!savingStack && !stackSaved) {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
+                    }}
+                  >
+                    {stackSaved ? 'STACK SAVED ✓' : savingStack ? 'SAVING...' : 'SAVE STACK'}
+                  </button>
+                )}
+              </FadeInSection>
+
               {/* Divider */}
               <div
-                className="mb-6"
+                className="mb-6 mt-2"
                 style={{
                   height: '1px',
                   background: 'rgba(255,255,255,0.06)',
                 }}
               />
 
-              {/* Your Stack */}
+              {/* Your Stack (existing supplement tracker) */}
               <FadeInSection delay={0.1}>
                 <div className="flex justify-between items-baseline mb-3">
                   <h2
@@ -602,7 +1144,7 @@ export default function DashboardPage() {
                       textTransform: 'uppercase',
                     }}
                   >
-                    YOUR STACK
+                    INTAKE TRACKER
                   </h2>
                   <span
                     style={{
