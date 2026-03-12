@@ -84,6 +84,7 @@ export default function AuthPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -119,15 +120,22 @@ export default function AuthPage() {
         if (!agreedToTerms) {
           throw new Error('You must agree to the Terms of Service');
         }
-        const { error: authError } = await supabase.auth.signUp({
+        const { data, error: authError } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: {
             data: { full_name: form.name },
+            emailRedirectTo: window.location.origin + '/auth/callback?next=/dashboard',
           },
         });
         if (authError) throw authError;
-        router.push('/dashboard');
+        // If session exists, user is immediately signed in (email confirmation disabled)
+        if (data.session) {
+          router.push('/dashboard');
+        } else {
+          // Email confirmation required — show message
+          setSuccessMessage('Check your email for a confirmation link, then come back and sign in.');
+        }
       }
     } catch (err) {
       setError(err.message || 'Something went wrong');
@@ -143,7 +151,7 @@ export default function AuthPage() {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/dashboard',
+          redirectTo: window.location.origin + '/auth/callback?next=/dashboard',
         },
       });
       if (authError) throw authError;
@@ -160,7 +168,7 @@ export default function AuthPage() {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: window.location.origin + '/dashboard',
+          redirectTo: window.location.origin + '/auth/callback?next=/dashboard',
         },
       });
       if (authError) throw authError;
@@ -601,6 +609,26 @@ export default function AuthPage() {
               }}
             >
               {error}
+            </div>
+          )}
+
+          {/* Success message */}
+          {successMessage && (
+            <div
+              style={{
+                fontFamily: spaceMono,
+                fontSize: 10,
+                color: '#00ffcc',
+                textAlign: 'center',
+                padding: '12px 16px',
+                background: 'rgba(0,255,204,0.06)',
+                border: '1px solid rgba(0,255,204,0.15)',
+                borderRadius: 4,
+                marginTop: 8,
+                lineHeight: 1.5,
+              }}
+            >
+              {successMessage}
             </div>
           )}
 
