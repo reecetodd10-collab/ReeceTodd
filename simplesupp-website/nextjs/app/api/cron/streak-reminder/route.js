@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import webpush from 'web-push';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Configure web push with VAPID keys
+if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    'mailto:info@avierafit.com',
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
 
 // Called daily by Vercel Cron — sends streak reminders to users who haven't logged today
 export async function GET(request) {
@@ -26,6 +36,56 @@ export async function GET(request) {
 
     if (error) throw error;
 
+    // ─── Send Web Push Notifications ───
+    let pushSent = 0;
+    if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      const userIds = (users || []).map((u) => u.id);
+      if (userIds.length > 0) {
+        const { data: pushSubs } = await supabase
+          .from('push_subscriptions')
+          .select('*')
+          .in('user_id', userIds);
+
+        const staleEndpoints = [];
+        for (const sub of pushSubs || []) {
+          const matchedUser = users.find((u) => u.id === sub.user_id);
+          if (!matchedUser) continue;
+
+          const payload = JSON.stringify({
+            title: "\uD83D\uDD25 Don't break your streak!",
+            body: `You're on a ${matchedUser.current_streak}-day streak. Log your supplements now.`,
+            url: '/dashboard',
+            icon: '/Aviera_Final_Transparent.png',
+          });
+
+          try {
+            await webpush.sendNotification(
+              {
+                endpoint: sub.endpoint,
+                keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth },
+              },
+              payload
+            );
+            pushSent++;
+          } catch (pushErr) {
+            if (pushErr.statusCode === 410 || pushErr.statusCode === 404) {
+              staleEndpoints.push(sub.endpoint);
+            }
+            console.error(`Push failed for endpoint:`, pushErr.statusCode || pushErr.message);
+          }
+        }
+
+        // Clean up stale subscriptions
+        if (staleEndpoints.length > 0) {
+          await supabase
+            .from('push_subscriptions')
+            .delete()
+            .in('endpoint', staleEndpoints);
+        }
+      }
+    }
+
+    // ─── Send Email Notifications ───
     let sent = 0;
     for (const user of (users || [])) {
       if (!user.email) continue;
@@ -83,6 +143,7 @@ export async function GET(request) {
       success: true,
       usersFound: users?.length || 0,
       emailsSent: sent,
+      pushSent,
     });
   } catch (error) {
     console.error('Streak reminder cron error:', error);

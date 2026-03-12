@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { getAuthUser } from '../../../lib/supabase-server';
-import { createClient } from '@supabase/supabase-js';
+import { getAuthUser, createSupabaseAdmin } from '../../../lib/supabase-server';
 
 // System prompt specifically for the quiz chat widget
 const QUIZ_CHAT_SYSTEM_PROMPT = `You are Aviera AI, a knowledgeable and friendly supplement advisor helping users understand their personalized supplement recommendations.
@@ -76,11 +75,8 @@ export async function POST(request) {
     const authUser = await getAuthUser(request);
     const userId = authUser?.id;
 
-    // Initialize Supabase
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    // Initialize Supabase admin client
+    const supabase = createSupabaseAdmin();
 
     // Build enriched context from auth + Supabase
     let contextPrompt = QUIZ_CHAT_SYSTEM_PROMPT;
@@ -88,44 +84,134 @@ export async function POST(request) {
     // If user is authenticated, fetch their data
     if (userId) {
       try {
-        // Fetch user's quiz results
-        const { data: quizResults } = await supabase
-          .from('quiz_results')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(1)
+        // Look up internal DB user for streak info
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('id, current_streak, longest_streak, last_intake_date')
+          .eq('auth_user_id', userId)
           .single();
 
-        // Fetch user's orders (if you have an orders table)
-        const { data: orders } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(5);
+        const internalUserId = dbUser?.id;
+
+        // Run all queries in parallel
+        const [quizRes, stacksRes, intakeRes, optimizationRes, ordersRes] = await Promise.all([
+          // Latest 3 quiz responses
+          internalUserId
+            ? supabase
+                .from('quiz_responses')
+                .select('goals, experience_level, age_range, gender, workout_frequency, diet_type, sleep_quality, stress_level, current_supplements, recommended_stack, created_at')
+                .eq('user_id', internalUserId)
+                .order('created_at', { ascending: false })
+                .limit(3)
+            : Promise.resolve({ data: [] }),
+
+          // Current supplement stacks
+          internalUserId
+            ? supabase
+                .from('supplement_stacks')
+                .select('name, supplements, created_at')
+                .eq('user_id', internalUserId)
+                .order('created_at', { ascending: false })
+                .limit(5)
+            : Promise.resolve({ data: [] }),
+
+          // Intake logs from last 30 days
+          internalUserId
+            ? supabase
+                .from('intake_logs')
+                .select('supplement_name, created_at')
+                .eq('user_id', internalUserId)
+                .gte('created_at', new Date(Date.now() - 30 * 86400000).toISOString())
+                .order('created_at', { ascending: false })
+            : Promise.resolve({ data: [] }),
+
+          // Latest optimization score (uses auth_user_id)
+          supabase
+            .from('supplement_optimization_results')
+            .select('optimization_score, primary_goal, primary_bottleneck, scores, created_at')
+            .eq('auth_user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single(),
+
+          // Fetch user's orders (if table exists)
+          supabase
+            .from('orders')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(5),
+        ]);
+
+        const quizData = quizRes.data || [];
+        const latestQuiz = quizData[0];
+
+        // Summarize intake logs by supplement frequency
+        const intakeSummary = {};
+        if (intakeRes.data) {
+          intakeRes.data.forEach(log => {
+            intakeSummary[log.supplement_name] = (intakeSummary[log.supplement_name] || 0) + 1;
+          });
+        }
 
         contextPrompt += `\n\n=== AUTHENTICATED USER DATA ===
 User ID: ${userId}
 
 Quiz Results:
-${quizResults ? `
-- Primary Goal: ${quizResults.primary_goal || 'Not specified'}
-- Age: ${quizResults.age || 'Not specified'}
-- Gender: ${quizResults.gender || 'Not specified'}
-- Activity Level: ${quizResults.activity_level || 'Not specified'}
-- Workout Frequency: ${quizResults.workout_frequency || 'Not specified'}
-- Diet Type: ${quizResults.diet_type || 'Not specified'}
-- Sleep: ${quizResults.sleep_hours || 'Not specified'} hours
-- Stress Level: ${quizResults.stress_level || 'Not specified'}
-- Biggest Challenge: ${quizResults.biggest_challenge || 'Not specified'}
-- Recommended Stack: ${JSON.stringify(quizResults.recommended_stack) || 'Not specified'}
-` : 'No quiz results found - suggest they take the quiz!'}
+${latestQuiz ? `
+- Goals: ${JSON.stringify(latestQuiz.goals) || 'Not specified'}
+- Age Range: ${latestQuiz.age_range || 'Not specified'}
+- Gender: ${latestQuiz.gender || 'Not specified'}
+- Experience Level: ${latestQuiz.experience_level || 'Not specified'}
+- Workout Frequency: ${latestQuiz.workout_frequency || 'Not specified'}
+- Diet Type: ${latestQuiz.diet_type || 'Not specified'}
+- Sleep Quality: ${latestQuiz.sleep_quality || 'Not specified'}
+- Stress Level: ${latestQuiz.stress_level || 'Not specified'}
+- Current Supplements: ${JSON.stringify(latestQuiz.current_supplements) || 'None'}
+- AI Recommended Stack: ${JSON.stringify(latestQuiz.recommended_stack) || 'Not specified'}
+` : 'No quiz results found - suggest they take the quiz!'}`;
 
-Purchase History:
+        // Supplement stacks
+        if (stacksRes.data && stacksRes.data.length > 0) {
+          contextPrompt += `\nCurrent Supplement Stacks:`;
+          stacksRes.data.forEach(stack => {
+            contextPrompt += `\n- ${stack.name}: ${JSON.stringify(stack.supplements)}`;
+          });
+        }
+
+        // Intake frequency
+        const intakeEntries = Object.entries(intakeSummary);
+        if (intakeEntries.length > 0) {
+          contextPrompt += `\n\nSupplement Intake (last 30 days):`;
+          intakeEntries.forEach(([name, count]) => {
+            contextPrompt += `\n- ${name}: ${count} time(s)`;
+          });
+        }
+
+        // Optimization score
+        if (optimizationRes.data) {
+          const opt = optimizationRes.data;
+          contextPrompt += `\n\nSupplement Optimization Score:
+- Score: ${opt.optimization_score}/100
+- Primary Goal: ${opt.primary_goal || 'Not specified'}
+- Primary Bottleneck: ${opt.primary_bottleneck || 'None identified'}
+- Sub-scores: ${JSON.stringify(opt.scores) || 'N/A'}`;
+        }
+
+        // Streak info
+        if (dbUser) {
+          contextPrompt += `\n\nAdherence & Streak:
+- Current streak: ${dbUser.current_streak || 0} day(s)
+- Longest streak: ${dbUser.longest_streak || 0} day(s)
+- Last intake logged: ${dbUser.last_intake_date || 'Never'}`;
+        }
+
+        // Purchase history
+        const orders = ordersRes.data;
+        contextPrompt += `\n\nPurchase History:
 ${orders && orders.length > 0 ? orders.map(order => `- ${order.product_name} (${new Date(order.created_at).toLocaleDateString()})`).join('\n') : 'No previous orders'}
 
-Use this data to provide highly personalized recommendations.`;
+Use this data to provide highly personalized recommendations. Reference their specific supplements, goals, streak, and optimization score when relevant.`;
 
       } catch (dbError) {
         console.error('Error fetching user data:', dbError);

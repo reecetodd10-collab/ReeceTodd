@@ -1,88 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 
-// ─── Mock supplement data ───
-const SUPPLEMENTS = [
-  {
-    id: 1,
-    name: 'Creatine Monohydrate',
-    tier: 'MUST HAVE',
-    tierColor: '#00ffcc',
-    dosage: '5g · Morning',
-    progress: 65,
-    streak: 12,
-    servingsCompleted: 39,
-    servingsTotal: 60,
-    personalBest: 14,
-    aiNote:
-      "Based on your training frequency (5x/week) and goals, creatine is the single most effective supplement for strength and cognitive performance. Your optimization score increases by ~8 points with consistent use.",
-    howToTake: [
-      { icon: '\u{1F4CA}', label: 'Dosage', value: '5g (1 scoop)' },
-      { icon: '\u23F0', label: 'When', value: 'Morning, with water' },
-      { icon: '\u{1F37D}', label: 'With', value: 'Can be taken with any meal' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Omega-3 Fish Oil',
-    tier: 'MUST HAVE',
-    tierColor: '#00ffcc',
-    dosage: '2g · With food',
-    progress: 45,
-    streak: 8,
-    servingsCompleted: 27,
-    servingsTotal: 60,
-    personalBest: 10,
-    aiNote:
-      "Your diet analysis shows low EPA/DHA intake. Omega-3s reduce inflammation from high-intensity training and support cardiovascular health. Critical for recovery between sessions.",
-    howToTake: [
-      { icon: '\u{1F4CA}', label: 'Dosage', value: '2g (2 softgels)' },
-      { icon: '\u23F0', label: 'When', value: 'With lunch or dinner' },
-      { icon: '\u{1F37D}', label: 'With', value: 'Always take with a meal containing fat' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Vitamin D3',
-    tier: 'RECOMMENDED',
-    tierColor: '#a855f7',
-    dosage: '5000 IU · Morning',
-    progress: 30,
-    streak: 5,
-    servingsCompleted: 18,
-    servingsTotal: 60,
-    personalBest: 7,
-    aiNote:
-      "Based on your location and indoor training schedule, your Vitamin D levels are likely suboptimal. D3 supplementation supports immune function, bone density, and mood — all critical for consistent training.",
-    howToTake: [
-      { icon: '\u{1F4CA}', label: 'Dosage', value: '5000 IU (1 softgel)' },
-      { icon: '\u23F0', label: 'When', value: 'Morning, with breakfast' },
-      { icon: '\u{1F37D}', label: 'With', value: 'Take with a fat-containing meal' },
-    ],
-  },
-  {
-    id: 4,
-    name: 'Magnesium Glycinate',
-    tier: 'RECOMMENDED',
-    tierColor: '#a855f7',
-    dosage: '400mg · Night',
-    progress: 20,
-    streak: 3,
-    servingsCompleted: 12,
-    servingsTotal: 60,
-    personalBest: 5,
-    aiNote:
-      "Your sleep quality data and high training volume suggest magnesium depletion. Glycinate form is best absorbed and promotes relaxation. Should improve sleep onset and reduce muscle cramping.",
-    howToTake: [
-      { icon: '\u{1F4CA}', label: 'Dosage', value: '400mg (2 capsules)' },
-      { icon: '\u23F0', label: 'When', value: '30-60 min before bed' },
-      { icon: '\u{1F37D}', label: 'With', value: 'Can be taken on an empty stomach' },
-    ],
-  },
-];
+// ─── Max supplement slots ───
+const MAX_SLOTS = 6;
 
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -215,14 +140,67 @@ function StickyNav({ menuOpen, setMenuOpen }) {
   );
 }
 
+// ─── Loading Skeleton ───
+function DashboardSkeleton() {
+  return (
+    <div className="animate-pulse">
+      {/* Score ring skeleton */}
+      <div className="flex justify-center mb-8 mt-4">
+        <div
+          className="rounded-full"
+          style={{
+            width: '150px',
+            height: '150px',
+            background: '#111',
+            border: '6px solid #1a1a1a',
+          }}
+        />
+      </div>
+
+      {/* Section label skeleton */}
+      <div
+        className="mb-3"
+        style={{ width: '120px', height: '12px', background: '#111', borderRadius: '4px' }}
+      />
+
+      {/* Stack grid skeleton */}
+      <div className="grid grid-cols-2 gap-2 mb-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="rounded-lg"
+            style={{
+              background: '#0a0a0a',
+              minHeight: '100px',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════
 // DASHBOARD PAGE
 // ═══════════════════════════════════════════
 export default function DashboardPage() {
+  const router = useRouter();
+  const { user, session, loading: authLoading } = useSupabaseUser();
+
   const [menuOpen, setMenuOpen] = useState(false);
   // Views: 'dashboard' | 'detail' | 'celebration'
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedSupplement, setSelectedSupplement] = useState(null);
+
+  // Real data state
+  const [dataLoading, setDataLoading] = useState(true);
+  const [optimizationScore, setOptimizationScore] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
+  const [supplements, setSupplements] = useState([]);
+  const [intakeLogs, setIntakeLogs] = useState([]);
+  const [loggingIntake, setLoggingIntake] = useState(false);
 
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
@@ -245,13 +223,126 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // Redirect to /auth if not signed in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth');
+    }
+  }, [authLoading, user, router]);
+
+  // Fetch real data on mount
+  const fetchDashboardData = useCallback(async () => {
+    if (!session?.access_token) return;
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    };
+
+    setDataLoading(true);
+
+    try {
+      const [intakeRes, stacksRes, optimizationRes] = await Promise.allSettled([
+        fetch('/api/intake?days=30', { headers }),
+        fetch('/api/stacks', { headers }),
+        fetch('/api/optimization-results?history=true', { headers }),
+      ]);
+
+      // Process intake data
+      if (intakeRes.status === 'fulfilled' && intakeRes.value.ok) {
+        const intakeData = await intakeRes.value.json();
+        setCurrentStreak(intakeData.streak || 0);
+        setLongestStreak(intakeData.longest_streak || 0);
+        setIntakeLogs(intakeData.logs || []);
+      }
+
+      // Process stacks data
+      if (stacksRes.status === 'fulfilled' && stacksRes.value.ok) {
+        const stacksData = await stacksRes.value.json();
+        const stacks = stacksData.stacks || [];
+        if (stacks.length > 0) {
+          // Use the latest stack
+          const latestStack = stacks[0];
+          const stackSupplements = (latestStack.supplements || latestStack.items || []).map(
+            (supp, idx) => ({
+              id: supp.id || idx + 1,
+              name: supp.name || supp.supplement_name || 'Unknown',
+              tier: supp.tier || (idx < 2 ? 'MUST HAVE' : 'RECOMMENDED'),
+              tierColor: (supp.tier || '').toUpperCase() === 'MUST HAVE' || idx < 2 ? '#00ffcc' : '#a855f7',
+              dosage: supp.dosage || supp.dose || '',
+              progress: supp.progress || 0,
+              streak: supp.streak || 0,
+              servingsCompleted: supp.servings_completed || 0,
+              servingsTotal: supp.servings_total || 60,
+              personalBest: supp.personal_best || 0,
+              aiNote: supp.ai_note || supp.reason || '',
+              howToTake: supp.how_to_take || [],
+            })
+          );
+          setSupplements(stackSupplements);
+        }
+      }
+
+      // Process optimization score
+      if (optimizationRes.status === 'fulfilled' && optimizationRes.value.ok) {
+        const optimizationData = await optimizationRes.value.json();
+        const results = optimizationData.results || [];
+        if (results.length > 0) {
+          // Use latest result's optimization_score
+          const latestResult = results[0];
+          setOptimizationScore(latestResult.optimization_score || 0);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err);
+    } finally {
+      setDataLoading(false);
+    }
+  }, [session?.access_token]);
+
+  useEffect(() => {
+    if (session?.access_token) {
+      fetchDashboardData();
+    }
+  }, [session?.access_token, fetchDashboardData]);
+
+  // Log intake for a supplement
+  const handleLogIntake = async (supplementName) => {
+    if (!session?.access_token || loggingIntake) return;
+
+    setLoggingIntake(true);
+    try {
+      const res = await fetch('/api/intake', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ supplement_name: supplementName }),
+      });
+
+      if (res.ok) {
+        // Show celebration then refresh data
+        setCurrentView('celebration');
+        // Refresh data in background
+        fetchDashboardData();
+      }
+    } catch (err) {
+      console.error('Failed to log intake:', err);
+    } finally {
+      setLoggingIntake(false);
+    }
+  };
+
   const handleSlotClick = (supplement) => {
     setSelectedSupplement(supplement);
     setCurrentView('detail');
   };
 
   const handleConfirmIntake = () => {
-    setCurrentView('celebration');
+    if (selectedSupplement) {
+      handleLogIntake(selectedSupplement.name);
+    }
   };
 
   const handleBackToDashboard = () => {
@@ -264,13 +355,55 @@ export default function DashboardPage() {
   };
 
   // Score ring calculations
-  const scoreValue = 87;
+  const scoreValue = optimizationScore;
   const radius = 65;
-  const circumference = 2 * Math.PI * radius; // ~408
+  const circumference = 2 * Math.PI * radius;
   const scoreOffset = circumference - (scoreValue / 100) * circumference;
+
+  // Score label based on value
+  const getScoreLabel = (score) => {
+    if (score >= 80) return "YOU'RE CRUSHING IT";
+    if (score >= 60) return 'SOLID PROGRESS';
+    if (score >= 40) return 'BUILDING MOMENTUM';
+    if (score > 0) return 'JUST GETTING STARTED';
+    return 'TAKE THE QUIZ';
+  };
+
+  const getScoreSubtext = (score) => {
+    if (score >= 80) return "You're in the top 15% of optimizers";
+    if (score >= 60) return 'Above average optimization';
+    if (score >= 40) return 'Room to improve your stack';
+    if (score > 0) return 'Consistency is key';
+    return 'Complete the O.S. quiz to get your score';
+  };
 
   // Confetti colors
   const confettiColors = ['#00ffcc', '#ff2d55', '#a855f7'];
+
+  // Empty slot count
+  const emptySlots = Math.max(0, MAX_SLOTS - supplements.length);
+
+  // Show loading or redirect states
+  if (authLoading) {
+    return (
+      <div
+        className="relative min-h-screen"
+        style={{ background: '#000000', color: '#ffffff' }}
+      >
+        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <main className="relative z-10 pt-[60px] pb-24 px-5">
+          <div className="max-w-[430px] mx-auto">
+            <DashboardSkeleton />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // Will redirect via useEffect
+    return null;
+  }
 
   return (
     <div
@@ -295,8 +428,11 @@ export default function DashboardPage() {
       <main className="relative z-10 pt-[60px] pb-24 px-5">
         <div className="max-w-[430px] mx-auto">
 
+          {/* Show skeleton while data is loading */}
+          {dataLoading && currentView === 'dashboard' && <DashboardSkeleton />}
+
           {/* ═══ VIEW 1: DASHBOARD HOME ═══ */}
-          {currentView === 'dashboard' && (
+          {!dataLoading && currentView === 'dashboard' && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -394,7 +530,7 @@ export default function DashboardPage() {
                     textShadow: '0 0 20px rgba(0, 255, 204, 0.3)',
                   }}
                 >
-                  YOU&apos;RE CRUSHING IT
+                  {getScoreLabel(scoreValue)}
                 </p>
                 <p
                   className="text-center mb-7"
@@ -404,9 +540,46 @@ export default function DashboardPage() {
                     color: '#666',
                   }}
                 >
-                  You&apos;re in the top 15% of optimizers
+                  {getScoreSubtext(scoreValue)}
                 </p>
               </FadeInSection>
+
+              {/* Streak Banner */}
+              {currentStreak > 0 && (
+                <FadeInSection delay={0.05}>
+                  <div
+                    className="text-center mb-4 py-3 rounded-lg"
+                    style={{
+                      background: 'rgba(255, 45, 85, 0.08)',
+                      border: '1px solid rgba(255, 45, 85, 0.2)',
+                    }}
+                  >
+                    <p
+                      className="streak-glow"
+                      style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '16px',
+                        color: '#ff2d55',
+                        letterSpacing: '2px',
+                      }}
+                    >
+                      {'\u{1F525}'} {currentStreak} DAY STREAK
+                    </p>
+                    {longestStreak > currentStreak && (
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                          fontSize: '9px',
+                          color: '#666',
+                          marginTop: '4px',
+                        }}
+                      >
+                        Personal best: {longestStreak} days
+                      </p>
+                    )}
+                  </div>
+                </FadeInSection>
+              )}
 
               {/* Divider */}
               <div
@@ -438,7 +611,7 @@ export default function DashboardPage() {
                       color: '#666',
                     }}
                   >
-                    4/6 slots filled
+                    {supplements.length}/{MAX_SLOTS} slots filled
                   </span>
                 </div>
 
@@ -447,7 +620,7 @@ export default function DashboardPage() {
                   className="grid grid-cols-2 gap-2 mb-6"
                 >
                   {/* Filled Slots */}
-                  {SUPPLEMENTS.map((supp) => (
+                  {supplements.map((supp) => (
                     <div
                       key={supp.id}
                       className="rounded-lg cursor-pointer transition-colors"
@@ -486,16 +659,18 @@ export default function DashboardPage() {
                       >
                         {supp.tier}
                       </p>
-                      <p
-                        className="mb-[6px]"
-                        style={{
-                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                          fontSize: '9px',
-                          color: '#666',
-                        }}
-                      >
-                        {supp.dosage}
-                      </p>
+                      {supp.dosage && (
+                        <p
+                          className="mb-[6px]"
+                          style={{
+                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                            fontSize: '9px',
+                            color: '#666',
+                          }}
+                        >
+                          {supp.dosage}
+                        </p>
+                      )}
                       {/* Progress bar */}
                       <div
                         className="mb-1 overflow-hidden"
@@ -516,21 +691,45 @@ export default function DashboardPage() {
                           }}
                         />
                       </div>
-                      <p style={{ fontSize: '9px', color: '#ff2d55' }}>
-                        {'\u{1F525}'} {supp.streak} days
-                      </p>
+                      <div className="flex items-center justify-between">
+                        <p style={{ fontSize: '9px', color: '#ff2d55' }}>
+                          {'\u{1F525}'} {supp.streak} days
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLogIntake(supp.name);
+                          }}
+                          disabled={loggingIntake}
+                          className="bg-transparent border-none cursor-pointer"
+                          style={{
+                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                            fontSize: '8px',
+                            color: '#00ffcc',
+                            padding: '2px 6px',
+                            border: '1px solid rgba(0,255,204,0.3)',
+                            borderRadius: '3px',
+                            opacity: loggingIntake ? 0.5 : 1,
+                          }}
+                          title="Log intake"
+                        >
+                          LOG
+                        </button>
+                      </div>
                     </div>
                   ))}
 
                   {/* Empty Slots */}
-                  {[1, 2].map((i) => (
-                    <div
+                  {Array.from({ length: emptySlots }).map((_, i) => (
+                    <Link
                       key={`empty-${i}`}
-                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
+                      href="/supplement-optimization-score"
+                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors no-underline"
                       style={{
                         border: '1px dashed rgba(255,255,255,0.1)',
                         minHeight: '100px',
                         background: 'transparent',
+                        textDecoration: 'none',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = '#333';
@@ -560,83 +759,60 @@ export default function DashboardPage() {
                       >
                         Add
                       </span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </FadeInSection>
 
-              {/* AI Recommended Next */}
-              <FadeInSection delay={0.2}>
-                <p
-                  className="mb-2"
-                  style={{
-                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                    fontSize: '9px',
-                    color: '#a855f7',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  AI RECOMMENDED NEXT
-                </p>
-                <div
-                  className="rounded-lg flex justify-between items-center"
-                  style={{
-                    background: '#0a0a0a',
-                    padding: '14px',
-                    border: '1px solid rgba(168, 85, 247, 0.2)',
-                    borderLeft: '3px solid #a855f7',
-                  }}
-                >
-                  <div className="flex-1">
+              {/* No stack prompt */}
+              {supplements.length === 0 && (
+                <FadeInSection delay={0.2}>
+                  <Link
+                    href="/supplement-optimization-score"
+                    className="block rounded-lg text-center no-underline"
+                    style={{
+                      background: '#0a0a0a',
+                      padding: '24px',
+                      border: '1px solid rgba(0, 255, 204, 0.2)',
+                      textDecoration: 'none',
+                    }}
+                  >
                     <p
-                      className="mb-[2px]"
                       style={{
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                        fontSize: '14px',
+                        fontSize: '16px',
                         color: '#fff',
-                        letterSpacing: '0.5px',
-                      }}
-                    >
-                      Ashwagandha KSM-66
-                    </p>
-                    <p
-                      style={{
-                        fontSize: '8px',
-                        color: '#a855f7',
-                        letterSpacing: '1px',
+                        letterSpacing: '2px',
                         textTransform: 'uppercase',
-                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        marginBottom: '8px',
                       }}
                     >
-                      NEXT BEST
+                      BUILD YOUR STACK
                     </p>
                     <p
-                      className="mt-1"
                       style={{
                         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                        fontSize: '9px',
+                        fontSize: '10px',
                         color: '#666',
+                        lineHeight: 1.5,
+                        marginBottom: '16px',
                       }}
                     >
-                      Stress &amp; recovery support
+                      Take the Optimization Score quiz to get your personalized supplement stack
                     </p>
-                  </div>
-                  <button
-                    className="bg-transparent border-none cursor-pointer"
-                    style={{
-                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                      fontSize: '11px',
-                      color: '#a855f7',
-                      letterSpacing: '1px',
-                    }}
-                    onMouseEnter={(e) => (e.target.style.color = '#c084fc')}
-                    onMouseLeave={(e) => (e.target.style.color = '#a855f7')}
-                  >
-                    Add to Stack &rarr;
-                  </button>
-                </div>
-              </FadeInSection>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '12px',
+                        color: '#00ffcc',
+                        letterSpacing: '2px',
+                      }}
+                    >
+                      START QUIZ &rarr;
+                    </span>
+                  </Link>
+                </FadeInSection>
+              )}
             </motion.div>
           )}
 
@@ -695,98 +871,102 @@ export default function DashboardPage() {
               </span>
 
               {/* Why It's In Your Stack */}
-              <div className="mb-6">
-                <h3
-                  className="mb-[10px]"
-                  style={{
-                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '12px',
-                    color: '#fff',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  WHY IT&apos;S IN YOUR STACK
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                    fontSize: '11px',
-                    color: '#999',
-                    lineHeight: 1.6,
-                    borderLeft: '2px solid #00ffcc',
-                    paddingLeft: '14px',
-                  }}
-                >
-                  {selectedSupplement.aiNote}
-                </p>
-              </div>
-
-              {/* How To Take It */}
-              <div className="mb-6">
-                <h3
-                  className="mb-[10px]"
-                  style={{
-                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                    fontSize: '12px',
-                    color: '#fff',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  HOW TO TAKE IT
-                </h3>
-                {selectedSupplement.howToTake.map((row, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-[10px]"
+              {selectedSupplement.aiNote && (
+                <div className="mb-6">
+                  <h3
+                    className="mb-[10px]"
                     style={{
-                      padding: '10px 0',
-                      borderBottom:
-                        idx < selectedSupplement.howToTake.length - 1
-                          ? '1px solid #111'
-                          : 'none',
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '12px',
+                      color: '#fff',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
                     }}
                   >
+                    WHY IT&apos;S IN YOUR STACK
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '11px',
+                      color: '#999',
+                      lineHeight: 1.6,
+                      borderLeft: '2px solid #00ffcc',
+                      paddingLeft: '14px',
+                    }}
+                  >
+                    {selectedSupplement.aiNote}
+                  </p>
+                </div>
+              )}
+
+              {/* How To Take It */}
+              {selectedSupplement.howToTake && selectedSupplement.howToTake.length > 0 && (
+                <div className="mb-6">
+                  <h3
+                    className="mb-[10px]"
+                    style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '12px',
+                      color: '#fff',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    HOW TO TAKE IT
+                  </h3>
+                  {selectedSupplement.howToTake.map((row, idx) => (
                     <div
-                      className="flex items-center justify-center flex-shrink-0"
+                      key={idx}
+                      className="flex items-center gap-[10px]"
                       style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '6px',
-                        background: '#0a0a0a',
-                        fontSize: '13px',
+                        padding: '10px 0',
+                        borderBottom:
+                          idx < selectedSupplement.howToTake.length - 1
+                            ? '1px solid #111'
+                            : 'none',
                       }}
                     >
-                      {row.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className="mb-[2px]"
+                      <div
+                        className="flex items-center justify-center flex-shrink-0"
                         style={{
-                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                          fontSize: '9px',
-                          color: '#666',
-                          letterSpacing: '1px',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {row.label}
-                      </p>
-                      <p
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '6px',
+                          background: '#0a0a0a',
                           fontSize: '13px',
-                          color: '#fff',
-                          letterSpacing: '0.5px',
                         }}
                       >
-                        {row.value}
-                      </p>
+                        {row.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p
+                          className="mb-[2px]"
+                          style={{
+                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                            fontSize: '9px',
+                            color: '#666',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {row.label}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                            fontSize: '13px',
+                            color: '#fff',
+                            letterSpacing: '0.5px',
+                          }}
+                        >
+                          {row.value}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Your Progress */}
               <div className="mb-6">
@@ -842,7 +1022,7 @@ export default function DashboardPage() {
                     color: '#666',
                   }}
                 >
-                  {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} servings remaining · ~{selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} days left
+                  {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} servings remaining
                 </p>
 
                 {/* Streak Display */}
@@ -859,54 +1039,52 @@ export default function DashboardPage() {
                     {'\u{1F525}'} {selectedSupplement.streak} DAY STREAK
                   </p>
                 </div>
-                <p
-                  className="text-center mb-5"
-                  style={{
-                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                    fontSize: '9px',
-                    color: '#666',
-                  }}
-                >
-                  Personal best: {selectedSupplement.personalBest} days
-                </p>
+                {selectedSupplement.personalBest > 0 && (
+                  <p
+                    className="text-center mb-5"
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '9px',
+                      color: '#666',
+                    }}
+                  >
+                    Personal best: {selectedSupplement.personalBest} days
+                  </p>
+                )}
               </div>
 
               {/* Confirm Button */}
               <button
                 onClick={handleConfirmIntake}
+                disabled={loggingIntake}
                 className="w-full rounded-lg cursor-pointer transition-all"
                 style={{
                   padding: '14px',
-                  background: '#00ffcc',
-                  color: '#000',
+                  background: loggingIntake ? '#0a0a0a' : '#00ffcc',
+                  color: loggingIntake ? '#666' : '#000',
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '14px',
                   letterSpacing: '2px',
                   border: 'none',
                   fontWeight: 600,
                   textTransform: 'uppercase',
+                  opacity: loggingIntake ? 0.6 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#00e6b8';
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 204, 0.3)';
+                  if (!loggingIntake) {
+                    e.currentTarget.style.background = '#00e6b8';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 204, 0.3)';
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#00ffcc';
-                  e.currentTarget.style.boxShadow = 'none';
+                  if (!loggingIntake) {
+                    e.currentTarget.style.background = '#00ffcc';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
                 }}
               >
-                I TOOK IT TODAY ✓
+                {loggingIntake ? 'LOGGING...' : 'I TOOK IT TODAY \u2713'}
               </button>
-              <p
-                className="text-center mt-[10px]"
-                style={{
-                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                  fontSize: '9px',
-                  color: '#444',
-                }}
-              >
-                Last confirmed: Today at 8:32 AM
-              </p>
             </motion.div>
           )}
 
@@ -962,7 +1140,7 @@ export default function DashboardPage() {
                     letterSpacing: '3px',
                   }}
                 >
-                  STREAK: {selectedSupplement.streak + 1} DAYS!
+                  STREAK: {currentStreak} DAYS!
                 </p>
 
                 <p
@@ -987,7 +1165,9 @@ export default function DashboardPage() {
                     lineHeight: 1.5,
                   }}
                 >
-                  Keep going — only {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted - 1} servings left
+                  {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted > 0
+                    ? `Keep going — only ${selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} servings left`
+                    : 'Keep up the consistency!'}
                 </p>
 
                 {/* Progress bar */}
@@ -1002,7 +1182,11 @@ export default function DashboardPage() {
                   >
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: '67%' }}
+                      animate={{
+                        width: `${selectedSupplement.servingsTotal > 0
+                          ? Math.round((selectedSupplement.servingsCompleted / selectedSupplement.servingsTotal) * 100)
+                          : 0}%`,
+                      }}
                       transition={{ duration: 1.2, delay: 0.5, ease: 'easeOut' }}
                       style={{
                         height: '100%',
@@ -1018,7 +1202,9 @@ export default function DashboardPage() {
                       color: '#666',
                     }}
                   >
-                    67% complete
+                    {selectedSupplement.servingsTotal > 0
+                      ? `${Math.round((selectedSupplement.servingsCompleted / selectedSupplement.servingsTotal) * 100)}% complete`
+                      : 'Logged!'}
                   </p>
                 </div>
 
