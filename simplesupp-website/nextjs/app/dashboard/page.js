@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
-import { fetchShopifyProducts } from '../lib/shopify';
+import { fetchShopifyProducts, addToCart, addMultipleToCart, getCheckoutUrl } from '../lib/shopify';
 
 // ─── Max supplement slots ───
 const MAX_SLOTS = 6;
@@ -295,6 +295,18 @@ export default function DashboardPage() {
   const [lastResultData, setLastResultData] = useState(null);
   const searchRef = useRef(null);
 
+  // Cart state
+  const [addingToCart, setAddingToCart] = useState({});
+  const [addingStackToCart, setAddingStackToCart] = useState(false);
+  const [stackAddedToCart, setStackAddedToCart] = useState(false);
+
+  // Intake log dropdown state
+  const [showLogDropdown, setShowLogDropdown] = useState(false);
+  const logDropdownRef = useRef(null);
+
+  // Suggestions panel (shown when clicking empty slot)
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -323,11 +335,14 @@ export default function DashboardPage() {
     }
   }, [authLoading, user, router]);
 
-  // Close search dropdown on outside click
+  // Close search dropdown and log dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchOpen(false);
+      }
+      if (logDropdownRef.current && !logDropdownRef.current.contains(e.target)) {
+        setShowLogDropdown(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -536,6 +551,14 @@ export default function DashboardPage() {
     setCurrentView('dashboard');
   };
 
+  // ─── Helper: find Shopify variantId by product name ───
+  const findVariantId = (name) => {
+    const match = shopifyProducts.find(
+      (p) => (p.title || '').toLowerCase() === name.toLowerCase()
+    );
+    return match?.variantId || null;
+  };
+
   // ─── Stack Builder helpers ───
   const addToStack = (item) => {
     if (stackItems.length >= MAX_SLOTS) return;
@@ -543,11 +566,14 @@ export default function DashboardPage() {
       (s) => s.name.toLowerCase() === item.name.toLowerCase()
     );
     if (alreadyIn) return;
+    // Resolve variantId from Shopify products for cart functionality
+    const variantId = item.variantId || findVariantId(item.name);
     setStackItems((prev) => [
       ...prev,
-      { id: item.id || `custom-${Date.now()}`, name: item.name, price: item.price || '' },
+      { id: item.id || `custom-${Date.now()}`, name: item.name, price: item.price || '', variantId },
     ]);
     setStackSaved(false);
+    setStackAddedToCart(false);
   };
 
   const removeFromStack = (id) => {
@@ -587,12 +613,69 @@ export default function DashboardPage() {
       if (res.ok) {
         setStackSaved(true);
         setTimeout(() => setStackSaved(false), 3000);
+        // Sync stack items to intake tracker so they appear there
+        const newSupplements = stackItems.map((s, idx) => ({
+          id: s.id || idx + 1,
+          name: s.name,
+          tier: idx < 2 ? 'MUST HAVE' : 'RECOMMENDED',
+          tierColor: idx < 2 ? '#00ffcc' : '#a855f7',
+          dosage: '',
+          progress: 0,
+          streak: 0,
+          servingsCompleted: 0,
+          servingsTotal: 60,
+          personalBest: 0,
+          aiNote: '',
+          howToTake: [],
+        }));
+        setSupplements(newSupplements);
       }
     } catch (err) {
       console.error('Failed to save stack:', err);
     } finally {
       setSavingStack(false);
     }
+  };
+
+  // ─── Cart helpers ───
+  const handleAddItemToCart = async (item) => {
+    if (!item.variantId) {
+      // Try to find variantId from Shopify products
+      const vid = findVariantId(item.name);
+      if (!vid) return; // Can't add to cart without variantId
+      item = { ...item, variantId: vid };
+    }
+    setAddingToCart((prev) => ({ ...prev, [item.id]: true }));
+    try {
+      await addToCart(item.variantId, 1);
+      setAddingToCart((prev) => ({ ...prev, [item.id]: 'done' }));
+      setTimeout(() => setAddingToCart((prev) => ({ ...prev, [item.id]: false })), 2000);
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+      setAddingToCart((prev) => ({ ...prev, [item.id]: false }));
+    }
+  };
+
+  const handleAddStackToCart = async () => {
+    const cartableItems = stackItems
+      .map((s) => ({ variantId: s.variantId || findVariantId(s.name), quantity: 1 }))
+      .filter((i) => i.variantId);
+    if (cartableItems.length === 0) return;
+    setAddingStackToCart(true);
+    try {
+      await addMultipleToCart(cartableItems);
+      setStackAddedToCart(true);
+      setTimeout(() => setStackAddedToCart(false), 3000);
+    } catch (err) {
+      console.error('Failed to add stack to cart:', err);
+    } finally {
+      setAddingStackToCart(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    const url = await getCheckoutUrl();
+    window.open(url, '_blank');
   };
 
   // Score ring calculations
@@ -904,7 +987,7 @@ export default function DashboardPage() {
                       BASED ON YOUR O.S.
                     </p>
                     <div className="grid grid-cols-2 gap-2">
-                      {recommendedProducts.slice(0, 4).map((rec, idx) => {
+                      {recommendedProducts.slice(0, 3).map((rec, idx) => {
                         const catColor = getCategoryColor(rec.title || '');
                         const catLabel = getCategoryLabel(rec.title || '');
                         const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
@@ -1105,6 +1188,26 @@ export default function DashboardPage() {
                             ${item.price}
                           </p>
                         )}
+                        {/* Add to Cart button */}
+                        {(item.variantId || findVariantId(item.name)) && (
+                          <button
+                            onClick={() => handleAddItemToCart(item)}
+                            disabled={addingToCart[item.id] === true || addingToCart[item.id] === 'done'}
+                            className="w-full mt-2 rounded cursor-pointer"
+                            style={{
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '7px',
+                              letterSpacing: '1px',
+                              color: addingToCart[item.id] === 'done' ? '#00ffcc' : '#fff',
+                              background: addingToCart[item.id] === 'done' ? 'rgba(0,255,204,0.08)' : 'rgba(255,255,255,0.05)',
+                              border: `1px solid ${addingToCart[item.id] === 'done' ? 'rgba(0,255,204,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                              padding: '4px 6px',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            {addingToCart[item.id] === 'done' ? 'ADDED \u2713' : addingToCart[item.id] === true ? '...' : 'ADD TO CART'}
+                          </button>
+                        )}
                       </motion.div>
                     );
                   })}
@@ -1114,6 +1217,7 @@ export default function DashboardPage() {
                     <button
                       key={`builder-empty-${i}`}
                       onClick={() => {
+                        setShowSuggestions(true);
                         setSearchOpen(false);
                         setSearchQuery('');
                         setTimeout(() => {
@@ -1325,9 +1429,150 @@ export default function DashboardPage() {
                       }
                     }}
                   >
-                    {stackSaved ? 'STACK SAVED ✓' : savingStack ? 'SAVING...' : 'SAVE STACK'}
+                    {stackSaved ? 'STACK SAVED \u2713' : savingStack ? 'SAVING...' : 'SAVE STACK'}
                   </button>
                 )}
+
+                {/* Add Stack to Cart + Checkout */}
+                {stackItems.length > 0 && stackItems.some(s => s.variantId || findVariantId(s.name)) && (
+                  <div className="flex gap-2 mb-2">
+                    <button
+                      onClick={handleAddStackToCart}
+                      disabled={addingStackToCart || stackAddedToCart}
+                      className="flex-1 rounded-lg cursor-pointer transition-all"
+                      style={{
+                        padding: '12px',
+                        background: stackAddedToCart ? 'rgba(0,255,204,0.08)' : '#0a0a0a',
+                        color: stackAddedToCart ? '#00ffcc' : '#fff',
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '11px',
+                        letterSpacing: '1.5px',
+                        border: `1px solid ${stackAddedToCart ? 'rgba(0,255,204,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {stackAddedToCart ? 'ADDED \u2713' : addingStackToCart ? 'ADDING...' : 'ADD STACK TO CART'}
+                    </button>
+                    <button
+                      onClick={handleCheckout}
+                      className="rounded-lg cursor-pointer transition-all"
+                      style={{
+                        padding: '12px 16px',
+                        background: '#00ffcc',
+                        color: '#000',
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '11px',
+                        letterSpacing: '1.5px',
+                        border: 'none',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,255,204,0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      CHECKOUT
+                    </button>
+                  </div>
+                )}
+
+                {/* Suggestions panel — shown when clicking empty slot */}
+                <AnimatePresence>
+                  {showSuggestions && recommendedProducts.length > 0 && stackItems.length < MAX_SLOTS && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mb-4 overflow-hidden"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <p style={{
+                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                          fontSize: '8px',
+                          color: '#a855f7',
+                          letterSpacing: '2px',
+                          textTransform: 'uppercase',
+                        }}>
+                          SUGGESTED FOR YOU
+                        </p>
+                        <button
+                          onClick={() => setShowSuggestions(false)}
+                          className="bg-transparent border-none cursor-pointer"
+                          style={{ color: '#444', fontSize: '12px', padding: '2px 4px' }}
+                        >
+                          \u2715
+                        </button>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto pb-1">
+                        {recommendedProducts
+                          .filter(rec => !stackItems.some(s => s.name.toLowerCase() === (rec.title || '').toLowerCase()))
+                          .slice(0, 3)
+                          .map((rec, idx) => {
+                            const sCatColor = getCategoryColor(rec.title || '');
+                            const sCatLabel = getCategoryLabel(rec.title || '');
+                            const sCatRgb = CATEGORY_COLOR_RGB[sCatColor] || '168, 85, 247';
+                            return (
+                              <button
+                                key={`sug-${idx}`}
+                                onClick={() => {
+                                  addToStack({ id: `sug-${idx}`, name: rec.title, price: rec.price || '' });
+                                  setShowSuggestions(false);
+                                }}
+                                className="flex-shrink-0 rounded-lg text-left cursor-pointer relative overflow-hidden"
+                                style={{
+                                  width: '140px',
+                                  background: '#0a0a0a',
+                                  border: `1px solid rgba(${sCatRgb}, 0.2)`,
+                                  padding: '10px',
+                                }}
+                              >
+                                <div style={{
+                                  position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+                                  background: sCatColor,
+                                }} />
+                                <span style={{
+                                  display: 'inline-block',
+                                  background: `rgba(${sCatRgb}, 0.12)`,
+                                  color: sCatColor,
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '6px',
+                                  letterSpacing: '1px',
+                                  padding: '1px 4px',
+                                  borderRadius: '2px',
+                                  marginBottom: '5px',
+                                }}>
+                                  {sCatLabel}
+                                </span>
+                                <p style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '10px',
+                                  color: '#fff',
+                                  letterSpacing: '0.3px',
+                                  textTransform: 'uppercase',
+                                  lineHeight: 1.2,
+                                  marginBottom: '4px',
+                                }}>
+                                  {rec.title}
+                                </p>
+                                <p style={{
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '8px',
+                                  color: '#00ffcc',
+                                }}>
+                                  + ADD
+                                </p>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </FadeInSection>
 
               {/* Divider */}
@@ -1353,15 +1598,99 @@ export default function DashboardPage() {
                   >
                     INTAKE TRACKER
                   </h2>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                      fontSize: '9px',
-                      color: '#666',
-                    }}
-                  >
-                    {supplements.length}/{MAX_SLOTS} slots filled
-                  </span>
+                  {/* Log Intake dropdown button */}
+                  <div ref={logDropdownRef} className="relative">
+                    <button
+                      onClick={() => setShowLogDropdown(!showLogDropdown)}
+                      className="rounded cursor-pointer transition-all"
+                      style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '10px',
+                        letterSpacing: '1px',
+                        color: '#00ffcc',
+                        background: 'transparent',
+                        border: '1px solid rgba(0,255,204,0.3)',
+                        padding: '4px 10px',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      LOG INTAKE {showLogDropdown ? '\u25B2' : '\u25BC'}
+                    </button>
+
+                    <AnimatePresence>
+                      {showLogDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 z-20 rounded-lg overflow-hidden"
+                          style={{
+                            top: 'calc(100% + 4px)',
+                            width: '200px',
+                            background: '#0f0f0f',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                          }}
+                        >
+                          {(supplements.length > 0 ? supplements : stackItems).map((item, idx) => {
+                            const dCatColor = getCategoryColor(item.name);
+                            const dCatRgb = CATEGORY_COLOR_RGB[dCatColor] || '168, 85, 247';
+                            return (
+                              <button
+                                key={`log-${idx}`}
+                                onClick={() => {
+                                  handleLogIntake(item.name);
+                                  setShowLogDropdown(false);
+                                }}
+                                disabled={loggingIntake}
+                                className="w-full text-left cursor-pointer"
+                                style={{
+                                  padding: '10px 12px',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                  borderLeft: `3px solid ${dCatColor}`,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = `rgba(${dCatRgb},0.05)`)}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                              >
+                                <span style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '11px',
+                                  color: '#fff',
+                                  letterSpacing: '0.5px',
+                                  textTransform: 'uppercase',
+                                }}>
+                                  {item.name}
+                                </span>
+                                <span style={{
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '8px',
+                                  color: '#00ffcc',
+                                }}>
+                                  LOG
+                                </span>
+                              </button>
+                            );
+                          })}
+                          {supplements.length === 0 && stackItems.length === 0 && (
+                            <p style={{
+                              padding: '12px',
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '9px',
+                              color: '#444',
+                              textAlign: 'center',
+                            }}>
+                              Build your stack first
+                            </p>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
 
                 {/* Stack Grid — Category-colored product cards */}
