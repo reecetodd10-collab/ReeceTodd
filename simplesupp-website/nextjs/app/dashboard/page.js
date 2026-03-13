@@ -93,7 +93,7 @@ function FadeInSection({ children, delay = 0, className = '' }) {
 }
 
 // ─── Sticky Navigation ───
-function StickyNav({ menuOpen, setMenuOpen, user }) {
+function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) {
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
@@ -119,11 +119,45 @@ function StickyNav({ menuOpen, setMenuOpen, user }) {
               textDecoration: 'none',
             }}
           >
-            ◉ Aviera
+            &#9673; Aviera
           </Link>
 
-          {/* User icon + hamburger */}
+          {/* Cart + User icon + hamburger */}
           <div className="flex items-center gap-3">
+            {/* Cart icon — only shown when items in cart */}
+            {cartCount > 0 && (
+              <button
+                onClick={onCartClick}
+                className="relative bg-transparent border-none cursor-pointer"
+                style={{ padding: '2px' }}
+                aria-label="View cart"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-6px',
+                    background: '#ff2d55',
+                    color: '#fff',
+                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                    fontSize: '8px',
+                    fontWeight: 700,
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {cartCount}
+                </span>
+              </button>
+            )}
             <Link
               href="/auth"
               className="flex items-center justify-center no-underline"
@@ -140,13 +174,12 @@ function StickyNav({ menuOpen, setMenuOpen, user }) {
               }}
             >
               {avatarUrl ? (
-                <Image
+                <img
                   src={avatarUrl}
                   alt="Profile"
                   width={28}
                   height={28}
                   style={{ borderRadius: '50%', objectFit: 'cover', width: '100%', height: '100%' }}
-                  unoptimized
                 />
               ) : (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -307,6 +340,9 @@ export default function DashboardPage() {
   // Suggestions panel (shown when clicking empty slot)
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Cart item count for nav badge
+  const [cartCount, setCartCount] = useState(0);
+
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -327,6 +363,38 @@ export default function DashboardPage() {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Listen for cart updates to show badge count
+  useEffect(() => {
+    const handleCartUpdate = (e) => {
+      setCartCount(e.detail?.itemCount || 0);
+    };
+    window.addEventListener('shopify:cart:updated', handleCartUpdate);
+    return () => window.removeEventListener('shopify:cart:updated', handleCartUpdate);
+  }, []);
+
+  // Auto-save stack to Supabase whenever stackItems change (debounced)
+  const autoSaveTimerRef = useRef(null);
+  useEffect(() => {
+    if (!session?.access_token || stackItems.length === 0) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        await fetch('/api/stacks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            name: 'My Stack',
+            supplements: stackItems.map((s) => ({ name: s.name, price: s.price })),
+          }),
+        });
+      } catch (_) {}
+    }, 1500);
+    return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
+  }, [stackItems, session?.access_token]);
 
   // Redirect to /auth if not signed in
   useEffect(() => {
@@ -717,7 +785,7 @@ export default function DashboardPage() {
         className="relative min-h-screen"
         style={{ background: '#000000', color: '#ffffff' }}
       >
-        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} />
+        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} cartCount={cartCount} onCartClick={handleCheckout} />
         <main className="relative z-10 pt-[60px] pb-24 px-5">
           <div className="max-w-[430px] mx-auto">
             <DashboardSkeleton />
@@ -749,7 +817,7 @@ export default function DashboardPage() {
         }}
       />
 
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} />
+      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} cartCount={cartCount} onCartClick={handleCheckout} />
 
       {/* Main content */}
       <main className="relative z-10 pt-[60px] pb-24 px-5">
@@ -1818,47 +1886,57 @@ export default function DashboardPage() {
                     );
                   })}
 
-                  {/* Empty Slots */}
-                  {Array.from({ length: emptySlots }).map((_, i) => (
-                    <Link
-                      key={`empty-${i}`}
-                      href="/supplement-optimization-score"
-                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors no-underline"
+                  {/* Empty Slots — show 1 "add from stack" button, rest are placeholders */}
+                  {emptySlots > 0 && (
+                    <div
+                      key="add-from-stack"
+                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors relative"
                       style={{
-                        border: '1px dashed rgba(255,255,255,0.1)',
+                        border: '1px dashed rgba(0,255,204,0.15)',
                         minHeight: '100px',
                         background: 'transparent',
-                        textDecoration: 'none',
                       }}
+                      onClick={() => setShowLogDropdown(!showLogDropdown)}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#333';
+                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.3)';
                         e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.15)';
                         e.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          fontSize: '20px',
-                          color: '#333',
-                          marginBottom: '4px',
-                        }}
-                      >
-                        +
+                      <span style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '18px',
+                        color: '#00ffcc',
+                        marginBottom: '2px',
+                      }}>+</span>
+                      <span style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '7px',
+                        color: '#00ffcc',
+                      }}>
+                        ADD FROM STACK
                       </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                          fontSize: '8px',
-                          color: '#333',
-                        }}
-                      >
-                        Add
-                      </span>
-                    </Link>
+                    </div>
+                  )}
+                  {emptySlots > 1 && Array.from({ length: emptySlots - 1 }).map((_, i) => (
+                    <div
+                      key={`empty-${i}`}
+                      className="rounded-lg flex flex-col items-center justify-center"
+                      style={{
+                        border: '1px dashed rgba(255,255,255,0.06)',
+                        minHeight: '100px',
+                        background: 'transparent',
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '18px',
+                        color: '#222',
+                      }}>+</span>
+                    </div>
                   ))}
                 </div>
               </FadeInSection>
