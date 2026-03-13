@@ -291,6 +291,8 @@ export default function DashboardPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [savingStack, setSavingStack] = useState(false);
   const [stackSaved, setStackSaved] = useState(false);
+  const [lastResultId, setLastResultId] = useState(null);
+  const [lastResultData, setLastResultData] = useState(null);
   const searchRef = useRef(null);
 
   // Install App CTA - shows after 15 seconds on first visit
@@ -436,6 +438,8 @@ export default function DashboardPage() {
         if (results.length > 0) {
           const latestResult = results[0];
           setOptimizationScore(latestResult.optimization_score || 0);
+          setLastResultId(latestResult.id);
+          setLastResultData(latestResult);
           // Extract recommended products from quiz result
           const recs = latestResult.recommended_products || [];
           setRecommendedProducts(Array.isArray(recs) ? recs : []);
@@ -454,8 +458,12 @@ export default function DashboardPage() {
     }
   }, [session?.access_token, fetchDashboardData]);
 
+  // Cooldown state
+  const [cooldownHours, setCooldownHours] = useState(0);
+  const [showCooldown, setShowCooldown] = useState(false);
+
   // Log intake for a supplement
-  const handleLogIntake = async (supplementName) => {
+  const handleLogIntake = async (supplementName, supplementObj = null) => {
     if (!session?.access_token || loggingIntake) return;
 
     setLoggingIntake(true);
@@ -470,7 +478,33 @@ export default function DashboardPage() {
       });
 
       if (res.ok) {
-        // Show celebration then refresh data
+        const data = await res.json();
+
+        // Check cooldown
+        if (data.cooldown) {
+          setCooldownHours(data.hoursLeft || 0);
+          setShowCooldown(true);
+          setTimeout(() => setShowCooldown(false), 4000);
+          return;
+        }
+
+        // Update streak immediately from response
+        if (data.streak != null) setCurrentStreak(data.streak);
+        if (data.longestStreak != null) setLongestStreak(data.longestStreak);
+
+        // Set selectedSupplement for celebration view if not already set
+        if (!selectedSupplement || selectedSupplement.name !== supplementName) {
+          const matchedSupp = supplements.find(s => s.name === supplementName);
+          setSelectedSupplement(matchedSupp || {
+            name: supplementName,
+            servingsCompleted: 0,
+            servingsTotal: 60,
+            streak: data.streak || 1,
+            personalBest: data.longestStreak || 0,
+          });
+        }
+
+        // Show celebration
         setCurrentView('celebration');
         // Refresh data in background
         fetchDashboardData();
@@ -489,7 +523,7 @@ export default function DashboardPage() {
 
   const handleConfirmIntake = () => {
     if (selectedSupplement) {
-      handleLogIntake(selectedSupplement.name);
+      handleLogIntake(selectedSupplement.name, selectedSupplement);
     }
   };
 
@@ -752,6 +786,36 @@ export default function DashboardPage() {
                 >
                   {getScoreSubtext(scoreValue)}
                 </p>
+                {/* View Last Results link */}
+                {lastResultId ? (
+                  <Link
+                    href={`/supplement-optimization-score?results=${lastResultId}`}
+                    className="block text-center no-underline mb-1"
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '9px',
+                      color: '#00ffcc',
+                      letterSpacing: '1px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    VIEW LAST RESULTS &rarr;
+                  </Link>
+                ) : (
+                  <Link
+                    href="/supplement-optimization-score"
+                    className="block text-center no-underline mb-1"
+                    style={{
+                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                      fontSize: '9px',
+                      color: '#00ffcc',
+                      letterSpacing: '1px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    TAKE THE QUIZ &rarr;
+                  </Link>
+                )}
               </FadeInSection>
 
               {/* Streak Banner */}
@@ -2068,6 +2132,47 @@ export default function DashboardPage() {
         </div>
       </footer>
 
+
+      {/* Cooldown Toast */}
+      <AnimatePresence>
+        {showCooldown && (
+          <motion.div
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 60, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed z-[70] left-0 right-0"
+            style={{ bottom: '80px' }}
+          >
+            <div
+              className="max-w-[430px] mx-auto rounded-lg text-center"
+              style={{
+                margin: '0 20px',
+                padding: '14px 16px',
+                background: '#1a1a1a',
+                border: '1px solid rgba(255, 45, 85, 0.3)',
+              }}
+            >
+              <p style={{
+                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                fontSize: '12px',
+                color: '#ff2d55',
+                letterSpacing: '1px',
+                marginBottom: '4px',
+              }}>
+                COOLDOWN ACTIVE
+              </p>
+              <p style={{
+                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                fontSize: '10px',
+                color: '#666',
+              }}>
+                You can log again in ~{cooldownHours} hour{cooldownHours !== 1 ? 's' : ''}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Install App CTA */}
       <AnimatePresence>

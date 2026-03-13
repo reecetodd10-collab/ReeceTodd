@@ -241,6 +241,54 @@ export default function SupplementOptimizationScore() {
     trackEvent('optimization_quiz_started');
   }, []);
 
+  // Load saved results from URL param ?results=ID
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const savedResultId = params.get('results');
+    if (!savedResultId) return;
+
+    async function loadSavedResult() {
+      try {
+        // Fetch the specific result
+        const headers = { 'Content-Type': 'application/json' };
+        try {
+          const { createClient } = await import('@supabase/supabase-js');
+          const sb = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+          );
+          const { data: { session: s } } = await sb.auth.getSession();
+          if (s?.access_token) headers['Authorization'] = `Bearer ${s.access_token}`;
+        } catch (_) {}
+
+        const res = await fetch('/api/optimization-results?history=true', { headers });
+        if (!res.ok) return;
+        const { results } = await res.json();
+        const saved = results?.find(r => String(r.id) === savedResultId) || results?.[0];
+        if (!saved) return;
+
+        // Restore state from saved result
+        setResultId(saved.id);
+        if (saved.scores) setScores(saved.scores);
+        if (saved.inputs) setResponses(prev => ({ ...prev, ...saved.inputs }));
+        if (saved.recommended_products) {
+          // Convert saved product format to recommendations format
+          const recs = saved.recommended_products.map((p, i) => ({
+            title: p.title,
+            price: p.price,
+            tier: i < 2 ? 'MUST HAVE' : 'RECOMMENDED',
+            reason: '',
+          }));
+          setRecommendations(recs);
+        }
+        setShowResults(true);
+      } catch (err) {
+        console.error('Failed to load saved result:', err);
+      }
+    }
+    loadSavedResult();
+  }, []);
+
   // Section definitions
   const sections = [
     {
@@ -572,9 +620,24 @@ export default function SupplementOptimizationScore() {
 
     // Save results to Supabase via API
     try {
+      const saveHeaders = { 'Content-Type': 'application/json' };
+      // Include auth token if signed in so results are tied to user
+      if (typeof window !== 'undefined') {
+        try {
+          const { createClient } = await import('@supabase/supabase-js');
+          const sb = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+          );
+          const { data: { session: currentSession } } = await sb.auth.getSession();
+          if (currentSession?.access_token) {
+            saveHeaders['Authorization'] = `Bearer ${currentSession.access_token}`;
+          }
+        } catch (_) { /* proceed without auth */ }
+      }
       const saveResponse = await fetch('/api/optimization-results', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: saveHeaders,
         body: JSON.stringify({
           email: email || authUser?.email,
           primary_goal: responses.primaryGoal,

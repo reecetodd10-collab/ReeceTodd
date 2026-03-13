@@ -113,8 +113,36 @@ export async function updateUserStreak(userId, streak, longestStreak, lastIntake
 }
 
 // Log supplement intake and update streak
+// Streak rules:
+//   - Can log again after 20 hours since last log
+//   - Streak breaks after 48 hours of not logging
+//   - Each valid log increments the streak by 1 day
 export async function logIntake(userId, supplementName, notes = null) {
   const supabase = createSupabaseAdmin();
+  const now = Date.now();
+
+  // Check last intake to enforce 20-hour cooldown
+  const { data: lastLog } = await supabase
+    .from('intake_logs')
+    .select('taken_at')
+    .eq('user_id', userId)
+    .order('taken_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (lastLog?.taken_at) {
+    const hoursSinceLast = (now - new Date(lastLog.taken_at).getTime()) / (1000 * 60 * 60);
+    if (hoursSinceLast < 20) {
+      const hoursLeft = Math.ceil(20 - hoursSinceLast);
+      return {
+        log: null,
+        streak: null,
+        longestStreak: null,
+        cooldown: true,
+        hoursLeft,
+      };
+    }
+  }
 
   // Insert intake log
   const { data: log, error: logError } = await supabase
@@ -129,10 +157,7 @@ export async function logIntake(userId, supplementName, notes = null) {
 
   if (logError) throw logError;
 
-  // Calculate streak
-  const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
+  // Calculate streak based on 48-hour window
   const { data: user } = await supabase
     .from('users')
     .select('current_streak, longest_streak, last_intake_date')
@@ -140,12 +165,25 @@ export async function logIntake(userId, supplementName, notes = null) {
     .single();
 
   let newStreak = 1;
-  if (user?.last_intake_date === yesterday) {
-    newStreak = (user.current_streak || 0) + 1;
-  } else if (user?.last_intake_date === today) {
-    newStreak = user.current_streak || 1; // already logged today
+  if (user?.last_intake_date) {
+    const lastDate = new Date(user.last_intake_date + 'T00:00:00Z');
+    const hoursSinceLastDate = (now - lastDate.getTime()) / (1000 * 60 * 60);
+
+    if (hoursSinceLastDate < 48) {
+      // Within 48 hours — check if this is a new day to increment
+      const today = new Date(now).toISOString().split('T')[0];
+      if (user.last_intake_date === today) {
+        // Same day, keep current streak
+        newStreak = user.current_streak || 1;
+      } else {
+        // New day within 48h window — increment
+        newStreak = (user.current_streak || 0) + 1;
+      }
+    }
+    // else: >48 hours, streak resets to 1 (default)
   }
 
+  const today = new Date(now).toISOString().split('T')[0];
   const newLongest = Math.max(newStreak, user?.longest_streak || 0);
 
   await updateUserStreak(userId, newStreak, newLongest, today);

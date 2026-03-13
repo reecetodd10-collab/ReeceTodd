@@ -55,6 +55,7 @@ export async function GET(request) {
     try {
         const user = await getAuthUser(request);
         const userId = user?.id;
+        const userEmail = user?.email;
         const { searchParams } = new URL(request.url);
         const history = searchParams.get('history');
 
@@ -66,21 +67,38 @@ export async function GET(request) {
         }
 
         const supabase = createSupabaseAdmin();
+        const limit = history === 'true' ? 10 : 100;
 
-        let query = supabase
+        // Query by auth_user_id first
+        let { data, error } = await supabase
             .from('supplement_optimization_results')
             .select('*')
             .eq('auth_user_id', userId)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .limit(limit);
 
-        if (history === 'true') {
-            query = query.limit(10);
-        }
+        if (error) throw error;
 
-        const { data, error } = await query;
+        // If no results found by auth_user_id, try by email
+        // (handles quizzes taken before sign-in)
+        if ((!data || data.length === 0) && userEmail) {
+            const { data: emailData, error: emailError } = await supabase
+                .from('supplement_optimization_results')
+                .select('*')
+                .eq('email', userEmail)
+                .is('auth_user_id', null)
+                .order('created_at', { ascending: false })
+                .limit(limit);
 
-        if (error) {
-            throw error;
+            if (!emailError && emailData && emailData.length > 0) {
+                data = emailData;
+                // Claim these results by updating auth_user_id
+                const ids = emailData.map(r => r.id);
+                await supabase
+                    .from('supplement_optimization_results')
+                    .update({ auth_user_id: userId })
+                    .in('id', ids);
+            }
         }
 
         return NextResponse.json({ results: data || [] }, { status: 200 });
