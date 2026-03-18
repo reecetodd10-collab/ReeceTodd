@@ -3,6 +3,7 @@ import "./globals.css";
 import MarketingLayout from "./components/MarketingLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { SupabaseAuthProvider } from "./components/SupabaseAuthProvider";
+import TikTokPixel from "./components/TikTokPixel";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${montserrat.className} ${oswald.variable} ${spaceMono.variable}`}>
       <body className="text-[var(--txt)] antialiased">
+        <TikTokPixel />
         <SupabaseAuthProvider>
           <ErrorBoundary>
             <MarketingLayout>{children}</MarketingLayout>

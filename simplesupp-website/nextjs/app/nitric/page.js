@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchProductById, addToCart, initializeShopifyCart, getCheckoutUrl } from '../lib/shopify';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { trackAddToCart, trackInitiateCheckout, trackViewContent } from '../components/TikTokPixel';
 
 // Animated section wrapper - fades up when scrolled into view
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -230,6 +231,7 @@ export default function FlowStateXPage() {
         if (product?.variantId) setVariantId(product.variantId);
         const img = product?.images?.[0] || product?.image || null;
         if (img) setProductImage(img);
+        trackViewContent({ contentId: SHOPIFY_PRODUCT_ID, contentName: 'Flow State X', price: 19.99 });
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -248,6 +250,7 @@ export default function FlowStateXPage() {
       await addToCart(variantId, 1);
       setAdded(true);
       setCartCount(prev => prev + 1);
+      trackAddToCart({ contentId: SHOPIFY_PRODUCT_ID, contentName: 'Flow State X', price: 19.99 });
       const url = await getCheckoutUrl();
       setCheckoutUrl(url);
       window.dispatchEvent(new CustomEvent('shopify:cart:updated', { detail: { itemCount: cartCount + 1 } }));
@@ -320,6 +323,7 @@ export default function FlowStateXPage() {
             {checkoutUrl && (
               <a
                 href={checkoutUrl}
+                onClick={() => trackInitiateCheckout({ contentIds: [SHOPIFY_PRODUCT_ID], value: 19.99 })}
                 className={`w-full max-w-md ${padding} font-bold uppercase tracking-widest text-center border-2 transition-all duration-300 block rounded-md hover:-translate-y-0.5`}
                 style={{
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
@@ -367,6 +371,7 @@ export default function FlowStateXPage() {
             {cartCount > 0 && (
               <button
                 onClick={async () => {
+                  trackInitiateCheckout({ contentIds: [SHOPIFY_PRODUCT_ID], value: 19.99 });
                   const url = checkoutUrl || await getCheckoutUrl();
                   if (url) window.location.href = url;
                 }}
