@@ -210,8 +210,18 @@ export default function FlowStateXPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState(null);
   const [productImage, setProductImage] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
 
   const SHOPIFY_PRODUCT_ID = '8645601657022';
+
+  // Listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = (e) => {
+      setCartCount(e.detail?.itemCount || 0);
+    };
+    window.addEventListener('shopify:cart:updated', handleCartUpdate);
+    return () => window.removeEventListener('shopify:cart:updated', handleCartUpdate);
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -237,8 +247,10 @@ export default function FlowStateXPage() {
     try {
       await addToCart(variantId, 1);
       setAdded(true);
+      setCartCount(prev => prev + 1);
       const url = await getCheckoutUrl();
       setCheckoutUrl(url);
+      window.dispatchEvent(new CustomEvent('shopify:cart:updated', { detail: { itemCount: cartCount + 1 } }));
     } catch (error) {
       console.error('Failed to add to cart:', error);
     } finally {
@@ -350,12 +362,42 @@ export default function FlowStateXPage() {
               AVIERA
             </span>
           </Link>
-          <span
-            className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-sm"
-            style={{ color: '#ffffff', fontFamily: 'var(--font-space-mono), Space Mono, monospace', background: '#ff6b4a', fontWeight: 700, letterSpacing: '0.1em', fontSize: '9px' }}
-          >
-            LIMITED DROP
-          </span>
+          <div className="flex items-center gap-3">
+            {/* Cart icon */}
+            {cartCount > 0 && (
+              <button
+                onClick={async () => {
+                  const url = checkoutUrl || await getCheckoutUrl();
+                  if (url) window.location.href = url;
+                }}
+                className="relative bg-transparent border-none cursor-pointer p-1"
+                aria-label="Shopping cart"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                  style={{
+                    background: '#00e6b0',
+                    color: '#0a4a3a',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                  }}
+                >
+                  {cartCount}
+                </span>
+              </button>
+            )}
+            <span
+              className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-sm"
+              style={{ color: '#ffffff', fontFamily: 'var(--font-space-mono), Space Mono, monospace', background: '#ff6b4a', fontWeight: 700, letterSpacing: '0.1em', fontSize: '9px' }}
+            >
+              LIMITED DROP
+            </span>
+          </div>
         </div>
       </header>
 
