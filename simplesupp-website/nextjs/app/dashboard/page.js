@@ -347,6 +347,10 @@ export default function DashboardPage() {
   // Product detail modal
   const [detailProduct, setDetailProduct] = useState(null);
 
+  // Expandable category browsing
+  const [expandedCategories, setExpandedCategories] = useState({});
+  const toggleCategory = (cat) => setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -879,7 +883,7 @@ export default function DashboardPage() {
                     textTransform: 'uppercase',
                   }}
                 >
-                  YOUR O.S.
+                  START PROGRESSING
                 </p>
 
                 {/* Score Ring */}
@@ -1517,6 +1521,159 @@ export default function DashboardPage() {
                   </AnimatePresence>
                 </div>
 
+                {/* Browse by Category */}
+                {shopifyProducts.length > 0 && stackItems.length < MAX_SLOTS && (
+                  <div className="mb-4">
+                    <p
+                      className="mb-2"
+                      style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '8px',
+                        color: '#666',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      BROWSE BY CATEGORY
+                    </p>
+                    {(() => {
+                      const grouped = {};
+                      shopifyProducts.forEach((p) => {
+                        const cat = getCategoryForProduct(p.title);
+                        if (!grouped[cat]) grouped[cat] = [];
+                        grouped[cat].push(p);
+                      });
+                      const catOrder = ['Performance', 'Recovery', 'Focus', 'Sleep', 'Weight', 'Beauty', 'Health'];
+                      return catOrder
+                        .filter((cat) => grouped[cat]?.length > 0)
+                        .map((cat) => {
+                          const catColor = CATEGORY_COLOR_MAP[cat] || '#a855f7';
+                          const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
+                          const isOpen = expandedCategories[cat];
+                          const items = grouped[cat];
+                          return (
+                            <div key={cat} className="mb-1">
+                              <button
+                                onClick={() => toggleCategory(cat)}
+                                className="w-full flex items-center justify-between cursor-pointer transition-all"
+                                style={{
+                                  padding: '10px 12px',
+                                  background: isOpen ? `rgba(${catRgb}, 0.06)` : '#0a0a0a',
+                                  border: `1px solid ${isOpen ? `rgba(${catRgb}, 0.25)` : 'rgba(255,255,255,0.06)'}`,
+                                  borderRadius: '6px',
+                                  borderLeft: `3px solid ${catColor}`,
+                                }}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    style={{
+                                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                      fontSize: '12px',
+                                      color: isOpen ? catColor : '#fff',
+                                      letterSpacing: '1px',
+                                      textTransform: 'uppercase',
+                                    }}
+                                  >
+                                    {cat}
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                      fontSize: '8px',
+                                      color: '#666',
+                                    }}
+                                  >
+                                    {items.length}
+                                  </span>
+                                </div>
+                                <span style={{ color: isOpen ? catColor : '#444', fontSize: '14px', transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
+                                  ▾
+                                </span>
+                              </button>
+                              <AnimatePresence>
+                                {isOpen && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div style={{ padding: '4px 0' }}>
+                                      {items.map((product) => {
+                                        const alreadyIn = stackItems.some(
+                                          (s) => s.name.toLowerCase() === product.title.toLowerCase()
+                                        );
+                                        return (
+                                          <div
+                                            key={product.id}
+                                            className="flex items-center justify-between"
+                                            style={{
+                                              padding: '8px 12px',
+                                              borderBottom: '1px solid rgba(255,255,255,0.04)',
+                                            }}
+                                          >
+                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                              {product.image && (
+                                                <div style={{ width: '28px', height: '28px', borderRadius: '4px', overflow: 'hidden', flexShrink: 0, background: '#fff' }}>
+                                                  <img src={product.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                </div>
+                                              )}
+                                              <span
+                                                className="truncate cursor-pointer"
+                                                onClick={() => setDetailProduct(product)}
+                                                style={{
+                                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                                  fontSize: '11px',
+                                                  color: '#fff',
+                                                  letterSpacing: '0.5px',
+                                                  textTransform: 'uppercase',
+                                                }}
+                                              >
+                                                {product.title}
+                                              </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                              <span style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#666' }}>
+                                                ${product.price?.toFixed(2)}
+                                              </span>
+                                              <button
+                                                onClick={() => {
+                                                  if (!alreadyIn && stackItems.length < MAX_SLOTS) {
+                                                    addToStack({ id: product.id, name: product.title, price: product.price?.toFixed(2) || '', variantId: product.variantId });
+                                                  }
+                                                }}
+                                                disabled={alreadyIn || stackItems.length >= MAX_SLOTS}
+                                                style={{
+                                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                                  fontSize: '8px',
+                                                  letterSpacing: '1px',
+                                                  color: alreadyIn ? '#333' : catColor,
+                                                  background: 'transparent',
+                                                  border: `1px solid ${alreadyIn ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
+                                                  borderRadius: '3px',
+                                                  padding: '3px 8px',
+                                                  cursor: alreadyIn ? 'default' : 'pointer',
+                                                  textTransform: 'uppercase',
+                                                }}
+                                              >
+                                                {alreadyIn ? 'IN STACK' : '+ ADD'}
+                                              </button>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        });
+                    })()}
+                  </div>
+                )}
+
                 {/* Save Stack button */}
                 {stackItems.length > 0 && (
                   <button
@@ -1835,7 +1992,14 @@ export default function DashboardPage() {
                           padding: '12px',
                           minHeight: '100px',
                         }}
-                        onClick={() => handleSlotClick(supp)}
+                        onClick={() => {
+                          const sp = findShopifyProduct(supp.name);
+                          if (sp) {
+                            setDetailProduct(sp);
+                          } else {
+                            handleSlotClick(supp);
+                          }
+                        }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = '#0f0f0f')}
                         onMouseLeave={(e) => (e.currentTarget.style.background = '#0a0a0a')}
                       >

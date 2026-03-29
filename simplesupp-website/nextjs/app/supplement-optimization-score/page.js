@@ -813,7 +813,7 @@ export default function SupplementOptimizationScore() {
                   letterSpacing: '0.4em',
                 }}
               >
-                AI-POWERED ANALYSIS
+                STOP GUESSING
               </p>
               <h1
                 className="text-4xl sm:text-5xl font-bold uppercase mb-3 leading-tight"
