@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-const TIKTOK_PIXEL_ID = 'D6L1HCJC77U7OH6C32NG';
+const TIKTOK_PIXEL_ID = 'D743DPRC77U40JR6AEB0';
 
 export default function TikTokPixel() {
   // Initialize pixel on mount
