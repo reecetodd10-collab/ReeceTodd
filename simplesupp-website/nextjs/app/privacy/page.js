@@ -55,7 +55,7 @@ function StickyNav({ menuOpen, setMenuOpen }) {
               { label: 'Shop', href: '/shop' },
               { label: 'Flow State X', href: '/nitric' },
               { label: 'Trybe', href: '/trybe' },
-              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
               { label: 'About', href: '/about' },
             ].map((link) => (
               <Link
@@ -113,7 +113,7 @@ function StickyNav({ menuOpen, setMenuOpen }) {
               { label: 'Shop', href: '/shop' },
               { label: 'Flow State X', href: '/nitric' },
               { label: 'Trybe', href: '/trybe' },
-              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
               { label: 'About', href: '/about' },
               { label: 'Latest', href: '/news' },
             ].map((link) => (

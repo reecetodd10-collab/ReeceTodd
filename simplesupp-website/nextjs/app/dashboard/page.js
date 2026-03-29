@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { fetchShopifyProducts, addToCart, addMultipleToCart, getCheckoutUrl } from '../lib/shopify';
+import ProductDetailModal from '../components/ProductDetailModal';
 
 // ─── Max supplement slots ───
 const MAX_SLOTS = 6;
@@ -223,10 +224,10 @@ function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) 
               { label: 'Shop', href: '/shop' },
               { label: 'Flow State X', href: '/nitric' },
               { label: 'Trybe', href: '/trybe' },
-              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
               { label: 'About', href: '/about' },
               { label: 'Latest', href: '/news' },
-              { label: 'Dashboard', href: '/dashboard' },
+              { label: 'My Stack', href: '/dashboard' },
               { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
@@ -238,7 +239,7 @@ function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) 
                   fontSize: '24px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: link.href === '/dashboard' ? '#00ffcc' : '#ffffff',
+                  color: link.href === '/dashboard' ? '#00ffcc' : link.href === '/supplement-optimization-score' ? '#00ffcc' : '#ffffff',
                   textDecoration: 'none',
                   letterSpacing: '0.1em',
                 }}
@@ -342,6 +343,9 @@ export default function DashboardPage() {
 
   // Cart item count for nav badge
   const [cartCount, setCartCount] = useState(0);
+
+  // Product detail modal
+  const [detailProduct, setDetailProduct] = useState(null);
 
   // Install App CTA - shows after 15 seconds on first visit
   const [showInstallCTA, setShowInstallCTA] = useState(false);
@@ -627,6 +631,21 @@ export default function DashboardPage() {
     return match?.variantId || null;
   };
 
+  const findShopifyProduct = (name) => {
+    if (!name || !shopifyProducts.length) return null;
+    const n = (name || '').toLowerCase();
+    // Exact match first
+    const exact = shopifyProducts.find((p) => (p.title || '').toLowerCase() === n);
+    if (exact) return exact;
+    // Partial match - product title contains name or name contains first word of title
+    return shopifyProducts.find(
+      (p) => {
+        const t = (p.title || '').toLowerCase();
+        return t.includes(n) || n.includes(t) || n.includes(t.split(' ')[0]) || t.includes(n.split(' ')[0]);
+      }
+    ) || null;
+  };
+
   // ─── Stack Builder helpers ───
   const addToStack = (item) => {
     if (stackItems.length >= MAX_SLOTS) return;
@@ -833,6 +852,21 @@ export default function DashboardPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
+              {/* Page Title */}
+              <h1
+                className="text-center mb-6"
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '28px',
+                  fontWeight: 700,
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  color: '#ffffff',
+                }}
+              >
+                My Stack
+              </h1>
+
               {/* O.S. Score Section */}
               <FadeInSection>
                 <p
@@ -1134,30 +1168,51 @@ export default function DashboardPage() {
                               )}
                             </div>
 
-                            {/* Add button */}
-                            <button
-                              onClick={() =>
-                                addToStack({
-                                  id: `rec-${idx}`,
-                                  name: rec.title,
-                                  price: rec.price || '',
-                                })
-                              }
-                              disabled={alreadyAdded || stackItems.length >= MAX_SLOTS}
-                              className="w-full mt-2 rounded cursor-pointer transition-all"
-                              style={{
-                                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                                fontSize: '9px',
-                                letterSpacing: '1.5px',
-                                color: alreadyAdded ? '#333' : catColor,
-                                background: alreadyAdded ? 'transparent' : `rgba(${catRgb}, 0.06)`,
-                                border: `1px solid ${alreadyAdded ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
-                                padding: '6px 8px',
-                                textTransform: 'uppercase',
-                              }}
-                            >
-                              {alreadyAdded ? 'IN STACK' : '+ ADD'}
-                            </button>
+                            {/* Buttons */}
+                            <div className="flex gap-1 mt-2">
+                              <button
+                                onClick={() => {
+                                  const sp = findShopifyProduct(rec.title);
+                                  if (sp) setDetailProduct({ ...sp, price: rec.price || sp.price });
+                                }}
+                                className="rounded cursor-pointer transition-all"
+                                style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '9px',
+                                  letterSpacing: '1.5px',
+                                  color: '#666',
+                                  background: 'transparent',
+                                  border: '1px solid rgba(255,255,255,0.1)',
+                                  padding: '6px 8px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                VIEW
+                              </button>
+                              <button
+                                onClick={() =>
+                                  addToStack({
+                                    id: `rec-${idx}`,
+                                    name: rec.title,
+                                    price: rec.price || '',
+                                  })
+                                }
+                                disabled={alreadyAdded || stackItems.length >= MAX_SLOTS}
+                                className="flex-1 rounded cursor-pointer transition-all"
+                                style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '9px',
+                                  letterSpacing: '1.5px',
+                                  color: alreadyAdded ? '#333' : catColor,
+                                  background: alreadyAdded ? 'transparent' : `rgba(${catRgb}, 0.06)`,
+                                  border: `1px solid ${alreadyAdded ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
+                                  padding: '6px 8px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {alreadyAdded ? 'IN STACK' : '+ ADD'}
+                              </button>
+                            </div>
                           </motion.div>
                         );
                       })}
@@ -1861,26 +1916,47 @@ export default function DashboardPage() {
                           <p style={{ fontSize: '9px', color: '#ff2d55' }}>
                             {'\u{1F525}'} {supp.streak} days
                           </p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLogIntake(supp.name);
-                            }}
-                            disabled={loggingIntake}
-                            className="bg-transparent border-none cursor-pointer"
-                            style={{
-                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                              fontSize: '8px',
-                              color: catColor,
-                              padding: '2px 6px',
-                              border: `1px solid rgba(${catRgb}, 0.3)`,
-                              borderRadius: '3px',
-                              opacity: loggingIntake ? 0.5 : 1,
-                            }}
-                            title="Log intake"
-                          >
-                            LOG
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const sp = findShopifyProduct(supp.name);
+                                if (sp) setDetailProduct(sp);
+                              }}
+                              className="bg-transparent border-none cursor-pointer"
+                              style={{
+                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                fontSize: '8px',
+                                color: '#666',
+                                padding: '2px 6px',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '3px',
+                              }}
+                              title="View product details"
+                            >
+                              VIEW
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLogIntake(supp.name);
+                              }}
+                              disabled={loggingIntake}
+                              className="bg-transparent border-none cursor-pointer"
+                              style={{
+                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                fontSize: '8px',
+                                color: catColor,
+                                padding: '2px 6px',
+                                border: `1px solid rgba(${catRgb}, 0.3)`,
+                                borderRadius: '3px',
+                                opacity: loggingIntake ? 0.5 : 1,
+                              }}
+                              title="Log intake"
+                            >
+                              LOG
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -2053,6 +2129,26 @@ export default function DashboardPage() {
                   </span>
                 );
               })()}
+
+              {/* View Full Product Details button */}
+              <button
+                onClick={() => {
+                  const sp = findShopifyProduct(selectedSupplement.name);
+                  if (sp) setDetailProduct(sp);
+                }}
+                className="w-full mb-6 py-3 rounded-lg cursor-pointer transition-all"
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '12px',
+                  letterSpacing: '1.5px',
+                  color: '#00ffcc',
+                  background: 'rgba(0, 255, 204, 0.06)',
+                  border: '1px solid rgba(0, 255, 204, 0.2)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                VIEW PRODUCT DETAILS & INGREDIENTS
+              </button>
 
               {/* Why It's In Your Stack */}
               {selectedSupplement.aiNote && (
@@ -2721,6 +2817,18 @@ export default function DashboardPage() {
           animation: celebrationGlow 3s ease-in-out infinite;
         }
       `}</style>
+
+      {/* Product Detail Modal */}
+      {detailProduct && (
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={() => {
+            handleAddItemToCart({ name: detailProduct.title, variantId: detailProduct.variantId });
+            setDetailProduct(null);
+          }}
+        />
+      )}
     </div>
   );
 }

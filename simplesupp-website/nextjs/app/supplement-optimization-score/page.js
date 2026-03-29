@@ -14,6 +14,9 @@ import Image from 'next/image';
 import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { trackEvent } from '@/lib/analytics';
+import { trackAddToCart, ttqTrack } from '../components/TikTokPixel';
+import ProductDetailModal from '../components/ProductDetailModal';
+import confetti from 'canvas-confetti';
 
 // ─── Design system constants ───
 const ACCENT = '#00ffcc';
@@ -121,10 +124,10 @@ function StickyNav({ menuOpen, setMenuOpen }) {
               { label: 'Shop', href: '/shop' },
               { label: 'Flow State X', href: '/nitric' },
               { label: 'Trybe', href: '/trybe' },
-              { label: 'O.S.', href: '/supplement-optimization-score' },
+              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
               { label: 'About', href: '/about' },
               { label: 'Latest', href: '/news' },
-              { label: 'Dashboard', href: '/dashboard' },
+              { label: 'My Stack', href: '/dashboard' },
               { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
@@ -230,6 +233,9 @@ export default function SupplementOptimizationScore() {
   // Email capture
   const [email, setEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+
+  // Product detail modal
+  const [detailProduct, setDetailProduct] = useState(null);
 
   // Fetch Shopify products on mount
   useEffect(() => {
@@ -659,6 +665,9 @@ export default function SupplementOptimizationScore() {
       console.error('Error saving results to database:', saveError);
     }
 
+    // TikTok: track quiz completion as a lead event
+    ttqTrack('CompleteRegistration', { content_name: 'Optimization Score Quiz', content_category: responses.primaryGoal });
+
     // Simulate loading for premium feel
     setTimeout(() => {
       setIsCalculating(false);
@@ -687,6 +696,9 @@ export default function SupplementOptimizationScore() {
       if (itemsToAdd.length > 0) {
         await addMultipleToCart(itemsToAdd);
         setAddedToCart(true);
+        // TikTok: track stack add-to-cart
+        const totalValue = [...recommendations, specialAIPick].filter(Boolean).reduce((sum, r) => sum + (r.price || 0), 0);
+        trackAddToCart({ contentId: 'os-quiz-stack', contentName: 'O.S. Recommended Stack', price: totalValue, quantity: itemsToAdd.length });
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -718,6 +730,8 @@ export default function SupplementOptimizationScore() {
       await addToCart(product.variantId, 1);
       setAddedIndividual(prev => ({ ...prev, [product.title]: true }));
       trackEvent('add_to_cart_clicked', { type: 'individual', product: product.title, result_id: resultId });
+      // TikTok: track individual add-to-cart
+      trackAddToCart({ contentId: product.variantId, contentName: product.title, price: product.price || 0 });
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -731,6 +745,8 @@ export default function SupplementOptimizationScore() {
     // TODO: Save to database and send email via Resend
     setEmailSubmitted(true);
     trackEvent('email_submitted', { email });
+    // TikTok: track email capture as lead
+    ttqTrack('SubmitForm', { content_name: 'O.S. Email Capture' });
   };
 
   // Render quiz or results
@@ -755,6 +771,8 @@ export default function SupplementOptimizationScore() {
         resultId={resultId}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
+        detailProduct={detailProduct}
+        setDetailProduct={setDetailProduct}
       />
     );
   }
@@ -1297,6 +1315,8 @@ function ResultsPage({
   resultId,
   menuOpen,
   setMenuOpen,
+  detailProduct,
+  setDetailProduct,
 }) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
@@ -1325,11 +1345,45 @@ function ResultsPage({
 
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        // Fire confetti when score reveal completes
+        const colors = scores.total >= 60
+          ? ['#00ffcc', '#00d9ff', '#a855f7']
+          : scores.total >= 40
+            ? ['#a855f7', '#00d9ff', '#ffffff']
+            : ['#ff2d55', '#a855f7', '#00d9ff'];
+
+        // Center burst
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.35 },
+          colors,
+          disableForReducedMotion: true,
+        });
+        // Left side
+        setTimeout(() => confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.4 },
+          colors,
+          disableForReducedMotion: true,
+        }), 200);
+        // Right side
+        setTimeout(() => confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.4 },
+          colors,
+          disableForReducedMotion: true,
+        }), 200);
       }
     };
 
     requestAnimationFrame(animate);
-  }, [displayScore]);
+  }, [displayScore, scores.total]);
 
   // Get score label
   const getScoreLabel = (score) => {
@@ -1543,6 +1597,7 @@ function ResultsPage({
                       product={product}
                       onAddToCart={() => onAddIndividual(product)}
                       isAdded={addedIndividual[product.title]}
+                      onViewDetails={() => setDetailProduct(product)}
                     />
                   </FadeInSection>
                 ))}
@@ -1553,6 +1608,7 @@ function ResultsPage({
                       product={specialAIPick}
                       onAddToCart={() => onAddIndividual(specialAIPick)}
                       isAdded={addedIndividual[specialAIPick.title]}
+                      onViewDetails={() => setDetailProduct(specialAIPick)}
                     />
                   </FadeInSection>
                 )}
@@ -1876,12 +1932,25 @@ function ResultsPage({
           </div>
         </div>
       </footer>
+
+      {/* Product Detail Modal */}
+      {detailProduct && (
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={() => {
+            onAddIndividual(detailProduct);
+            setDetailProduct(null);
+          }}
+          added={addedIndividual[detailProduct.title]}
+        />
+      )}
     </div>
   );
 }
 
 // ─── Product Card Component ───
-function ProductCard({ product, onAddToCart, isAdded }) {
+function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -2010,6 +2079,26 @@ function ProductCard({ product, onAddToCart, isAdded }) {
                   </p>
                 </div>
               )}
+              {onViewDetails && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewDetails();
+                  }}
+                  className="w-full mb-3 py-2.5 flex items-center justify-center gap-2 font-bold uppercase transition-all"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '12px',
+                    letterSpacing: '0.1em',
+                    background: 'transparent',
+                    color: ACCENT,
+                    border: `1px solid rgba(${ACCENT_RGB}, 0.3)`,
+                    cursor: 'pointer',
+                  }}
+                >
+                  View Ingredients & Full Details
+                </button>
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2030,7 +2119,7 @@ function ProductCard({ product, onAddToCart, isAdded }) {
 }
 
 // ─── Special AI Pick Card Component ───
-function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
+function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -2183,6 +2272,26 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded }) {
                       {product.reasoning || 'Premium supplement formulated to support your fitness goals.'}
                     </p>
                   </div>
+                )}
+                {onViewDetails && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewDetails();
+                    }}
+                    className="w-full mb-3 py-2.5 flex items-center justify-center gap-2 font-bold uppercase transition-all"
+                    style={{
+                      fontFamily: OSWALD,
+                      fontSize: '12px',
+                      letterSpacing: '0.1em',
+                      background: 'transparent',
+                      color: ACCENT,
+                      border: `1px solid rgba(${ACCENT_RGB}, 0.3)`,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    View Ingredients & Full Details
+                  </button>
                 )}
                 <button
                   onClick={() => setExpanded(false)}

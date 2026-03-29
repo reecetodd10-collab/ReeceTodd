@@ -9,8 +9,8 @@ const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Shop', href: '/shop', icon: ShoppingBag },
   { label: 'Trybe', href: '/trybe', icon: Users },
-  { label: 'O.S.', href: '/supplement-optimization-score', icon: ClipboardList },
-  { label: 'Account', href: '/dashboard', icon: User },
+  { label: 'Optimize', href: '/supplement-optimization-score', icon: ClipboardList },
+  { label: 'My Stack', href: '/dashboard', icon: User },
 ];
 
 export default function BottomNav() {

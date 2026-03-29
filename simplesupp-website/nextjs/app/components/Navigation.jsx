@@ -70,7 +70,7 @@ export default function Navigation() {
 
   // Main navigation links - always visible
   const mainNavLinks = [
-    { name: 'Optimization Score', href: '/supplement-optimization-score' },
+    { name: 'Optimize Quiz', href: '/supplement-optimization-score' },
     { name: 'Aviera Fit', href: '/smartfitt' },
     { name: 'Aviera Shop', href: '/shop' },
     { name: 'Trybe', href: '/trybe' },
@@ -410,7 +410,7 @@ export default function Navigation() {
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10"
               >
                 <LayoutDashboard size={16} />
-                Dashboard
+                My Stack
               </Link>
             </div>
 

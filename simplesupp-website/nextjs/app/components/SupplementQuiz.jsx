@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Grid3X3, Layers, Truck, MessageCircle, Send, Bot } from 'lucide-react';
 import { products, PRODUCT_CATEGORIES } from '../data/products';
 import { fetchShopifyProducts, addMultipleToCart } from '../lib/shopify';
+import { trackAddToCart, trackViewContent, ttqTrack } from '../components/TikTokPixel';
+import ProductDetailModal from '../components/ProductDetailModal';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -325,10 +327,14 @@ export default function SupplementAdvisor() {
   // SHOPIFY PRODUCTS STATE (for real images)
   const [shopifyProducts, setShopifyProducts] = useState([]);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
-  
+  const [lightboxImage, setLightboxImage] = useState(null);
+
   // HOVER STATE FOR PERSONALIZED STACK (matching shop page)
   const [hoveredPersonalizedSupplement, setHoveredPersonalizedSupplement] = useState(null);
   const [hoveredPersonalizedProduct, setHoveredPersonalizedProduct] = useState(null);
+
+  // PRODUCT DETAIL MODAL STATE
+  const [detailProduct, setDetailProduct] = useState(null);
   
   // AVIERA AI CHAT WIDGET STATE
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -616,6 +622,10 @@ export default function SupplementAdvisor() {
         quantity: 1
       }]);
     }
+    // TikTok: track individual add-to-cart
+    if (supplement) {
+      trackAddToCart({ contentId: supplement.suplifulId, contentName: supplementName, price: supplement.price });
+    }
   };
 
   const removeFromCart = (supplementName) => {
@@ -677,6 +687,9 @@ export default function SupplementAdvisor() {
         setAddedToShopify(true);
         setTimeout(() => setAddedToShopify(false), 3000);
         console.log(`[SupplementQuiz] Added ${itemsToAdd.length} items to Shopify cart`);
+        // TikTok: track add-to-cart for the full stack
+        const totalValue = recommendations.stack.reduce((sum, s) => sum + (SUPPLEMENT_DATABASE[s.name]?.price || 0), 0);
+        trackAddToCart({ contentId: 'quiz-stack', contentName: 'Aviera Stack Bundle', price: totalValue, quantity: itemsToAdd.length });
       } else {
         console.warn('[SupplementQuiz] No items could be matched to Shopify products');
         alert('Some products could not be added. Please try adding them individually from the shop.');
@@ -767,6 +780,8 @@ export default function SupplementAdvisor() {
           isAI: true
         });
         setStep(4);
+        // TikTok: track quiz completion as a lead event
+        ttqTrack('CompleteRegistration', { content_name: 'Aviera Stack Quiz', content_category: primaryGoal });
       } else {
         throw new Error('Invalid response from AI');
       }
@@ -900,6 +915,8 @@ export default function SupplementAdvisor() {
 
     setRecommendations({ stack, insights });
     setStep(4);
+    // TikTok: track quiz completion as a lead event
+    ttqTrack('CompleteRegistration', { content_name: 'Aviera Stack Quiz', content_category: primaryGoal });
   };
 
   return (
@@ -1958,7 +1975,8 @@ export default function SupplementAdvisor() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.3 }}
-                                    className="absolute inset-0 w-full h-full"
+                                    className="absolute inset-0 w-full h-full cursor-pointer"
+                                    onClick={() => setLightboxImage(productImages[currentImageIndex])}
                                   >
                                     <Image
                                       src={productImages[currentImageIndex]}
@@ -2032,11 +2050,15 @@ export default function SupplementAdvisor() {
                                     ))}
                                   </div>
                                 )}
+                                {/* Tap to zoom hint */}
+                                <div className="absolute bottom-3 right-3 z-10 px-2 py-1 rounded-full text-[10px] text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                                  Tap to zoom
+                                </div>
                               </div>
                             ) : (
                               <div className="text-6xl opacity-20">💊</div>
                             )}
-                            
+
                             {/* Priority Badge */}
                             <span 
                               className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium z-20"
@@ -2081,6 +2103,19 @@ export default function SupplementAdvisor() {
                                 {supplement?.info && (
                                   <p className="text-xs text-gray-400 mt-2">{supplement.info}</p>
                                 )}
+                                {/* View Full Details button */}
+                                <button
+                                  onClick={() => {
+                                    const shopifyProduct = getShopifyProduct(supp.name);
+                                    if (shopifyProduct) {
+                                      setDetailProduct({ ...shopifyProduct, price: supplement?.price || shopifyProduct.price });
+                                    }
+                                  }}
+                                  className="mt-3 w-full py-2 rounded-lg text-xs font-semibold transition-all duration-200"
+                                  style={{ background: 'transparent', border: '1px solid rgba(0, 217, 255, 0.4)', color: '#00d9ff' }}
+                                >
+                                  View Ingredients & Details
+                                </button>
                               </div>
                             )}
 
@@ -2671,6 +2706,56 @@ export default function SupplementAdvisor() {
             )}
           </AnimatePresence>
         </>
+      )}
+
+      {/* Image Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center text-white"
+              style={{ background: 'rgba(255,255,255,0.15)' }}
+            >
+              <X size={22} />
+            </button>
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative max-w-[90vw] max-h-[85vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={lightboxImage}
+                alt="Product"
+                width={800}
+                height={800}
+                className="w-full h-full object-contain"
+                unoptimized
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Product Detail Modal */}
+      {detailProduct && (
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={() => {
+            addToCart(detailProduct.title);
+            setDetailProduct(null);
+          }}
+        />
       )}
     </div>
   );
