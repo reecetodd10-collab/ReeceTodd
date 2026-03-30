@@ -28,32 +28,110 @@ const PRODUCT_CATALOG = {
       other: 'Pure micronized creatine monohydrate · No fillers',
     },
   },
-  'whey protein isolate (vanilla)': { cat: 'Protein', desc: '100% whey isolate. Fast-absorbing, low-fat, no bloat.', tags: ['Protein', 'Muscle', 'Recovery'] },
-  'whey protein isolate (chocolate)': { cat: 'Protein', desc: 'Premium whey isolate in rich Chocolate. High protein per scoop.', tags: ['Protein', 'Muscle', 'Recovery'] },
-  'plant protein (chocolate)': { cat: 'Protein', desc: 'Plant-powered protein for lifters who skip the dairy.', tags: ['Vegan', 'Protein', 'Plant-Based'] },
-  'plant protein (vanilla)': { cat: 'Protein', desc: "Vegan protein that doesn't taste like dirt.", tags: ['Vegan', 'Protein', 'Plant-Based'] },
-  'l-glutamine': { cat: 'Performance', desc: 'Amino acid for recovery and gut support. Reduces soreness.', tags: ['Recovery', 'Gut Health', 'Muscle'] },
-  'beetroot': { cat: 'Performance', desc: 'Natural nitrate source for blood flow and endurance.', tags: ['Blood Flow', 'Endurance', 'Nitric Oxide'] },
-  'bcaa shock': { cat: 'Recovery', desc: 'Branch-chain aminos for muscle recovery and reduced soreness.', tags: ['BCAAs', 'Recovery', 'Muscle'] },
-  'hydration powder (lemonade)': { cat: 'Recovery', desc: 'Electrolyte-packed hydration for training and recovery.', tags: ['Hydration', 'Electrolytes', 'Recovery'] },
-  "lion's mane": { cat: 'Focus', desc: 'The brain mushroom. Supports cognitive function, memory, and nerve health.', tags: ['Focus', 'Brain Health', 'Mushroom'] },
-  'ashwagandha': { cat: 'Focus', desc: 'Ancient adaptogen for modern stress. Lowers cortisol, improves recovery.', tags: ['Stress', 'Adaptogen', 'Recovery'] },
-  'sleep formula': { cat: 'Sleep', desc: 'Fall asleep faster, stay asleep longer, wake up recovered.', tags: ['Sleep', 'Recovery', 'Relaxation'] },
-  'sleep support': { cat: 'Sleep', desc: 'Gentle sleep support for restless nights. Non-habit forming.', tags: ['Sleep', 'Calm', 'Rest'] },
-  'magnesium': { cat: 'Sleep', desc: 'The most absorbable form of magnesium. Supports sleep.', tags: ['Mineral', 'Sleep', 'Muscle'] },
-  'complete multivitamin': { cat: 'Health', desc: 'Complete daily multivitamin with essential vitamins and minerals.', tags: ['Vitamins', 'Daily Health', 'Foundation'] },
-  'omega-3': { cat: 'Health', desc: 'Essential fatty acids for heart, brain, and joint support.', tags: ['Heart', 'Brain', 'Joint Health'] },
-  'probiotic 40': { cat: 'Health', desc: 'Double the CFUs plus prebiotics to feed the good bacteria.', tags: ['Gut Health', 'Digestion', 'Prebiotics'] },
-  'coq10': { cat: 'Health', desc: 'Cellular energy production and heart health support.', tags: ['Heart Health', 'Energy', 'Antioxidant'] },
-  'platinum turmeric': { cat: 'Health', desc: 'Premium turmeric for inflammation and joint support.', tags: ['Anti-Inflammatory', 'Joint', 'Recovery'] },
-  'apple cider vinegar': { cat: 'Health', desc: 'All the ACV benefits without the taste.', tags: ['Digestion', 'Weight', 'Wellness'] },
-  'keto bhb': { cat: 'Weight', desc: 'Exogenous ketones for keto support and clean energy.', tags: ['Keto', 'Energy', 'Fat Burn'] },
-  'fat burner': { cat: 'Weight', desc: 'Thermogenic fat burner with MCT oil. Burn fat for fuel.', tags: ['Fat Burn', 'MCT', 'Metabolism'] },
-  'collagen': { cat: 'Beauty', desc: 'Grass-fed collagen for skin elasticity, joint support, and recovery.', tags: ['Collagen', 'Skin', 'Joint'] },
-  'green tea extract': { cat: 'Weight', desc: 'Natural metabolism booster with EGCG antioxidants.', tags: ['Metabolism', 'Antioxidant', 'Fat Burn'] },
-  'energy powder': { cat: 'Pre-Workout', desc: 'Clean energy without the crash. Smooth, sustained power.', tags: ['Energy', 'Endurance'] },
-  'alpha energy': { cat: 'Pre-Workout', desc: 'Testosterone and energy support in one.', tags: ['Testosterone', 'Drive', 'Vitality'] },
-  'nootropic powder': { cat: 'Focus', desc: 'Lock in mentally. Nootropic powder for deep focus.', tags: ['Focus', 'Clarity', 'Nootropic'] },
+  'whey protein isolate (vanilla)': {
+    cat: 'Protein', desc: '100% whey isolate. Fast-absorbing, low-fat, no bloat. Vanilla that mixes smooth.', tags: ['Protein', 'Muscle', 'Recovery'],
+    formula: { rows: [{ name: 'Protein (Whey Isolate)', dose: '25 g' }, { name: 'Calories', dose: '120' }, { name: 'Total Fat', dose: '1 g' }, { name: 'Total Carbs', dose: '2 g' }, { name: 'BCAAs', dose: '5.5 g' }], other: 'Whey Protein Isolate, Natural & Artificial Flavors, Lecithin, Sucralose · 30 servings' },
+  },
+  'whey protein isolate (chocolate)': {
+    cat: 'Protein', desc: 'Premium whey isolate in rich Chocolate. High protein per scoop.', tags: ['Protein', 'Muscle', 'Recovery'],
+    formula: { rows: [{ name: 'Protein (Whey Isolate)', dose: '25 g' }, { name: 'Calories', dose: '130' }, { name: 'Total Fat', dose: '1.5 g' }, { name: 'Total Carbs', dose: '3 g' }, { name: 'BCAAs', dose: '5.5 g' }], other: 'Whey Protein Isolate, Cocoa Powder, Natural & Artificial Flavors, Lecithin · 30 servings' },
+  },
+  'plant protein (chocolate)': {
+    cat: 'Protein', desc: 'Plant-powered protein for lifters who skip the dairy.', tags: ['Vegan', 'Protein', 'Plant-Based'],
+    formula: { rows: [{ name: 'Protein (Pea + Rice)', dose: '20 g' }, { name: 'Calories', dose: '130' }, { name: 'Fiber', dose: '3 g' }, { name: 'Iron', dose: '6 mg' }], other: 'Pea Protein Isolate, Brown Rice Protein, Cocoa, Natural Flavors · 30 servings' },
+  },
+  'plant protein (vanilla)': {
+    cat: 'Protein', desc: "Vegan protein that doesn't taste like dirt.", tags: ['Vegan', 'Protein', 'Plant-Based'],
+    formula: { rows: [{ name: 'Protein (Pea + Rice)', dose: '20 g' }, { name: 'Calories', dose: '120' }, { name: 'Fiber', dose: '3 g' }, { name: 'Iron', dose: '6 mg' }], other: 'Pea Protein Isolate, Brown Rice Protein, Natural Vanilla Flavor · 30 servings' },
+  },
+  'l-glutamine': {
+    cat: 'Performance', desc: 'Amino acid for recovery and gut support. Reduces soreness.', tags: ['Recovery', 'Gut Health', 'Muscle'],
+    formula: { rows: [{ name: 'L-Glutamine', dose: '5,000 mg' }], other: 'Pure L-Glutamine powder · Unflavored · 60 servings' },
+  },
+  'beetroot': {
+    cat: 'Performance', desc: 'Natural nitrate source for blood flow and endurance.', tags: ['Blood Flow', 'Endurance', 'Nitric Oxide'],
+    formula: { rows: [{ name: 'Organic Beetroot Extract', dose: '1,000 mg' }, { name: 'Nitrates (as dietary nitrate)', dose: '~50 mg' }], other: 'Organic Beetroot Powder, Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'bcaa shock': {
+    cat: 'Recovery', desc: 'Branch-chain aminos for muscle recovery and reduced soreness.', tags: ['BCAAs', 'Recovery', 'Muscle'],
+    formula: { rows: [{ name: 'L-Leucine', dose: '3,000 mg' }, { name: 'L-Isoleucine', dose: '1,500 mg' }, { name: 'L-Valine', dose: '1,500 mg' }, { name: 'Total BCAAs (2:1:1)', dose: '6,000 mg' }], other: 'Fruit Punch flavor · 30 servings' },
+  },
+  'hydration powder (lemonade)': {
+    cat: 'Recovery', desc: 'Electrolyte-packed hydration for training and recovery.', tags: ['Hydration', 'Electrolytes', 'Recovery'],
+    formula: { rows: [{ name: 'Sodium', dose: '500 mg' }, { name: 'Potassium', dose: '200 mg' }, { name: 'Magnesium', dose: '60 mg' }, { name: 'Calcium', dose: '40 mg' }, { name: 'Vitamin C', dose: '100 mg' }], other: 'Lemonade flavor · Zero sugar · 30 servings' },
+  },
+  "lion's mane": {
+    cat: 'Focus', desc: 'The brain mushroom. Supports cognitive function, memory, and nerve health.', tags: ['Focus', 'Brain Health', 'Mushroom'],
+    formula: { rows: [{ name: "Lion's Mane Extract (fruit body)", dose: '1,000 mg' }, { name: 'Beta-Glucans', dose: '≥30%' }], other: 'Organic Lion\'s Mane Mushroom Extract, Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'ashwagandha': {
+    cat: 'Focus', desc: 'Ancient adaptogen for modern stress. Lowers cortisol, improves recovery.', tags: ['Stress', 'Adaptogen', 'Recovery'],
+    formula: { rows: [{ name: 'Ashwagandha Root Extract (KSM-66)', dose: '600 mg' }, { name: 'Withanolides', dose: '≥5%' }], other: 'KSM-66 Ashwagandha, Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'sleep formula': {
+    cat: 'Sleep', desc: 'Fall asleep faster, stay asleep longer, wake up recovered.', tags: ['Sleep', 'Recovery', 'Relaxation'],
+    formula: { rows: [{ name: 'Valerian Root Extract', dose: '500 mg' }, { name: 'GABA', dose: '300 mg' }, { name: 'L-Tryptophan', dose: '200 mg' }, { name: 'Chamomile Extract', dose: '150 mg' }, { name: 'Lemon Balm Extract', dose: '100 mg' }, { name: 'Passion Flower Extract', dose: '100 mg' }, { name: 'Melatonin', dose: '3 mg' }], other: '2 capsules per serving · 30 servings' },
+  },
+  'sleep support': {
+    cat: 'Sleep', desc: 'Gentle sleep support for restless nights. Non-habit forming.', tags: ['Sleep', 'Calm', 'Rest'],
+    formula: { rows: [{ name: 'Melatonin', dose: '5 mg' }, { name: 'L-Theanine', dose: '200 mg' }, { name: 'Magnesium (as Glycinate)', dose: '200 mg' }], other: 'Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'magnesium': {
+    cat: 'Sleep', desc: 'The most absorbable form of magnesium. Supports sleep, reduces cramps.', tags: ['Mineral', 'Sleep', 'Muscle'],
+    formula: { rows: [{ name: 'Magnesium (as Magnesium Glycinate)', dose: '400 mg' }, { name: 'Elemental Magnesium', dose: '80 mg' }], other: 'Magnesium Glycinate, Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'complete multivitamin': {
+    cat: 'Health', desc: 'Complete daily multivitamin with essential vitamins and minerals.', tags: ['Vitamins', 'Daily Health', 'Foundation'],
+    formula: { rows: [{ name: 'Vitamin A', dose: '900 mcg' }, { name: 'Vitamin C', dose: '90 mg' }, { name: 'Vitamin D3', dose: '50 mcg (2000 IU)' }, { name: 'Vitamin E', dose: '15 mg' }, { name: 'Vitamin B12', dose: '100 mcg' }, { name: 'Zinc', dose: '11 mg' }, { name: 'Iron', dose: '8 mg' }], other: '+ B-Complex, Selenium, Chromium, Biotin · 60 tablets / 30 servings' },
+  },
+  'omega-3': {
+    cat: 'Health', desc: 'Essential fatty acids for heart, brain, and joint support.', tags: ['Heart', 'Brain', 'Joint Health'],
+    formula: { rows: [{ name: 'Fish Oil Concentrate', dose: '1,200 mg' }, { name: 'EPA (Eicosapentaenoic Acid)', dose: '360 mg' }, { name: 'DHA (Docosahexaenoic Acid)', dose: '240 mg' }, { name: 'Total Omega-3s', dose: '720 mg' }], other: 'Molecularly distilled fish oil, softgel capsule · 60 softgels / 30 servings' },
+  },
+  'probiotic 40': {
+    cat: 'Health', desc: 'Double the CFUs plus prebiotics to feed the good bacteria.', tags: ['Gut Health', 'Digestion', 'Prebiotics'],
+    formula: { rows: [{ name: 'Probiotic Blend (10 strains)', dose: '40 Billion CFU' }, { name: 'Lactobacillus acidophilus', dose: '10B CFU' }, { name: 'Bifidobacterium lactis', dose: '8B CFU' }, { name: 'Prebiotic Fiber (FOS)', dose: '100 mg' }], other: 'Delayed-release vegetable capsule · 60 caps / 30 servings' },
+  },
+  'coq10': {
+    cat: 'Health', desc: 'Cellular energy production and heart health support.', tags: ['Heart Health', 'Energy', 'Antioxidant'],
+    formula: { rows: [{ name: 'Coenzyme Q10 (Ubiquinone)', dose: '200 mg' }, { name: 'BioPerine (Black Pepper Extract)', dose: '5 mg' }], other: 'Enhanced absorption with BioPerine · 60 softgels / 30 servings' },
+  },
+  'platinum turmeric': {
+    cat: 'Health', desc: 'Premium turmeric for inflammation and joint support.', tags: ['Anti-Inflammatory', 'Joint', 'Recovery'],
+    formula: { rows: [{ name: 'Turmeric Root Extract', dose: '1,500 mg' }, { name: 'Curcuminoids', dose: '95%' }, { name: 'BioPerine (Black Pepper)', dose: '10 mg' }], other: 'Enhanced absorption formula · 60 caps / 30 servings' },
+  },
+  'apple cider vinegar': {
+    cat: 'Health', desc: 'All the ACV benefits without the taste.', tags: ['Digestion', 'Weight', 'Wellness'],
+    formula: { rows: [{ name: 'Apple Cider Vinegar Powder', dose: '500 mg' }, { name: 'Acetic Acid', dose: '5%' }], other: 'With "The Mother" · Vegetable Capsule · 60 caps / 30 servings' },
+  },
+  'keto bhb': {
+    cat: 'Weight', desc: 'Exogenous ketones for keto support and clean energy.', tags: ['Keto', 'Energy', 'Fat Burn'],
+    formula: { rows: [{ name: 'BHB Ketone Blend', dose: '2,400 mg' }, { name: 'Calcium BHB', dose: '800 mg' }, { name: 'Sodium BHB', dose: '800 mg' }, { name: 'Magnesium BHB', dose: '800 mg' }], other: '3 capsules per serving · 30 servings' },
+  },
+  'fat burner': {
+    cat: 'Weight', desc: 'Thermogenic fat burner with MCT oil. Burn fat for fuel.', tags: ['Fat Burn', 'MCT', 'Metabolism'],
+    formula: { rows: [{ name: 'MCT Oil Powder', dose: '500 mg' }, { name: 'Green Tea Extract (EGCG)', dose: '300 mg' }, { name: 'Caffeine Anhydrous', dose: '200 mg' }, { name: 'L-Carnitine', dose: '500 mg' }, { name: 'CLA', dose: '400 mg' }], other: '2 capsules per serving · 30 servings' },
+  },
+  'collagen': {
+    cat: 'Beauty', desc: 'Grass-fed collagen for skin elasticity, joint support, and recovery.', tags: ['Collagen', 'Skin', 'Joint'],
+    formula: { rows: [{ name: 'Hydrolyzed Collagen Peptides (Types I & III)', dose: '10,000 mg' }, { name: 'Vitamin C', dose: '60 mg' }], other: 'Grass-fed, pasture-raised bovine collagen · Unflavored · 30 servings' },
+  },
+  'green tea extract': {
+    cat: 'Weight', desc: 'Natural metabolism booster with EGCG antioxidants.', tags: ['Metabolism', 'Antioxidant', 'Fat Burn'],
+    formula: { rows: [{ name: 'Green Tea Leaf Extract', dose: '500 mg' }, { name: 'EGCG', dose: '250 mg' }, { name: 'Caffeine (natural)', dose: '50 mg' }], other: 'Standardized to 50% EGCG · 60 caps / 30 servings' },
+  },
+  'energy powder': {
+    cat: 'Pre-Workout', desc: 'Clean energy without the crash. Smooth, sustained power.', tags: ['Energy', 'Endurance'],
+    formula: { rows: [{ name: 'Caffeine', dose: '150 mg' }, { name: 'L-Theanine', dose: '100 mg' }, { name: 'Beta-Alanine', dose: '1,600 mg' }, { name: 'Taurine', dose: '1,000 mg' }], other: 'Fruit Punch / Cotton Candy / Lychee flavors · 30 servings' },
+  },
+  'alpha energy': {
+    cat: 'Pre-Workout', desc: 'Testosterone and energy support in one.', tags: ['Testosterone', 'Drive', 'Vitality'],
+    formula: { rows: [{ name: 'Tongkat Ali Extract', dose: '300 mg' }, { name: 'Fenugreek Extract', dose: '300 mg' }, { name: 'Zinc', dose: '15 mg' }, { name: 'Vitamin D3', dose: '2000 IU' }, { name: 'Ashwagandha (KSM-66)', dose: '300 mg' }], other: '3 capsules per serving · 30 servings' },
+  },
+  'nootropic powder': {
+    cat: 'Focus', desc: 'Lock in mentally. Nootropic powder for deep focus.', tags: ['Focus', 'Clarity', 'Nootropic'],
+    formula: { rows: [{ name: 'Alpha-GPC', dose: '300 mg' }, { name: "Lion's Mane Extract", dose: '500 mg' }, { name: 'L-Tyrosine', dose: '500 mg' }, { name: 'Caffeine', dose: '100 mg' }, { name: 'L-Theanine', dose: '200 mg' }], other: 'Sour Gummi Worm / Sour Candy flavors · 30 servings' },
+  },
 };
 
 const OSWALD = 'var(--font-oswald), Oswald, sans-serif';

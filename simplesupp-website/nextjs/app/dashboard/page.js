@@ -22,13 +22,13 @@ const CATEGORY_COLOR_MAP = {
   'Protein': '#ff2d55',
   'Recovery & Sleep': '#00ffcc',
   'Recovery': '#00ffcc',
-  'Sleep': '#00ffcc',
-  'Focus & Energy': '#00ffcc',
-  'Focus': '#00ffcc',
-  'Weight Management': '#a855f7',
-  'Weight': '#a855f7',
-  'Beauty & Anti-Aging': '#a855f7',
-  'Beauty': '#a855f7',
+  'Sleep': '#7c6fea',
+  'Focus & Energy': '#f5c542',
+  'Focus': '#f5c542',
+  'Weight Management': '#3b9eff',
+  'Weight': '#3b9eff',
+  'Beauty & Anti-Aging': '#ff6bb5',
+  'Beauty': '#ff6bb5',
   'Health & Wellness': '#a855f7',
   'Health': '#a855f7',
 };
@@ -37,6 +37,10 @@ const CATEGORY_COLOR_RGB = {
   '#ff2d55': '255, 45, 85',
   '#00ffcc': '0, 255, 204',
   '#a855f7': '168, 85, 247',
+  '#f5c542': '245, 197, 66',
+  '#3b9eff': '59, 158, 255',
+  '#ff6bb5': '255, 107, 181',
+  '#7c6fea': '124, 111, 234',
 };
 
 // Map product name/title to a category using keyword matching
