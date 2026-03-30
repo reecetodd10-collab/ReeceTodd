@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { fetchShopifyProducts, addToCart, initializeShopifyCart, getCheckoutUrl, removeFromCart, updateCartQuantity, fetchCart } from '../lib/shopify';
 import { products as localProducts } from '../data/products';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
+import { trackViewContent, trackAddToCart as trackAddToCartEvent } from '../lib/tracking';
 
 // ─── Scroll-triggered fade-up wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -684,7 +685,14 @@ export default function ShopPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [openAccordions, setOpenAccordions] = useState({});
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [expandedCard, setExpandedCardRaw] = useState(null);
+  const setExpandedCard = (productId) => {
+    setExpandedCardRaw(productId);
+    if (productId) {
+      const p = shopifyProducts.find(sp => sp.id === productId);
+      if (p) trackViewContent(p.title, p.variantId || p.id, p.price || 0);
+    }
+  };
   const [addingProducts, setAddingProducts] = useState({});
   const [addedProducts, setAddedProducts] = useState({});
   const [checkoutUrl, setCheckoutUrl] = useState(null);
@@ -799,6 +807,7 @@ export default function ShopPage() {
     try {
       const updatedCart = await addToCart(product.variantId);
       setAddedProducts((prev) => ({ ...prev, [product.id]: true }));
+      trackAddToCartEvent(product.title, product.variantId, product.price || 0);
       // Sync cart state from response
       if (updatedCart) {
         setCartItems(updatedCart.lineItems || []);

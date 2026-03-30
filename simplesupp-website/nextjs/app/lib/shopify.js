@@ -1,6 +1,8 @@
 // BEFORE LAUNCH: Test full checkout with Shopify test card (4242 4242 4242 4242)
 // Configure Shopify Payments in Admin → Settings → Payments
 
+import { trackInitiateCheckout } from './tracking';
+
 // Shopify Storefront API Service
 const SHOPIFY_DOMAIN = '671mam-tn.myshopify.com';
 const STOREFRONT_ACCESS_TOKEN = '0c065c971704ea64c81537bc81e8be16';
@@ -413,6 +415,10 @@ export async function getCheckoutUrl() {
         const cart = await client.checkout.fetch(cartId);
         // Use the checkout URL from the cart object
         if (cart && cart.webUrl) {
+          // Track checkout initiation across all pixels
+          const cartValue = cart.lineItems ? cart.lineItems.reduce((sum, item) => sum + parseFloat(item.variant?.price?.amount || 0) * item.quantity, 0) : 0;
+          const contentIds = cart.lineItems ? cart.lineItems.map(item => item.variant?.id || '') : [];
+          trackInitiateCheckout(cartValue, contentIds);
           return cart.webUrl;
         }
       } catch (e) {

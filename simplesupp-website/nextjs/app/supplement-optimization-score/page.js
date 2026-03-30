@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { trackEvent } from '@/lib/analytics';
-import { trackAddToCart, ttqTrack } from '../components/TikTokPixel';
+import { trackStartQuiz, trackCompleteQuiz, trackAddToCart, trackSubmitForm } from '../lib/tracking';
 import ProductDetailModal from '../components/ProductDetailModal';
 import confetti from 'canvas-confetti';
 
@@ -284,6 +284,7 @@ export default function SupplementOptimizationScore() {
 
     // Track quiz started
     trackEvent('optimization_quiz_started');
+    trackStartQuiz('Optimization Score Quiz');
   }, []);
 
   // Load saved results from URL param ?results=ID
@@ -704,8 +705,8 @@ export default function SupplementOptimizationScore() {
       console.error('Error saving results to database:', saveError);
     }
 
-    // TikTok: track quiz completion as a lead event
-    ttqTrack('CompleteRegistration', { content_name: 'Optimization Score Quiz', content_category: responses.primaryGoal });
+    // Track quiz completion across all pixels
+    trackCompleteQuiz('Optimization Score Quiz', responses.primaryGoal);
 
     // Simulate loading for premium feel
     setTimeout(() => {
@@ -735,9 +736,9 @@ export default function SupplementOptimizationScore() {
       if (itemsToAdd.length > 0) {
         await addMultipleToCart(itemsToAdd);
         setAddedToCart(true);
-        // TikTok: track stack add-to-cart
+        // Track stack add-to-cart across all pixels
         const totalValue = [...recommendations, specialAIPick].filter(Boolean).reduce((sum, r) => sum + (r.price || 0), 0);
-        trackAddToCart({ contentId: 'os-quiz-stack', contentName: 'O.S. Recommended Stack', price: totalValue, quantity: itemsToAdd.length });
+        trackAddToCart('O.S. Recommended Stack', 'os-quiz-stack', totalValue, itemsToAdd.length);
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -769,8 +770,8 @@ export default function SupplementOptimizationScore() {
       await addToCart(product.variantId, 1);
       setAddedIndividual(prev => ({ ...prev, [product.title]: true }));
       trackEvent('add_to_cart_clicked', { type: 'individual', product: product.title, result_id: resultId });
-      // TikTok: track individual add-to-cart
-      trackAddToCart({ contentId: product.variantId, contentName: product.title, price: product.price || 0 });
+      // Track individual add-to-cart across all pixels
+      trackAddToCart(product.title, product.variantId, product.price || 0);
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -784,8 +785,8 @@ export default function SupplementOptimizationScore() {
     // TODO: Save to database and send email via Resend
     setEmailSubmitted(true);
     trackEvent('email_submitted', { email });
-    // TikTok: track email capture as lead
-    ttqTrack('SubmitForm', { content_name: 'O.S. Email Capture' });
+    // Track email capture across all pixels
+    trackSubmitForm('O.S. Email Capture');
   };
 
   // Render quiz or results

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { trackViewContent } from '../lib/tracking';
 import { products as localProducts } from '../data/products';
 
 // ─── Product catalog data (mirrors shop page) ───
@@ -272,6 +273,13 @@ function FormulaSection({ formulaData }) {
  */
 export default function ProductDetailModal({ product, onClose, onAddToCart, adding, added }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Fire ViewContent when modal opens
+  useEffect(() => {
+    if (product) {
+      trackViewContent(product.title, product.variantId || product.id, typeof product.price === 'number' ? product.price : 0);
+    }
+  }, [product]);
 
   if (!product) return null;
 

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Heart, Target, Pill, Info, Dumbbell, Sparkles, ShoppingCart, ExternalLink, Flame, Brain, Moon, Zap, X, Plus, Minus, Check, Clock, TrendingUp, CheckCircle, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Grid3X3, Layers, Truck, MessageCircle, Send, Bot } from 'lucide-react';
 import { products, PRODUCT_CATEGORIES } from '../data/products';
 import { fetchShopifyProducts, addMultipleToCart } from '../lib/shopify';
-import { trackAddToCart, trackViewContent, ttqTrack } from '../components/TikTokPixel';
+import { trackStartQuiz, trackCompleteQuiz, trackAddToCart, trackViewContent } from '../lib/tracking';
 import ProductDetailModal from '../components/ProductDetailModal';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -622,9 +622,9 @@ export default function SupplementAdvisor() {
         quantity: 1
       }]);
     }
-    // TikTok: track individual add-to-cart
+    // Track individual add-to-cart across all pixels
     if (supplement) {
-      trackAddToCart({ contentId: supplement.suplifulId, contentName: supplementName, price: supplement.price });
+      trackAddToCart(supplementName, supplement.suplifulId, supplement.price);
     }
   };
 
@@ -687,9 +687,9 @@ export default function SupplementAdvisor() {
         setAddedToShopify(true);
         setTimeout(() => setAddedToShopify(false), 3000);
         console.log(`[SupplementQuiz] Added ${itemsToAdd.length} items to Shopify cart`);
-        // TikTok: track add-to-cart for the full stack
+        // Track add-to-cart for the full stack across all pixels
         const totalValue = recommendations.stack.reduce((sum, s) => sum + (SUPPLEMENT_DATABASE[s.name]?.price || 0), 0);
-        trackAddToCart({ contentId: 'quiz-stack', contentName: 'Aviera Stack Bundle', price: totalValue, quantity: itemsToAdd.length });
+        trackAddToCart('Aviera Stack Bundle', 'quiz-stack', totalValue, itemsToAdd.length);
       } else {
         console.warn('[SupplementQuiz] No items could be matched to Shopify products');
         alert('Some products could not be added. Please try adding them individually from the shop.');
@@ -780,8 +780,8 @@ export default function SupplementAdvisor() {
           isAI: true
         });
         setStep(4);
-        // TikTok: track quiz completion as a lead event
-        ttqTrack('CompleteRegistration', { content_name: 'Aviera Stack Quiz', content_category: primaryGoal });
+        // Track quiz completion across all pixels
+        trackCompleteQuiz('Aviera Stack Quiz', primaryGoal);
       } else {
         throw new Error('Invalid response from AI');
       }
@@ -1128,7 +1128,7 @@ export default function SupplementAdvisor() {
               </div>
               <div className="text-center space-y-4 max-w-xl mx-auto">
                 <button 
-                  onClick={() => setShowLanding(false)} 
+                  onClick={() => { setShowLanding(false); trackStartQuiz('Aviera Stack Quiz'); }}
                   className="w-full py-4 px-8 rounded-lg text-white text-xl font-normal transition-all duration-300"
                   style={{
                     background: '#00d9ff',
