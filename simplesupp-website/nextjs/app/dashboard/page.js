@@ -228,7 +228,6 @@ function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) 
               { label: 'About', href: '/about' },
               { label: 'Latest', href: '/news' },
               { label: 'My Stack', href: '/dashboard' },
-              { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -247,6 +246,46 @@ function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) 
                 {link.label}
               </Link>
             ))}
+            {session ? (
+              <button
+                onClick={async () => {
+                  await signOut();
+                  setMenuOpen(false);
+                  window.location.href = '/auth';
+                }}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ff2d55',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  letterSpacing: '0.1em',
+                  padding: 0,
+                  textAlign: 'left',
+                }}
+              >
+                SIGN OUT
+              </button>
+            ) : (
+              <Link
+                href="/auth"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                SIGN IN
+              </Link>
+            )}
           </div>
         </div>
       )}
@@ -300,7 +339,7 @@ function DashboardSkeleton() {
 // ═══════════════════════════════════════════
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, session, loading: authLoading } = useSupabaseUser();
+  const { user, session, loading: authLoading, signOut } = useSupabaseUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
   // Views: 'dashboard' | 'detail' | 'celebration'

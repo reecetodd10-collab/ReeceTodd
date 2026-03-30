@@ -27,7 +27,7 @@ function FadeInSection({ children, delay = 0, className = '' }) {
 
 // ─── Sticky Navigation ───
 function StickyNav({ menuOpen, setMenuOpen, cartCount, onCartClick }) {
-  const { user } = useSupabaseUser();
+  const { user, session, signOut } = useSupabaseUser();
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
@@ -156,7 +156,6 @@ function StickyNav({ menuOpen, setMenuOpen, cartCount, onCartClick }) {
               { label: 'Latest', href: '/news' },
               { label: 'About', href: '/about' },
               { label: 'My Stack', href: '/dashboard' },
-              { label: 'Sign In', href: '/auth' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -175,6 +174,46 @@ function StickyNav({ menuOpen, setMenuOpen, cartCount, onCartClick }) {
                 {link.label}
               </Link>
             ))}
+            {session ? (
+              <button
+                onClick={async () => {
+                  await signOut();
+                  setMenuOpen(false);
+                  window.location.href = '/auth';
+                }}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ff2d55',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  letterSpacing: '0.1em',
+                  padding: 0,
+                  textAlign: 'left',
+                }}
+              >
+                SIGN OUT
+              </button>
+            ) : (
+              <Link
+                href="/auth"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                SIGN IN
+              </Link>
+            )}
           </div>
         </div>
       )}
