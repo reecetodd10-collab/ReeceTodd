@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-const META_PIXEL_ID = 'META_PIXEL_ID'; // Replace with your actual Meta Pixel ID
+const META_PIXEL_ID = '1600105094374902';
 
 export default function MetaPixel() {
   // Initialize pixel on mount
