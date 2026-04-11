@@ -15,7 +15,7 @@ const MAX_SLOTS = 6;
 
 // ─── Category → Color mapping ───
 // Red (#ff2d55) = Strength / Performance
-// Green (#00ffcc) = Recovery / Focus / Sleep
+// Green (#00e5ff) = Recovery / Focus / Sleep
 // Purple (#a855f7) = Weight Management / Skin / Health
 const CATEGORY_COLOR_MAP = {
   'Performance': '#00e5ff',
@@ -118,12 +118,12 @@ function DashboardSkeleton() {
   return (
     <div className="animate-pulse">
       <div className="flex justify-center mb-8 mt-4">
-        <div className="rounded-full" style={{ width: '150px', height: '150px', background: '#111', border: '6px solid #1a1a1a' }} />
+        <div className="rounded-full" style={{ width: '150px', height: '150px', background: 'rgba(0,0,0,0.04)', border: '6px solid rgba(0,0,0,0.08)' }} />
       </div>
-      <div className="mb-3" style={{ width: '120px', height: '12px', background: '#111', borderRadius: '4px' }} />
+      <div className="mb-3" style={{ width: '120px', height: '12px', background: 'rgba(0,0,0,0.04)', borderRadius: '4px' }} />
       <div className="grid grid-cols-2 gap-2 mb-6">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-lg" style={{ background: '#0a0a0a', minHeight: '100px', border: '1px solid rgba(255,255,255,0.06)' }} />
+          <div key={i} className="rounded-lg" style={{ background: '#ffffff', minHeight: '100px', border: '1px solid rgba(0,0,0,0.06)' }} />
         ))}
       </div>
     </div>
@@ -334,7 +334,7 @@ export default function DashboardPage() {
               id: supp.id || idx + 1,
               name: supp.name || supp.supplement_name || 'Unknown',
               tier: supp.tier || (idx < 2 ? 'MUST HAVE' : 'RECOMMENDED'),
-              tierColor: (supp.tier || '').toUpperCase() === 'MUST HAVE' || idx < 2 ? '#00ffcc' : '#a855f7',
+              tierColor: (supp.tier || '').toUpperCase() === 'MUST HAVE' || idx < 2 ? '#00e5ff' : '#a855f7',
               dosage: supp.dosage || supp.dose || '',
               progress: supp.progress || 0,
               streak: supp.streak || 0,
@@ -563,7 +563,7 @@ export default function DashboardPage() {
           id: s.id || idx + 1,
           name: s.name,
           tier: idx < 2 ? 'MUST HAVE' : 'RECOMMENDED',
-          tierColor: idx < 2 ? '#00ffcc' : '#a855f7',
+          tierColor: idx < 2 ? '#00e5ff' : '#a855f7',
           dosage: '',
           progress: 0,
           streak: 0,
@@ -647,7 +647,7 @@ export default function DashboardPage() {
   };
 
   // Confetti colors
-  const confettiColors = ['#00ffcc', '#ff2d55', '#a855f7'];
+  const confettiColors = ['#00e5ff', '#FF3B3B', '#a855f7'];
 
   // Empty slot count for the existing stack display
   const emptySlots = Math.max(0, MAX_SLOTS - supplements.length);
@@ -659,7 +659,7 @@ export default function DashboardPage() {
   if (authLoading) {
     return (
       <PageLayout hideFooter>
-        <div className="relative min-h-screen" style={{ background: '#000000', color: '#ffffff' }}>
+        <div className="relative min-h-screen" style={{ background: '#F5F0EB', color: '#28282A' }}>
           <main className="relative z-10 pt-[60px] pb-24 px-5">
             <div className="max-w-[430px] md:max-w-3xl mx-auto">
               <DashboardSkeleton />
@@ -680,8 +680,8 @@ export default function DashboardPage() {
     <div
       className="relative min-h-screen"
       style={{
-        background: '#000000',
-        color: '#ffffff',
+        background: '#F5F0EB',
+        color: '#28282A',
       }}
     >
       {/* Main content */}
@@ -707,7 +707,7 @@ export default function DashboardPage() {
                   fontWeight: 700,
                   letterSpacing: '4px',
                   textTransform: 'uppercase',
-                  color: '#ffffff',
+                  color: '#28282A',
                 }}
               >
                 My Supplement Plan
@@ -720,7 +720,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                     fontSize: '9px',
-                    color: '#00ffcc',
+                    color: '#00e5ff',
                     letterSpacing: '3px',
                     textTransform: 'uppercase',
                   }}
@@ -741,7 +741,7 @@ export default function DashboardPage() {
                       cy="75"
                       r={radius}
                       fill="none"
-                      stroke="#111"
+                      stroke="rgba(0,0,0,0.08)"
                       strokeWidth="6"
                     />
                     <motion.circle
@@ -749,7 +749,7 @@ export default function DashboardPage() {
                       cy="75"
                       r={radius}
                       fill="none"
-                      stroke="#00ffcc"
+                      stroke="#00e5ff"
                       strokeWidth="6"
                       strokeLinecap="round"
                       strokeDasharray={circumference}
@@ -775,7 +775,7 @@ export default function DashboardPage() {
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '72px',
                         fontWeight: 700,
-                        color: '#fff',
+                        color: '#28282A',
                         lineHeight: 1,
                       }}
                     >
@@ -785,7 +785,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '24px',
-                        color: '#666',
+                        color: 'rgba(0,0,0,0.5)',
                         fontWeight: 400,
                       }}
                     >
@@ -800,7 +800,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '14px',
-                    color: '#00ffcc',
+                    color: '#00e5ff',
                     letterSpacing: '4px',
                     textShadow: '0 0 20px rgba(0, 255, 204, 0.3)',
                   }}
@@ -812,7 +812,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                     fontSize: '10px',
-                    color: '#666',
+                    color: 'rgba(0,0,0,0.5)',
                   }}
                 >
                   {getScoreSubtext(scoreValue)}
@@ -825,7 +825,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '9px',
-                      color: '#00ffcc',
+                      color: '#00e5ff',
                       letterSpacing: '1px',
                       textDecoration: 'none',
                     }}
@@ -839,7 +839,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '9px',
-                      color: '#00ffcc',
+                      color: '#00e5ff',
                       letterSpacing: '1px',
                       textDecoration: 'none',
                     }}
@@ -875,7 +875,7 @@ export default function DashboardPage() {
                         style={{
                           fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                           fontSize: '9px',
-                          color: '#666',
+                          color: 'rgba(0,0,0,0.5)',
                           marginTop: '4px',
                         }}
                       >
@@ -893,7 +893,7 @@ export default function DashboardPage() {
                   className="mb-5"
                   style={{
                     height: '1px',
-                    background: 'rgba(255,255,255,0.06)',
+                    background: 'rgba(0,0,0,0.04)',
                   }}
                 />
                 <div className="flex justify-between items-baseline mb-4">
@@ -901,7 +901,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '16px',
-                      color: '#fff',
+                      color: '#28282A',
                       letterSpacing: '2px',
                       textTransform: 'uppercase',
                     }}
@@ -912,7 +912,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '9px',
-                      color: '#666',
+                      color: 'rgba(0,0,0,0.5)',
                     }}
                   >
                     {stackItems.length}/{MAX_SLOTS} slots
@@ -961,7 +961,7 @@ export default function DashboardPage() {
                             transition={{ duration: 0.4, delay: idx * 0.08 }}
                             className="rounded-lg relative overflow-hidden"
                             style={{
-                              background: '#0a0a0a',
+                              background: '#ffffff',
                               border: `1px solid rgba(${catRgb}, 0.25)`,
                               padding: '14px 12px 12px',
                               minHeight: '110px',
@@ -1004,7 +1004,7 @@ export default function DashboardPage() {
                                 style={{
                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                   fontSize: '12px',
-                                  color: '#fff',
+                                  color: '#28282A',
                                   letterSpacing: '0.5px',
                                   textTransform: 'uppercase',
                                   lineHeight: 1.2,
@@ -1018,7 +1018,7 @@ export default function DashboardPage() {
                                 <p style={{
                                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                   fontSize: '9px',
-                                  color: '#555',
+                                  color: 'rgba(0,0,0,0.5)',
                                 }}>
                                   ${rec.price}
                                 </p>
@@ -1037,9 +1037,9 @@ export default function DashboardPage() {
                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                   fontSize: '9px',
                                   letterSpacing: '1.5px',
-                                  color: '#666',
+                                  color: 'rgba(0,0,0,0.5)',
                                   background: 'transparent',
-                                  border: '1px solid rgba(255,255,255,0.1)',
+                                  border: '1px solid rgba(0,0,0,0.1)',
                                   padding: '6px 8px',
                                   textTransform: 'uppercase',
                                 }}
@@ -1092,7 +1092,7 @@ export default function DashboardPage() {
                         transition={{ duration: 0.3, delay: idx * 0.05 }}
                         className="rounded-lg relative overflow-hidden"
                         style={{
-                          background: '#0a0a0a',
+                          background: '#ffffff',
                           border: `1px solid rgba(${catRgb}, 0.2)`,
                           padding: '12px 10px 10px',
                           minHeight: '90px',
@@ -1113,7 +1113,7 @@ export default function DashboardPage() {
                           onClick={() => removeFromStack(item.id)}
                           className="absolute top-1 right-1 bg-transparent border-none cursor-pointer"
                           style={{
-                            color: '#444',
+                            color: 'rgba(0,0,0,0.55)',
                             fontSize: '10px',
                             lineHeight: 1,
                             padding: '2px 4px',
@@ -1148,7 +1148,7 @@ export default function DashboardPage() {
                           style={{
                             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                             fontSize: '11px',
-                            color: '#fff',
+                            color: '#28282A',
                             letterSpacing: '0.3px',
                             textTransform: 'uppercase',
                             lineHeight: 1.2,
@@ -1161,7 +1161,7 @@ export default function DashboardPage() {
                             style={{
                               fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                               fontSize: '8px',
-                              color: '#555',
+                              color: 'rgba(0,0,0,0.5)',
                               marginTop: '4px',
                             }}
                           >
@@ -1178,9 +1178,9 @@ export default function DashboardPage() {
                               fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                               fontSize: '7px',
                               letterSpacing: '1px',
-                              color: addingToCart[item.id] === 'done' ? '#00ffcc' : '#fff',
-                              background: addingToCart[item.id] === 'done' ? 'rgba(0,255,204,0.08)' : 'rgba(255,255,255,0.05)',
-                              border: `1px solid ${addingToCart[item.id] === 'done' ? 'rgba(0,255,204,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                              color: addingToCart[item.id] === 'done' ? '#00e5ff' : '#28282A',
+                              background: addingToCart[item.id] === 'done' ? 'rgba(0,229,255,0.08)' : 'rgba(0,0,0,0.05)',
+                              border: `1px solid ${addingToCart[item.id] === 'done' ? 'rgba(0,229,255,0.3)' : 'rgba(0,0,0,0.1)'}`,
                               padding: '4px 6px',
                               textTransform: 'uppercase',
                             }}
@@ -1206,7 +1206,7 @@ export default function DashboardPage() {
                       }}
                       className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
                       style={{
-                        border: '1px dashed rgba(255,255,255,0.08)',
+                        border: '1px dashed rgba(0,0,0,0.08)',
                         minHeight: '90px',
                         background: 'transparent',
                       }}
@@ -1215,7 +1215,7 @@ export default function DashboardPage() {
                         e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)';
                         e.currentTarget.style.background = 'transparent';
                       }}
                     >
@@ -1223,7 +1223,7 @@ export default function DashboardPage() {
                         style={{
                           fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                           fontSize: '18px',
-                          color: '#333',
+                          color: 'rgba(0,0,0,0.7)',
                           marginBottom: '2px',
                         }}
                       >
@@ -1233,7 +1233,7 @@ export default function DashboardPage() {
                         style={{
                           fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                           fontSize: '7px',
-                          color: '#333',
+                          color: 'rgba(0,0,0,0.7)',
                         }}
                       >
                         Add
@@ -1257,24 +1257,24 @@ export default function DashboardPage() {
                     disabled={stackItems.length >= MAX_SLOTS}
                     style={{
                       width: '100%',
-                      background: '#0a0a0a',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      background: '#ffffff',
+                      border: '1px solid rgba(0,0,0,0.1)',
                       borderRadius: '6px',
                       padding: '10px 14px',
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '11px',
-                      color: '#fff',
+                      color: '#28282A',
                       outline: 'none',
                       boxSizing: 'border-box',
                       opacity: stackItems.length >= MAX_SLOTS ? 0.4 : 1,
                     }}
                     onMouseEnter={(e) => {
                       if (stackItems.length < MAX_SLOTS)
-                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.3)';
+                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.3)';
                     }}
                     onMouseLeave={(e) => {
                       if (!e.currentTarget.matches(':focus'))
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
                     }}
                   />
                   {searchQuery.length > 0 && (
@@ -1282,7 +1282,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                         fontSize: '8px',
-                        color: '#444',
+                        color: 'rgba(0,0,0,0.55)',
                         marginTop: '4px',
                         paddingLeft: '2px',
                       }}
@@ -1303,7 +1303,7 @@ export default function DashboardPage() {
                         style={{
                           top: 'calc(100% + 4px)',
                           background: '#0f0f0f',
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          border: '1px solid rgba(0,0,0,0.1)',
                         }}
                       >
                         {searchResults.map((result) => {
@@ -1319,7 +1319,7 @@ export default function DashboardPage() {
                                 padding: '10px 14px',
                                 background: 'transparent',
                                 border: 'none',
-                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                borderBottom: '1px solid rgba(0,0,0,0.05)',
                                 borderLeft: `3px solid ${rCatColor}`,
                               }}
                               onMouseEnter={(e) =>
@@ -1347,7 +1347,7 @@ export default function DashboardPage() {
                                   style={{
                                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                     fontSize: '12px',
-                                    color: '#fff',
+                                    color: '#28282A',
                                     letterSpacing: '0.5px',
                                     textTransform: 'uppercase',
                                   }}
@@ -1360,7 +1360,7 @@ export default function DashboardPage() {
                                   style={{
                                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                     fontSize: '9px',
-                                    color: '#666',
+                                    color: 'rgba(0,0,0,0.5)',
                                   }}
                                 >
                                   ${result.price}
@@ -1382,7 +1382,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                         fontSize: '8px',
-                        color: '#666',
+                        color: 'rgba(0,0,0,0.5)',
                         letterSpacing: '2px',
                         textTransform: 'uppercase',
                       }}
@@ -1411,8 +1411,8 @@ export default function DashboardPage() {
                                 className="w-full flex items-center justify-between cursor-pointer transition-all"
                                 style={{
                                   padding: '10px 12px',
-                                  background: isOpen ? `rgba(${catRgb}, 0.06)` : '#0a0a0a',
-                                  border: `1px solid ${isOpen ? `rgba(${catRgb}, 0.25)` : 'rgba(255,255,255,0.06)'}`,
+                                  background: isOpen ? `rgba(${catRgb}, 0.06)` : '#ffffff',
+                                  border: `1px solid ${isOpen ? `rgba(${catRgb}, 0.25)` : 'rgba(0,0,0,0.06)'}`,
                                   borderRadius: '6px',
                                   borderLeft: `3px solid ${catColor}`,
                                 }}
@@ -1422,7 +1422,7 @@ export default function DashboardPage() {
                                     style={{
                                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                       fontSize: '12px',
-                                      color: isOpen ? catColor : '#fff',
+                                      color: isOpen ? catColor : '#28282A',
                                       letterSpacing: '1px',
                                       textTransform: 'uppercase',
                                     }}
@@ -1433,7 +1433,7 @@ export default function DashboardPage() {
                                     style={{
                                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                       fontSize: '8px',
-                                      color: '#666',
+                                      color: 'rgba(0,0,0,0.5)',
                                     }}
                                   >
                                     {items.length}
@@ -1463,7 +1463,7 @@ export default function DashboardPage() {
                                             className="flex items-center justify-between"
                                             style={{
                                               padding: '8px 12px',
-                                              borderBottom: '1px solid rgba(255,255,255,0.04)',
+                                              borderBottom: '1px solid rgba(0,0,0,0.04)',
                                             }}
                                           >
                                             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1478,7 +1478,7 @@ export default function DashboardPage() {
                                                 style={{
                                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                                   fontSize: '11px',
-                                                  color: '#fff',
+                                                  color: '#28282A',
                                                   letterSpacing: '0.5px',
                                                   textTransform: 'uppercase',
                                                 }}
@@ -1487,7 +1487,7 @@ export default function DashboardPage() {
                                               </span>
                                             </div>
                                             <div className="flex items-center gap-2 flex-shrink-0">
-                                              <span style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#666' }}>
+                                              <span style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: 'rgba(0,0,0,0.5)' }}>
                                                 ${product.price?.toFixed(2)}
                                               </span>
                                               <button
@@ -1536,23 +1536,23 @@ export default function DashboardPage() {
                     style={{
                       padding: '13px',
                       background: stackSaved
-                        ? 'rgba(0,255,204,0.1)'
+                        ? 'rgba(0,229,255,0.1)'
                         : savingStack
-                        ? '#0a0a0a'
+                        ? '#ffffff'
                         : 'transparent',
-                      color: stackSaved ? '#00ffcc' : savingStack ? '#666' : '#00ffcc',
+                      color: stackSaved ? '#00e5ff' : savingStack ? '#666' : '#00e5ff',
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '13px',
                       letterSpacing: '2px',
-                      border: `1px solid ${stackSaved ? 'rgba(0,255,204,0.4)' : 'rgba(0,255,204,0.3)'}`,
+                      border: `1px solid ${stackSaved ? 'rgba(0,229,255,0.4)' : 'rgba(0,229,255,0.3)'}`,
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       marginBottom: '6px',
                     }}
                     onMouseEnter={(e) => {
                       if (!savingStack && !stackSaved) {
-                        e.currentTarget.style.background = 'rgba(0,255,204,0.08)';
-                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,255,204,0.15)';
+                        e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
+                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,229,255,0.15)';
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -1575,12 +1575,12 @@ export default function DashboardPage() {
                       className="flex-1 rounded-lg cursor-pointer transition-all"
                       style={{
                         padding: '12px',
-                        background: stackAddedToCart ? 'rgba(0,255,204,0.08)' : '#0a0a0a',
-                        color: stackAddedToCart ? '#00ffcc' : '#fff',
+                        background: stackAddedToCart ? 'rgba(0,229,255,0.08)' : '#ffffff',
+                        color: stackAddedToCart ? '#00e5ff' : '#28282A',
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '11px',
                         letterSpacing: '1.5px',
-                        border: `1px solid ${stackAddedToCart ? 'rgba(0,255,204,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                        border: `1px solid ${stackAddedToCart ? 'rgba(0,229,255,0.3)' : 'rgba(0,0,0,0.1)'}`,
                         fontWeight: 600,
                         textTransform: 'uppercase',
                       }}
@@ -1592,7 +1592,7 @@ export default function DashboardPage() {
                       className="rounded-lg cursor-pointer transition-all"
                       style={{
                         padding: '12px 16px',
-                        background: '#00ffcc',
+                        background: '#00e5ff',
                         color: '#000',
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '11px',
@@ -1602,7 +1602,7 @@ export default function DashboardPage() {
                         textTransform: 'uppercase',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,255,204,0.3)';
+                        e.currentTarget.style.boxShadow = '0 0 16px rgba(0,229,255,0.3)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.boxShadow = 'none';
@@ -1636,7 +1636,7 @@ export default function DashboardPage() {
                         <button
                           onClick={() => setShowSuggestions(false)}
                           className="bg-transparent border-none cursor-pointer"
-                          style={{ color: '#444', fontSize: '12px', padding: '2px 4px' }}
+                          style={{ color: 'rgba(0,0,0,0.55)', fontSize: '12px', padding: '2px 4px' }}
                         >
                           \u2715
                         </button>
@@ -1659,7 +1659,7 @@ export default function DashboardPage() {
                                 className="flex-shrink-0 rounded-lg text-left cursor-pointer relative overflow-hidden"
                                 style={{
                                   width: '140px',
-                                  background: '#0a0a0a',
+                                  background: '#ffffff',
                                   border: `1px solid rgba(${sCatRgb}, 0.2)`,
                                   padding: '10px',
                                 }}
@@ -1684,7 +1684,7 @@ export default function DashboardPage() {
                                 <p style={{
                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                   fontSize: '10px',
-                                  color: '#fff',
+                                  color: '#28282A',
                                   letterSpacing: '0.3px',
                                   textTransform: 'uppercase',
                                   lineHeight: 1.2,
@@ -1695,7 +1695,7 @@ export default function DashboardPage() {
                                 <p style={{
                                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                   fontSize: '8px',
-                                  color: '#00ffcc',
+                                  color: '#00e5ff',
                                 }}>
                                   + ADD
                                 </p>
@@ -1713,7 +1713,7 @@ export default function DashboardPage() {
                 className="mb-6 mt-2"
                 style={{
                   height: '1px',
-                  background: 'rgba(255,255,255,0.06)',
+                  background: 'rgba(0,0,0,0.04)',
                 }}
               />
 
@@ -1724,7 +1724,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '16px',
-                      color: '#fff',
+                      color: '#28282A',
                       letterSpacing: '2px',
                       textTransform: 'uppercase',
                     }}
@@ -1740,9 +1740,9 @@ export default function DashboardPage() {
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '10px',
                         letterSpacing: '1px',
-                        color: '#00ffcc',
+                        color: '#00e5ff',
                         background: 'transparent',
-                        border: '1px solid rgba(0,255,204,0.3)',
+                        border: '1px solid rgba(0,229,255,0.3)',
                         padding: '4px 10px',
                         textTransform: 'uppercase',
                       }}
@@ -1762,7 +1762,7 @@ export default function DashboardPage() {
                             top: 'calc(100% + 4px)',
                             width: '200px',
                             background: '#0f0f0f',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            border: '1px solid rgba(0,0,0,0.1)',
                           }}
                         >
                           {(supplements.length > 0 ? supplements : stackItems).map((item, idx) => {
@@ -1781,7 +1781,7 @@ export default function DashboardPage() {
                                   padding: '10px 12px',
                                   background: 'transparent',
                                   border: 'none',
-                                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                  borderBottom: '1px solid rgba(0,0,0,0.05)',
                                   borderLeft: `3px solid ${dCatColor}`,
                                   display: 'flex',
                                   alignItems: 'center',
@@ -1793,7 +1793,7 @@ export default function DashboardPage() {
                                 <span style={{
                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                   fontSize: '11px',
-                                  color: '#fff',
+                                  color: '#28282A',
                                   letterSpacing: '0.5px',
                                   textTransform: 'uppercase',
                                 }}>
@@ -1802,7 +1802,7 @@ export default function DashboardPage() {
                                 <span style={{
                                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                   fontSize: '8px',
-                                  color: '#00ffcc',
+                                  color: '#00e5ff',
                                 }}>
                                   LOG
                                 </span>
@@ -1814,7 +1814,7 @@ export default function DashboardPage() {
                               padding: '12px',
                               fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                               fontSize: '9px',
-                              color: '#444',
+                              color: 'rgba(0,0,0,0.55)',
                               textAlign: 'center',
                             }}>
                               Build your stack first
@@ -1840,7 +1840,7 @@ export default function DashboardPage() {
                         key={supp.id}
                         className="rounded-lg cursor-pointer transition-colors relative overflow-hidden"
                         style={{
-                          background: '#0a0a0a',
+                          background: '#ffffff',
                           border: `1px solid rgba(${catRgb}, 0.2)`,
                           padding: '12px',
                           minHeight: '100px',
@@ -1854,7 +1854,7 @@ export default function DashboardPage() {
                           }
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = '#0f0f0f')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = '#0a0a0a')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
                       >
                         {/* Top color bar */}
                         <div style={{
@@ -1889,7 +1889,7 @@ export default function DashboardPage() {
                           style={{
                             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                             fontSize: '11px',
-                            color: '#fff',
+                            color: '#28282A',
                             letterSpacing: '0.5px',
                             textTransform: 'uppercase',
                             lineHeight: 1.2,
@@ -1903,7 +1903,7 @@ export default function DashboardPage() {
                             style={{
                               fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                               fontSize: '9px',
-                              color: '#666',
+                              color: 'rgba(0,0,0,0.5)',
                             }}
                           >
                             {supp.dosage}
@@ -1944,11 +1944,11 @@ export default function DashboardPage() {
                               style={{
                                 fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                 fontSize: '8px',
-                                color: '#00ffcc',
+                                color: '#00e5ff',
                                 padding: '2px 6px',
-                                border: '1px solid rgba(0,255,204,0.4)',
+                                border: '1px solid rgba(0,229,255,0.4)',
                                 borderRadius: '3px',
-                                background: 'rgba(0,255,204,0.08)',
+                                background: 'rgba(0,229,255,0.08)',
                               }}
                               title="View product details"
                             >
@@ -1986,30 +1986,30 @@ export default function DashboardPage() {
                       key="add-from-stack"
                       className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors relative"
                       style={{
-                        border: '1px dashed rgba(0,255,204,0.15)',
+                        border: '1px dashed rgba(0,229,255,0.15)',
                         minHeight: '100px',
                         background: 'transparent',
                       }}
                       onClick={() => setShowLogDropdown(!showLogDropdown)}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.3)';
+                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.3)';
                         e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,255,204,0.15)';
+                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.15)';
                         e.currentTarget.style.background = 'transparent';
                       }}
                     >
                       <span style={{
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '18px',
-                        color: '#00ffcc',
+                        color: '#00e5ff',
                         marginBottom: '2px',
                       }}>+</span>
                       <span style={{
                         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                         fontSize: '7px',
-                        color: '#00ffcc',
+                        color: '#00e5ff',
                       }}>
                         ADD FROM STACK
                       </span>
@@ -2020,7 +2020,7 @@ export default function DashboardPage() {
                       key={`empty-${i}`}
                       className="rounded-lg flex flex-col items-center justify-center"
                       style={{
-                        border: '1px dashed rgba(255,255,255,0.06)',
+                        border: '1px dashed rgba(0,0,0,0.06)',
                         minHeight: '100px',
                         background: 'transparent',
                       }}
@@ -2042,7 +2042,7 @@ export default function DashboardPage() {
                     href="/supplement-optimization-score"
                     className="block rounded-lg text-center no-underline"
                     style={{
-                      background: '#0a0a0a',
+                      background: '#ffffff',
                       padding: '24px',
                       border: '1px solid rgba(0, 255, 204, 0.2)',
                       textDecoration: 'none',
@@ -2052,7 +2052,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '16px',
-                        color: '#fff',
+                        color: '#28282A',
                         letterSpacing: '2px',
                         textTransform: 'uppercase',
                         marginBottom: '8px',
@@ -2064,7 +2064,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                         fontSize: '10px',
-                        color: '#666',
+                        color: 'rgba(0,0,0,0.5)',
                         lineHeight: 1.5,
                         marginBottom: '16px',
                       }}
@@ -2075,7 +2075,7 @@ export default function DashboardPage() {
                       style={{
                         fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                         fontSize: '12px',
-                        color: '#00ffcc',
+                        color: '#00e5ff',
                         letterSpacing: '2px',
                       }}
                     >
@@ -2101,7 +2101,7 @@ export default function DashboardPage() {
                 style={{
                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                   fontSize: '11px',
-                  color: '#00ffcc',
+                  color: '#00e5ff',
                 }}
                 onMouseEnter={(e) => (e.target.style.opacity = '0.7')}
                 onMouseLeave={(e) => (e.target.style.opacity = '1')}
@@ -2115,7 +2115,7 @@ export default function DashboardPage() {
                 style={{
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '28px',
-                  color: '#fff',
+                  color: '#28282A',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
                   lineHeight: 1.1,
@@ -2159,7 +2159,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '12px',
                   letterSpacing: '1.5px',
-                  color: '#00ffcc',
+                  color: '#00e5ff',
                   background: 'rgba(0, 255, 204, 0.06)',
                   border: '1px solid rgba(0, 255, 204, 0.2)',
                   textTransform: 'uppercase',
@@ -2176,7 +2176,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '12px',
-                      color: '#fff',
+                      color: '#28282A',
                       letterSpacing: '2px',
                       textTransform: 'uppercase',
                     }}
@@ -2187,9 +2187,9 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '11px',
-                      color: '#999',
+                      color: 'rgba(0,0,0,0.45)',
                       lineHeight: 1.6,
-                      borderLeft: '2px solid #00ffcc',
+                      borderLeft: '2px solid #00e5ff',
                       paddingLeft: '14px',
                     }}
                   >
@@ -2206,7 +2206,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                       fontSize: '12px',
-                      color: '#fff',
+                      color: '#28282A',
                       letterSpacing: '2px',
                       textTransform: 'uppercase',
                     }}
@@ -2231,7 +2231,7 @@ export default function DashboardPage() {
                           width: '28px',
                           height: '28px',
                           borderRadius: '6px',
-                          background: '#0a0a0a',
+                          background: '#ffffff',
                           fontSize: '13px',
                         }}
                       >
@@ -2243,7 +2243,7 @@ export default function DashboardPage() {
                           style={{
                             fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                             fontSize: '9px',
-                            color: '#666',
+                            color: 'rgba(0,0,0,0.5)',
                             letterSpacing: '1px',
                             textTransform: 'uppercase',
                           }}
@@ -2254,7 +2254,7 @@ export default function DashboardPage() {
                           style={{
                             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                             fontSize: '13px',
-                            color: '#fff',
+                            color: '#28282A',
                             letterSpacing: '0.5px',
                           }}
                         >
@@ -2273,7 +2273,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '12px',
-                    color: '#fff',
+                    color: '#28282A',
                     letterSpacing: '2px',
                     textTransform: 'uppercase',
                   }}
@@ -2286,7 +2286,7 @@ export default function DashboardPage() {
                   className="mb-2 overflow-hidden"
                   style={{
                     height: '12px',
-                    background: '#111',
+                    background: 'rgba(0,0,0,0.04)',
                     borderRadius: '8px',
                   }}
                 >
@@ -2297,7 +2297,7 @@ export default function DashboardPage() {
                     style={{
                       height: '100%',
                       borderRadius: '8px',
-                      background: 'linear-gradient(90deg, #00ffcc, #ff2d55)',
+                      background: 'linear-gradient(90deg, #00e5ff, #ff2d55)',
                     }}
                   />
                 </div>
@@ -2307,7 +2307,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                     fontSize: '10px',
-                    color: '#fff',
+                    color: '#28282A',
                   }}
                 >
                   {selectedSupplement.servingsCompleted} / {selectedSupplement.servingsTotal} servings completed
@@ -2317,7 +2317,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                     fontSize: '9px',
-                    color: '#666',
+                    color: 'rgba(0,0,0,0.5)',
                   }}
                 >
                   {selectedSupplement.servingsTotal - selectedSupplement.servingsCompleted} servings remaining
@@ -2343,7 +2343,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '9px',
-                      color: '#666',
+                      color: 'rgba(0,0,0,0.5)',
                     }}
                   >
                     Personal best: {selectedSupplement.personalBest} days
@@ -2358,7 +2358,7 @@ export default function DashboardPage() {
                 className="w-full rounded-lg cursor-pointer transition-all"
                 style={{
                   padding: '14px',
-                  background: loggingIntake ? '#0a0a0a' : '#00ffcc',
+                  background: loggingIntake ? '#ffffff' : '#00e5ff',
                   color: loggingIntake ? '#666' : '#000',
                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                   fontSize: '14px',
@@ -2376,7 +2376,7 @@ export default function DashboardPage() {
                 }}
                 onMouseLeave={(e) => {
                   if (!loggingIntake) {
-                    e.currentTarget.style.background = '#00ffcc';
+                    e.currentTarget.style.background = '#00e5ff';
                     e.currentTarget.style.boxShadow = 'none';
                   }
                 }}
@@ -2407,7 +2407,7 @@ export default function DashboardPage() {
                     width: '300px',
                     height: '300px',
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(255,45,85,0.15) 0%, rgba(0,255,204,0.08) 40%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(255,45,85,0.15) 0%, rgba(0,229,255,0.08) 40%, transparent 70%)',
                     filter: 'blur(40px)',
                   }}
                 />
@@ -2447,7 +2447,7 @@ export default function DashboardPage() {
                     width: '100px',
                     height: '100px',
                     borderRadius: '50%',
-                    border: '2px solid rgba(0,255,204,0.4)',
+                    border: '2px solid rgba(0,229,255,0.4)',
                   }}
                 />
 
@@ -2469,7 +2469,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '14px',
-                    color: '#00ffcc',
+                    color: '#00e5ff',
                     letterSpacing: '4px',
                     marginBottom: '8px',
                     textShadow: '0 0 20px rgba(0, 255, 204, 0.4)',
@@ -2503,7 +2503,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '18px',
-                    color: '#fff',
+                    color: '#28282A',
                     letterSpacing: '1px',
                   }}
                 >
@@ -2526,7 +2526,7 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                     fontSize: '10px',
-                    color: '#666',
+                    color: 'rgba(0,0,0,0.5)',
                     maxWidth: '260px',
                     lineHeight: 1.5,
                   }}
@@ -2544,7 +2544,7 @@ export default function DashboardPage() {
                     className="mb-[6px] overflow-hidden"
                     style={{
                       height: '8px',
-                      background: '#111',
+                      background: 'rgba(0,0,0,0.04)',
                       borderRadius: '8px',
                     }}
                   >
@@ -2559,8 +2559,8 @@ export default function DashboardPage() {
                       style={{
                         height: '100%',
                         borderRadius: '8px',
-                        background: 'linear-gradient(90deg, #00ffcc, #ff2d55)',
-                        boxShadow: '0 0 10px rgba(0,255,204,0.3)',
+                        background: 'linear-gradient(90deg, #00e5ff, #ff2d55)',
+                        boxShadow: '0 0 10px rgba(0,229,255,0.3)',
                       }}
                     />
                   </div>
@@ -2568,7 +2568,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '9px',
-                      color: '#666',
+                      color: 'rgba(0,0,0,0.5)',
                     }}
                   >
                     {selectedSupplement.servingsTotal > 0
@@ -2587,7 +2587,7 @@ export default function DashboardPage() {
                   style={{
                     padding: '14px 48px',
                     background: '#ff2d55',
-                    color: '#fff',
+                    color: '#28282A',
                     fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                     fontSize: '14px',
                     letterSpacing: '2px',
@@ -2618,29 +2618,29 @@ export default function DashboardPage() {
         style={{
           fontFamily: 'var(--font-space-mono), Space Mono, monospace',
           fontSize: '9px',
-          color: '#333',
+          color: 'rgba(0,0,0,0.7)',
           lineHeight: 1.6,
-          borderTop: '1px solid rgba(255,255,255,0.04)',
+          borderTop: '1px solid rgba(0,0,0,0.04)',
         }}
       >
         <div className="max-w-[430px] mx-auto">
           <div className="mb-3">
-            <Link href="/shop" style={{ color: '#00ffcc', textDecoration: 'none' }}>Shop</Link>
+            <Link href="/shop" style={{ color: '#00e5ff', textDecoration: 'none' }}>Shop</Link>
             {' · '}
-            <Link href="/about" style={{ color: '#00ffcc', textDecoration: 'none' }}>About</Link>
+            <Link href="/about" style={{ color: '#00e5ff', textDecoration: 'none' }}>About</Link>
             {' · '}
-            <Link href="/news" style={{ color: '#00ffcc', textDecoration: 'none' }}>News</Link>
+            <Link href="/news" style={{ color: '#00e5ff', textDecoration: 'none' }}>News</Link>
           </div>
           <div className="mb-3">
-            <Link href="/terms" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Terms</Link>
+            <Link href="/terms" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: 'rgba(0,0,0,0.55)', textTransform: 'uppercase', textDecoration: 'none' }}>Terms</Link>
             {' · '}
-            <Link href="/privacy" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Privacy</Link>
+            <Link href="/privacy" style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: 'rgba(0,0,0,0.55)', textTransform: 'uppercase', textDecoration: 'none' }}>Privacy</Link>
           </div>
           <div className="flex justify-center gap-5 mb-4">
-            <a href="https://instagram.com/avierafit" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+            <a href="https://instagram.com/avierafit" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'rgba(0,0,0,0.55)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00e5ff'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             </a>
-            <a href="https://tiktok.com/@avierafit" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+            <a href="https://tiktok.com/@avierafit" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: 'rgba(0,0,0,0.55)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00e5ff'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.98a8.21 8.21 0 0 0 4.76 1.52V7.05a4.84 4.84 0 0 1-1-.36z"/></svg>
             </a>
           </div>
@@ -2686,7 +2686,7 @@ export default function DashboardPage() {
               <p style={{
                 fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                 fontSize: '10px',
-                color: '#666',
+                color: 'rgba(0,0,0,0.5)',
               }}>
                 You can log again in ~{cooldownHours} hour{cooldownHours !== 1 ? 's' : ''}
               </p>
@@ -2706,8 +2706,8 @@ export default function DashboardPage() {
             className="fixed z-[55] left-0 right-0"
             style={{
               bottom: '64px',
-              background: '#0a0a0a',
-              borderTop: '1px solid rgba(255,255,255,0.08)',
+              background: '#ffffff',
+              borderTop: '1px solid rgba(0,0,0,0.08)',
             }}
           >
             <div
@@ -2715,7 +2715,7 @@ export default function DashboardPage() {
               style={{ padding: '16px' }}
             >
               <div className="flex items-center gap-3">
-                <span style={{ color: '#00ffcc', fontSize: '14px' }}>◉</span>
+                <span style={{ color: '#00e5ff', fontSize: '14px' }}>◉</span>
                 <div>
                   <div
                     style={{
@@ -2723,7 +2723,7 @@ export default function DashboardPage() {
                       fontSize: '12px',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: '#ffffff',
+                      color: '#28282A',
                       letterSpacing: '0.1em',
                     }}
                   >
@@ -2733,7 +2733,7 @@ export default function DashboardPage() {
                     style={{
                       fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                       fontSize: '10px',
-                      color: '#666',
+                      color: 'rgba(0,0,0,0.5)',
                     }}
                   >
                     Install Aviera as an app
@@ -2778,7 +2778,7 @@ export default function DashboardPage() {
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#666',
+                    color: 'rgba(0,0,0,0.5)',
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '4px 8px',
