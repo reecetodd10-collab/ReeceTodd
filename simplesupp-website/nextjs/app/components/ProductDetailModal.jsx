@@ -58,8 +58,8 @@ const PRODUCT_CATALOG = {
     formula: { rows: [{ name: 'L-Leucine', dose: '3,000 mg' }, { name: 'L-Isoleucine', dose: '1,500 mg' }, { name: 'L-Valine', dose: '1,500 mg' }, { name: 'Total BCAAs (2:1:1)', dose: '6,000 mg' }], other: 'Fruit Punch flavor · 30 servings' },
   },
   'hydration powder (lemonade)': {
-    cat: 'Recovery', desc: 'Electrolyte-packed hydration for training and recovery.', tags: ['Hydration', 'Electrolytes', 'Recovery'],
-    formula: { rows: [{ name: 'Sodium', dose: '500 mg' }, { name: 'Potassium', dose: '200 mg' }, { name: 'Magnesium', dose: '60 mg' }, { name: 'Calcium', dose: '40 mg' }, { name: 'Vitamin C', dose: '100 mg' }], other: 'Lemonade flavor · Zero sugar · 30 servings' },
+    cat: 'Recovery', desc: 'Full-spectrum electrolyte replenishment. Zero sugar, real lemonade flavor.', tags: ['Hydration', 'Electrolytes', 'Recovery'],
+    formula: { rows: [{ name: 'Thiamin (Thiamine HCl)', dose: '0.40 mg' }, { name: 'Riboflavin (Vitamin B2)', dose: '0.43 mg' }, { name: 'Niacin (Vitamin B3)', dose: '5.20 mg NE' }, { name: 'Vitamin B6 (Pyridoxine HCl)', dose: '0.56 mg' }, { name: 'Folate', dose: '133 mcg DFE' }, { name: 'Vitamin B12 (Methylcobalamin)', dose: '0.80 mcg' }, { name: 'Pantothenic Acid', dose: '1.66 mg' }, { name: 'Calcium (Calcium Citrate)', dose: '40 mg' }, { name: 'Magnesium (Mag. Citrate)', dose: '20 mg' }, { name: 'Sodium (Sodium Citrate)', dose: '100 mg' }, { name: 'Potassium (Potassium Citrate)', dose: '200 mg' }], other: 'Other: Polydextrose, Citric Acid, N&A Flavors, Sucralose, Calcium Silicate, Beta Carotene · 1 Scoop (5.4g) · 30 servings' },
   },
   "lion's mane": {
     cat: 'Focus', desc: 'The brain mushroom. Supports cognitive function, memory, and nerve health.', tags: ['Focus', 'Brain Health', 'Mushroom'],
@@ -178,11 +178,21 @@ function parseIngredientsFromHtml(html) {
 }
 
 function getFormulaData(product) {
+  // Priority 1: Shopify descriptionHtml (real Supliful data — most accurate)
+  if (product.descriptionHtml) {
+    const parsed = parseIngredientsFromHtml(product.descriptionHtml);
+    if (parsed) {
+      return { type: 'ingredients-list', ingredients: parsed.ingredients, servingLine: parsed.servingInfo ? `Serving Size: ${parsed.servingInfo}` : null };
+    }
+  }
+
+  // Priority 2: Hardcoded catalog formulas (for FSX, Creatine — verified from real labels)
   const catalog = getCatalogData(product.title);
   if (catalog && catalog.formula) {
     return { type: 'formula', ...catalog.formula };
   }
 
+  // Priority 3: Local products.js data
   const title = (product.title || '').toLowerCase();
   const localMatch = localProducts.find(lp => {
     const sName = (lp.suplifulName || '').toLowerCase();
@@ -197,13 +207,7 @@ function getFormulaData(product) {
     return { type: 'ingredients-list', ingredients: ingredientList, servingLine };
   }
 
-  if (product.descriptionHtml) {
-    const parsed = parseIngredientsFromHtml(product.descriptionHtml);
-    if (parsed) {
-      return { type: 'ingredients-list', ingredients: parsed.ingredients, servingLine: parsed.servingInfo ? `Serving Size: ${parsed.servingInfo}` : null };
-    }
-  }
-
+  // Priority 4: Label image fallback
   if (product.images && product.images.length >= 2) {
     return { type: 'label-image', labelImage: product.images[product.images.length - 1] };
   }
@@ -211,12 +215,12 @@ function getFormulaData(product) {
   return { type: 'fallback' };
 }
 
-function FormulaSection({ formulaData }) {
+function FormulaSection({ formulaData, accentColor = '#00ffcc' }) {
   if (!formulaData) return null;
 
   return (
     <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ fontFamily: OSWALD, fontSize: '12px', letterSpacing: '0.2em', color: '#00ffcc', textTransform: 'uppercase', marginBottom: '8px' }}>
+      <div style={{ fontFamily: OSWALD, fontSize: '12px', letterSpacing: '0.2em', color: accentColor, textTransform: 'uppercase', marginBottom: '8px' }}>
         The Formula
       </div>
 
@@ -225,7 +229,7 @@ function FormulaSection({ formulaData }) {
           {formulaData.rows.map((row, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '11px' }}>
               <span style={{ color: '#ccc' }}>{row.name}</span>
-              <span style={{ fontFamily: OSWALD, fontWeight: 700, color: '#00ffcc' }}>{row.dose}</span>
+              <span style={{ fontFamily: OSWALD, fontWeight: 700, color: accentColor }}>{row.dose}</span>
             </div>
           ))}
           {formulaData.other && (
@@ -271,6 +275,66 @@ function FormulaSection({ formulaData }) {
  * - adding: boolean, whether currently adding to cart
  * - added: boolean, whether item was just added
  */
+// Category color system — matches dashboard CATEGORY_COLOR_MAP
+const CATEGORY_COLORS = {
+  'Performance': '#00e5ff',
+  'Pre-Workout': '#FF3B3B',
+  'Protein': '#8B5CF6',
+  'Recovery': '#FFD700',
+  'Sleep': '#a855f7',      // user spec: bright purple
+  'Focus': '#3B82F6',
+  'Weight': '#F97316',
+  'Beauty': '#EC4899',
+  'Health': '#22C55E',
+};
+
+function getCategoryForProduct(name = '') {
+  const n = name.toLowerCase();
+  // Nootropics + Lion's Mane → Focus
+  if (/nootropic|lion.?s mane/i.test(n)) return 'Focus';
+  // Pre-Workout & Energy — energy powders, alpha energy, pre-workout, CoQ10
+  if (/pre.?workout|alpha energy|nitric shock|energy powder|coq10|ubiquinone/i.test(n)) return 'Pre-Workout';
+  // Protein
+  if (/whey|plant protein|protein isolate/i.test(n)) return 'Protein';
+  // Recovery & Hydration
+  if (/hydration|electrolyte|bcaa/i.test(n)) return 'Recovery';
+  // Sleep
+  if (/sleep|melatonin|magnesium|ashwagandha/i.test(n)) return 'Sleep';
+  // Weight
+  if (/fat.?burn|keto|weight|metabolism|thermogenic/i.test(n)) return 'Weight';
+  // Beauty & Skin
+  if (/collagen|hyaluronic|vitamin glow|skin|beauty|hair/i.test(n)) return 'Beauty';
+  // Performance — Flow State X, Creatine, Beetroot, L-Glutamine
+  if (/flow state x(?!.*nootropic)|flow state(?!.*nootropic)|creatine|beetroot|glutamine/i.test(n)) return 'Performance';
+  // Health & Wellness default (multivitamin, probiotic, turmeric, omega-3, ACV, gut health)
+  return 'Health';
+}
+
+function getProductTheme(title) {
+  const cat = getCategoryForProduct(title);
+  const color = CATEGORY_COLORS[cat] || '#00ffcc';
+  return {
+    accent: color,
+    border: `rgba(${hexToRgb(color)}, 0.2)`,
+    tagColor: color,
+    tagBorder: `rgba(${hexToRgb(color)}, 0.3)`,
+    catColor: color,
+    formulaAccent: color,
+    categoryLabel: {
+      'Performance': 'PERFORMANCE', 'Pre-Workout': 'PRE-WORKOUT & ENERGY', 'Protein': 'PROTEIN',
+      'Recovery': 'RECOVERY & HYDRATION', 'Sleep': 'SLEEP', 'Focus': 'FOCUS & COGNITIVE',
+      'Weight': 'WEIGHT MANAGEMENT', 'Beauty': 'BEAUTY & SKIN', 'Health': 'HEALTH & WELLNESS',
+    }[cat] || 'HEALTH & WELLNESS',
+  };
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
 export default function ProductDetailModal({ product, onClose, onAddToCart, adding, added }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -288,6 +352,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
   const displayDesc = catalog ? catalog.desc : product.description;
   const displayTags = catalog ? catalog.tags : [];
   const images = product.images && product.images.length > 0 ? product.images : (product.image ? [product.image] : []);
+  const theme = getProductTheme(product.title);
 
   return (
     <div
@@ -297,7 +362,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
     >
       <div
         className="w-full max-w-[430px] max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl"
-        style={{ background: '#0a0a0a', border: '1px solid rgba(0,255,204,0.15)' }}
+        style={{ background: '#0a0a0a', border: `1px solid ${theme.border}` }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -340,7 +405,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
                     <div
                       key={i}
                       className="rounded-full cursor-pointer"
-                      style={{ width: '6px', height: '6px', background: i === currentImageIndex ? '#00ffcc' : 'rgba(255,255,255,0.3)' }}
+                      style={{ width: '6px', height: '6px', background: i === currentImageIndex ? theme.accent : 'rgba(255,255,255,0.3)' }}
                       onClick={() => setCurrentImageIndex(i)}
                     />
                   ))}
@@ -353,11 +418,9 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
         {/* Body */}
         <div style={{ padding: '16px' }}>
           {/* Category */}
-          {catalog?.cat && (
-            <div style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
-              {Array.isArray(catalog.cat) ? catalog.cat[0] : catalog.cat}
-            </div>
-          )}
+          <div style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: theme.catColor, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '3px' }}>
+            {theme.categoryLabel}
+          </div>
 
           {/* Title */}
           <h3 style={{ fontFamily: OSWALD, fontSize: '22px', fontWeight: 700, textTransform: 'uppercase', margin: '0 0 6px 0', color: '#fff' }}>
@@ -375,7 +438,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
               {displayTags.map((tag) => (
                 <span
                   key={tag}
-                  style={{ fontSize: '7px', fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', border: '1px solid rgba(168,85,247,0.25)', borderRadius: '2px', color: '#a855f7' }}
+                  style={{ fontSize: '7px', fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', border: `1px solid ${theme.tagBorder}`, borderRadius: '2px', color: theme.tagColor }}
                 >
                   {tag}
                 </span>
@@ -401,13 +464,13 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
                 display: 'block',
                 width: '100%',
                 padding: '14px',
-                background: added ? '#111' : '#00ffcc',
-                border: added ? '1px solid #00ffcc' : 'none',
+                background: added ? '#111' : theme.accent,
+                border: added ? `1px solid ${theme.accent}` : 'none',
                 borderRadius: '6px',
                 fontFamily: OSWALD,
                 fontSize: '16px',
                 letterSpacing: '0.12em',
-                color: added ? '#00ffcc' : '#000',
+                color: added ? theme.accent : '#000',
                 textTransform: 'uppercase',
                 fontWeight: 700,
                 textAlign: 'center',
@@ -429,7 +492,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
           </div>
 
           {/* Formula / Ingredients */}
-          <FormulaSection formulaData={formulaData} />
+          <FormulaSection formulaData={formulaData} accentColor={theme.formulaAccent} />
         </div>
       </div>
     </div>

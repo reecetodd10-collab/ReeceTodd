@@ -410,7 +410,7 @@ export default function Navigation() {
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 text-[var(--acc)] hover:text-[var(--acc-hover)] hover:bg-[var(--acc)]/10"
               >
                 <LayoutDashboard size={16} />
-                My Stack
+                My Supplement Plan
               </Link>
             </div>
 

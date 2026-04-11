@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ChevronRight, ChevronLeft, Check, ShoppingCart, Mail,
   Dumbbell, Flame, Moon, Brain, Zap, Activity,
@@ -13,33 +14,37 @@ import {
 import Image from 'next/image';
 import { fetchShopifyProducts, addMultipleToCart, addToCart } from '../lib/shopify';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
+import PageLayout, { FadeInSection as DSFadeIn, TOKENS } from '../components/PageLayout';
+import { getSupabaseBrowser } from '../lib/supabase-browser';
 import { trackEvent } from '@/lib/analytics';
 import { trackStartQuiz, trackCompleteQuiz, trackAddToCart, trackSubmitForm } from '../lib/tracking';
 import ProductDetailModal from '../components/ProductDetailModal';
 import confetti from 'canvas-confetti';
 
-// ─── Design system constants ───
-const ACCENT = '#00ffcc';
-const ACCENT_RGB = '0, 255, 204';
-const CARD_BG = '#0a0a0a';
-const CARD_BORDER = 'rgba(255,255,255,0.06)';
-const URGENCY = '#ff2d55';
+// ─── Design system constants (updated to match site-wide design system) ───
+const ACCENT = '#00e5ff';
+const ACCENT_RGB = '0, 229, 255';
+const CARD_BG = '#ffffff';
+const CARD_BORDER = 'rgba(0,0,0,0.08)';
+const URGENCY = '#FF3B3B';
 const PURPLE = '#a855f7';
 const PURPLE_RGB = '168, 85, 247';
 const OSWALD = 'var(--font-oswald), Oswald, sans-serif';
 const SPACE_MONO = 'var(--font-space-mono), Space Mono, monospace';
+const INK = '#28282A';
+const CREAM = '#F5F0EB';
+const CYAN_TINT = '#f4fdff';
 
-// ─── Scroll-triggered fade-up wrapper ───
+// FadeInSection — kept local for animation consistency within quiz
 function FadeInSection({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
-
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ duration: 0.7, delay, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 32 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -47,151 +52,8 @@ function FadeInSection({ children, delay = 0, className = '' }) {
   );
 }
 
-// ─── Sticky Navigation ───
-function StickyNav({ menuOpen, setMenuOpen }) {
-  const { user, session, signOut } = useSupabaseUser();
-  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-
-  return (
-    <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          background: '#000000',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div className="max-w-[430px] mx-auto flex items-center justify-between px-4 py-3">
-          <Link
-            href="/home"
-            className="no-underline"
-            style={{
-              fontFamily: OSWALD,
-              fontSize: '12px',
-              fontWeight: 700,
-              letterSpacing: '0.4em',
-              color: ACCENT,
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
-          >
-            &#9673; Aviera
-          </Link>
-
-          {/* Desktop links - hidden */}
-          <div className="hidden">
-            {/* Nav links removed - use hamburger menu */}
-          </div>
-
-          {/* User icon + hamburger */}
-          <div className="flex items-center gap-3">
-            <Link href={user ? "/dashboard" : "/auth"} className="flex items-center justify-center no-underline" style={{width: '28px', height: '28px', borderRadius: '50%', border: avatarUrl ? '2px solid #00ffcc' : '1px solid rgba(255,255,255,0.15)', background: 'transparent', overflow: 'hidden'}}>
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="" width={28} height={28} style={{borderRadius: '50%', objectFit: 'cover'}} />
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              )}
-            </Link>
-            <button
-              className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-            >
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {menuOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center"
-          style={{ background: '#000000' }}
-        >
-          <button
-            className="absolute top-4 right-4 bg-transparent border-none cursor-pointer"
-            onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
-            style={{ fontFamily: OSWALD, fontSize: '28px', color: '#fff' }}
-          >
-            &#10005;
-          </button>
-
-          <div className="flex flex-col items-center gap-8">
-            {[
-              { label: 'Shop', href: '/shop' },
-              { label: 'Flow State X', href: '/nitric' },
-              { label: 'Trybe', href: '/trybe' },
-              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
-              { label: 'About', href: '/about' },
-              { label: 'Latest', href: '/news' },
-              { label: 'My Stack', href: '/dashboard' },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: OSWALD,
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: '#ffffff',
-                  textDecoration: 'none',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {session ? (
-              <button
-                onClick={async () => {
-                  await signOut();
-                  setMenuOpen(false);
-                  window.location.href = '/auth';
-                }}
-                style={{
-                  fontFamily: OSWALD,
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: '#ff2d55',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  letterSpacing: '0.1em',
-                  padding: 0,
-                  textAlign: 'left',
-                }}
-              >
-                SIGN OUT
-              </button>
-            ) : (
-              <Link
-                href="/auth"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: OSWALD,
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: '#ffffff',
-                  textDecoration: 'none',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                SIGN IN
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+// StickyNav removed — PageLayout provides shared nav
+const StickyNav_REMOVED = true; // marker for deleted code
 
 // Goal icons mapping
 const GOAL_ICONS = {
@@ -224,8 +86,6 @@ const POPULATION_AVERAGES = {
 };
 
 export default function SupplementOptimizationScore() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   // Quiz state
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -266,7 +126,7 @@ export default function SupplementOptimizationScore() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [addedIndividual, setAddedIndividual] = useState({});
   const [resultId, setResultId] = useState(null);
-  const { user: authUser } = useSupabaseUser();
+  const { user: authUser, session: authSession } = useSupabaseUser();
   const isSignedIn = !!authUser;
 
   // Email capture
@@ -276,6 +136,88 @@ export default function SupplementOptimizationScore() {
   // Product detail modal
   const [detailProduct, setDetailProduct] = useState(null);
 
+  // Signup modal state
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [signupForm, setSignupForm] = useState({ email: '', password: '' });
+  const [signupError, setSignupError] = useState('');
+  const [signupLoading, setSignupLoading] = useState(false);
+  const [signupMode, setSignupMode] = useState('signup'); // 'signup' or 'signin'
+  const router = useRouter();
+
+  // Signup modal disabled — uncomment to re-enable
+  // useEffect(() => {
+  //   if (!showResults || isSignedIn) return;
+  //   const dismissed = typeof window !== 'undefined' && sessionStorage.getItem('aviera_signup_dismissed');
+  //   if (dismissed) return;
+  //   const timer = setTimeout(() => setShowSignupModal(true), 5000);
+  //   return () => clearTimeout(timer);
+  // }, [showResults, isSignedIn]);
+
+  // Save quiz results to sessionStorage when results are ready (persists through signup flow)
+  useEffect(() => {
+    if (!showResults || !scores) return;
+    try {
+      sessionStorage.setItem('aviera_quiz_results', JSON.stringify({
+        scores,
+        responses,
+        recommendations: recommendations.map(r => ({ title: r.title, price: r.price, reasoning: r.reasoning })),
+        specialAIPick: specialAIPick ? { title: specialAIPick.title, price: specialAIPick.price, reasoning: specialAIPick.reasoning } : null,
+        resultId,
+      }));
+    } catch (_) {}
+  }, [showResults, scores, recommendations, specialAIPick, resultId, responses]);
+
+  // Handle signup/signin
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setSignupError('');
+    setSignupLoading(true);
+    try {
+      const supabase = getSupabaseBrowser();
+      if (signupMode === 'signup') {
+        const { data, error } = await supabase.auth.signUp({
+          email: signupForm.email,
+          password: signupForm.password,
+        });
+        if (error) throw error;
+        if (data.session) {
+          // Signed in immediately — re-save results with auth
+          if (resultId) {
+            try {
+              await fetch('/api/optimization-results', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}` },
+                body: JSON.stringify({ id: resultId, auth_user_id: data.user.id }),
+              });
+            } catch (_) {}
+          }
+          setShowSignupModal(false);
+          router.push('/dashboard');
+        } else {
+          setSignupError('Check your email for a confirmation link, then sign in.');
+          setSignupMode('signin');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: signupForm.email,
+          password: signupForm.password,
+        });
+        if (error) throw error;
+        setShowSignupModal(false);
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setSignupError(err.message || 'Something went wrong');
+    } finally {
+      setSignupLoading(false);
+    }
+  };
+
+  const dismissSignupModal = () => {
+    setShowSignupModal(false);
+    if (typeof window !== 'undefined') sessionStorage.setItem('aviera_signup_dismissed', 'true');
+  };
+
   // Fetch Shopify products on mount
   useEffect(() => {
     fetchShopifyProducts()
@@ -284,7 +226,7 @@ export default function SupplementOptimizationScore() {
 
     // Track quiz started
     trackEvent('optimization_quiz_started');
-    trackStartQuiz('Optimization Score Quiz');
+    trackStartQuiz('Personalized Supplements Quiz');
   }, []);
 
   // Load saved results from URL param ?results=ID
@@ -706,7 +648,7 @@ export default function SupplementOptimizationScore() {
     }
 
     // Track quiz completion across all pixels
-    trackCompleteQuiz('Optimization Score Quiz', responses.primaryGoal);
+    trackCompleteQuiz('Personalized Supplements Quiz', responses.primaryGoal);
 
     // Simulate loading for premium feel
     setTimeout(() => {
@@ -792,6 +734,7 @@ export default function SupplementOptimizationScore() {
   // Render quiz or results
   if (showResults && scores) {
     return (
+      <PageLayout>
       <ResultsPage
         scores={scores}
         responses={responses}
@@ -809,74 +752,63 @@ export default function SupplementOptimizationScore() {
         onEmailSubmit={handleEmailSubmit}
         isSignedIn={isSignedIn}
         resultId={resultId}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
         detailProduct={detailProduct}
         setDetailProduct={setDetailProduct}
+        showSignupModal={showSignupModal}
+        signupForm={signupForm}
+        setSignupForm={setSignupForm}
+        signupError={signupError}
+        signupLoading={signupLoading}
+        signupMode={signupMode}
+        setSignupMode={setSignupMode}
+        handleSignupSubmit={handleSignupSubmit}
+        dismissSignupModal={dismissSignupModal}
+        isSignedIn={isSignedIn}
       />
+      </PageLayout>
     );
   }
 
   if (isCalculating) {
-    return <LoadingScreen menuOpen={menuOpen} setMenuOpen={setMenuOpen} />;
+    return <PageLayout><LoadingScreen /></PageLayout>;
   }
 
   const isLastQuestion = currentSection === sections.length - 1 && currentQuestion === currentSectionData.questions.length - 1;
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#000000', color: '#ffffff', overflowX: 'hidden' }}>
-      {/* Scan line background */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
-        }}
-      />
-
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      {/* Main content */}
-      <div className="relative z-10 pt-20 pb-16 px-4">
-        <div className="max-w-[430px] mx-auto">
-
-          {/* Header */}
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+    <PageLayout hideFooter>
+      {/* Hero */}
+      <section className="relative" style={{ background: '#000', paddingTop: '100px', paddingBottom: '40px', zIndex: 10 }}>
+        <div className="max-w-[430px] md:max-w-3xl mx-auto px-5 md:px-8 text-center">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+            <p className="text-xs uppercase mb-4" style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}>
+              Stop Guessing
+            </p>
+            <h1
+              className="text-[36px] sm:text-[48px] md:text-[64px] font-bold uppercase mb-3 leading-tight"
+              style={{ fontFamily: OSWALD, color: '#fff' }}
             >
-              <p
-                className="text-xs uppercase mb-4"
-                style={{
-                  color: ACCENT,
-                  fontFamily: SPACE_MONO,
-                  letterSpacing: '0.4em',
-                }}
-              >
-                STOP GUESSING
-              </p>
-              <h1
-                className="text-4xl sm:text-5xl font-bold uppercase mb-3 leading-tight"
-                style={{ fontFamily: OSWALD }}
-              >
-                OPTIMIZATION <span style={{ color: URGENCY }}>SCORE</span>
-              </h1>
-              <p
-                className="text-sm"
-                style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px' }}
-              >
-                Find out how optimized you really are — 60 seconds
-              </p>
-            </motion.div>
-          </div>
+              Personalized <span style={{ color: ACCENT }}>Supplements</span>
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontFamily: SPACE_MONO, fontSize: '12px' }}>
+              Answer a few questions. Get your custom stack — 60 seconds.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Quiz body */}
+      <section style={{ background: CREAM, color: INK }}>
+      <div className="relative pt-10 pb-16 px-4">
+        <div className="max-w-[430px] md:max-w-3xl mx-auto">
 
           {/* Progress Bar */}
           <div className="mb-8">
-            <div className="flex justify-between text-xs mb-2" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <div className="flex justify-between text-xs mb-2" style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               <span>Progress</span>
               <span>{progressPercent}%</span>
             </div>
-            <div className="h-1.5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div className="h-1.5 overflow-hidden rounded-full" style={{ background: 'rgba(0,0,0,0.08)' }}>
               <motion.div
                 className="h-full"
                 initial={{ width: 0 }}
@@ -891,17 +823,17 @@ export default function SupplementOptimizationScore() {
           <div className="mb-6">
             <p
               className="text-xs uppercase mb-2"
-              style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+              style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
             >
               SECTION {currentSection + 1} OF {sections.length}
             </p>
             <h2
               className="text-2xl font-bold uppercase mb-1"
-              style={{ fontFamily: OSWALD }}
+              style={{ fontFamily: OSWALD, color: '#1a1a1a' }}
             >
               {currentSectionData.title}
             </h2>
-            <p style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>
+            <p style={{ color: '#4a4a4a', fontFamily: SPACE_MONO, fontSize: '12px' }}>
               {currentSectionData.subtitle}
             </p>
           </div>
@@ -916,8 +848,10 @@ export default function SupplementOptimizationScore() {
               transition={{ duration: 0.2 }}
               className="p-6 mb-6"
               style={{
-                background: CARD_BG,
-                border: `1px solid ${CARD_BORDER}`,
+                background: '#ffffff',
+                border: `1.5px solid ${CARD_BORDER}`,
+                borderRadius: '12px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
               }}
             >
               <QuestionRenderer
@@ -952,55 +886,27 @@ export default function SupplementOptimizationScore() {
             <button
               onClick={goNext}
               disabled={!isCurrentAnswered()}
-              className="flex items-center gap-2 px-8 py-4 font-bold uppercase tracking-widest transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-8 py-4 font-bold uppercase tracking-widest transition disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5"
               style={{
                 fontFamily: OSWALD,
-                fontSize: '16px',
-                background: isCurrentAnswered() ? ACCENT : 'rgba(255,255,255,0.06)',
-                color: isCurrentAnswered() ? '#000000' : 'rgba(255,255,255,0.3)',
-                clipPath: 'polygon(0 0, 100% 0, 96% 100%, 4% 100%)',
+                fontSize: '14px',
+                background: isCurrentAnswered() ? ACCENT : 'rgba(0,0,0,0.06)',
+                color: isCurrentAnswered() ? '#000000' : 'rgba(0,0,0,0.3)',
+                borderRadius: '10px',
                 border: 'none',
                 cursor: isCurrentAnswered() ? 'pointer' : 'not-allowed',
-                letterSpacing: '0.15em',
+                letterSpacing: '0.18em',
+                boxShadow: isCurrentAnswered() ? `0 4px 24px rgba(${ACCENT_RGB}, 0.35)` : 'none',
               }}
             >
-              {isLastQuestion ? <><span style={{ color: isCurrentAnswered() ? '#000' : undefined }}>CALCULATE MY SCORE</span></> : 'CONTINUE'}
+              {isLastQuestion ? <><span style={{ color: isCurrentAnswered() ? '#000' : undefined }}>GET MY STACK</span></> : 'CONTINUE'}
               <ChevronRight size={18} />
             </button>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="relative z-10 py-12 px-6" style={{ borderTop: `1px solid ${CARD_BORDER}` }}>
-        <div className="max-w-[430px] mx-auto text-center">
-          <p style={{ fontFamily: OSWALD, fontSize: '12px', fontWeight: 700, letterSpacing: '0.4em', color: ACCENT, marginBottom: '16px' }}>
-            &#9673; AVIERA
-          </p>
-          <p style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#444', marginBottom: '8px' }}>
-            Manufactured in the USA in a GMP-certified facility.
-          </p>
-          <p style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#333', marginBottom: '8px', fontStyle: 'italic' }}>
-            *These statements have not been evaluated by the FDA. These products are not intended to diagnose, treat, cure, or prevent any disease.
-          </p>
-          <p style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#333' }}>
-            &copy; {new Date().getFullYear()} Aviera. All rights reserved.
-          </p>
-          <div className="flex justify-center gap-4 mt-3">
-            <Link href="/terms" style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Terms</Link>
-            <Link href="/privacy" style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#444', textTransform: 'uppercase', textDecoration: 'none' }}>Privacy</Link>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '12px' }}>
-            <a href="https://instagram.com/avierafit" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            </a>
-            <a href="https://tiktok.com/@avierafit" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: '#444', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#00ffcc'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.98a8.21 8.21 0 0 0 4.76 1.52V7.05a4.84 4.84 0 0 1-1-.36z"/></svg>
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </section>
+    </PageLayout>
   );
 }
 
@@ -1008,16 +914,18 @@ export default function SupplementOptimizationScore() {
 function QuestionRenderer({ question, value, onChange }) {
   if (!question) return null;
 
-  // Shared button style helpers
+  // Shared button style helpers — dark text for light bg quiz cards
   const selectedStyle = {
     background: ACCENT,
     color: '#000000',
     border: `1px solid ${ACCENT}`,
+    boxShadow: `0 2px 12px rgba(${ACCENT_RGB}, 0.3)`,
   };
   const unselectedStyle = {
-    background: 'transparent',
-    color: '#ffffff',
+    background: '#ffffff',
+    color: '#1a1a1a',
     border: `1px solid ${CARD_BORDER}`,
+    borderRadius: '10px',
   };
 
   switch (question.type) {
@@ -1031,16 +939,17 @@ function QuestionRenderer({ question, value, onChange }) {
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: '#4a4a4a', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
             className="w-full px-4 py-3 appearance-none cursor-pointer focus:outline-none"
             style={{
-              background: CARD_BG,
-              border: `1px solid ${value ? ACCENT : CARD_BORDER}`,
-              color: '#ffffff',
+              background: '#ffffff',
+              border: `1.5px solid ${value ? ACCENT : CARD_BORDER}`,
+              borderRadius: '10px',
+              color: '#1a1a1a',
               fontFamily: SPACE_MONO,
               fontSize: '13px',
             }}
@@ -1056,7 +965,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -1082,14 +991,14 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'goal-buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
             {question.options.map((opt, idx) => {
               const Icon = GOAL_ICONS[opt] || Target;
               const isSelected = value === opt;
-              const iconColor = isSelected ? '#000000' : (idx % 2 === 1 ? PURPLE : ACCENT);
+              const iconColor = isSelected ? '#000000' : ACCENT;
               return (
                 <button
                   key={opt}
@@ -1098,7 +1007,7 @@ function QuestionRenderer({ question, value, onChange }) {
                   style={{
                     ...(isSelected ? selectedStyle : {
                       ...unselectedStyle,
-                      borderColor: idx % 2 === 1 ? `rgba(${PURPLE_RGB}, 0.2)` : CARD_BORDER,
+                      borderColor: CARD_BORDER,
                     }),
                     fontFamily: SPACE_MONO,
                     fontSize: '11px',
@@ -1116,14 +1025,14 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'training-buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
             {question.options.map((opt, idx) => {
               const Icon = TRAINING_ICONS[opt] || Activity;
               const isSelected = value === opt;
-              const iconColor = isSelected ? '#000000' : (idx % 2 === 1 ? PURPLE : ACCENT);
+              const iconColor = isSelected ? '#000000' : ACCENT;
               return (
                 <button
                   key={opt}
@@ -1132,7 +1041,7 @@ function QuestionRenderer({ question, value, onChange }) {
                   style={{
                     ...(isSelected ? selectedStyle : {
                       ...unselectedStyle,
-                      borderColor: idx % 2 === 1 ? `rgba(${PURPLE_RGB}, 0.2)` : CARD_BORDER,
+                      borderColor: CARD_BORDER,
                     }),
                     fontFamily: SPACE_MONO,
                     fontSize: '11px',
@@ -1150,11 +1059,11 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'scale':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: '#4a4a4a', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((num) => (
@@ -1189,7 +1098,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'yesno':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-4">
@@ -1219,11 +1128,11 @@ function QuestionRenderer({ question, value, onChange }) {
       const selected = value || [];
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD }}>
+          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
             {question.label}
           </label>
           {question.microcopy && (
-            <p className="mb-4" style={{ color: `rgba(${PURPLE_RGB}, 0.6)`, fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
+            <p className="mb-4" style={{ color: '#4a4a4a', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
           <div className="grid grid-cols-2 gap-3">
             {question.options.map((opt) => {
@@ -1246,9 +1155,10 @@ function QuestionRenderer({ question, value, onChange }) {
                   }}
                   className="flex items-center gap-2 px-4 py-3 font-medium transition-all text-left"
                   style={{
-                    background: isSelected ? `rgba(${ACCENT_RGB}, 0.15)` : 'transparent',
-                    color: '#ffffff',
-                    border: isSelected ? `1px solid ${ACCENT}` : `1px solid ${CARD_BORDER}`,
+                    background: isSelected ? `rgba(${ACCENT_RGB}, 0.12)` : '#ffffff',
+                    color: '#1a1a1a',
+                    border: isSelected ? `1.5px solid ${ACCENT}` : `1.5px solid ${CARD_BORDER}`,
+                    borderRadius: '10px',
                     fontFamily: SPACE_MONO,
                     fontSize: '11px',
                   }}
@@ -1276,7 +1186,7 @@ function QuestionRenderer({ question, value, onChange }) {
 }
 
 // ─── Loading Screen Component ───
-function LoadingScreen({ menuOpen, setMenuOpen }) {
+function LoadingScreen() {
   const [loadingText, setLoadingText] = useState('Analyzing performance baseline...');
 
   useEffect(() => {
@@ -1287,47 +1197,32 @@ function LoadingScreen({ menuOpen, setMenuOpen }) {
       'Generating personalized recommendations...',
     ];
     let index = 0;
-
     const interval = setInterval(() => {
       index = (index + 1) % texts.length;
       setLoadingText(texts[index]);
     }, 600);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center" style={{ background: '#000000', color: '#ffffff' }}>
-      {/* Scan line background */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
-        }}
-      />
-
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      <div className="text-center relative z-10 px-4">
+    <div className="flex items-center justify-center" style={{ minHeight: '70vh', background: CREAM, color: INK }}>
+      <div className="text-center px-4">
         <div className="relative w-24 h-24 mx-auto mb-6">
           <div
             className="absolute inset-0 rounded-full"
             style={{
-              background: `conic-gradient(from 0deg, transparent, ${PURPLE}, ${ACCENT}, transparent)`,
+              background: `conic-gradient(from 0deg, transparent, ${ACCENT}80, ${ACCENT}, transparent)`,
               animation: 'spin 1.5s linear infinite',
             }}
           />
           <div
             className="absolute inset-2 rounded-full flex items-center justify-center"
-            style={{ background: '#000000' }}
+            style={{ background: CREAM }}
           >
             <Sparkles style={{ color: ACCENT }} size={32} />
           </div>
         </div>
-        <p
-          className="text-lg animate-pulse"
-          style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '13px' }}
-        >
+        <p className="text-lg animate-pulse" style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '13px' }}>
           {loadingText}
         </p>
       </div>
@@ -1353,10 +1248,17 @@ function ResultsPage({
   onEmailSubmit,
   isSignedIn,
   resultId,
-  menuOpen,
-  setMenuOpen,
   detailProduct,
   setDetailProduct,
+  showSignupModal,
+  signupForm,
+  setSignupForm,
+  signupError,
+  signupLoading,
+  signupMode,
+  setSignupMode,
+  handleSignupSubmit,
+  dismissSignupModal,
 }) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
@@ -1367,8 +1269,8 @@ function ResultsPage({
   const avgDisplayScore = (POPULATION_AVERAGES.total / 10).toFixed(1);
 
   // Score-based ring color: red for low, purple for mid, cyan for good
-  const scoreRingColor = scores.total < 40 ? URGENCY : scores.total < 60 ? PURPLE : ACCENT;
-  const scoreRingRGB = scores.total < 40 ? '255, 45, 85' : scores.total < 60 ? PURPLE_RGB : ACCENT_RGB;
+  const scoreRingColor = scores.total < 40 ? URGENCY : ACCENT;
+  const scoreRingRGB = scores.total < 40 ? '255, 59, 59' : ACCENT_RGB;
 
   // Animate score count-up
   useEffect(() => {
@@ -1428,8 +1330,8 @@ function ResultsPage({
   // Get score label
   const getScoreLabel = (score) => {
     if (score < 5.0) return { text: 'HUGE UPSIDE AHEAD', color: URGENCY };
-    if (score < 6.0) return { text: 'SOLID START — LET\'S BUILD', color: PURPLE };
-    if (score < 7.5) return { text: 'STRONG FOUNDATION', color: '#ffffff' };
+    if (score < 6.0) return { text: 'SOLID START — LET\'S BUILD', color: ACCENT };
+    if (score < 7.5) return { text: 'STRONG FOUNDATION', color: ACCENT };
     if (score < 8.5) return { text: 'YOU\'RE CRUSHING IT', color: ACCENT };
     return { text: 'ELITE — TOP 10%', color: ACCENT };
   };
@@ -1438,7 +1340,7 @@ function ResultsPage({
   const getComparisonStatus = (userScore, avgScore, threshold = 3) => {
     if (userScore > avgScore + threshold) return { text: 'Above Avg', color: '#10b981', icon: TrendingUp };
     if (userScore < avgScore - threshold) return { text: 'Below Avg', color: URGENCY, icon: TrendingDown };
-    return { text: 'Average', color: PURPLE, icon: Minus };
+    return { text: 'Average', color: ACCENT, icon: Minus };
   };
 
   // Overall assessment
@@ -1446,7 +1348,7 @@ function ResultsPage({
 
   const assessmentConfig = {
     above: { text: 'Outstanding', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-    average: { text: 'Great Start', color: PURPLE, bg: `rgba(${PURPLE_RGB}, 0.15)` },
+    average: { text: 'Great Start', color: ACCENT, bg: `rgba(${ACCENT_RGB}, 0.12)` },
     below: { text: 'Room to Grow', color: URGENCY, bg: 'rgba(255, 45, 85, 0.15)' },
   };
 
@@ -1456,26 +1358,16 @@ function ResultsPage({
   const percentile = Math.min(99, Math.max(1, Math.round(scores.total * 0.9 + 10)));
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#000000', color: '#ffffff', overflowX: 'hidden' }}>
-      {/* Scan line background */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
-        }}
-      />
-
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      <div className="relative z-10 pt-20 pb-16 px-4">
-        <div className="max-w-[430px] mx-auto">
+    <div className="min-h-screen relative" style={{ background: CREAM, color: INK, overflowX: 'hidden' }}>
+      <div className="relative pt-16 pb-16 px-4" style={{ background: CREAM, color: INK }}>
+        <div className="max-w-[430px] md:max-w-3xl lg:max-w-5xl mx-auto">
 
           {/* Score Hero */}
           <FadeInSection>
             <div className="text-center mb-10">
               <p
                 className="text-xs uppercase mb-4"
-                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}
+                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}
               >
                 YOUR O.S. IS IN
               </p>
@@ -1488,7 +1380,7 @@ function ResultsPage({
                     cy="104"
                     r="94"
                     fill="none"
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke="rgba(0,0,0,0.08)"
                     strokeWidth="10"
                   />
                   <circle
@@ -1516,7 +1408,7 @@ function ResultsPage({
                   >
                     {animatedScore}
                   </span>
-                  <span style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '18px' }}>/10</span>
+                  <span style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '18px' }}>/10</span>
                 </div>
               </div>
 
@@ -1526,7 +1418,7 @@ function ResultsPage({
               >
                 {getScoreLabel(parseFloat(displayScore)).text}
               </h2>
-              <p style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '12px' }}>
+              <p style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '12px' }}>
                 You&apos;re in the top <span style={{ color: '#ff2d55', fontWeight: 700 }}>{100 - percentile}%</span> of optimizers
               </p>
 
@@ -1555,7 +1447,7 @@ function ResultsPage({
                         Your Score Breakdown
                       </h4>
                       <div className="space-y-2" style={{ fontFamily: SPACE_MONO, fontSize: '11px', color: '#999' }}>
-                        <p>Total Score: <span style={{ color: '#fff', fontWeight: 700 }}>{displayScore}/10</span></p>
+                        <p>Total Score: <span style={{ color: INK, fontWeight: 700 }}>{displayScore}/10</span></p>
                         <div className="pl-2 space-y-1" style={{ borderLeft: `2px solid rgba(${ACCENT_RGB}, 0.3)` }}>
                           <p>Sleep & Recovery: {scores.sleep}/25 pts ({responses.sleepQuality}/5 input)</p>
                           <p>Energy Output: {scores.energy}/20 pts ({responses.energyLevel}/5 input)</p>
@@ -1579,7 +1471,7 @@ function ResultsPage({
             <section className="mb-10" style={{ borderTop: `1px solid ${CARD_BORDER}`, paddingTop: '32px' }}>
               <p
                 className="text-xs uppercase mb-3"
-                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
               >
                 YOUR FASTEST WIN
               </p>
@@ -1605,7 +1497,7 @@ function ResultsPage({
                   <h4 className="text-xl font-bold uppercase mb-2" style={{ fontFamily: OSWALD }}>
                     {aiInsights?.primaryGap?.category || findPrimaryGap(scores, responses)}
                   </h4>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
                     {aiInsights?.primaryGap?.text || `This is the single biggest factor currently limiting your ${responses.primaryGoal.toLowerCase()} potential.`}
                   </p>
                 </div>
@@ -1623,7 +1515,7 @@ function ResultsPage({
                   <h4 className="text-xl font-bold uppercase mb-2" style={{ fontFamily: OSWALD }}>
                     {responses.primaryGoal}
                   </h4>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
                     Addressing your primary bottleneck unlocks up to {calculatePotentialGain(scores, responses)} additional points in this category.
                   </p>
                 </div>
@@ -1665,7 +1557,8 @@ function ResultsPage({
                   letterSpacing: '0.15em',
                   background: addedToCart ? 'rgba(16, 185, 129, 0.95)' : ACCENT,
                   color: '#000000',
-                  clipPath: 'polygon(0 0, 100% 0, 96% 100%, 4% 100%)',
+                  borderRadius: '10px',
+                  boxShadow: `0 4px 24px rgba(${ACCENT_RGB}, 0.35)`,
                   border: 'none',
                   cursor: isAddingToCart || addedToCart ? 'default' : 'pointer',
                 }}
@@ -1678,7 +1571,7 @@ function ResultsPage({
                   <><ShoppingCart size={24} /> ADD MY STACK TO CART</>
                 )}
               </button>
-              <p className="text-center mt-4" style={{ color: '#444', fontFamily: SPACE_MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <p className="text-center mt-4" style={{ color: 'rgba(0,0,0,0.45)', fontFamily: SPACE_MONO, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 Pharmaceutical grade &bull; 3rd party tested &bull; Free US shipping
               </p>
 
@@ -1711,8 +1604,9 @@ function ResultsPage({
                     fontSize: '16px',
                     letterSpacing: '0.15em',
                     background: 'transparent',
-                    color: PURPLE,
-                    border: `2px solid ${PURPLE}`,
+                    color: ACCENT,
+                    border: `2px solid ${ACCENT}`,
+                    borderRadius: '10px',
                     textDecoration: 'none',
                   }}
                 >
@@ -1727,20 +1621,20 @@ function ResultsPage({
             <section className="mb-10 p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
               <p
                 className="text-xs uppercase mb-3"
-                style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
               >
                 BREAKDOWN
               </p>
               <h3 className="text-2xl font-bold uppercase mb-6" style={{ fontFamily: OSWALD }}>
-                PERFORMANCE <span style={{ color: PURPLE }}>METRICS</span>
+                PERFORMANCE <span style={{ color: ACCENT }}>METRICS</span>
               </h3>
 
               <div className="space-y-5">
                 {[
                   { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep, iconColor: ACCENT },
-                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy, iconColor: PURPLE },
+                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy, iconColor: ACCENT },
                   { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress, iconColor: ACCENT },
-                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment, iconColor: PURPLE },
+                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment, iconColor: ACCENT },
                   { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad, iconColor: ACCENT },
                 ].map(({ icon: Icon, label, score, max, avg, iconColor }) => {
                   const userPercent = (score / max) * 100;
@@ -1753,10 +1647,10 @@ function ResultsPage({
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <Icon size={16} style={{ color: iconColor }} />
-                          <span style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                          <span style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span style={{ color: '#fff', fontFamily: OSWALD, fontSize: '14px', fontWeight: 700 }}>{score}/{max}</span>
+                          <span style={{ color: INK, fontFamily: OSWALD, fontSize: '14px', fontWeight: 700 }}>{score}/{max}</span>
                           <span
                             className="flex items-center gap-1 px-2 py-0.5"
                             style={{
@@ -1773,7 +1667,7 @@ function ResultsPage({
                           </span>
                         </div>
                       </div>
-                      <div className="relative h-2 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <div className="relative h-2 overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
                         {/* User score bar */}
                         <motion.div
                           initial={{ width: 0 }}
@@ -1796,7 +1690,7 @@ function ResultsPage({
                         />
                       </div>
                       <div className="flex justify-between mt-1">
-                        <span style={{ fontSize: '9px', color: '#666', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Your score</span>
+                        <span style={{ fontSize: '9px', color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Your score</span>
                         <span style={{ fontSize: '9px', color: '#10b981', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Avg: {avg}/{max}</span>
                       </div>
                     </div>
@@ -1817,14 +1711,14 @@ function ResultsPage({
                 <div className="relative z-10">
                   <p
                     className="text-xs uppercase mb-3"
-                    style={{ color: PURPLE, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+                    style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
                   >
                     TRACK PROGRESS
                   </p>
                   <h3 className="text-2xl font-bold uppercase mb-3" style={{ fontFamily: OSWALD }}>
-                    SAVE YOUR <span style={{ color: PURPLE }}>RESULTS</span>
+                    SAVE YOUR <span style={{ color: ACCENT }}>RESULTS</span>
                   </h3>
-                  <p className="mb-6 max-w-lg mx-auto" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
+                  <p className="mb-6 max-w-lg mx-auto" style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '12px', lineHeight: 1.6 }}>
                     Create an account to save your score history, unlock your detailed performance roadmap, and track how your optimization improves over time.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1893,7 +1787,7 @@ function ResultsPage({
                       'AI-generated training recommendations',
                       'Exclusive member pricing alerts',
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2" style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '11px' }}>
+                      <div key={idx} className="flex items-center gap-2" style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '11px' }}>
                         <Check size={12} style={{ color: ACCENT, flexShrink: 0 }} />
                         <span>{item}</span>
                       </div>
@@ -1985,6 +1879,146 @@ function ResultsPage({
           added={addedIndividual[detailProduct.title]}
         />
       )}
+
+      {/* Signup Modal */}
+      <AnimatePresence>
+        {showSignupModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={dismissSignupModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="w-full max-w-[380px] rounded-2xl relative overflow-hidden"
+              style={{ background: '#0a0a0a', border: '1px solid rgba(0,255,204,0.15)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={dismissSignupModal}
+                className="absolute top-3 right-3 z-10 bg-transparent border-none cursor-pointer"
+                style={{ color: '#666', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+
+              <div className="p-6 pt-8 text-center">
+                {/* Logo */}
+                <div className="flex justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0,255,204,0.1)', border: '1px solid rgba(0,255,204,0.2)' }}>
+                    <span style={{ fontFamily: OSWALD, fontSize: '18px', fontWeight: 700, color: ACCENT, letterSpacing: '0.1em' }}>A</span>
+                  </div>
+                </div>
+
+                {/* Headline */}
+                <h2 style={{ fontFamily: OSWALD, fontSize: '24px', fontWeight: 700, color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Save Your Results
+                </h2>
+                <p style={{ fontFamily: SPACE_MONO, fontSize: '11px', color: '#888', lineHeight: 1.6, marginBottom: '20px' }}>
+                  Create a free account to save your personalized stack, track your optimization score, and get recommendations tailored to you.
+                </p>
+
+                {/* Form */}
+                <form onSubmit={handleSignupSubmit} className="space-y-3">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={signupForm.email}
+                    onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      background: '#111',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontFamily: SPACE_MONO,
+                      fontSize: '12px',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(0,255,204,0.4)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={signupForm.password}
+                    onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
+                    required
+                    minLength={6}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      background: '#111',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      fontFamily: SPACE_MONO,
+                      fontSize: '12px',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'rgba(0,255,204,0.4)'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
+
+                  {signupError && (
+                    <p style={{ fontFamily: SPACE_MONO, fontSize: '10px', color: '#ff2d55', textAlign: 'left' }}>
+                      {signupError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={signupLoading}
+                    className="w-full cursor-pointer transition-all"
+                    style={{
+                      padding: '14px',
+                      background: signupLoading ? '#333' : ACCENT,
+                      color: '#000',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontFamily: OSWALD,
+                      fontSize: '16px',
+                      fontWeight: 700,
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      opacity: signupLoading ? 0.6 : 1,
+                    }}
+                  >
+                    {signupLoading ? 'Loading...' : signupMode === 'signup' ? 'Create Account' : 'Sign In'}
+                  </button>
+                </form>
+
+                <p className="mt-4" style={{ fontFamily: SPACE_MONO, fontSize: '10px', color: '#666' }}>
+                  {signupMode === 'signup' ? (
+                    <>Already have an account?{' '}
+                      <button onClick={() => { setSignupMode('signin'); setSignupError(''); }} className="bg-transparent border-none cursor-pointer" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', textDecoration: 'underline' }}>
+                        Sign in
+                      </button>
+                    </>
+                  ) : (
+                    <>Need an account?{' '}
+                      <button onClick={() => { setSignupMode('signup'); setSignupError(''); }} className="bg-transparent border-none cursor-pointer" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', textDecoration: 'underline' }}>
+                        Create one
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1994,10 +2028,10 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="p-5" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
+    <div className="p-5" style={{ background: '#ffffff', border: `1.5px solid ${CARD_BORDER}`, borderRadius: '12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
       <div className="flex items-start gap-4">
         {product.image ? (
-          <div className="w-20 h-20 overflow-hidden flex-shrink-0" style={{ background: '#ffffff' }}>
+          <div className="w-20 h-20 overflow-hidden flex-shrink-0 rounded-lg" style={{ background: CREAM }}>
             <Image
               src={product.image}
               alt={product.title}
@@ -2019,11 +2053,11 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
             <span className="whitespace-nowrap font-bold" style={{ color: ACCENT, fontFamily: OSWALD, fontSize: '20px' }}>${product.price?.toFixed(2)}</span>
           </div>
 
-          <div className="mb-3">
-            <p className="mb-1" style={{ color: PURPLE, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+          <div className="mb-3 p-3" style={{ background: CREAM, borderRadius: '8px', borderLeft: `3px solid ${ACCENT}` }}>
+            <p className="mb-1" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Perfect For You Because:
             </p>
-            <p className="line-clamp-2" style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
+            <p className="line-clamp-2" style={{ color: INK, fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
               {product.reasoning}
             </p>
           </div>
@@ -2062,8 +2096,8 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
                 fontFamily: SPACE_MONO,
                 fontSize: '10px',
                 textTransform: 'uppercase',
-                color: expanded ? ACCENT : '#666',
-                background: expanded ? `rgba(${ACCENT_RGB}, 0.1)` : 'rgba(255,255,255,0.03)',
+                color: expanded ? ACCENT : 'rgba(0,0,0,0.5)',
+                background: expanded ? `rgba(${ACCENT_RGB}, 0.1)` : 'rgba(0,0,0,0.03)',
                 border: `1px solid ${expanded ? `rgba(${ACCENT_RGB}, 0.3)` : CARD_BORDER}`,
                 cursor: 'pointer',
                 letterSpacing: '0.05em',
@@ -2090,31 +2124,31 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
               {product.description && (
                 <div className="mb-3">
                   <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Description</p>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.description}</p>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.description}</p>
                 </div>
               )}
               {product.ingredients && (
                 <div className="mb-3">
                   <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Key Ingredients</p>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.ingredients}</p>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.ingredients}</p>
                 </div>
               )}
               {product.dosage && (
                 <div className="mb-3">
                   <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Recommended Dosage</p>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.dosage}</p>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.dosage}</p>
                 </div>
               )}
               {product.benefits && (
                 <div className="mb-3">
                   <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Benefits</p>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.benefits}</p>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.benefits}</p>
                 </div>
               )}
               {!product.description && !product.ingredients && !product.dosage && !product.benefits && (
                 <div className="mb-3">
                   <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Product Details</p>
-                  <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
+                  <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
                     {product.reasoning || 'Premium supplement formulated to support your fitness goals.'}
                   </p>
                 </div>
@@ -2145,7 +2179,7 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
                   setExpanded(false);
                 }}
                 className="flex items-center gap-1 bg-transparent border-none cursor-pointer"
-                style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase' }}
+                style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase' }}
               >
                 <ChevronUp size={12} />
                 Collapse
@@ -2166,7 +2200,7 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
     <div
       className="relative overflow-hidden p-[2px]"
       style={{
-        background: `linear-gradient(135deg, ${ACCENT}, ${PURPLE}, ${ACCENT}, ${PURPLE})`,
+        background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT}88, ${ACCENT}, ${ACCENT}88)`,
         backgroundSize: '300% 300%',
         animation: 'shimmer 3s linear infinite',
       }}
@@ -2179,15 +2213,15 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
         }
       `}</style>
 
-      <div className="p-5" style={{ background: 'rgba(10, 10, 10, 0.97)' }}>
+      <div className="p-5" style={{ background: '#ffffff' }}>
         {/* Special Badge */}
         <div className="flex items-center gap-2 mb-4">
           <span
             className="flex items-center gap-1.5 px-3 py-1"
             style={{
-              background: `rgba(${PURPLE_RGB}, 0.15)`,
-              color: PURPLE,
-              border: `1px solid rgba(${PURPLE_RGB}, 0.3)`,
+              background: `rgba(${ACCENT_RGB}, 0.12)`,
+              color: ACCENT,
+              border: `1px solid rgba(${ACCENT_RGB}, 0.3)`,
               fontFamily: SPACE_MONO,
               fontSize: '10px',
               fontWeight: 700,
@@ -2224,11 +2258,11 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
               <span className="whitespace-nowrap font-bold" style={{ color: ACCENT, fontFamily: OSWALD, fontSize: '22px' }}>${product.price?.toFixed(2)}</span>
             </div>
 
-            <div className="mb-4">
-              <p className="mb-1" style={{ color: PURPLE, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+            <div className="mb-4 p-3" style={{ background: CREAM, borderRadius: '8px', borderLeft: `3px solid ${ACCENT}` }}>
+              <p className="mb-1" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
                 AI Selected Because:
               </p>
-              <p style={{ color: '#999', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
+              <p style={{ color: INK, fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
                 {product.reasoning}
               </p>
             </div>
@@ -2284,31 +2318,31 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
                 {product.description && (
                   <div className="mb-3">
                     <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Description</p>
-                    <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.description}</p>
+                    <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.description}</p>
                   </div>
                 )}
                 {product.ingredients && (
                   <div className="mb-3">
                     <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Key Ingredients</p>
-                    <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.ingredients}</p>
+                    <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.ingredients}</p>
                   </div>
                 )}
                 {product.dosage && (
                   <div className="mb-3">
                     <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Recommended Dosage</p>
-                    <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.dosage}</p>
+                    <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.dosage}</p>
                   </div>
                 )}
                 {product.benefits && (
                   <div className="mb-3">
                     <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Benefits</p>
-                    <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.benefits}</p>
+                    <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>{product.benefits}</p>
                   </div>
                 )}
                 {!product.description && !product.ingredients && !product.dosage && !product.benefits && (
                   <div className="mb-3">
                     <p style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px' }}>Product Details</p>
-                    <p style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
+                    <p style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
                       {product.reasoning || 'Premium supplement formulated to support your fitness goals.'}
                     </p>
                   </div>
@@ -2336,7 +2370,7 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
                 <button
                   onClick={() => setExpanded(false)}
                   className="flex items-center gap-1 bg-transparent border-none cursor-pointer"
-                  style={{ color: '#666', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase' }}
+                  style={{ color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, fontSize: '10px', textTransform: 'uppercase' }}
                 >
                   <ChevronUp size={12} />
                   Collapse

@@ -5,45 +5,9 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowser } from '../lib/supabase-browser';
+import PageLayout, { TOKENS, FONTS, FadeInSection } from '../components/PageLayout';
 
 const supabase = getSupabaseBrowser();
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' },
-  }),
-};
-
-const oswald = 'var(--font-oswald), Oswald, sans-serif';
-const spaceMono = 'var(--font-space-mono), Space Mono, monospace';
-
-const inputStyle = {
-  width: '100%',
-  padding: '14px 16px',
-  background: '#0a0a0a',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 4,
-  color: '#ffffff',
-  fontFamily: spaceMono,
-  fontSize: 12,
-  outline: 'none',
-  transition: 'border-color 0.2s',
-  boxSizing: 'border-box',
-};
-
-const labelStyle = {
-  display: 'block',
-  fontFamily: oswald,
-  fontSize: 9,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.2em',
-  color: '#666',
-  marginBottom: 6,
-};
 
 const GoogleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -55,7 +19,7 @@ const GoogleIcon = () => (
 );
 
 const AppleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={TOKENS.INK}>
     <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.18 0-.36-.02-.53-.06-.01-.12-.04-.3-.04-.49 0-1.13.535-2.22 1.207-3.01C13.514 1.77 14.802 1.08 15.93 1c.015.14.036.28.036.43zM20.61 17.21c-.27.64-.58 1.23-.96 1.78-.53.76-1.22 1.7-2.09 1.7-.76 0-1.27-.5-2.5-.51-1.26 0-1.81.52-2.63.53-.84.01-1.48-.88-2.01-1.64-1.46-2.11-2.57-5.96-1.07-8.56.74-1.28 2.07-2.1 3.51-2.12 1.03-.02 1.63.55 2.47.55.82 0 1.32-.55 2.5-.55.61 0 2.12.23 3.13 1.76-.08.05-1.87 1.09-1.85 3.26.03 2.59 2.27 3.45 2.3 3.46-.03.09-.36 1.24-.8 2.34z"/>
   </svg>
 );
@@ -69,12 +33,14 @@ function getPasswordStrength(password) {
   if (/\d/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
 
-  if (score <= 1) return { score: 1, label: 'Weak', color: '#ff2d55' };
-  if (score === 2) return { score: 2, label: 'Fair', color: '#ff8c00' };
-  if (score === 3) return { score: 3, label: 'Good', color: '#ffcc00' };
-  if (score === 4) return { score: 4, label: 'Strong', color: '#00ffcc' };
-  return { score: 5, label: 'Locked in', color: '#00ffcc' };
+  if (score <= 1) return { score: 1, label: 'Weak', color: '#FF3B3B' };
+  if (score === 2) return { score: 2, label: 'Fair', color: '#F97316' };
+  if (score === 3) return { score: 3, label: 'Good', color: '#FFD700' };
+  if (score === 4) return { score: 4, label: 'Strong', color: TOKENS.CYAN };
+  return { score: 5, label: 'Locked in', color: TOKENS.CYAN };
 }
+
+const inputCls = 'w-full outline-none transition-all duration-200';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -85,12 +51,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -104,7 +65,6 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       if (isSignIn) {
         const { error: authError } = await supabase.auth.signInWithPassword({
@@ -114,12 +74,8 @@ export default function AuthPage() {
         if (authError) throw authError;
         router.push('/dashboard');
       } else {
-        if (form.password !== form.confirmPassword) {
-          throw new Error('Passwords do not match');
-        }
-        if (!agreedToTerms) {
-          throw new Error('You must agree to the Terms of Service');
-        }
+        if (form.password !== form.confirmPassword) throw new Error('Passwords do not match');
+        if (!agreedToTerms) throw new Error('You must agree to the Terms of Service');
         const { data, error: authError } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
@@ -129,11 +85,9 @@ export default function AuthPage() {
           },
         });
         if (authError) throw authError;
-        // If session exists, user is immediately signed in (email confirmation disabled)
         if (data.session) {
           router.push('/dashboard');
         } else {
-          // Email confirmation required — show message
           setSuccessMessage('Check your email for a confirmation link, then come back and sign in.');
         }
       }
@@ -150,9 +104,7 @@ export default function AuthPage() {
     try {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/auth/callback?next=/dashboard',
-        },
+        options: { redirectTo: window.location.origin + '/auth/callback?next=/dashboard' },
       });
       if (authError) throw authError;
     } catch (err) {
@@ -167,9 +119,7 @@ export default function AuthPage() {
     try {
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
-        options: {
-          redirectTo: window.location.origin + '/auth/callback?next=/dashboard',
-        },
+        options: { redirectTo: window.location.origin + '/auth/callback?next=/dashboard' },
       });
       if (authError) throw authError;
     } catch (err) {
@@ -178,665 +128,296 @@ export default function AuthPage() {
     }
   };
 
-  let stepIndex = 0;
-  const step = () => ++stepIndex;
+  const inputStyle = {
+    ...FONTS.mono,
+    fontSize: '13px',
+    padding: '14px 16px',
+    background: '#ffffff',
+    border: '1.5px solid rgba(0,0,0,0.12)',
+    borderRadius: '10px',
+    color: TOKENS.INK,
+  };
+
+  const focusBorder = `1.5px solid ${TOKENS.CYAN}`;
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#000000',
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 430,
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '0 24px 24px',
-        }}
-      >
-        {/* Top strip */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-            marginBottom: 40,
-            padding: '8px 0',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: oswald,
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '0.4em',
-              textTransform: 'uppercase',
-              color: '#00ffcc',
-            }}
+    <PageLayout>
+      {/* Hero strip */}
+      <section style={{ background: '#000', paddingTop: '100px', paddingBottom: '40px', zIndex: 10 }} className="relative">
+        <div className="max-w-[430px] md:max-w-xl mx-auto px-5 text-center">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase', marginBottom: '12px' }}
           >
-            Aviera
-          </span>
-          <Link
-            href="/home"
-            style={{
-              fontFamily: spaceMono,
-              fontSize: 9,
-              color: '#666',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              letterSpacing: '0.08em',
-            }}
+            Welcome to Aviera
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[36px] md:text-[52px]"
+            style={{ ...FONTS.oswald, fontWeight: 700, textTransform: 'uppercase', color: '#fff', lineHeight: 0.95, marginBottom: '10px' }}
           >
-            &larr; Back to site
-          </Link>
-        </motion.div>
+            {isSignIn ? 'Sign In' : 'Create Account'}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            style={{ ...FONTS.mono, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}
+          >
+            {isSignIn ? 'Welcome back. Pick up where you left off.' : 'Join Aviera. Your stack starts here.'}
+          </motion.p>
+        </div>
+      </section>
 
-        {/* Logo block */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{ textAlign: 'center', marginBottom: 36 }}
-        >
-          <div
-            style={{
-              fontFamily: oswald,
-              fontSize: 11,
-              fontWeight: 500,
-              letterSpacing: '0.35em',
-              textTransform: 'uppercase',
-              color: '#666',
-              marginBottom: 4,
-            }}
-          >
-            AVIERA<span style={{ color: '#00ffcc', margin: '0 4px' }}>{'\u2022'}</span>FIT
-          </div>
-          <div
-            style={{
-              fontFamily: spaceMono,
-              fontSize: 8,
-              letterSpacing: '0.2em',
-              color: '#444',
-              textTransform: 'uppercase',
-            }}
-          >
-            Est. 2025 · San Diego, CA
-          </div>
-          {/* Glow line */}
-          <div
-            style={{
-              width: 60,
-              height: 2,
-              background: '#00ffcc',
-              margin: '12px auto 0',
-              boxShadow: '0 0 12px rgba(0,255,204,0.4)',
-              borderRadius: 1,
-            }}
-          />
-        </motion.div>
-
-        {/* Auth tabs */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{
-            display: 'flex',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-            marginBottom: 28,
-          }}
-        >
-          <button
-            onClick={() => { setActiveTab('signin'); setError(''); }}
-            style={{
-              flex: 1,
-              fontFamily: oswald,
-              fontSize: 12,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.2em',
-              textAlign: 'center',
-              padding: '12px 0',
-              color: isSignIn ? '#00ffcc' : '#666',
-              cursor: 'pointer',
-              border: 'none',
-              borderBottom: isSignIn ? '2px solid #00ffcc' : '2px solid transparent',
-              background: 'none',
-              transition: 'all 0.2s',
-            }}
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => { setActiveTab('signup'); setError(''); }}
-            style={{
-              flex: 1,
-              fontFamily: oswald,
-              fontSize: 12,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.2em',
-              textAlign: 'center',
-              padding: '12px 0',
-              color: !isSignIn ? '#00ffcc' : '#666',
-              cursor: 'pointer',
-              border: 'none',
-              borderBottom: !isSignIn ? '2px solid #00ffcc' : '2px solid transparent',
-              background: 'none',
-              transition: 'all 0.2s',
-            }}
-          >
-            Create Account
-          </button>
-        </motion.div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          {/* Full Name (signup only) */}
-          {!isSignIn && (
-            <motion.div
-              custom={step()}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              style={{ marginBottom: 18 }}
-            >
-              <label style={labelStyle}>Full Name</label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={handleChange('name')}
-                placeholder="Your name"
-                autoComplete="name"
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
-                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-              />
-            </motion.div>
-          )}
-
-          {/* Email */}
-          <motion.div
-            custom={step()}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{ marginBottom: 18 }}
-          >
-            <label style={labelStyle}>Email</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={handleChange('email')}
-              placeholder="you@email.com"
-              autoComplete="email"
-              style={inputStyle}
-              onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-            />
-          </motion.div>
-
-          {/* Password */}
-          <motion.div
-            custom={step()}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{ marginBottom: isSignIn ? 0 : 18 }}
-          >
-            <label style={labelStyle}>Password</label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={handleChange('password')}
-                placeholder="••••••••"
-                autoComplete={isSignIn ? 'current-password' : 'new-password'}
-                style={{ ...inputStyle, padding: '14px 60px 14px 16px' }}
-                onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
-                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-              />
+      {/* Auth form */}
+      <section style={{ background: TOKENS.CREAM, color: TOKENS.INK }}>
+        <div className="max-w-[430px] md:max-w-md mx-auto px-5 md:px-8 py-12 md:py-16">
+          {/* Tabs */}
+          <div className="flex mb-8" style={{ borderBottom: '1.5px solid rgba(0,0,0,0.08)' }}>
+            {['signin', 'signup'].map((tab) => (
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                key={tab}
+                onClick={() => { setActiveTab(tab); setError(''); setSuccessMessage(''); }}
+                className="flex-1 py-3 border-none cursor-pointer transition-all duration-200"
                 style={{
-                  position: 'absolute',
-                  right: 14,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  fontSize: 9,
-                  color: '#666',
+                  ...FONTS.oswald,
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  cursor: 'pointer',
-                  background: 'none',
-                  border: 'none',
-                  fontFamily: spaceMono,
-                  padding: 0,
+                  background: 'transparent',
+                  color: activeTab === tab ? TOKENS.CYAN : 'rgba(0,0,0,0.4)',
+                  borderBottom: activeTab === tab ? `2px solid ${TOKENS.CYAN}` : '2px solid transparent',
                 }}
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {tab === 'signin' ? 'Sign In' : 'Create Account'}
               </button>
+            ))}
+          </div>
+
+          {/* Success message */}
+          {successMessage && (
+            <div className="mb-6 p-4" style={{ background: `${TOKENS.CYAN}18`, border: `1.5px solid ${TOKENS.CYAN}40`, borderRadius: '10px' }}>
+              <p style={{ ...FONTS.mono, fontSize: '11px', color: TOKENS.CYAN }}>{successMessage}</p>
             </div>
-            {isSignIn && (
-              <div style={{ textAlign: 'right', marginTop: 8 }}>
-                <Link
-                  href="#"
-                  style={{
-                    fontSize: 9,
-                    color: '#00ffcc',
-                    textDecoration: 'none',
-                    fontFamily: spaceMono,
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Confirm Password (signup only) */}
-          {!isSignIn && (
-            <motion.div
-              custom={step()}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              style={{ marginBottom: 18 }}
-            >
-              <label style={labelStyle}>Confirm Password</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={form.confirmPassword}
-                  onChange={handleChange('confirmPassword')}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  style={{ ...inputStyle, padding: '14px 60px 14px 16px' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#00ffcc')}
-                  onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: 14,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: 9,
-                    color: '#666',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    cursor: 'pointer',
-                    background: 'none',
-                    border: 'none',
-                    fontFamily: spaceMono,
-                    padding: 0,
-                  }}
-                >
-                  {showConfirmPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Password strength bar (signup only) */}
-          {!isSignIn && form.password && (
-            <motion.div
-              custom={step()}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              style={{ marginBottom: 18 }}
-            >
-              <div
-                style={{
-                  width: '100%',
-                  height: 2,
-                  background: 'rgba(255,255,255,0.06)',
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                  marginBottom: 4,
-                }}
-              >
-                <div
-                  style={{
-                    width: `${(strength.score / 5) * 100}%`,
-                    height: '100%',
-                    background: strength.color,
-                    transition: 'all 0.3s ease',
-                    borderRadius: 1,
-                  }}
-                />
-              </div>
-              <span
-                style={{
-                  fontFamily: spaceMono,
-                  fontSize: 8,
-                  color: strength.color,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {strength.label}
-              </span>
-            </motion.div>
-          )}
-
-          {/* Terms checkbox (signup only) */}
-          {!isSignIn && (
-            <motion.div
-              custom={step()}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              style={{
-                marginBottom: 4,
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 10,
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setAgreedToTerms(!agreedToTerms)}
-                style={{
-                  width: 16,
-                  height: 16,
-                  minWidth: 16,
-                  borderRadius: 2,
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  background: agreedToTerms ? '#00ffcc' : '#0a0a0a',
-                  cursor: 'pointer',
-                  padding: 0,
-                  marginTop: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {agreedToTerms && (
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6L5 9L10 3" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )}
-              </button>
-              <span
-                style={{
-                  fontFamily: spaceMono,
-                  fontSize: 9,
-                  color: '#666',
-                  lineHeight: 1.5,
-                }}
-              >
-                I agree to the{' '}
-                <Link href="/terms" style={{ color: '#00ffcc', textDecoration: 'none' }}>
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link href="/privacy" style={{ color: '#00ffcc', textDecoration: 'none' }}>
-                  Privacy Policy
-                </Link>
-              </span>
-            </motion.div>
           )}
 
           {/* Error message */}
           {error && (
-            <div
-              style={{
-                fontFamily: spaceMono,
-                fontSize: 10,
-                color: '#ff2d55',
-                textAlign: 'center',
-                padding: '8px 0',
-              }}
-            >
-              {error}
+            <div className="mb-6 p-4" style={{ background: 'rgba(255,59,59,0.08)', border: '1.5px solid rgba(255,59,59,0.25)', borderRadius: '10px' }}>
+              <p style={{ ...FONTS.mono, fontSize: '11px', color: '#FF3B3B' }}>{error}</p>
             </div>
           )}
 
-          {/* Success message */}
-          {successMessage && (
-            <div
+          {/* OAuth buttons */}
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-2 py-3 cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
               style={{
-                fontFamily: spaceMono,
-                fontSize: 10,
-                color: '#00ffcc',
-                textAlign: 'center',
-                padding: '12px 16px',
-                background: 'rgba(0,255,204,0.06)',
-                border: '1px solid rgba(0,255,204,0.15)',
-                borderRadius: 4,
-                marginTop: 8,
-                lineHeight: 1.5,
+                ...FONTS.mono,
+                fontSize: '11px',
+                background: '#fff',
+                border: '1.5px solid rgba(0,0,0,0.12)',
+                borderRadius: '10px',
+                color: TOKENS.INK,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
               }}
             >
-              {successMessage}
-            </div>
-          )}
+              <GoogleIcon /> Google
+            </button>
+            <button
+              onClick={handleAppleSignIn}
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-2 py-3 cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                ...FONTS.mono,
+                fontSize: '11px',
+                background: '#fff',
+                border: '1.5px solid rgba(0,0,0,0.12)',
+                borderRadius: '10px',
+                color: TOKENS.INK,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              }}
+            >
+              <AppleIcon /> Apple
+            </button>
+          </div>
 
-          {/* Submit button */}
-          <motion.div
-            custom={step()}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{ marginTop: 8 }}
-          >
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 h-px" style={{ background: 'rgba(0,0,0,0.1)' }} />
+            <span style={{ ...FONTS.mono, fontSize: '9px', color: 'rgba(0,0,0,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              or with email
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(0,0,0,0.1)' }} />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            {!isSignIn && (
+              <div className="mb-4">
+                <label style={{ ...FONTS.oswald, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', display: 'block', marginBottom: '6px' }}>
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={handleChange('name')}
+                  placeholder="Your name"
+                  className={inputCls}
+                  style={inputStyle}
+                  onFocus={(e) => (e.target.style.border = focusBorder)}
+                  onBlur={(e) => (e.target.style.border = inputStyle.border)}
+                />
+              </div>
+            )}
+
+            <div className="mb-4">
+              <label style={{ ...FONTS.oswald, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', display: 'block', marginBottom: '6px' }}>
+                Email
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={handleChange('email')}
+                placeholder="you@email.com"
+                required
+                className={inputCls}
+                style={inputStyle}
+                onFocus={(e) => (e.target.style.border = focusBorder)}
+                onBlur={(e) => (e.target.style.border = inputStyle.border)}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label style={{ ...FONTS.oswald, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', display: 'block', marginBottom: '6px' }}>
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={handleChange('password')}
+                  placeholder="••••••••"
+                  required
+                  className={inputCls}
+                  style={{ ...inputStyle, paddingRight: '48px' }}
+                  onFocus={(e) => (e.target.style.border = focusBorder)}
+                  onBlur={(e) => (e.target.style.border = inputStyle.border)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer"
+                  style={{ ...FONTS.mono, fontSize: '9px', color: TOKENS.CYAN, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {/* Password strength */}
+              {!isSignIn && form.password && (
+                <div className="mt-2">
+                  <div className="flex gap-1 mb-1">
+                    {[1, 2, 3, 4, 5].map((seg) => (
+                      <div
+                        key={seg}
+                        className="flex-1 h-1 rounded-full"
+                        style={{ background: seg <= strength.score ? strength.color : 'rgba(0,0,0,0.08)' }}
+                      />
+                    ))}
+                  </div>
+                  <p style={{ ...FONTS.mono, fontSize: '9px', color: strength.color }}>{strength.label}</p>
+                </div>
+              )}
+            </div>
+
+            {!isSignIn && (
+              <>
+                <div className="mb-4">
+                  <label style={{ ...FONTS.oswald, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', display: 'block', marginBottom: '6px' }}>
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={form.confirmPassword}
+                      onChange={handleChange('confirmPassword')}
+                      placeholder="••••••••"
+                      required
+                      className={inputCls}
+                      style={{ ...inputStyle, paddingRight: '48px' }}
+                      onFocus={(e) => (e.target.style.border = focusBorder)}
+                      onBlur={(e) => (e.target.style.border = inputStyle.border)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer"
+                      style={{ ...FONTS.mono, fontSize: '9px', color: TOKENS.CYAN, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                    >
+                      {showConfirmPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                </div>
+
+                <label className="flex items-start gap-3 mb-6 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={() => setAgreedToTerms(!agreedToTerms)}
+                    className="mt-0.5"
+                    style={{ accentColor: TOKENS.CYAN, width: '16px', height: '16px' }}
+                  />
+                  <span style={{ ...FONTS.mono, fontSize: '10px', color: 'rgba(0,0,0,0.6)', lineHeight: 1.5 }}>
+                    I agree to the{' '}
+                    <Link href="/terms" style={{ color: TOKENS.CYAN, textDecoration: 'underline' }}>Terms of Service</Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" style={{ color: TOKENS.CYAN, textDecoration: 'underline' }}>Privacy Policy</Link>
+                  </span>
+                </label>
+              </>
+            )}
+
             <button
               type="submit"
               disabled={loading}
+              className="w-full border-none cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
               style={{
-                width: '100%',
-                padding: 16,
-                fontFamily: oswald,
-                fontSize: 14,
+                ...FONTS.oswald,
+                padding: '16px',
+                background: TOKENS.CYAN,
+                color: TOKENS.INK,
+                fontSize: '14px',
                 fontWeight: 700,
-                textTransform: 'uppercase',
                 letterSpacing: '0.2em',
-                background: loading ? '#666' : '#00ffcc',
-                color: '#000',
-                border: 'none',
-                borderRadius: 4,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) {
-                  e.target.style.boxShadow = '0 0 30px rgba(0,255,204,0.25)';
-                  e.target.style.transform = 'translateY(-1px)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.boxShadow = 'none';
-                e.target.style.transform = 'translateY(0)';
+                textTransform: 'uppercase',
+                borderRadius: '10px',
+                boxShadow: TOKENS.CYAN_GLOW,
+                opacity: loading ? 0.6 : 1,
               }}
             >
-              {loading
-                ? 'Loading...'
-                : isSignIn
-                  ? 'Sign In \u2192'
-                  : 'Create Account \u2192'}
+              {loading ? 'Loading...' : isSignIn ? 'Sign In' : 'Create Account'}
             </button>
-          </motion.div>
-        </form>
+          </form>
 
-        {/* Divider */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            margin: '24px 0',
-            gap: 12,
-          }}
-        >
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-          <span
-            style={{
-              fontSize: 8,
-              color: '#444',
-              textTransform: 'uppercase',
-              letterSpacing: '0.2em',
-              fontFamily: spaceMono,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            or continue with
-          </span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-        </motion.div>
-
-        {/* Social buttons */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}
-        >
-          <button
-            type="button"
-            disabled={loading}
-            onClick={handleGoogleSignIn}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              fontFamily: spaceMono,
-              fontSize: 11,
-              background: '#0a0a0a',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 4,
-              color: '#ffffff',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                e.currentTarget.style.background = '#111';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.background = '#0a0a0a';
-            }}
-          >
-            <GoogleIcon />
-            Google
-          </button>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={handleAppleSignIn}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              fontFamily: spaceMono,
-              fontSize: 11,
-              background: '#0a0a0a',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 4,
-              color: '#ffffff',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                e.currentTarget.style.background = '#111';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.background = '#0a0a0a';
-            }}
-          >
-            <AppleIcon />
-            Apple
-          </button>
-        </motion.div>
-
-        {/* Terms text */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{
-            fontSize: 8,
-            color: '#444',
-            lineHeight: 1.6,
-            textAlign: 'center',
-            fontFamily: spaceMono,
-            padding: '0 16px',
-          }}
-        >
-          By continuing, you agree to Aviera Fit&apos;s{' '}
-          <Link href="/terms" style={{ color: '#00ffcc', textDecoration: 'none', fontSize: 8 }}>
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" style={{ color: '#00ffcc', textDecoration: 'none', fontSize: 8 }}>
-            Privacy Policy
-          </Link>
-        </motion.div>
-
-        {/* Footer */}
-        <motion.div
-          custom={step()}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          style={{
-            marginTop: 'auto',
-            paddingTop: 24,
-            textAlign: 'center',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: oswald,
-              fontSize: 9,
-              letterSpacing: '0.3em',
-              color: '#333',
-              textTransform: 'uppercase',
-            }}
-          >
-            Aviera Fit /// San Diego, CA
-          </span>
-        </motion.div>
-      </div>
-    </div>
+          {/* Bottom link */}
+          <p className="text-center mt-6" style={{ ...FONTS.mono, fontSize: '11px', color: 'rgba(0,0,0,0.5)' }}>
+            {isSignIn ? "Don't have an account? " : 'Already have an account? '}
+            <button
+              onClick={() => { setActiveTab(isSignIn ? 'signup' : 'signin'); setError(''); setSuccessMessage(''); }}
+              className="border-none bg-transparent cursor-pointer"
+              style={{ ...FONTS.mono, fontSize: '11px', color: TOKENS.CYAN, fontWeight: 700 }}
+            >
+              {isSignIn ? 'Create one' : 'Sign in'}
+            </button>
+          </p>
+        </div>
+      </section>
+    </PageLayout>
   );
 }

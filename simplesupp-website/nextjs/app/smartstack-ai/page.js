@@ -5,6 +5,7 @@ import Link from 'next/link';
 import SupplementQuiz from '../components/SupplementQuiz';
 import OptimizedImage from '../components/OptimizedImage';
 import { Brain, Target, Sparkles, Crown, Check } from 'lucide-react';
+import PageLayout from '../components/PageLayout';
 
 export default function SmartStackAI() {
   const [mounted, setMounted] = useState(false);
@@ -37,6 +38,7 @@ export default function SmartStackAI() {
   );
 
   return (
+    <PageLayout>
     <div className="min-h-screen relative">
       {/* Full-page Background Image */}
       <div className="fixed inset-0 z-0">
@@ -398,6 +400,7 @@ export default function SmartStackAI() {
         <SupplementQuiz />
       </div>
     </div>
+    </PageLayout>
   );
 }
 

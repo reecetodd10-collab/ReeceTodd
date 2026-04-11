@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useSupabaseUser } from '../components/SupabaseAuthProvider';
 import { fetchShopifyProducts, addToCart, addMultipleToCart, getCheckoutUrl } from '../lib/shopify';
 import ProductDetailModal from '../components/ProductDetailModal';
+import PageLayout from '../components/PageLayout';
 
 // ─── Max supplement slots ───
 const MAX_SLOTS = 6;
@@ -17,45 +18,59 @@ const MAX_SLOTS = 6;
 // Green (#00ffcc) = Recovery / Focus / Sleep
 // Purple (#a855f7) = Weight Management / Skin / Health
 const CATEGORY_COLOR_MAP = {
-  'Performance': '#ff2d55',
-  'Pre-Workout': '#ff2d55',
-  'Protein': '#ff2d55',
-  'Recovery & Sleep': '#00ffcc',
-  'Recovery': '#00ffcc',
-  'Sleep': '#7c6fea',
-  'Focus & Energy': '#f5c542',
-  'Focus': '#f5c542',
-  'Weight Management': '#3b9eff',
-  'Weight': '#3b9eff',
-  'Beauty & Anti-Aging': '#ff6bb5',
-  'Beauty': '#ff6bb5',
-  'Health & Wellness': '#a855f7',
-  'Health': '#a855f7',
+  'Performance': '#00e5ff',
+  'Pre-Workout': '#FF3B3B',
+  'Pre-Workout & Energy': '#FF3B3B',
+  'Protein': '#8B5CF6',
+  'Recovery & Hydration': '#FFD700',
+  'Recovery': '#FFD700',
+  'Recovery & Sleep': '#FFD700',
+  'Sleep': '#6366F1',
+  'Focus & Cognitive': '#3B82F6',
+  'Focus': '#3B82F6',
+  'Focus & Energy': '#3B82F6',
+  'Health & Wellness': '#22C55E',
+  'Health': '#22C55E',
+  'Weight Management': '#F97316',
+  'Weight': '#F97316',
+  'Beauty & Skin': '#EC4899',
+  'Beauty': '#EC4899',
+  'Beauty & Anti-Aging': '#EC4899',
 };
 
 const CATEGORY_COLOR_RGB = {
-  '#ff2d55': '255, 45, 85',
-  '#00ffcc': '0, 255, 204',
-  '#a855f7': '168, 85, 247',
-  '#f5c542': '245, 197, 66',
-  '#3b9eff': '59, 158, 255',
-  '#ff6bb5': '255, 107, 181',
-  '#7c6fea': '124, 111, 234',
+  '#00e5ff': '0, 229, 255',
+  '#FF3B3B': '255, 59, 59',
+  '#8B5CF6': '139, 92, 246',
+  '#FFD700': '255, 215, 0',
+  '#6366F1': '99, 102, 241',
+  '#3B82F6': '59, 130, 246',
+  '#22C55E': '34, 197, 94',
+  '#F97316': '249, 115, 22',
+  '#EC4899': '236, 72, 153',
 };
 
 // Map product name/title to a category using keyword matching
 function getCategoryForProduct(name = '') {
   const n = name.toLowerCase();
-  // Strength / Performance (Red)
-  if (/protein|whey|creatine|bcaa|pre.?workout|post.?workout|beta.?alanine|performance|muscle|strength|nitric|flow state/i.test(n)) return 'Performance';
-  // Recovery / Sleep (Green)
-  if (/magnesium|melatonin|sleep|recovery|zma|ashwagandha|rest/i.test(n)) return 'Recovery';
-  if (/caffeine|energy|focus|alpha energy|nootropic|rhodiola|cognitive|l.?theanine/i.test(n)) return 'Focus';
-  // Weight / Skin / Health (Purple)
-  if (/fat.?burn|weight|metabolism|thermogenic|l.?carnitine|green tea/i.test(n)) return 'Weight';
-  if (/collagen|biotin|beauty|skin|hair|anti.?aging|vitamin c/i.test(n)) return 'Beauty';
-  if (/omega|vitamin d|coq10|multivitamin|health|wellness|immune/i.test(n)) return 'Health';
-  return 'Health'; // default
+  // Performance (cyan) — nitric oxide, creatine, bcaa, beetroot, glutamine
+  if (/nitric|flow state x(?!.*nootropic)|creatine|bcaa(?!.*post)|beetroot|glutamine/i.test(n)) return 'Performance';
+  // Pre-Workout & Energy (red) — pre-workout, alpha energy
+  if (/pre.?workout|alpha energy|nitric shock/i.test(n)) return 'Pre-Workout';
+  // Protein (purple) — whey, plant protein
+  if (/protein|whey|plant protein/i.test(n)) return 'Protein';
+  // Recovery & Hydration (gold) — hydration, electrolyte, bcaa post
+  if (/hydration|electrolyte|bcaa post/i.test(n)) return 'Recovery';
+  // Focus & Cognitive (blue) — nootropic, lion's mane, energy powder, methylene, flow state nootropic
+  if (/nootropic|lion.?s mane|energy powder|methylene|focus|cognitive/i.test(n)) return 'Focus';
+  // Sleep (indigo) — sleep, melatonin, magnesium, ashwagandha
+  if (/sleep|melatonin|magnesium|ashwagandha/i.test(n)) return 'Sleep';
+  // Weight Management (orange) — fat burner, keto, green tea
+  if (/fat.?burn|keto|weight|metabolism|thermogenic|green tea/i.test(n)) return 'Weight';
+  // Beauty & Skin (pink) — collagen, hyaluronic, vitamin glow, skin, beauty
+  if (/collagen|hyaluronic|vitamin glow|skin|beauty|hair/i.test(n)) return 'Beauty';
+  // Health & Wellness (green) — everything else
+  return 'Health';
 }
 
 function getCategoryColor(name) {
@@ -66,17 +81,17 @@ function getCategoryColor(name) {
 function getCategoryLabel(name) {
   const cat = getCategoryForProduct(name);
   const labels = {
-    'Performance': 'STRENGTH',
-    'Pre-Workout': 'STRENGTH',
-    'Protein': 'STRENGTH',
-    'Recovery': 'RECOVERY',
+    'Performance': 'PERFORMANCE',
+    'Pre-Workout': 'PRE-WORKOUT & ENERGY',
+    'Protein': 'PROTEIN',
+    'Recovery': 'RECOVERY & HYDRATION',
     'Sleep': 'SLEEP',
-    'Focus': 'FOCUS',
-    'Weight': 'WEIGHT',
-    'Beauty': 'BEAUTY',
-    'Health': 'HEALTH',
+    'Focus': 'FOCUS & COGNITIVE',
+    'Weight': 'WEIGHT MANAGEMENT',
+    'Beauty': 'BEAUTY & SKIN',
+    'Health': 'HEALTH & WELLNESS',
   };
-  return labels[cat] || 'HEALTH';
+  return labels[cat] || 'HEALTH & WELLNESS';
 }
 
 // ─── Scroll-triggered fade-up wrapper ───
@@ -97,241 +112,18 @@ function FadeInSection({ children, delay = 0, className = '' }) {
   );
 }
 
-// ─── Sticky Navigation ───
-function StickyNav({ menuOpen, setMenuOpen, user, cartCount = 0, onCartClick }) {
-  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
-  return (
-    <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{
-          background: '#000000',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div className="max-w-[430px] mx-auto flex items-center justify-between px-4 py-3">
-          <Link
-            href="/home"
-            className="no-underline"
-            style={{
-              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-              fontSize: '12px',
-              fontWeight: 700,
-              letterSpacing: '0.4em',
-              color: '#00ffcc',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
-          >
-            &#9673; Aviera
-          </Link>
-
-          {/* Cart + User icon + hamburger */}
-          <div className="flex items-center gap-3">
-            {/* Cart icon — only shown when items in cart */}
-            {cartCount > 0 && (
-              <button
-                onClick={onCartClick}
-                className="relative bg-transparent border-none cursor-pointer"
-                style={{ padding: '2px' }}
-                aria-label="View cart"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-6px',
-                    background: '#ff2d55',
-                    color: '#fff',
-                    fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                    fontSize: '8px',
-                    fontWeight: 700,
-                    width: '14px',
-                    height: '14px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {cartCount}
-                </span>
-              </button>
-            )}
-            <Link
-              href="/auth"
-              className="flex items-center justify-center no-underline"
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                border: avatarUrl ? '2px solid #00ffcc' : '1px solid rgba(255,255,255,0.15)',
-                background: 'transparent',
-                color: '#ffffff',
-                textDecoration: 'none',
-                overflow: 'hidden',
-                flexShrink: 0,
-              }}
-            >
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="Profile"
-                  width={28}
-                  height={28}
-                  style={{ borderRadius: '50%', objectFit: 'cover', width: '100%', height: '100%' }}
-                />
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              )}
-            </Link>
-            <button
-              className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-            >
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile overlay */}
-      {menuOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center"
-          style={{ background: '#000000' }}
-        >
-          <button
-            className="absolute top-4 right-4 bg-transparent border-none cursor-pointer"
-            onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
-            style={{
-              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-              fontSize: '28px',
-              color: '#fff',
-            }}
-          >
-            ✕
-          </button>
-
-          <div className="flex flex-col items-center gap-8">
-            {[
-              { label: 'Home', href: '/home' },
-              { label: 'Shop', href: '/shop' },
-              { label: 'Flow State X', href: '/nitric' },
-              { label: 'Trybe', href: '/trybe' },
-              { label: 'Optimize Quiz', href: '/supplement-optimization-score' },
-              { label: 'About', href: '/about' },
-              { label: 'Latest', href: '/news' },
-              { label: 'My Stack', href: '/dashboard' },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: link.href === '/dashboard' ? '#00ffcc' : link.href === '/supplement-optimization-score' ? '#00ffcc' : '#ffffff',
-                  textDecoration: 'none',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {session ? (
-              <button
-                onClick={async () => {
-                  await signOut();
-                  setMenuOpen(false);
-                  window.location.href = '/auth';
-                }}
-                style={{
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: '#ff2d55',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  letterSpacing: '0.1em',
-                  padding: 0,
-                  textAlign: 'left',
-                }}
-              >
-                SIGN OUT
-              </button>
-            ) : (
-              <Link
-                href="/auth"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: '#ffffff',
-                  textDecoration: 'none',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                SIGN IN
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-// ─── Loading Skeleton ───
+// ─── Dashboard Loading Skeleton ───
 function DashboardSkeleton() {
   return (
     <div className="animate-pulse">
-      {/* Score ring skeleton */}
       <div className="flex justify-center mb-8 mt-4">
-        <div
-          className="rounded-full"
-          style={{
-            width: '150px',
-            height: '150px',
-            background: '#111',
-            border: '6px solid #1a1a1a',
-          }}
-        />
+        <div className="rounded-full" style={{ width: '150px', height: '150px', background: '#111', border: '6px solid #1a1a1a' }} />
       </div>
-
-      {/* Section label skeleton */}
-      <div
-        className="mb-3"
-        style={{ width: '120px', height: '12px', background: '#111', borderRadius: '4px' }}
-      />
-
-      {/* Stack grid skeleton */}
+      <div className="mb-3" style={{ width: '120px', height: '12px', background: '#111', borderRadius: '4px' }} />
       <div className="grid grid-cols-2 gap-2 mb-6">
         {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="rounded-lg"
-            style={{
-              background: '#0a0a0a',
-              minHeight: '100px',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}
-          />
+          <div key={i} className="rounded-lg" style={{ background: '#0a0a0a', minHeight: '100px', border: '1px solid rgba(255,255,255,0.06)' }} />
         ))}
       </div>
     </div>
@@ -345,7 +137,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, session, loading: authLoading, signOut } = useSupabaseUser();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  
   // Views: 'dashboard' | 'detail' | 'celebration'
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedSupplement, setSelectedSupplement] = useState(null);
@@ -438,7 +230,7 @@ export default function DashboardPage() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            name: 'My Stack',
+            name: 'My Supplement Plan',
             supplements: stackItems.map((s) => ({ name: s.name, price: s.price })),
           }),
         });
@@ -592,6 +384,25 @@ export default function DashboardPage() {
     }
   }, [session?.access_token, fetchDashboardData]);
 
+  // Recover quiz results from sessionStorage (for post-signup redirect)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = sessionStorage.getItem('aviera_quiz_results');
+      if (saved && recommendedProducts.length === 0) {
+        const parsed = JSON.parse(saved);
+        if (parsed.recommendations?.length > 0) {
+          setRecommendedProducts(parsed.recommendations);
+        }
+        if (parsed.scores?.total) {
+          setOptimizationScore(parsed.scores.total);
+        }
+        // Clear after loading so it doesn't override future API data
+        sessionStorage.removeItem('aviera_quiz_results');
+      }
+    } catch (_) {}
+  }, [recommendedProducts.length]);
+
   // Cooldown state
   const [cooldownHours, setCooldownHours] = useState(0);
   const [showCooldown, setShowCooldown] = useState(false);
@@ -740,7 +551,7 @@ export default function DashboardPage() {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          name: 'My Stack',
+          name: 'My Supplement Plan',
           supplements: stackItems.map((s) => ({ name: s.name, price: s.price })),
         }),
       });
@@ -847,17 +658,15 @@ export default function DashboardPage() {
   // Show loading or redirect states
   if (authLoading) {
     return (
-      <div
-        className="relative min-h-screen"
-        style={{ background: '#000000', color: '#ffffff' }}
-      >
-        <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} cartCount={cartCount} onCartClick={handleCheckout} />
-        <main className="relative z-10 pt-[60px] pb-24 px-5">
-          <div className="max-w-[430px] mx-auto">
-            <DashboardSkeleton />
-          </div>
-        </main>
-      </div>
+      <PageLayout hideFooter>
+        <div className="relative min-h-screen" style={{ background: '#000000', color: '#ffffff' }}>
+          <main className="relative z-10 pt-[60px] pb-24 px-5">
+            <div className="max-w-[430px] md:max-w-3xl mx-auto">
+              <DashboardSkeleton />
+            </div>
+          </main>
+        </div>
+      </PageLayout>
     );
   }
 
@@ -867,6 +676,7 @@ export default function DashboardPage() {
   }
 
   return (
+    <PageLayout hideFooter>
     <div
       className="relative min-h-screen"
       style={{
@@ -874,20 +684,9 @@ export default function DashboardPage() {
         color: '#ffffff',
       }}
     >
-      {/* Scanline overlay */}
-      <div
-        className="fixed inset-0 pointer-events-none z-[1]"
-        style={{
-          background:
-            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px)',
-        }}
-      />
-
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} user={user} cartCount={cartCount} onCartClick={handleCheckout} />
-
       {/* Main content */}
       <main className="relative z-10 pt-[60px] pb-24 px-5">
-        <div className="max-w-[430px] mx-auto">
+        <div className="max-w-[430px] md:max-w-3xl mx-auto">
 
           {/* Show skeleton while data is loading */}
           {dataLoading && currentView === 'dashboard' && <DashboardSkeleton />}
@@ -911,7 +710,7 @@ export default function DashboardPage() {
                   color: '#ffffff',
                 }}
               >
-                My Stack
+                My Supplement Plan
               </h1>
 
               {/* O.S. Score Section */}
@@ -1120,8 +919,8 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* AI Recommendations — Product Cards */}
-                {recommendedProducts.length > 0 && (
+                {/* Personalized Recommendations */}
+                {(recommendedProducts.length > 0 || shopifyProducts.length > 0) && (
                   <div className="mb-5">
                     <p
                       className="mb-3"
@@ -1133,10 +932,21 @@ export default function DashboardPage() {
                         textTransform: 'uppercase',
                       }}
                     >
-                      BASED ON YOUR O.S.
+                      PERSONALIZED RECOMMENDATIONS
                     </p>
                     <div className="grid grid-cols-2 gap-2">
-                      {recommendedProducts.slice(0, 3).map((rec, idx) => {
+                      {(() => {
+                        // Show quiz recommendations + AI-suggested extras from Shopify catalog
+                        const quizRecs = recommendedProducts.slice(0, 3);
+                        const quizTitles = new Set(quizRecs.map(r => (r.title || '').toLowerCase()));
+                        const stackTitles = new Set(stackItems.map(s => s.name.toLowerCase()));
+                        // Add extra AI picks from Shopify products not already in quiz recs or stack
+                        const extras = shopifyProducts
+                          .filter(p => !quizTitles.has(p.title.toLowerCase()) && !stackTitles.has(p.title.toLowerCase()))
+                          .slice(0, 6 - quizRecs.length)
+                          .map(p => ({ title: p.title, price: p.price?.toFixed(2), isAISuggested: true }));
+                        return [...quizRecs, ...extras];
+                      })().map((rec, idx) => {
                         const catColor = getCategoryColor(rec.title || '');
                         const catLabel = getCategoryLabel(rec.title || '');
                         const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
@@ -2134,14 +1944,15 @@ export default function DashboardPage() {
                               style={{
                                 fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                 fontSize: '8px',
-                                color: '#666',
+                                color: '#00ffcc',
                                 padding: '2px 6px',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                border: '1px solid rgba(0,255,204,0.4)',
                                 borderRadius: '3px',
+                                background: 'rgba(0,255,204,0.08)',
                               }}
                               title="View product details"
                             >
-                              VIEW
+                              VIEW CARD
                             </button>
                             <button
                               onClick={(e) => {
@@ -3037,5 +2848,6 @@ export default function DashboardPage() {
         />
       )}
     </div>
+    </PageLayout>
   );
 }
