@@ -1,0 +1,121 @@
+# Aviera Fit Research Notes
+
+## Target audience framing evidence
+
+### Source 1: Glanbia Nutritionals, 2025 Nutrition Trends for Active Adults
+- Active lifestyle consumers prioritize **hydration, energy, protein, and micronutrients**.
+- These consumers are described as **highly informed**, often using **online resources and apps** to make nutrition and fitness decisions.
+- They span age groups, but the article highlights **Gen Z and Millennials** as early adopters of wellness trends.
+- Convenience, clean-label positioning, and premium functional benefits are presented as key purchase drivers.
+- Relevance to Aviera Fit: the current product line directly maps to hydration, energy, recovery, and micronutrient support.
+
+### Source 2: Frontiers in Nutrition systematic review (2025)
+- Supplement use among athletes is reported as **common, often ranging from 40% to 100%** depending on context.
+- Evidence in the review supports **individualized, evidence-based supplementation strategies** rather than generic protocols.
+- The review notes that many athletes use supplements for **performance, recovery, and health maintenance**.
+- Relevance to Aviera Fit: the personalized quiz and AI positioning are strategically aligned with the evidence-based personalization trend.
+
+## Preliminary audience conclusion
+Aviera Fit should primarily target **performance-oriented men aged roughly 22-35 who strength train, do hybrid training, or train for physique and performance goals**, with a secondary audience of active adults seeking cleaner, more personalized supplementation. This audience best matches the product assortment, the likely search demand around pre-workout, creatine, nitric oxide, hydration, and recovery, and the brand's AI-guided personalization angle.
+
+## US keyword volume snapshot from SearchVolume.io
+
+| Keyword | Avg. monthly searches |
+|---|---:|
+| creatine monohydrate | 246,000 |
+| magnesium glycinate for sleep | 246,000 |
+| electrolyte powder | 60,500 |
+| best electrolyte powder | 33,100 |
+| nitric oxide supplement | 33,100 |
+| creatine hcl vs monohydrate | 18,100 |
+| clean pre workout | 3,600 |
+| best nitric oxide supplement | 1,300 |
+| pre workout without jitters | 70 |
+| personalized supplement quiz | 0 |
+
+### Interpretation
+The strongest organic acquisition opportunities appear to sit in broad supplement category terms and comparison or problem-solution queries rather than direct demand for personalization language. This suggests Aviera Fit should use **personalization as a conversion and merchandising mechanism**, while building SEO around category pages, educational articles, and comparison content for creatine, magnesium, electrolytes, nitric oxide, and pre-workout intent.
+
+Source: SearchVolume.io browser results captured on 2026-04-13.
+
+## Competitor snapshot: Momentous
+
+### Observed positioning and SEO/GEO implications
+- Brand promise centers on **human performance**, **science-backed ingredients**, and **rigorous testing**.
+- Navigation is organized by both **Shop** and **goal-based pathways** such as Athletic Performance, Cognitive Function, Sleep, Foundational Health, and Hormone Support.
+- The homepage prominently surfaces **best sellers** and attaches short benefit-led bullet points to each product, creating strong query-to-product relevance.
+- Trust signals are unusually prominent: **NSF Certified for Sport**, expert partnerships, professional team adoption, and military usage claims.
+- Editorial and authority architecture is visible through **Learn**, **Blog**, **Trusted Experts**, and **Build My Routine** pathways.
+- Product naming largely follows recognizable category language such as **Creatine**, **Whey Protein Isolate**, and **Omega-3**, which likely improves search alignment versus branded-only naming.
+
+### What Aviera Fit should learn from Momentous
+1. Lead with **category-first naming** and let the proprietary product name be secondary.
+2. Organize product discovery by **goal/use case** in addition to product type.
+3. Put **proof and authority signals** above the fold and near product claims.
+4. Create clearer educational pathways linking products, routines, and expert-backed content.
+5. Use concise benefit bullets that mirror real search intent around performance, recovery, energy, and sleep.
+
+## Competitor snapshot: Thorne
+
+### Observed positioning and SEO/GEO implications
+- Thorne emphasizes **clinically backed supplements**, **personal biology**, and **medical/scientific authority**.
+- Site architecture combines standard commerce paths with **goal-based discovery** such as Sports Performance, Men’s Health, Women’s Health, and Sleep.
+- The homepage includes a visible **AI wellness advisor** and quiz-like recommendation flow, showing how personalization can coexist with high-authority health positioning.
+- Trust signals are heavily developed: **four rounds of testing**, third-party certifications, NSF, FDA compliance language, clinical research, and manufacturing transparency.
+- Educational pathways are extensive, including **Health Concerns**, **Wellness Guides**, **Clinical Research**, **Our Ingredients**, and **Our Manufacturing Process**.
+- Content examples on the homepage suggest SEO coverage extends beyond product pages into **condition, lifecycle, and audience-specific education**.
+
+### What Aviera Fit should learn from Thorne
+1. Pair personalization with **medical and manufacturing credibility**, not just convenience.
+2. Build deeper **ingredient, quality, and research explainer content** to improve both SEO trust and AI citation likelihood.
+3. Create content hubs by **health goal and audience segment**, not only by SKU.
+4. Make quality-control claims concrete with specific processes, certifications, and proof pages.
+5. Use AI recommendation features as an extension of evidence-based guidance, not as a standalone novelty angle.
+
+## Aviera homepage audit
+
+### Positive signals
+- The homepage has a clear **title tag** and a reasonably descriptive **meta description** focused on AI-powered supplement personalization.
+- The page uses a visible **H1** that reinforces the core slogan and value proposition.
+- Core conversion paths are present near the top of the page, especially **Shop Supplements** and **Take the Optimization Quiz**.
+- The homepage introduces several product entry points and use-case framing around performance, hydration, sleep, recovery, and personalization.
+- Footer compliance language includes the standard FDA disclaimer and business address, which helps trust and legitimacy.
+
+### Notable SEO and GEO weaknesses
+- The primary H1 is highly branded and slogan-based (**Stop guessing. Start progressing.**) rather than category-descriptive, so it may underperform for non-branded search intent.
+- Product URLs appear short and clean, but the homepage leans heavily on proprietary naming such as **Flow State X**, which risks weak alignment with category searches unless product pages compensate strongly.
+- The downloaded HTML did not expose a visible **canonical tag** or Open Graph metadata in the initial audit extract, suggesting incomplete social/technical metadata implementation.
+- The hero copy contains a grammar issue (**Premium supplements meets artificial intelligence**) and uses broad positioning instead of clearer category language such as personalized supplement stacks for active adults.
+- The page appears light on deep informational content, ingredient specifics, structured proof, and evidence links that would increase both traditional rankings and AI citation likelihood.
+- Trust signals are weaker than leading competitors because the homepage does not foreground certifications, manufacturing quality, clinical validation, or transparent testing details.
+
+### Immediate homepage recommendations
+1. Retain the brand-forward creative but add a stronger SEO-facing subheading that explicitly targets **personalized supplements**, **AI supplement quiz**, and **goal-based stacks**.
+2. Add trust modules for **transparent labeling**, **ingredient dosages**, **testing**, and **manufacturing standards**.
+3. Expand the homepage with linked educational blocks tied to core intents such as pre-workout, hydration, creatine, sleep support, and nitric oxide performance support.
+4. Implement complete metadata coverage including canonical, Open Graph, and product-aware social previews.
+5. Reduce overreliance on slogan copy by pairing branded language with plain-English category descriptors.
+
+## Product page audit: Flow State X (/nitric)
+
+The product page shows that Aviera has strong raw ingredients for conversion-oriented copy but weak search-facing metadata architecture. The visible page introduces the product with the category cue **nitric oxide formula**, which is useful, yet the document title remains the same generic homepage title rather than a product-specific title. The same issue appears in the meta description pattern from the extracted metadata summary, indicating that multiple product pages reuse broad site-level metadata instead of targeting the actual product query.
+
+In terms of page content, the copy does a solid job of translating the product into benefits such as blood flow, pumps, sustained performance, stimulant-free use, and stack compatibility. The page also includes a transparent ingredient section and dosage details, which are valuable for both user trust and answer-engine retrieval. However, the ingredient amounts shown on the page appear far below what a serious buyer would expect for flagship nitric-oxide ingredients, so the page needs either stronger explanatory context or clearer rationale around serving logic and intended use. Without that, knowledgeable users and AI systems may view the formula as under-substantiated.
+
+From an SEO and GEO standpoint, the biggest weakness is the heavy emphasis on proprietary branding (**Flow State X**) without enough consistent category-language reinforcement. The product should more aggressively pair the brand name with descriptive terms like **nitric oxide supplement**, **pump supplement**, **stimulant-free pre-workout support**, and **blood flow support**. The page would also benefit from FAQ content, evidence references, usage guidance, and structured data for product information, reviews, price, and availability.
+
+## Technical SEO audit: crawlability and metadata
+
+The technical audit surfaced several high-priority deficiencies. Both **/robots.txt** and **/sitemap.xml** return **404** responses rather than valid crawl-control and discovery files. For a small site this is not fatal, but it is a meaningful weakness because it reduces crawl guidance, slows content discovery, and signals low technical maturity to search systems. The site is hosted on Vercel and redirects the root domain to **www.avierafit.com**, which is acceptable, but the absence of core indexing files should be corrected immediately.
+
+The extracted HTML also suggests that the site lacks broad deployment of **canonical tags**, **Open Graph metadata**, and visible **structured data** such as JSON-LD for organization, website, product, FAQ, or review entities. In practice, this means Aviera is missing several of the easiest wins for improving snippet control, social sharing, machine readability, and answer-engine eligibility. Multiple pages also appear to share a nearly identical title and meta description, which weakens keyword targeting and causes avoidable duplication across the index.
+
+These issues should be treated as priority-one technical fixes because they are comparatively easy to implement and will improve both classic SEO foundations and GEO readiness. A valid robots file, XML sitemap, page-specific canonicals, product schema, FAQ schema, and richer social metadata should all be included in the final implementation plan.
+
+## Quiz page audit: /supplement-optimization-score
+
+The quiz page is one of Aviera's strongest strategic assets because it directly matches high-intent language around **personalized supplements** and custom recommendations. Visually, the page foregrounds the exact phrase **Personalized Supplements**, which is much closer to a searchable category term than the homepage slogan. This suggests the brand already has the right positioning instincts, but they are not yet consistently reflected in metadata and crawlable supporting copy.
+
+At the same time, the page appears very light on indexable text. Much of its value is embedded in the interactive flow rather than in explanatory content that search engines and answer engines can reliably interpret. As a result, the page may convert human visitors while still underperforming as a search landing page. The solution is not to remove the quiz, but to wrap it with richer static content: who the quiz is for, how recommendations are generated, what inputs are considered, what supplement categories are covered, and how users should interpret their results.
+
+From an SEO and GEO perspective, this page should become a major non-product landing page targeting terms such as **personalized supplement quiz**, **AI supplement quiz**, **supplement recommendation quiz**, and **custom supplement stack**. It should also include FAQ schema, plain-language summaries, and internal links to the relevant product and educational pages that support each recommendation outcome.
