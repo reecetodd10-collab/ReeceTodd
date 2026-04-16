@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { ShoppingBag } from 'lucide-react';
 import { useSupabaseUser } from './SupabaseAuthProvider';
+import { fetchCart, initializeShopifyCart } from '../lib/shopify';
+import CartDrawer from './CartDrawer';
 
 // ════════════════════════════════════════════════════════════
 //  AVIERA DESIGN SYSTEM
@@ -52,12 +55,46 @@ export function FadeInSection({ children, delay = 0, y = 32, className = '' }) {
 // ════════════════════════════════════════════════════════════
 //  StickyNav — shared header/hamburger
 // ════════════════════════════════════════════════════════════
-export function StickyNav({ menuOpen, setMenuOpen }) {
+export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
   const auth = useSupabaseUser();
   const user = auth?.user;
   const session = auth?.session;
   const signOut = auth?.signOut;
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const [cartCount, setCartCount] = useState(0);
+
+  // Initialize Shopify SDK and fetch initial cart count
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let cancelled = false;
+
+    initializeShopifyCart()
+      .then(() => fetchCart())
+      .then((cart) => {
+        if (cancelled || !cart) return;
+        const count = (cart.lineItems || []).reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(count);
+      })
+      .catch(() => { /* no cart yet is fine */ });
+
+    // Listen for cart updates dispatched from anywhere (add, remove, qty change)
+    const handler = (e) => {
+      if (e?.detail?.itemCount !== undefined) {
+        setCartCount(e.detail.itemCount);
+        return;
+      }
+      if (e?.detail?.cart?.lineItems) {
+        const count = e.detail.cart.lineItems.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(count);
+      }
+    };
+    window.addEventListener('shopify:cart:updated', handler);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('shopify:cart:updated', handler);
+    };
+  }, []);
 
   return (
     <>
@@ -109,6 +146,43 @@ export function StickyNav({ menuOpen, setMenuOpen }) {
                 </svg>
               )}
             </Link>
+
+            {/* Cart button with badge */}
+            <button
+              onClick={() => setCartOpen && setCartOpen(true)}
+              aria-label={`Open cart${cartCount > 0 ? ` (${cartCount} items)` : ''}`}
+              className="relative bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
+              style={{ color: '#fff' }}
+            >
+              <ShoppingBag size={20} strokeWidth={1.8} />
+              {cartCount > 0 && (
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    minWidth: '18px',
+                    height: '18px',
+                    padding: '0 5px',
+                    background: TOKENS.CYAN,
+                    color: '#001018',
+                    borderRadius: '9px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    boxShadow: '0 0 10px rgba(0,229,255,0.6)',
+                    lineHeight: 1,
+                  }}
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </button>
+
             <button
               className="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
               onClick={() => setMenuOpen(true)}
@@ -327,15 +401,22 @@ export function Footer() {
 // ════════════════════════════════════════════════════════════
 export default function PageLayout({ children, hideFooter = false }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <div
       className="min-h-screen relative"
       style={{ background: '#000', color: TOKENS.INK, overflowX: 'hidden' }}
     >
-      <StickyNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <StickyNav
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        cartOpen={cartOpen}
+        setCartOpen={setCartOpen}
+      />
       <main className="relative">{children}</main>
       {!hideFooter && <Footer />}
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

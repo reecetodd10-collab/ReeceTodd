@@ -17,13 +17,13 @@ const config = {
   price: { display: '$19.99', value: 19.99 },
   servingsText: '30 SERVINGS',
   colors: {
-    primary: '#00e6b0',     // Aviera green-cyan
-    dark: '#0a4a3a',        // deep forest
-    bg: '#fffef5',          // pale cream
-    accent: '#ff6b4a',      // coral urgency
-    bodyText: '#5a5a5a',
-    mutedText: '#8a8a8a',
-    borderTint: '#e0ebe5',
+    primary: '#00e5ff',      // electric cyan (matches /creatine)
+    dark: '#003a4a',         // deep teal
+    bg: '#f4fdff',           // pale cyan tint
+    accent: '#22d3ee',       // brighter cyan
+    bodyText: '#2a4a55',
+    mutedText: '#6a8a95',
+    borderTint: '#d4eef2',
   },
   benefits: [
     {

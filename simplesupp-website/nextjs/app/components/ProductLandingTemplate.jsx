@@ -6,6 +6,8 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from '../lib/tracking';
 import ProductDetailModal from './ProductDetailModal';
+import CartDrawer from './CartDrawer';
+import { ShoppingBag } from 'lucide-react';
 
 // ─── Animated section wrapper ───
 function FadeInSection({ children, delay = 0, className = '' }) {
@@ -248,6 +250,7 @@ export default function ProductLandingTemplate({ config }) {
   const [fullProduct, setFullProduct] = useState(null);
   const [showProductCard, setShowProductCard] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     const handleCartUpdate = (e) => setCartCount(e.detail?.itemCount || 0);
@@ -380,29 +383,40 @@ export default function ProductLandingTemplate({ config }) {
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            {cartCount > 0 && (
-              <button
-                onClick={async () => {
-                  trackInitiateCheckout(price.value, [variantId]);
-                  const url = checkoutUrl || (await getCheckoutUrl());
-                  if (url) window.location.href = url;
-                }}
-                className="relative bg-transparent border-none cursor-pointer p-1"
-                aria-label="Shopping cart"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
+              aria-label={`Open cart${cartCount > 0 ? ` (${cartCount} items)` : ''}`}
+              style={{ color: '#fff' }}
+            >
+              <ShoppingBag size={20} strokeWidth={1.8} />
+              {cartCount > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
-                  style={{ background: PRIMARY, color: DARK, fontSize: '9px', fontWeight: 700, ...mono }}
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    minWidth: '18px',
+                    height: '18px',
+                    padding: '0 5px',
+                    background: PRIMARY,
+                    color: DARK,
+                    borderRadius: '9px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    ...oswald,
+                    boxShadow: `0 0 10px ${PRIMARY}99`,
+                    lineHeight: 1,
+                  }}
                 >
-                  {cartCount}
+                  {cartCount > 99 ? '99+' : cartCount}
                 </span>
-              </button>
-            )}
+              )}
+            </button>
             {hero.badge && (
               <span
                 className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-sm"
@@ -909,6 +923,8 @@ export default function ProductLandingTemplate({ config }) {
           added={added}
         />
       )}
+
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }
