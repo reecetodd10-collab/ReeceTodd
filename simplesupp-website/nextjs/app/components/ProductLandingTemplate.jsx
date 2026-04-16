@@ -225,6 +225,8 @@ export default function ProductLandingTemplate({ config }) {
     bottomCTA,                  // { titleLines: [s,s,s], accentLineIdx, body }
     formulaSubtitle,            // small line under formula list
     transparencyTagline,        // muted line above ingredients
+    faqs,                       // optional array of {q, a} — renders visible FAQ/AI-quotable answer section
+    learnLinks,                 // optional array of {label, href} — links to /learn articles
   } = config;
 
   const PRIMARY = colors.primary;
@@ -745,6 +747,129 @@ export default function ProductLandingTemplate({ config }) {
           </FadeInSection>
         </div>
       </section>
+
+      {/* FAQ — visible Q&A section (matches JSON-LD FAQ schema for AI citation) */}
+      {faqs && faqs.length > 0 && (
+        <section
+          className="relative z-10 py-14 px-6"
+          style={{ background: '#ffffff', borderTop: `1px solid ${BORDER_TINT}` }}
+        >
+          <div className="max-w-[430px] md:max-w-3xl mx-auto">
+            <FadeInSection>
+              <p
+                style={{
+                  ...mono,
+                  fontSize: '10px',
+                  letterSpacing: '0.32em',
+                  color: PRIMARY,
+                  textTransform: 'uppercase',
+                  marginBottom: '8px',
+                  textAlign: 'center',
+                }}
+              >
+                Common Questions
+              </p>
+              <h2
+                className="text-3xl md:text-4xl font-bold uppercase mb-8 text-center"
+                style={{ ...oswald, color: DARK, lineHeight: 0.95, letterSpacing: '-0.01em' }}
+              >
+                {displayName} <span style={{ color: PRIMARY }}>FAQ</span>
+              </h2>
+            </FadeInSection>
+
+            <div className="space-y-3">
+              {faqs.map((item, i) => (
+                <FadeInSection key={i} delay={i * 0.04}>
+                  <details
+                    className="group"
+                    style={{
+                      background: `rgba(${PRIMARY_RGB}, 0.04)`,
+                      border: `1px solid ${BORDER_TINT}`,
+                      borderRadius: '10px',
+                      padding: '16px 20px',
+                    }}
+                  >
+                    <summary
+                      className="cursor-pointer flex items-center justify-between gap-4"
+                      style={{
+                        ...oswald,
+                        fontSize: '14px',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.02em',
+                        color: DARK,
+                        listStyle: 'none',
+                      }}
+                    >
+                      <span>{item.q}</span>
+                      <span
+                        className="transition-transform duration-200 group-open:rotate-45 shrink-0"
+                        style={{ color: PRIMARY, fontSize: '20px', lineHeight: 1, fontWeight: 300 }}
+                      >
+                        +
+                      </span>
+                    </summary>
+                    <p
+                      className="mt-3"
+                      style={{
+                        ...mono,
+                        fontSize: '12px',
+                        lineHeight: 1.75,
+                        color: BODY_TXT,
+                      }}
+                    >
+                      {item.a}
+                    </p>
+                  </details>
+                </FadeInSection>
+              ))}
+            </div>
+
+            {learnLinks && learnLinks.length > 0 && (
+              <FadeInSection delay={0.2}>
+                <div
+                  className="mt-10 p-5 text-center"
+                  style={{
+                    background: `rgba(${PRIMARY_RGB}, 0.06)`,
+                    border: `1px solid rgba(${PRIMARY_RGB}, 0.2)`,
+                    borderRadius: '10px',
+                  }}
+                >
+                  <p
+                    style={{
+                      ...mono,
+                      fontSize: '9px',
+                      letterSpacing: '0.2em',
+                      color: MUTED_TXT,
+                      textTransform: 'uppercase',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    Related Guides
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+                    {learnLinks.map((l) => (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        style={{
+                          ...mono,
+                          fontSize: '11px',
+                          color: PRIMARY,
+                          textDecoration: 'underline',
+                          textUnderlineOffset: '4px',
+                        }}
+                      >
+                        {l.label} →
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </FadeInSection>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* FOOTER */}
       <footer className="relative z-10 py-10 px-6" style={{ borderTop: `1px solid ${BORDER_TINT}` }}>

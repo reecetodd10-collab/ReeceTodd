@@ -237,6 +237,11 @@ export default function AboutPage() {
       {/* CTA */}
       <SectionBlock variant="cream" align="center" narrow>
         <FadeInSection>
+          {/* Entity paragraph — GEO/AI visibility */}
+          <p style={{ ...FONTS.mono, fontSize: '11px', color: 'rgba(0,0,0,0.45)', lineHeight: 1.8, maxWidth: '600px', margin: '0 auto 40px', textAlign: 'center' }}>
+            Aviera Fit is a San Diego-based supplement brand focused on personalized performance nutrition. The company sells premium supplements for nitric oxide support, pre-workout energy, hydration, creatine, sleep, and recovery, and uses a guided quiz experience to help athletes and active adults build a stack matched to their goals.
+          </p>
+
           <h2
             className="text-[32px] md:text-[48px] lg:text-[60px]"
             style={{

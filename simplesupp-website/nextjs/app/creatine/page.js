@@ -86,6 +86,33 @@ const config = {
       'Creatine is non-negotiable. If you\'re lifting and not taking it, you\'re leaving 10% of your potential on the table.',
   },
   transparencyTagline: 'Pure micronized creatine monohydrate. Nothing added. Nothing hidden.',
+  faqs: [
+    {
+      q: 'Is creatine worth taking every day?',
+      a: 'Creatine is one of the most researched sports supplements and is widely used to support strength, power, and training performance. For most goal-driven lifters, a simple daily creatine routine is more evidence-aligned than chasing exotic performance ingredients.',
+    },
+    {
+      q: 'Do I need to load creatine?',
+      a: 'Loading is optional. A daily serving of 5g of creatine monohydrate will saturate muscles over 3-4 weeks without the need for a loading phase.',
+    },
+    {
+      q: 'Does creatine cause bloating?',
+      a: 'Some people experience minor water retention initially, but this typically subsides. Creatine monohydrate at standard doses is well-tolerated by most athletes.',
+    },
+    {
+      q: 'When should I take creatine?',
+      a: 'Timing is flexible. Take creatine at whatever time fits your routine — consistency matters more than timing. Post-workout with carbs or protein may slightly enhance uptake.',
+    },
+    {
+      q: 'Can I mix creatine with other supplements?',
+      a: 'Yes. Creatine stacks well with pre-workout, hydration, and recovery products. It is one of the most versatile supplements available and does not interfere with other formulas.',
+    },
+  ],
+  learnLinks: [
+    { label: 'Complete Creatine Guide', href: '/learn/creatine-guide' },
+    { label: 'Muscle-Building Stack', href: '/learn/best-supplement-stack-for-muscle-building' },
+    { label: 'Take the Optimization Quiz', href: '/supplement-optimization-score' },
+  ],
 };
 
 export default function CreatinePage() {

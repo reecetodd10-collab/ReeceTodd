@@ -88,6 +88,33 @@ const config = {
       'Recovery happens at night. If your sleep is broken, your gains are too. Fix the foundation.',
   },
   transparencyTagline: 'Glycinate chelate. Full label. No magnesium oxide tricks.',
+  faqs: [
+    {
+      q: 'Why magnesium glycinate for sleep?',
+      a: 'Magnesium glycinate is often favored for sleep-focused routines because it combines high bioavailability, excellent GI tolerance, and the added sleep benefits of the glycine chelate itself — glycine independently supports sleep onset and overnight recovery.',
+    },
+    {
+      q: 'Who should take magnesium glycinate?',
+      a: 'It is best suited for athletes, lifters, and active adults whose training quality suffers when sleep quality declines. Heavy sweaters and people with high training volume tend to lose more magnesium and benefit most.',
+    },
+    {
+      q: 'When should I take magnesium?',
+      a: 'Take magnesium glycinate in the evening, typically 30-60 minutes before bed. Consistency matters more than exact timing — effects build over 1-2 weeks of daily use.',
+    },
+    {
+      q: 'Can I take magnesium with other supplements?',
+      a: 'Yes. Magnesium pairs well with sleep support formulas, creatine, and hydration products, and fits into most supplement stacks without interaction concerns.',
+    },
+    {
+      q: 'How much magnesium do I need daily?',
+      a: 'Aviera Magnesium Glycinate provides 275mg of elemental magnesium per serving, which supports the recommended daily intake for active adults. Most people do well between 200-400mg of elemental magnesium.',
+    },
+  ],
+  learnLinks: [
+    { label: 'Best Magnesium for Sleep', href: '/learn/best-magnesium-for-sleep' },
+    { label: 'Muscle-Building Stack', href: '/learn/best-supplement-stack-for-muscle-building' },
+    { label: 'Take the Optimization Quiz', href: '/supplement-optimization-score' },
+  ],
 };
 
 export default function MagnesiumPage() {

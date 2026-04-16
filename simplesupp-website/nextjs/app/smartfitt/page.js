@@ -17,7 +17,7 @@ export default function SmartFitt() {
     : [];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       {/* Hero Header */}
       <div className="relative text-[var(--txt)] py-20 md:py-32 overflow-hidden min-h-[60vh]">
         {/* Background Image */}

@@ -74,6 +74,7 @@ export default function Navigation() {
     { name: 'Aviera Fit', href: '/smartfitt' },
     { name: 'Aviera Shop', href: '/shop' },
     { name: 'Trybe', href: '/trybe' },
+    { name: 'Learn', href: '/learn' },
     { name: 'Latest', href: '/news', isCyan: true },
     { name: 'About', href: '/about' },
   ];

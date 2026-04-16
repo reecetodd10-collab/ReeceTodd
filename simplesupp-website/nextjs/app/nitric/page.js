@@ -87,6 +87,33 @@ const config = {
       'Limited batch. Once it\'s gone, it\'s gone. Get yours before we restock at full price.',
   },
   transparencyTagline: 'Full transparent label. No proprietary blends. Clinical doses only.',
+  faqs: [
+    {
+      q: 'What does a nitric oxide supplement do?',
+      a: 'A nitric oxide supplement supports vasodilation, which increases blood flow to working muscles during training. This can improve pumps, nutrient delivery, endurance, and the mind-muscle connection.',
+    },
+    {
+      q: 'Is Flow State X stimulant-free?',
+      a: 'Yes. Flow State X contains no caffeine or stimulants. It is designed for pumps and blood flow without affecting sleep or causing jitters — ideal for evening training or stacking with a pre-workout.',
+    },
+    {
+      q: 'When should I take a nitric oxide supplement?',
+      a: 'Take it 20 to 30 minutes before training for best results. L-citrulline reaches peak plasma levels around the 60-minute mark, so a slightly earlier window also works well.',
+    },
+    {
+      q: 'Can I stack Flow State X with pre-workout?',
+      a: 'Yes. Because it is stimulant-free, Flow State X pairs well with a caffeinated pre-workout for combined energy, focus, and pump support without doubling up on stimulants.',
+    },
+    {
+      q: 'How long does it take to feel the effects?',
+      a: 'Most users notice improved pumps and blood flow within 20 to 40 minutes of taking it before a workout. Effects compound over weeks of consistent daily use.',
+    },
+  ],
+  learnLinks: [
+    { label: 'Best Nitric Oxide Supplements Guide', href: '/learn/best-nitric-oxide-supplements' },
+    { label: 'Pre-Workout Without Jitters', href: '/learn/pre-workout-without-jitters' },
+    { label: 'Take the Optimization Quiz', href: '/supplement-optimization-score' },
+  ],
 };
 
 export default function FlowStateXPage() {

@@ -1,13 +1,17 @@
 export const metadata = {
-  title: 'Personalized Supplement Quiz',
+  title: 'Personalized Supplement Quiz | Aviera',
   description: 'Answer a few questions to get a custom supplement stack based on your goals, training, recovery, and routine.',
   alternates: { canonical: '/supplement-optimization-score' },
   openGraph: {
-    title: 'Personalized Supplement Quiz',
+    title: 'Personalized Supplement Quiz | Aviera',
     description: 'Answer a few questions to get a custom supplement stack based on your goals, training, recovery, and routine.',
     url: '/supplement-optimization-score',
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Personalized Supplement Quiz | Aviera',
+    description: 'Answer a few questions to get a custom supplement stack based on your goals, training, recovery, and routine.',
+  },
 };
 
 const howToJsonLd = {

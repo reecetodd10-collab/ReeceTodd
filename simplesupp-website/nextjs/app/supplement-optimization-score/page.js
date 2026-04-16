@@ -797,6 +797,29 @@ export default function SupplementOptimizationScore() {
         </div>
       </section>
 
+      {/* SEO / GEO — crawlable supporting copy for quiz (hidden visually when quiz is active, but always in DOM for crawlers) */}
+      {currentSection === 0 && currentQuestion === 0 && (
+        <section style={{ background: '#000', color: 'rgba(255,255,255,0.75)', paddingBottom: '32px' }}>
+          <div className="max-w-[430px] md:max-w-3xl mx-auto px-5 md:px-8">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+              {[
+                { title: 'How It Works', text: 'The Aviera quiz asks a short series of questions about your goals, training, recovery, and routine, then uses those inputs to recommend a more relevant supplement stack.' },
+                { title: 'Who It\'s For', text: 'Designed for athletes and active adults who want help choosing supplements for performance, hydration, recovery, sleep, or day-to-day support.' },
+                { title: 'What You\'ll Get', text: 'A suggested stack tied to your goals, along with a short explanation of why each product fits. Takes about 60 seconds.' },
+              ].map((item, i) => (
+                <div key={i} style={{ padding: '16px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px' }}>
+                  <h3 style={{ fontFamily: OSWALD, fontSize: '14px', fontWeight: 700, color: ACCENT, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{item.title}</h3>
+                  <p style={{ fontSize: '12px', lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}>{item.text}</p>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
+              Aviera Fit is a San Diego-based supplement brand focused on personalized performance nutrition. The quiz is educational and goal-based — not medical advice or diagnosis.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Quiz body */}
       <section style={{ background: CREAM, color: INK }}>
       <div className="relative pt-10 pb-16 px-4">
@@ -934,7 +957,7 @@ function QuestionRenderer({ question, value, onChange }) {
         <div>
           <label
             className="block text-lg font-bold uppercase mb-4"
-            style={{ fontFamily: OSWALD }}
+            style={{ fontFamily: OSWALD, color: ACCENT }}
           >
             {question.label}
           </label>
@@ -965,7 +988,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -991,7 +1014,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'goal-buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1025,7 +1048,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'training-buttons':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -1059,7 +1082,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'scale':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           {question.microcopy && (
@@ -1098,7 +1121,7 @@ function QuestionRenderer({ question, value, onChange }) {
     case 'yesno':
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           <div className="grid grid-cols-2 gap-4">
@@ -1128,7 +1151,7 @@ function QuestionRenderer({ question, value, onChange }) {
       const selected = value || [];
       return (
         <div>
-          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: '#1a1a1a' }}>
+          <label className="block text-lg font-bold uppercase mb-2" style={{ fontFamily: OSWALD, color: ACCENT }}>
             {question.label}
           </label>
           {question.microcopy && (
@@ -2057,7 +2080,7 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
             <p className="mb-1" style={{ color: ACCENT, fontFamily: SPACE_MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Perfect For You Because:
             </p>
-            <p className="line-clamp-2" style={{ color: INK, fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
+            <p className={expanded ? '' : 'line-clamp-2'} style={{ color: INK, fontFamily: SPACE_MONO, fontSize: '11px', lineHeight: 1.6 }}>
               {product.reasoning}
             </p>
           </div>

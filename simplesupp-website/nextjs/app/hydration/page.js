@@ -88,6 +88,33 @@ const config = {
       'Water isn\'t enough. Your muscles lose electrolytes every rep, every mile, every set. Replace what you lose.',
   },
   transparencyTagline: 'Full transparent label. No proprietary blends. Zero sugar.',
+  faqs: [
+    {
+      q: 'Why do athletes need electrolyte powder?',
+      a: 'Athletes who sweat heavily or train in heat often benefit from replacing fluids and electrolytes lost during training. An electrolyte powder is especially useful for long sessions, hot environments, or two-a-day training schedules where cumulative losses stack up.',
+    },
+    {
+      q: 'When should I use Aviera Hydration?',
+      a: 'Use it during or after training, especially on high-sweat days. Many athletes also pre-load electrolytes 30-60 minutes before a session. It works well as daily hydration support for active lifestyles.',
+    },
+    {
+      q: 'What electrolytes are in Aviera Hydration?',
+      a: 'Aviera Hydration includes sodium, potassium, magnesium, and calcium along with B-vitamins to support energy metabolism and recovery. Each serving covers the core minerals lost in sweat.',
+    },
+    {
+      q: 'Is electrolyte powder better than sports drinks?',
+      a: 'Electrolyte powders typically offer more targeted electrolyte replenishment with less sugar than traditional sports drinks, making them a cleaner option for athletes focused on performance rather than carbohydrate fueling.',
+    },
+    {
+      q: 'Can I stack Hydration with other Aviera products?',
+      a: 'Yes. Hydration pairs well with creatine, pre-workout, and recovery products as part of a training-day stack. Creatine users especially benefit since creatine increases intracellular water demand.',
+    },
+  ],
+  learnLinks: [
+    { label: 'Electrolytes for Athletes Guide', href: '/learn/electrolytes-for-athletes' },
+    { label: 'Complete Creatine Guide', href: '/learn/creatine-guide' },
+    { label: 'Take the Optimization Quiz', href: '/supplement-optimization-score' },
+  ],
 };
 
 export default function HydrationPage() {

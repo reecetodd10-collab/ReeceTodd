@@ -3,12 +3,12 @@
 import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
-  displayName: 'Nitric Shock Pre-Workout (Fruit Punch)',
+  displayName: 'Pre-Workout (Fruit Punch)',
   productMatchers: ['nitric shock', 'fruit punch'],
   fallbackEmoji: '🔥',
   hero: {
     eyebrow: 'PRE-WORKOUT FORMULA',
-    titleLines: ['NITRIC', 'SHOCK', 'FRUIT PUNCH'],
+    titleLines: ['PRE', 'WORKOUT', 'FRUIT PUNCH'],
     titleAccentLine: 2,
     subtitle:
       'Full-send pre-workout. Pumps, energy, and tunnel-vision focus in one scoop. Fruit Punch flavor that actually tastes good — no chemical aftertaste.',
@@ -88,6 +88,33 @@ const config = {
       'Walking into the gym without a pre-workout is like driving without gas. Show up loaded.',
   },
   transparencyTagline: 'Clinical doses. Real flavor. No proprietary blends, no hidden fillers.',
+  faqs: [
+    {
+      q: 'What makes a clean pre-workout?',
+      a: 'A clean pre-workout supports energy and focus without feeling overloaded, overly sweet, or crash-prone. That typically means moderate caffeine (150-200mg), L-theanine to smooth it out, clinical-dose L-citrulline for pumps, and no proprietary blends.',
+    },
+    {
+      q: 'Will this pre-workout make me jittery?',
+      a: 'Aviera Pre-Workout is designed to provide energy and focus without the crash or overstimulated feeling common with high-stimulant pre-workouts. Caffeine is paired with L-theanine to deliver smooth focus instead of jitters.',
+    },
+    {
+      q: 'When should I take pre-workout?',
+      a: 'Take it 20-30 minutes before training for best results. Start with one scoop to assess tolerance, and avoid stacking other caffeine sources on top of it.',
+    },
+    {
+      q: 'Can I stack pre-workout with Flow State X?',
+      a: 'Yes. Flow State X provides stimulant-free pump support that complements the energy and focus from Aviera Pre-Workout. Check the citrulline doses to avoid unnecessary overlap.',
+    },
+    {
+      q: 'Is this pre-workout good for cardio?',
+      a: 'Yes. The energy and endurance support makes it suitable for both strength training and high-intensity cardio sessions. Beta-alanine in the formula helps extend sustained efforts.',
+    },
+  ],
+  learnLinks: [
+    { label: 'Pre-Workout Without Jitters', href: '/learn/pre-workout-without-jitters' },
+    { label: 'Best Nitric Oxide Supplements', href: '/learn/best-nitric-oxide-supplements' },
+    { label: 'Take the Optimization Quiz', href: '/supplement-optimization-score' },
+  ],
 };
 
 export default function PreWorkoutPage() {

@@ -93,7 +93,8 @@ function productHref(title = '') {
 
 function displayName(title = '') {
   const t = title.toLowerCase();
-  if (t.includes('sleep formula') && !t.includes('melatonin')) return `${title} (Melatonin)`;
+  // Sleep Support contains 10mg melatonin (vs Sleep Formula's 2mg) — tag it as the melatonin product
+  if (t.includes('sleep support') && !t.includes('melatonin')) return `${title} (Melatonin)`;
   return title;
 }
 
@@ -153,7 +154,16 @@ export default function ShopPage() {
 
   useEffect(() => {
     fetchShopifyProducts()
-      .then((all) => setProducts(all || []))
+      .then((all) => {
+        // Exclude discontinued products
+        const filtered = (all || []).filter((p) => {
+          const t = (p.title || '').toLowerCase();
+          if (t.includes('turmeric') && t.includes('gumm')) return false;
+          if (t.includes('multivitamin bear') || (t.includes('multivitamin') && t.includes('gumm'))) return false;
+          return true;
+        });
+        setProducts(filtered);
+      })
       .catch(console.error)
       .finally(() => setIsLoading(false));
     initializeShopifyCart().catch(console.error);

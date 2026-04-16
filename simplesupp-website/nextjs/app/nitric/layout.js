@@ -1,13 +1,17 @@
 export const metadata = {
-  title: 'Nitric Oxide Supplement for Pumps',
+  title: 'Nitric Oxide Supplement for Pumps | Aviera',
   description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
   alternates: { canonical: '/nitric' },
   openGraph: {
-    title: 'Nitric Oxide Supplement for Pumps',
+    title: 'Nitric Oxide Supplement for Pumps | Aviera',
     description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
     url: '/nitric',
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nitric Oxide Supplement for Pumps | Aviera',
+    description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
+  },
 };
 
 const productJsonLd = {
@@ -25,6 +29,11 @@ const productJsonLd = {
     "priceCurrency": "USD",
     "price": "19.99",
     "availability": "https://schema.org/InStock",
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "47",
   },
 };
 
@@ -60,11 +69,22 @@ const faqJsonLd = {
   ],
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.avierafit.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.avierafit.com/shop" },
+    { "@type": "ListItem", "position": 3, "name": "Flow State X", "item": "https://www.avierafit.com/nitric" },
+  ],
+};
+
 export default function NitricLayout({ children }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {children}
     </>
   );

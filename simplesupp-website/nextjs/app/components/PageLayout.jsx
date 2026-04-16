@@ -180,6 +180,7 @@ export function StickyNav({ menuOpen, setMenuOpen }) {
                   { label: 'Home', href: '/home' },
                   { label: 'Shop', href: '/shop' },
                   { label: 'Personalized Supplements', href: '/supplement-optimization-score' },
+                  { label: 'Learn', href: '/learn' },
                   { label: 'Creators Program', href: '/trybe' },
                   { label: 'About', href: '/about' },
                   { label: 'News', href: '/news' },
@@ -288,6 +289,8 @@ export function Footer() {
           <Link href="/shop" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Shop</Link>
           {' · '}
           <Link href="/about" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>About</Link>
+          {' · '}
+          <Link href="/learn" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Learn</Link>
           {' · '}
           <Link href="/news" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>News</Link>
           {' · '}

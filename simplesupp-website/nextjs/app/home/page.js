@@ -320,7 +320,7 @@ export default function HomePage() {
                   textUnderlineOffset: '6px',
                 }}
               >
-                Take the Optimization Quiz →
+                Get My Recommendations →
               </Link>
             </motion.div>
           </div>

@@ -1960,10 +1960,10 @@ export default function SupplementAdvisor() {
                           }}
                         >
                           {/* Product Image Carousel - Matching Shop Page */}
-                          <div 
+                          <div
                             className="relative w-full h-64 flex items-center justify-center overflow-hidden"
                             style={{
-                              background: 'linear-gradient(to bottom, var(--bg-elev-1), var(--bg))'
+                              background: '#ffffff'
                             }}
                           >
                             {productImages.length > 0 ? (
@@ -2040,9 +2040,9 @@ export default function SupplementAdvisor() {
                                           width: currentImageIndex === imgIdx ? '24px' : '8px',
                                           height: '8px',
                                           borderRadius: '4px',
-                                          background: currentImageIndex === imgIdx 
-                                            ? 'rgba(0, 217, 255, 1)' 
-                                            : 'rgba(255, 255, 255, 0.4)',
+                                          background: currentImageIndex === imgIdx
+                                            ? 'rgba(0, 217, 255, 1)'
+                                            : 'rgba(0, 0, 0, 0.25)',
                                           border: 'none',
                                           cursor: 'pointer',
                                         }}

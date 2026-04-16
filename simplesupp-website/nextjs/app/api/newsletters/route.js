@@ -18,12 +18,27 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')) : null;
     const latest = searchParams.get('latest') === 'true';
+    const category = searchParams.get('category');
+
+    // Validate category if provided
+    const validCategories = ['supplements', 'fitness', 'fitness_socials'];
+    if (category && !validCategories.includes(category)) {
+      return NextResponse.json(
+        { error: `Invalid category. Must be one of: ${validCategories.join(', ')}` },
+        { status: 400 }
+      );
+    }
 
     // Build query
     let query = supabase
       .from('newsletters')
       .select('*')
       .order('published_date', { ascending: false });
+
+    // Filter by category if provided
+    if (category) {
+      query = query.eq('category', category);
+    }
 
     // If latest flag is set, get only the most recent one
     if (latest) {

@@ -341,20 +341,6 @@ export const products = [
     active: true
   },
   {
-    id: 'a4f7b4e6-8dee-4429-aa82-ac7a8c8630c0',
-    name: 'Multivitamin Gummies',
-    suplifulName: 'Multivitamin Bear Gummies (Adult)',
-    category: PRODUCT_CATEGORIES.HEALTH,
-    price: 18.15,
-    costPrice: 9.79,
-    description: 'Delicious gummy multivitamin for adults. Easy and enjoyable daily nutrition.',
-    benefits: ['Tasty and convenient', 'Supports immune health', 'Fills nutrient gaps', 'Easy to take'],
-    dosage: '2 gummies daily',
-    goals: ['health'],
-    priority: 'medium',
-    active: true
-  },
-  {
     id: '13c3102f-ed0c-4bfd-b42c-202836f25fd8',
     name: 'Omega-3 Fish Oil',
     suplifulName: 'Omega-3 EPA 180mg + DHA 120mg',
@@ -394,20 +380,6 @@ export const products = [
     dosage: 'As directed on label',
     goals: ['health', 'recovery'],
     priority: 'high',
-    active: true
-  },
-  {
-    id: '37a28e0d-7746-4d46-a049-0bed6a3bf9f0',
-    name: 'Turmeric Gummies',
-    suplifulName: 'Turmeric Curcumin Gummies',
-    category: PRODUCT_CATEGORIES.HEALTH,
-    price: 17.99,
-    costPrice: 10.65,
-    description: 'Delicious turmeric gummies for joint health and inflammation support.',
-    benefits: ['Anti-inflammatory support', 'Supports joint health', 'Easy to take', 'Great taste'],
-    dosage: '2 gummies daily',
-    goals: ['health', 'recovery'],
-    priority: 'medium',
     active: true
   },
   {

@@ -6,6 +6,7 @@ export async function POST(request) {
     // Parse request body
     const body = await request.json();
     const email = body.email;
+    const { sub_supplements, sub_fitness, sub_fitness_socials } = body;
 
     // Log for debugging
     console.log('Received newsletter subscription email:', email);
@@ -38,17 +39,54 @@ export async function POST(request) {
       }
     );
 
+    // Build subscriber record with optional category preferences
+    const subscriberData = { email: email.trim().toLowerCase() };
+
+    // Only include category preferences if explicitly provided (booleans)
+    if (typeof sub_supplements === 'boolean') subscriberData.sub_supplements = sub_supplements;
+    if (typeof sub_fitness === 'boolean') subscriberData.sub_fitness = sub_fitness;
+    if (typeof sub_fitness_socials === 'boolean') subscriberData.sub_fitness_socials = sub_fitness_socials;
+
     // Insert email into newsletter_subscribers table
     const { data, error } = await supabase
       .from('newsletter_subscribers')
-      .insert([{ email: email.trim().toLowerCase() }])
+      .insert([subscriberData])
       .select();
 
     if (error) {
       console.error('Supabase error:', error);
 
-      // Handle duplicate email
+      // Handle duplicate email - update category preferences if provided
       if (error.code === '23505') {
+        const hasPreferences = typeof sub_supplements === 'boolean' ||
+          typeof sub_fitness === 'boolean' ||
+          typeof sub_fitness_socials === 'boolean';
+
+        if (hasPreferences) {
+          const updateData = {};
+          if (typeof sub_supplements === 'boolean') updateData.sub_supplements = sub_supplements;
+          if (typeof sub_fitness === 'boolean') updateData.sub_fitness = sub_fitness;
+          if (typeof sub_fitness_socials === 'boolean') updateData.sub_fitness_socials = sub_fitness_socials;
+
+          const { error: updateError } = await supabase
+            .from('newsletter_subscribers')
+            .update(updateData)
+            .eq('email', email.trim().toLowerCase());
+
+          if (updateError) {
+            console.error('Failed to update preferences:', updateError);
+            return NextResponse.json(
+              { error: 'Failed to update subscription preferences' },
+              { status: 500 }
+            );
+          }
+
+          return NextResponse.json(
+            { message: 'Subscription preferences updated!' },
+            { status: 200 }
+          );
+        }
+
         return NextResponse.json(
           { message: 'You are already subscribed to our newsletter!' },
           { status: 200 }
