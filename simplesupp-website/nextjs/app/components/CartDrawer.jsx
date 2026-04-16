@@ -420,59 +420,32 @@ export default function CartDrawer({ isOpen, onClose }) {
                   Shipping and taxes calculated at checkout.
                 </p>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <a
-                    href={SHOPIFY_CART_URL}
-                    className="flex items-center justify-center no-underline transition-all duration-200"
-                    style={{
-                      ...FONTS.oswald,
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
-                      padding: '12px 14px',
-                      background: 'transparent',
-                      color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: 8,
-                      textDecoration: 'none',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                    }}
-                  >
-                    View Cart
-                  </a>
-                  <button
-                    onClick={handleCheckout}
-                    className="border-none cursor-pointer transition-all duration-200"
-                    style={{
-                      ...FONTS.oswald,
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
-                      padding: '12px 14px',
-                      background: CYAN,
-                      color: '#001018',
-                      borderRadius: 8,
-                      boxShadow: '0 4px 20px rgba(0,229,255,0.35)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 6px 28px rgba(0,229,255,0.55)';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,229,255,0.35)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    Checkout
-                  </button>
-                </div>
+                <button
+                  onClick={handleCheckout}
+                  className="w-full border-none cursor-pointer transition-all duration-200"
+                  style={{
+                    ...FONTS.oswald,
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    padding: '14px 14px',
+                    background: CYAN,
+                    color: '#001018',
+                    borderRadius: 8,
+                    boxShadow: '0 4px 20px rgba(0,229,255,0.35)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 6px 28px rgba(0,229,255,0.55)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,229,255,0.35)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Checkout
+                </button>
               </div>
             )}
           </motion.aside>
