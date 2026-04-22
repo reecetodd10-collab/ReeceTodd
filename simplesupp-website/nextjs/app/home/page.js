@@ -15,10 +15,11 @@ const BORDER_CYAN = '#d4eef2';    // Soft cyan hairline (not used as divider —
 
 // Curated drop — 5 hero products with category accents
 const dropProducts = [
+  { name: 'Creatine + Electrolyte',    category: 'Performance', accent: '#00e5ff', href: '/creatine-electrolyte', match: 'creatine + electrolyte' },
   { name: 'Flow State X',              category: 'Performance', accent: '#00e5ff', href: '/nitric',    match: 'flow state' },
   { name: 'Hydration Powder Lemonade', category: 'Hydration',   accent: '#FFD700', href: '/hydration', match: 'lemonade' },
   { name: 'Magnesium Glycinate',       category: 'Sleep',       accent: '#a855f7', href: '/magnesium', match: 'magnesium' },
-  { name: 'Creatine',                  category: 'Performance', accent: '#00e5ff', href: '/creatine',  match: 'creatine' },
+  { name: 'Creatine',                  category: 'Performance', accent: '#00e5ff', href: '/creatine',  match: 'creatine monohydrate' },
   { name: 'Pre-Workout (Fruit Punch)', category: 'Performance', accent: '#FF3B3B', href: '/preworkout', match: 'fruit punch' },
 ];
 

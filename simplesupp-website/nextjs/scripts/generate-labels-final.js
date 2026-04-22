@@ -49,6 +49,7 @@ const SIZE_OVERRIDES = {
   'Plant Protein (Vanilla)': { w: 4500, h: 1350 },                         // 15" x 4.5"
   'BCAA Shock Powder (Fruit Punch)': { w: 2700, h: 1200 },                 // 9" x 4"
   'BCAA Post Workout Powder (Honeydew/Watermelon)': { w: 2700, h: 1200 }, // 9" x 4" (matches BCAA Shock)
+  'Creatine + Electrolyte Powder': { w: 3300, h: 900 },                   // 11" x 3"
   'L-Glutamine Powder': { w: 1800, h: 750 },                               // 6" x 2.5"
   'Beetroot Powder': { w: 3225, h: 495 },                                  // 10.75" x 1.65"
   "Lion's Mane Mushroom": { w: 1650, h: 525 },                             // 5.5" x 1.75"
@@ -122,6 +123,7 @@ function getTagline(productName, category) {
   if (/^pre workout|nitric shock/i.test(n)) return 'Maximum pump & explosive energy*';
   if (/flow state x$/i.test(n)) return 'Nitric oxide & blood flow support*';
   if (/nootropic|flow state.*powder/i.test(n)) return 'Focus, memory & mental clarity*';
+  if (/creatine.*electrolyte|electrolyte.*creatine/i.test(n)) return 'Muscle strength & electrolyte balance*';
   if (/creatine/i.test(n)) return 'Strength, power & muscle support*';
   if (/bcaa shock/i.test(n)) return 'Muscle recovery & endurance*';
   if (/bcaa post/i.test(n)) return 'Post-workout recovery & repair*';
@@ -162,6 +164,7 @@ function getBenefits(productName, category) {
   if (/^pre workout|nitric shock/i.test(n)) return ['Pump','Energy','Endurance'];
   if (/flow state x$/i.test(n)) return ['Blood Flow','Pump','Performance'];
   if (/nootropic|flow state.*powder/i.test(n)) return ['Focus','Memory','Clarity'];
+  if (/creatine.*electrolyte|electrolyte.*creatine/i.test(n)) return ['Strength','Hydration','Recovery'];
   if (/creatine/i.test(n)) return ['Strength','Power','Recovery'];
   if (/bcaa/i.test(n)) return ['Recovery','Endurance','Lean Muscle'];
   if (/hydration/i.test(n)) return ['Hydration','Electrolytes','Recovery'];

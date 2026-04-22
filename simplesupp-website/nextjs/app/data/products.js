@@ -14,6 +14,20 @@ export const PRODUCT_CATEGORIES = {
 export const products = [
   // PERFORMANCE
   {
+    id: 'creatine-electrolyte',
+    name: 'Creatine + Electrolyte',
+    suplifulName: 'Creatine + Electrolyte Powder',
+    category: PRODUCT_CATEGORIES.PERFORMANCE,
+    price: 22.99,
+    costPrice: 13.55,
+    description: '5g creatine monohydrate fused with a full electrolyte profile — strength and hydration in one scoop.',
+    benefits: ['5g clinical-dose creatine', 'Full electrolyte profile', 'Supports strength and hydration', 'Zero stims, no bloat'],
+    dosage: '1 scoop with 6-8 oz water daily',
+    goals: ['muscle_gain', 'strength', 'recovery', 'energy'],
+    priority: 'essential',
+    active: true
+  },
+  {
     id: '3054ec5d-6cc4-428b-978d-af5b257738e7',
     name: 'Creatine Monohydrate',
     suplifulName: 'Creatine Monohydrate',

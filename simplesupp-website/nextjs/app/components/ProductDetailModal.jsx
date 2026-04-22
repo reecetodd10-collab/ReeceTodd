@@ -20,6 +20,10 @@ const PRODUCT_CATALOG = {
       other: 'Other: Cellulose (vegetable capsule), Brown Rice Flour · 2 Capsules · 30 servings · 60 caps',
     },
   },
+  'creatine + electrolyte': {
+    cat: 'Performance', desc: '5g creatine monohydrate + full electrolyte profile in one scoop.', tags: ['Creatine', 'Electrolytes', 'Hydration', 'Strength'],
+    formula: { rows: [{ name: 'Creatine (as Creatine Monohydrate)', dose: '5,000 mg' }, { name: 'Sodium (as Sea Salt)', dose: '1,000 mg' }, { name: 'Potassium (as Potassium Chloride)', dose: '200 mg' }, { name: 'Magnesium (as Magnesium Malate)', dose: '60 mg' }], other: 'Natural Flavors, Stevia Extract (Leaf), Silicon Dioxide · 1 Scoop (10g) · 30 servings · 10.6 oz (300g)' },
+  },
   'creatine': {
     cat: 'Performance',
     desc: 'The most researched supplement ever. Pure creatine monohydrate for strength, power, and muscle volume.',

@@ -86,6 +86,7 @@ function productHref(title = '') {
   if (t.includes('flow state') && !t.includes('nootropic')) return '/nitric';
   if (t.includes('hydration') && t.includes('lemonade')) return '/hydration';
   if (t.includes('magnesium')) return '/magnesium';
+  if (t.includes('creatine') && t.includes('electrolyte')) return '/creatine-electrolyte';
   if (t.includes('creatine')) return '/creatine';
   if (t.includes('nitric shock') && t.includes('fruit punch')) return '/preworkout';
   return null;
@@ -177,15 +178,23 @@ export default function ShopPage() {
       const category = categorize(p.title);
       if (!category) continue;
       const accent = CAT_COLORS[category];
-      groups[category].grid.push({
+      const item = {
         name: displayName(p.title),
         category,
         accent,
         href: productHref(p.title) || '/shop',
         image: p.images?.[0] || p.image || null,
         price: p.price ? `$${parseFloat(p.price).toFixed(2)}` : null,
-      });
+      };
+      groups[category].grid.push(item);
       groups[category].raw.push(p);
+
+      // Dual-category: Creatine + Electrolyte appears in both Performance and Recovery & Hydration
+      const tl = (p.title || '').toLowerCase();
+      if (tl.includes('creatine') && tl.includes('electrolyte') && groups['Recovery & Hydration']) {
+        groups['Recovery & Hydration'].grid.push({ ...item, category: 'Recovery & Hydration', accent: CAT_COLORS['Recovery & Hydration'] });
+        groups['Recovery & Hydration'].raw.push(p);
+      }
     }
     return groups;
   }, [products]);
