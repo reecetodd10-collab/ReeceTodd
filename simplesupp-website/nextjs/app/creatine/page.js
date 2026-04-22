@@ -14,7 +14,7 @@ const config = {
       'The most researched supplement on Earth. Pure micronized creatine monohydrate. Strength, size, and explosive power — backed by 500+ studies.',
     badge: 'NO FILLER',
   },
-  price: { display: '$24.99', value: 24.99 },
+  price: { display: '$19.99', value: 19.99 },
   servingsText: '60 SERVINGS',
   colors: {
     primary: '#00e5ff',      // electric cyan

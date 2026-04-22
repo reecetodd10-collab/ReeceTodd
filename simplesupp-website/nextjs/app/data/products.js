@@ -18,7 +18,7 @@ export const products = [
     name: 'Creatine Monohydrate',
     suplifulName: 'Creatine Monohydrate',
     category: PRODUCT_CATEGORIES.PERFORMANCE,
-    price: 24.99,
+    price: 19.99,
     costPrice: 14.69,
     description: 'The most researched supplement for strength and power. Increases muscle mass, strength, and exercise performance.',
     benefits: ['Increases strength and power', 'Supports muscle growth', 'Improves high-intensity performance', 'Enhances recovery'],
