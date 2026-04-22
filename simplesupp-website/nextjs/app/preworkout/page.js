@@ -14,7 +14,7 @@ const config = {
       'Full-send pre-workout. Pumps, energy, and tunnel-vision focus in one scoop. Fruit Punch flavor that actually tastes good — no chemical aftertaste.',
     badge: 'NEW FLAVOR',
   },
-  price: { display: '$29.99', value: 29.99 },
+  price: { display: '$22.99', value: 22.99 },
   servingsText: '30 SCOOPS',
   colors: {
     primary: '#FF3B3B',      // hot red

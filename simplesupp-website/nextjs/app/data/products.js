@@ -74,7 +74,7 @@ export const products = [
     name: 'Pre-Workout Formula',
     suplifulName: 'Nitric Shock Pre-Workout Powder (Fruit Punch)',
     category: PRODUCT_CATEGORIES.PERFORMANCE,
-    price: 29.99,
+    price: 22.99,
     costPrice: 19.75,
     description: 'Explosive energy, focus, and pumps. Nitric oxide booster for enhanced performance.',
     benefits: ['Increases energy and focus', 'Enhances muscle pumps', 'Improves endurance', 'Delays fatigue'],

@@ -26,7 +26,7 @@ const productJsonLd = {
     "@type": "Offer",
     "url": "https://www.avierafit.com/preworkout",
     "priceCurrency": "USD",
-    "price": "29.99",
+    "price": "22.99",
     "availability": "https://schema.org/InStock",
   },
   "aggregateRating": {
