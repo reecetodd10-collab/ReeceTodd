@@ -60,28 +60,48 @@ const articles = [
 export default function LearnPage() {
   return (
     <PageLayout>
-      {/* Hero */}
+      {/* Hero with background image */}
       <section
-        className="relative"
-        style={{
-          background: '#000',
-          paddingTop: '120px',
-          paddingBottom: '64px',
-          zIndex: 10,
-        }}
+        className="relative overflow-hidden"
+        style={{ minHeight: '45vh', zIndex: 10 }}
       >
-        <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center">
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/learn-background.jpg"
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: 'grayscale(20%) contrast(1.06)' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,1) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 70%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center flex flex-col justify-end" style={{ paddingTop: '140px', paddingBottom: '64px', minHeight: '45vh' }}>
           <motion.p
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             style={{
               ...FONTS.mono,
-              fontSize: '10px',
+              fontSize: '11px',
               letterSpacing: '0.32em',
               color: TOKENS.CYAN,
               textTransform: 'uppercase',
               marginBottom: '14px',
+              textShadow: '0 0 20px rgba(0,229,255,0.6), 0 2px 8px rgba(0,0,0,0.8)',
             }}
           >
             Aviera Learn
@@ -103,6 +123,7 @@ export default function LearnPage() {
               letterSpacing: '-0.02em',
               color: '#fff',
               marginBottom: '20px',
+              textShadow: '0 2px 12px rgba(0,0,0,0.6)',
             }}
           >
             Supplement Guides{' '}
@@ -116,10 +137,11 @@ export default function LearnPage() {
             style={{
               ...FONTS.mono,
               fontSize: '12px',
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(255,255,255,0.65)',
               lineHeight: 1.7,
               maxWidth: '560px',
               margin: '0 auto',
+              textShadow: '0 2px 8px rgba(0,0,0,0.6)',
             }}
           >
             Evidence-based articles on performance nutrition, recovery, and
