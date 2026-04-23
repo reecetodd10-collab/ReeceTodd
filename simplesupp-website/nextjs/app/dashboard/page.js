@@ -898,28 +898,19 @@ export default function DashboardPage() {
                     background: 'rgba(0,0,0,0.04)',
                   }}
                 />
-                <div className="flex justify-between items-baseline mb-4">
-                  <h2
-                    style={{
-                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                      fontSize: '16px',
-                      color: '#28282A',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    YOUR STACK
-                  </h2>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                      fontSize: '9px',
-                      color: 'rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    {stackItems.length}/{MAX_SLOTS} slots
-                  </span>
-                </div>
+                <h2
+                  className="text-center mb-4"
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 700,
+                    color: '#28282A',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Build Your <span style={{ color: '#00b8d4' }}>Stack</span>
+                </h2>
 
                 {/* Divider */}
               <div
@@ -945,6 +936,11 @@ export default function DashboardPage() {
                   }}
                 >
                   Your <span style={{ color: '#00b8d4' }}>Stack</span>
+                  {supplements.length > 0 && (
+                    <span style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '10px', color: 'rgba(0,0,0,0.35)', fontWeight: 400, letterSpacing: '1px', marginLeft: '8px' }}>
+                      {supplements.length} {supplements.length === 1 ? 'product' : 'products'}
+                    </span>
+                  )}
                 </h2>
                 <div className="flex justify-end items-baseline mb-3">
                   {/* Log Intake dropdown button */}
@@ -1056,13 +1052,13 @@ export default function DashboardPage() {
                     return (
                       <div
                         key={supp.id}
-                        className="rounded-lg cursor-pointer transition-all relative overflow-hidden"
+                        className="rounded-xl cursor-pointer transition-all relative overflow-hidden"
                         style={{
                           background: '#ffffff',
-                          border: `1px solid rgba(${catRgb}, 0.2)`,
-                          padding: '12px',
-                          minHeight: '100px',
-                          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                          border: `1px solid rgba(${catRgb}, 0.15)`,
+                          padding: '14px',
+                          minHeight: '110px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                         }}
                         onClick={() => {
                           if (shopifyMatch) {
@@ -1092,8 +1088,8 @@ export default function DashboardPage() {
 
                         {/* Product image */}
                         {productImg && (
-                          <div className="w-full flex items-center justify-center mb-2" style={{ height: '60px', background: '#f8f8f8', borderRadius: '6px', overflow: 'hidden' }}>
-                            <img src={productImg} alt={supp.name} className="h-full object-contain" style={{ maxWidth: '100%', padding: '4px' }} />
+                          <div className="w-full flex items-center justify-center mb-3" style={{ height: '72px', background: '#fafafa', borderRadius: '10px', overflow: 'hidden' }}>
+                            <img src={productImg} alt={supp.name} className="h-full object-contain" style={{ maxWidth: '100%', padding: '6px' }} />
                           </div>
                         )}
 
@@ -1116,10 +1112,11 @@ export default function DashboardPage() {
                         </span>
 
                         <p
-                          className="mb-[3px]"
+                          className="mb-1"
                           style={{
                             fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                            fontSize: '11px',
+                            fontSize: '13px',
+                            fontWeight: 700,
                             color: '#28282A',
                             letterSpacing: '0.5px',
                             textTransform: 'uppercase',
