@@ -777,20 +777,44 @@ export default function SupplementOptimizationScore() {
 
   return (
     <PageLayout hideFooter>
-      {/* Hero */}
-      <section className="relative" style={{ background: '#000', paddingTop: '100px', paddingBottom: '40px', zIndex: 10 }}>
-        <div className="max-w-[430px] md:max-w-3xl mx-auto px-5 md:px-8 text-center">
+      {/* Hero with background image */}
+      <section className="relative overflow-hidden" style={{ minHeight: '45vh', zIndex: 10 }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/quiz-background.jpg"
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: 'grayscale(20%) contrast(1.06)' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,1) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 70%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-[430px] md:max-w-3xl mx-auto px-5 md:px-8 text-center flex flex-col justify-end" style={{ paddingTop: '120px', paddingBottom: '40px', minHeight: '45vh' }}>
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-xs uppercase mb-4" style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}>
+            <p className="text-xs uppercase mb-4" style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', textShadow: '0 0 20px rgba(0,229,255,0.6), 0 2px 8px rgba(0,0,0,0.8)' }}>
               Stop Guessing
             </p>
             <h1
               className="text-[36px] sm:text-[48px] md:text-[64px] font-bold uppercase mb-3 leading-tight"
-              style={{ fontFamily: OSWALD, color: '#fff' }}
+              style={{ fontFamily: OSWALD, color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}
             >
               Personalized <span style={{ color: ACCENT }}>Supplements</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontFamily: SPACE_MONO, fontSize: '12px' }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontFamily: SPACE_MONO, fontSize: '12px', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}>
               Answer a few questions. Get your custom stack — 60 seconds.
             </p>
           </motion.div>
