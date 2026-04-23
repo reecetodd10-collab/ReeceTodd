@@ -376,18 +376,13 @@ export default function ProductLandingTemplate({ config }) {
       {/* HEADER */}
       <header className="relative z-10 py-3.5 px-6 sticky top-0" style={{ background: DARK, zIndex: 100 }}>
         <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/home" className="flex items-center gap-2 no-underline" style={{ textDecoration: 'none', color: '#fff' }}>
-            <svg width="16" height="16" viewBox="0 0 42 42" fill="none">
-              <circle cx="21" cy="21" r="19" stroke={PRIMARY} strokeWidth="2"/>
-              <path d="M21 12 L21 30" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round"/>
-              <path d="M15 18 L21 12 L27 18" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <Link href="/home" className="flex items-center no-underline" style={{ textDecoration: 'none', color: '#fff' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase' }}>AVIERA</span>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', color: PRIMARY, textTransform: 'uppercase' }}> FIT</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '12px', fontWeight: 900, letterSpacing: '0.25em', textTransform: 'uppercase' }}>AVIERA</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '12px', fontWeight: 900, letterSpacing: '0.25em', color: PRIMARY, textTransform: 'uppercase' }}> FIT</span>
               </div>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', fontWeight: 500, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
+              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '5px', fontWeight: 400, letterSpacing: '0.35em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginTop: '2px' }}>Supplements</span>
             </div>
           </Link>
           <div className="flex items-center gap-3">

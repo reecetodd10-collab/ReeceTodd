@@ -15,7 +15,7 @@ import CartDrawer from './CartDrawer';
 
 // ── Design tokens ──
 export const TOKENS = {
-  CYAN: '#00e5ff',           // Electric cyan — sole accent (matches /creatine)
+  CYAN: '#00b8d4',           // Muted teal — matches ig_cream logo style
   CYAN_TINT: '#f4fdff',      // Pale cyan-washed white
   CREAM: '#F5F0EB',          // Warm tan/cream
   INK: '#28282A',            // Soft near-black body text
@@ -101,7 +101,7 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
       <nav
         className="fixed top-0 left-0 right-0 z-50"
         style={{
-          background: 'rgba(232,221,211,0.92)',
+          background: 'rgba(245,240,235,0.92)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(0,0,0,0.06)',
@@ -110,20 +110,15 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
         <div className={`${CONTAINER_CLASSES} flex items-center justify-between px-5 md:px-8 py-4`}>
           <Link
             href="/home"
-            className="no-underline flex items-center gap-2"
+            className="no-underline flex items-center"
             style={{ textDecoration: 'none' }}
           >
-            <svg width="18" height="18" viewBox="0 0 42 42" fill="none">
-              <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
-              <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
-              <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '13px', fontWeight: 900, letterSpacing: '0.25em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '13px', fontWeight: 900, letterSpacing: '0.25em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
               </div>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '6px', fontWeight: 500, letterSpacing: '0.22em', color: 'rgba(40,40,42,0.45)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
+              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '6px', fontWeight: 400, letterSpacing: '0.35em', color: 'rgba(40,40,42,0.4)', textTransform: 'uppercase', marginTop: '2px' }}>Supplements</span>
             </div>
           </Link>
 
@@ -223,20 +218,13 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
             >
               {/* Header row */}
               <div className="flex items-center justify-between px-6 pt-6 pb-4">
-                <span className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 42 42" fill="none">
-                    <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
-                    <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
-                    <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div>
-                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
-                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
-                    </div>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', fontWeight: 500, letterSpacing: '0.2em', color: 'rgba(40,40,42,0.4)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div>
+                    <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '12px', fontWeight: 900, letterSpacing: '0.25em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
+                    <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '12px', fontWeight: 900, letterSpacing: '0.25em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
                   </div>
-                </span>
+                  <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '5px', fontWeight: 400, letterSpacing: '0.35em', color: 'rgba(40,40,42,0.4)', textTransform: 'uppercase', marginTop: '2px' }}>Supplements</span>
+                </div>
                 <motion.button
                   whileHover={{ rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
