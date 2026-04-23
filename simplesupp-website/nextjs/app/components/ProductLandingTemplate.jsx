@@ -382,9 +382,12 @@ export default function ProductLandingTemplate({ config }) {
               <path d="M21 12 L21 30" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M15 18 L21 12 L27 18" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <div>
-              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase' }}>AVIERA</span>
-              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', color: PRIMARY, textTransform: 'uppercase' }}> FIT</span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase' }}>AVIERA</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.25em', color: PRIMARY, textTransform: 'uppercase' }}> FIT</span>
+              </div>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', fontWeight: 500, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
             </div>
           </Link>
           <div className="flex items-center gap-3">
