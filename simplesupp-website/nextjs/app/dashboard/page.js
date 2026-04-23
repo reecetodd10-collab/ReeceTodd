@@ -919,7 +919,352 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* Personalized Recommendations */}
+                {/* Divider */}
+              <div
+                className="mb-6 mt-2"
+                style={{
+                  height: '1px',
+                  background: 'rgba(0,0,0,0.04)',
+                }}
+              />
+
+              {/* Your Stack (existing supplement tracker) */}
+              <FadeInSection delay={0.1}>
+                <h2
+                  className="text-center mb-4"
+                  style={{
+                    fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 700,
+                    color: '#28282A',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Your <span style={{ color: '#00b8d4' }}>Stack</span>
+                </h2>
+                <div className="flex justify-end items-baseline mb-3">
+                  {/* Log Intake dropdown button */}
+                  <div ref={logDropdownRef} className="relative">
+                    <button
+                      onClick={() => setShowLogDropdown(!showLogDropdown)}
+                      className="rounded cursor-pointer transition-all"
+                      style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '10px',
+                        letterSpacing: '1px',
+                        color: '#00e5ff',
+                        background: 'transparent',
+                        border: '1px solid rgba(0,229,255,0.3)',
+                        padding: '4px 10px',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      LOG INTAKE {showLogDropdown ? '\u25B2' : '\u25BC'}
+                    </button>
+
+                    <AnimatePresence>
+                      {showLogDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 z-20 rounded-lg overflow-hidden"
+                          style={{
+                            top: 'calc(100% + 4px)',
+                            width: '200px',
+                            background: '#0f0f0f',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                          }}
+                        >
+                          {(supplements.length > 0 ? supplements : stackItems).map((item, idx) => {
+                            const dCatColor = getCategoryColor(item.name);
+                            const dCatRgb = CATEGORY_COLOR_RGB[dCatColor] || '168, 85, 247';
+                            return (
+                              <button
+                                key={`log-${idx}`}
+                                onClick={() => {
+                                  handleLogIntake(item.name);
+                                  setShowLogDropdown(false);
+                                }}
+                                disabled={loggingIntake}
+                                className="w-full text-left cursor-pointer"
+                                style={{
+                                  padding: '10px 12px',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                  borderLeft: `3px solid ${dCatColor}`,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = `rgba(${dCatRgb},0.05)`)}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                              >
+                                <span style={{
+                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                  fontSize: '11px',
+                                  color: '#28282A',
+                                  letterSpacing: '0.5px',
+                                  textTransform: 'uppercase',
+                                }}>
+                                  {item.name}
+                                </span>
+                                <span style={{
+                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                  fontSize: '8px',
+                                  color: '#00e5ff',
+                                }}>
+                                  LOG
+                                </span>
+                              </button>
+                            );
+                          })}
+                          {supplements.length === 0 && stackItems.length === 0 && (
+                            <p style={{
+                              padding: '12px',
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '9px',
+                              color: 'rgba(0,0,0,0.55)',
+                              textAlign: 'center',
+                            }}>
+                              Build your stack first
+                            </p>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                {/* Stack Grid — Category-colored product cards */}
+                <div
+                  className="grid grid-cols-2 gap-2 mb-6"
+                >
+                  {/* Filled Slots */}
+                  {supplements.map((supp) => {
+                    const catColor = getCategoryColor(supp.name);
+                    const catLabel = getCategoryLabel(supp.name);
+                    const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
+                    const shopifyMatch = findShopifyProduct(supp.name);
+                    const productImg = shopifyMatch?.images?.[0] || shopifyMatch?.image || null;
+                    return (
+                      <div
+                        key={supp.id}
+                        className="rounded-lg cursor-pointer transition-all relative overflow-hidden"
+                        style={{
+                          background: '#ffffff',
+                          border: `1px solid rgba(${catRgb}, 0.2)`,
+                          padding: '12px',
+                          minHeight: '100px',
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                        }}
+                        onClick={() => {
+                          if (shopifyMatch) {
+                            setDetailProduct(shopifyMatch);
+                          } else {
+                            handleSlotClick(supp);
+                          }
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = `0 4px 16px rgba(${catRgb}, 0.15)`;
+                          e.currentTarget.style.borderColor = catColor;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)';
+                          e.currentTarget.style.borderColor = `rgba(${catRgb}, 0.2)`;
+                        }}
+                      >
+                        {/* Top color bar */}
+                        <div style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '2px',
+                          background: catColor,
+                        }} />
+
+                        {/* Product image */}
+                        {productImg && (
+                          <div className="w-full flex items-center justify-center mb-2" style={{ height: '60px', background: '#f8f8f8', borderRadius: '6px', overflow: 'hidden' }}>
+                            <img src={productImg} alt={supp.name} className="h-full object-contain" style={{ maxWidth: '100%', padding: '4px' }} />
+                          </div>
+                        )}
+
+                        {/* Category badge */}
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            background: `rgba(${catRgb}, 0.12)`,
+                            border: `1px solid rgba(${catRgb}, 0.3)`,
+                            color: catColor,
+                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                            fontSize: '6px',
+                            letterSpacing: '1.5px',
+                            padding: '2px 5px',
+                            borderRadius: '2px',
+                            marginBottom: '6px',
+                          }}
+                        >
+                          {catLabel}
+                        </span>
+
+                        <p
+                          className="mb-[3px]"
+                          style={{
+                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                            fontSize: '11px',
+                            color: '#28282A',
+                            letterSpacing: '0.5px',
+                            textTransform: 'uppercase',
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {supp.name}
+                        </p>
+                        {supp.dosage && (
+                          <p
+                            className="mb-[6px]"
+                            style={{
+                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                              fontSize: '9px',
+                              color: 'rgba(0,0,0,0.5)',
+                            }}
+                          >
+                            {supp.dosage}
+                          </p>
+                        )}
+                        {/* Progress bar */}
+                        <div
+                          className="mb-1 overflow-hidden"
+                          style={{
+                            height: '4px',
+                            background: '#1a1a1a',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${supp.progress}%` }}
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            style={{
+                              height: '100%',
+                              borderRadius: '4px',
+                              background: `linear-gradient(90deg, ${catColor}, ${catColor}88)`,
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p style={{ fontSize: '9px', color: '#ff2d55' }}>
+                            {'\u{1F525}'} {supp.streak} days
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const sp = findShopifyProduct(supp.name);
+                                if (sp) setDetailProduct(sp);
+                              }}
+                              className="bg-transparent border-none cursor-pointer"
+                              style={{
+                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                fontSize: '8px',
+                                color: '#00e5ff',
+                                padding: '2px 6px',
+                                border: '1px solid rgba(0,229,255,0.4)',
+                                borderRadius: '3px',
+                                background: 'rgba(0,229,255,0.08)',
+                              }}
+                              title="View product details"
+                            >
+                              VIEW CARD
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLogIntake(supp.name);
+                              }}
+                              disabled={loggingIntake}
+                              className="bg-transparent border-none cursor-pointer"
+                              style={{
+                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                fontSize: '8px',
+                                color: catColor,
+                                padding: '2px 6px',
+                                border: `1px solid rgba(${catRgb}, 0.3)`,
+                                borderRadius: '3px',
+                                opacity: loggingIntake ? 0.5 : 1,
+                              }}
+                              title="Log intake"
+                            >
+                              LOG
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Empty Slots — show 1 "add from stack" button, rest are placeholders */}
+                  {emptySlots > 0 && (
+                    <div
+                      key="add-from-stack"
+                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors relative"
+                      style={{
+                        border: '1px dashed rgba(0,229,255,0.15)',
+                        minHeight: '100px',
+                        background: 'transparent',
+                      }}
+                      onClick={() => setShowLogDropdown(!showLogDropdown)}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.3)';
+                        e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.15)';
+                        e.currentTarget.style.background = 'transparent';
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '18px',
+                        color: '#00e5ff',
+                        marginBottom: '2px',
+                      }}>+</span>
+                      <span style={{
+                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                        fontSize: '7px',
+                        color: '#00e5ff',
+                      }}>
+                        ADD FROM STACK
+                      </span>
+                    </div>
+                  )}
+                  {emptySlots > 1 && Array.from({ length: emptySlots - 1 }).map((_, i) => (
+                    <div
+                      key={`empty-${i}`}
+                      className="rounded-lg flex flex-col items-center justify-center"
+                      style={{
+                        border: '1px dashed rgba(0,0,0,0.06)',
+                        minHeight: '100px',
+                        background: 'transparent',
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '18px',
+                        color: '#222',
+                      }}>+</span>
+                    </div>
+                  ))}
+                </div>
+              </FadeInSection>
+
+              
+{/* Personalized Recommendations — visually below Your Stack via order */}
                 {(recommendedProducts.length > 0 || shopifyProducts.length > 0) && (
                   <div className="mb-5">
                     <h2
@@ -1707,333 +2052,6 @@ export default function DashboardPage() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </FadeInSection>
-
-              {/* Divider */}
-              <div
-                className="mb-6 mt-2"
-                style={{
-                  height: '1px',
-                  background: 'rgba(0,0,0,0.04)',
-                }}
-              />
-
-              {/* Your Stack (existing supplement tracker) */}
-              <FadeInSection delay={0.1}>
-                <div className="flex justify-between items-baseline mb-3">
-                  <h2
-                    style={{
-                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                      fontSize: '16px',
-                      color: '#28282A',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    YOUR STACK
-                  </h2>
-                  {/* Log Intake dropdown button */}
-                  <div ref={logDropdownRef} className="relative">
-                    <button
-                      onClick={() => setShowLogDropdown(!showLogDropdown)}
-                      className="rounded cursor-pointer transition-all"
-                      style={{
-                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                        fontSize: '10px',
-                        letterSpacing: '1px',
-                        color: '#00e5ff',
-                        background: 'transparent',
-                        border: '1px solid rgba(0,229,255,0.3)',
-                        padding: '4px 10px',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      LOG INTAKE {showLogDropdown ? '\u25B2' : '\u25BC'}
-                    </button>
-
-                    <AnimatePresence>
-                      {showLogDropdown && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 z-20 rounded-lg overflow-hidden"
-                          style={{
-                            top: 'calc(100% + 4px)',
-                            width: '200px',
-                            background: '#0f0f0f',
-                            border: '1px solid rgba(0,0,0,0.1)',
-                          }}
-                        >
-                          {(supplements.length > 0 ? supplements : stackItems).map((item, idx) => {
-                            const dCatColor = getCategoryColor(item.name);
-                            const dCatRgb = CATEGORY_COLOR_RGB[dCatColor] || '168, 85, 247';
-                            return (
-                              <button
-                                key={`log-${idx}`}
-                                onClick={() => {
-                                  handleLogIntake(item.name);
-                                  setShowLogDropdown(false);
-                                }}
-                                disabled={loggingIntake}
-                                className="w-full text-left cursor-pointer"
-                                style={{
-                                  padding: '10px 12px',
-                                  background: 'transparent',
-                                  border: 'none',
-                                  borderBottom: '1px solid rgba(0,0,0,0.05)',
-                                  borderLeft: `3px solid ${dCatColor}`,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = `rgba(${dCatRgb},0.05)`)}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                              >
-                                <span style={{
-                                  fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                                  fontSize: '11px',
-                                  color: '#28282A',
-                                  letterSpacing: '0.5px',
-                                  textTransform: 'uppercase',
-                                }}>
-                                  {item.name}
-                                </span>
-                                <span style={{
-                                  fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                  fontSize: '8px',
-                                  color: '#00e5ff',
-                                }}>
-                                  LOG
-                                </span>
-                              </button>
-                            );
-                          })}
-                          {supplements.length === 0 && stackItems.length === 0 && (
-                            <p style={{
-                              padding: '12px',
-                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                              fontSize: '9px',
-                              color: 'rgba(0,0,0,0.55)',
-                              textAlign: 'center',
-                            }}>
-                              Build your stack first
-                            </p>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Stack Grid — Category-colored product cards */}
-                <div
-                  className="grid grid-cols-2 gap-2 mb-6"
-                >
-                  {/* Filled Slots */}
-                  {supplements.map((supp) => {
-                    const catColor = getCategoryColor(supp.name);
-                    const catLabel = getCategoryLabel(supp.name);
-                    const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
-                    return (
-                      <div
-                        key={supp.id}
-                        className="rounded-lg cursor-pointer transition-colors relative overflow-hidden"
-                        style={{
-                          background: '#ffffff',
-                          border: `1px solid rgba(${catRgb}, 0.2)`,
-                          padding: '12px',
-                          minHeight: '100px',
-                        }}
-                        onClick={() => {
-                          const sp = findShopifyProduct(supp.name);
-                          if (sp) {
-                            setDetailProduct(sp);
-                          } else {
-                            handleSlotClick(supp);
-                          }
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#0f0f0f')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
-                      >
-                        {/* Top color bar */}
-                        <div style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          height: '2px',
-                          background: catColor,
-                        }} />
-
-                        {/* Category badge */}
-                        <span
-                          style={{
-                            display: 'inline-block',
-                            background: `rgba(${catRgb}, 0.12)`,
-                            border: `1px solid rgba(${catRgb}, 0.3)`,
-                            color: catColor,
-                            fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                            fontSize: '6px',
-                            letterSpacing: '1.5px',
-                            padding: '2px 5px',
-                            borderRadius: '2px',
-                            marginBottom: '6px',
-                          }}
-                        >
-                          {catLabel}
-                        </span>
-
-                        <p
-                          className="mb-[3px]"
-                          style={{
-                            fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                            fontSize: '11px',
-                            color: '#28282A',
-                            letterSpacing: '0.5px',
-                            textTransform: 'uppercase',
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          {supp.name}
-                        </p>
-                        {supp.dosage && (
-                          <p
-                            className="mb-[6px]"
-                            style={{
-                              fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                              fontSize: '9px',
-                              color: 'rgba(0,0,0,0.5)',
-                            }}
-                          >
-                            {supp.dosage}
-                          </p>
-                        )}
-                        {/* Progress bar */}
-                        <div
-                          className="mb-1 overflow-hidden"
-                          style={{
-                            height: '4px',
-                            background: '#1a1a1a',
-                            borderRadius: '4px',
-                          }}
-                        >
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${supp.progress}%` }}
-                            transition={{ duration: 1, ease: 'easeOut' }}
-                            style={{
-                              height: '100%',
-                              borderRadius: '4px',
-                              background: `linear-gradient(90deg, ${catColor}, ${catColor}88)`,
-                            }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p style={{ fontSize: '9px', color: '#ff2d55' }}>
-                            {'\u{1F525}'} {supp.streak} days
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const sp = findShopifyProduct(supp.name);
-                                if (sp) setDetailProduct(sp);
-                              }}
-                              className="bg-transparent border-none cursor-pointer"
-                              style={{
-                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                fontSize: '8px',
-                                color: '#00e5ff',
-                                padding: '2px 6px',
-                                border: '1px solid rgba(0,229,255,0.4)',
-                                borderRadius: '3px',
-                                background: 'rgba(0,229,255,0.08)',
-                              }}
-                              title="View product details"
-                            >
-                              VIEW CARD
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleLogIntake(supp.name);
-                              }}
-                              disabled={loggingIntake}
-                              className="bg-transparent border-none cursor-pointer"
-                              style={{
-                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                                fontSize: '8px',
-                                color: catColor,
-                                padding: '2px 6px',
-                                border: `1px solid rgba(${catRgb}, 0.3)`,
-                                borderRadius: '3px',
-                                opacity: loggingIntake ? 0.5 : 1,
-                              }}
-                              title="Log intake"
-                            >
-                              LOG
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Empty Slots — show 1 "add from stack" button, rest are placeholders */}
-                  {emptySlots > 0 && (
-                    <div
-                      key="add-from-stack"
-                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors relative"
-                      style={{
-                        border: '1px dashed rgba(0,229,255,0.15)',
-                        minHeight: '100px',
-                        background: 'transparent',
-                      }}
-                      onClick={() => setShowLogDropdown(!showLogDropdown)}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.3)';
-                        e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,229,255,0.15)';
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <span style={{
-                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                        fontSize: '18px',
-                        color: '#00e5ff',
-                        marginBottom: '2px',
-                      }}>+</span>
-                      <span style={{
-                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                        fontSize: '7px',
-                        color: '#00e5ff',
-                      }}>
-                        ADD FROM STACK
-                      </span>
-                    </div>
-                  )}
-                  {emptySlots > 1 && Array.from({ length: emptySlots - 1 }).map((_, i) => (
-                    <div
-                      key={`empty-${i}`}
-                      className="rounded-lg flex flex-col items-center justify-center"
-                      style={{
-                        border: '1px dashed rgba(0,0,0,0.06)',
-                        minHeight: '100px',
-                        background: 'transparent',
-                      }}
-                    >
-                      <span style={{
-                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                        fontSize: '18px',
-                        color: '#222',
-                      }}>+</span>
-                    </div>
-                  ))}
-                </div>
               </FadeInSection>
 
               {/* No stack prompt */}
