@@ -118,9 +118,13 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.35em', color: '#fff', textTransform: 'uppercase' }}>
-              AVIERA
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: '#fff', textTransform: 'uppercase' }}>AVIERA</span>
+                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
+              </div>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginTop: '2px' }}>Supplements</span>
+            </div>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -220,14 +224,18 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               {/* Header row */}
               <div className="flex items-center justify-between px-6 pt-6 pb-4">
                 <span className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 42 42" fill="none">
+                  <svg width="16" height="16" viewBox="0 0 42 42" fill="none">
                     <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
                     <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
                     <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.35em', color: TOKENS.CYAN, textTransform: 'uppercase' }}>
-                    AVIERA
-                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div>
+                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
+                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
+                    </div>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', letterSpacing: '0.18em', color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
+                  </div>
                 </span>
                 <motion.button
                   whileHover={{ rotate: 90 }}
