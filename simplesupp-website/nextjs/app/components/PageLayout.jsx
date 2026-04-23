@@ -101,10 +101,10 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
       <nav
         className="fixed top-0 left-0 right-0 z-50"
         style={{
-          background: 'rgba(0,0,0,0.78)',
+          background: 'rgba(232,221,211,0.92)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
         }}
       >
         <div className={`${CONTAINER_CLASSES} flex items-center justify-between px-5 md:px-8 py-4`}>
@@ -118,12 +118,9 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: '#fff', textTransform: 'uppercase' }}>AVIERA</span>
-                <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
-              </div>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', marginTop: '2px' }}>Supplements</span>
+            <div>
+              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
+              <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
             </div>
           </Link>
 
@@ -135,7 +132,7 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
                 width: '28px',
                 height: '28px',
                 borderRadius: '50%',
-                border: avatarUrl ? `2px solid ${TOKENS.CYAN}` : '1px solid rgba(255,255,255,0.15)',
+                border: avatarUrl ? `2px solid ${TOKENS.CYAN}` : '1px solid rgba(0,0,0,0.2)',
                 background: 'transparent',
                 overflow: 'hidden',
               }}
@@ -143,7 +140,7 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               {avatarUrl ? (
                 <img src={avatarUrl} alt="" width={28} height={28} style={{ borderRadius: '50%', objectFit: 'cover' }} />
               ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#28282A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
@@ -155,7 +152,7 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               onClick={() => setCartOpen && setCartOpen(true)}
               aria-label={`Open cart${cartCount > 0 ? ` (${cartCount} items)` : ''}`}
               className="relative bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
-              style={{ color: '#fff' }}
+              style={{ color: TOKENS.INK }}
             >
               <ShoppingBag size={20} strokeWidth={1.8} />
               {cartCount > 0 && (
@@ -191,9 +188,9 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
-              <span className="block w-5 h-[2px] bg-white" />
+              <span className="block w-5 h-[2px]" style={{ background: TOKENS.INK }} />
+              <span className="block w-5 h-[2px]" style={{ background: TOKENS.INK }} />
+              <span className="block w-5 h-[2px]" style={{ background: TOKENS.INK }} />
             </button>
           </div>
         </div>
@@ -229,12 +226,9 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
                     <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
                     <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div>
-                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
-                      <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
-                    </div>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '5px', letterSpacing: '0.18em', color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginTop: '1px' }}>Supplements</span>
+                  <div>
+                    <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.INK, textTransform: 'uppercase' }}>AVIERA</span>
+                    <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '10px', fontWeight: 800, letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}> FIT</span>
                   </div>
                 </span>
                 <motion.button
