@@ -113,7 +113,7 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
             className="no-underline flex items-center gap-2"
             style={{ textDecoration: 'none' }}
           >
-            <svg width="22" height="22" viewBox="0 0 42 42" fill="none">
+            <svg width="18" height="18" viewBox="0 0 42 42" fill="none">
               <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
               <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>

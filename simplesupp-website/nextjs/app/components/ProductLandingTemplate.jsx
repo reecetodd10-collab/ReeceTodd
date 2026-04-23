@@ -377,7 +377,7 @@ export default function ProductLandingTemplate({ config }) {
       <header className="relative z-10 py-3.5 px-6 sticky top-0" style={{ background: DARK, zIndex: 100 }}>
         <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto flex items-center justify-between">
           <Link href="/home" className="flex items-center gap-2 no-underline" style={{ textDecoration: 'none', color: '#fff' }}>
-            <svg width="20" height="20" viewBox="0 0 42 42" fill="none">
+            <svg width="16" height="16" viewBox="0 0 42 42" fill="none">
               <circle cx="21" cy="21" r="19" stroke={PRIMARY} strokeWidth="2"/>
               <path d="M21 12 L21 30" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M15 18 L21 12 L27 18" stroke={PRIMARY} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
