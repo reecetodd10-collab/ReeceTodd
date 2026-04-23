@@ -1563,54 +1563,7 @@ export default function DashboardPage() {
                     );
                   })}
 
-                  {/* Empty slots */}
-                  {Array.from({ length: builderEmptySlots }).map((_, i) => (
-                    <button
-                      key={`builder-empty-${i}`}
-                      onClick={() => {
-                        setShowSuggestions(true);
-                        setSearchOpen(false);
-                        setSearchQuery('');
-                        setTimeout(() => {
-                          document.getElementById('stack-search-input')?.focus();
-                        }, 50);
-                      }}
-                      className="rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
-                      style={{
-                        border: '1px dashed rgba(0,0,0,0.08)',
-                        minHeight: '90px',
-                        background: 'transparent',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#333';
-                        e.currentTarget.style.background = 'rgba(0, 255, 204, 0.02)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)';
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-oswald), Oswald, sans-serif',
-                          fontSize: '18px',
-                          color: 'rgba(0,0,0,0.7)',
-                          marginBottom: '2px',
-                        }}
-                      >
-                        +
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                          fontSize: '7px',
-                          color: 'rgba(0,0,0,0.7)',
-                        }}
-                      >
-                        Add
-                      </span>
-                    </button>
-                  ))}
+                  {/* Empty slots removed — cleaner layout */}
                 </div>
 
                 {/* Search bar */}
