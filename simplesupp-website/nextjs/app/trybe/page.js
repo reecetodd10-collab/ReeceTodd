@@ -65,9 +65,33 @@ export default function CreatorsProgramPage() {
 
   return (
     <PageLayout>
-      {/* ═══ HERO ═══ */}
-      <section className="relative" style={{ background: '#000', paddingTop: '120px', paddingBottom: '60px', zIndex: 10 }}>
-        <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8">
+      {/* ═══ HERO with background image ═══ */}
+      <section className="relative overflow-hidden" style={{ minHeight: '50vh', zIndex: 10 }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/creators-background.jpg"
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: 'grayscale(15%) contrast(1.06)' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,1) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 70%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8" style={{ paddingTop: '140px', paddingBottom: '60px' }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <div>
               <motion.div
@@ -75,7 +99,7 @@ export default function CreatorsProgramPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-3 mb-6"
               >
-                <span style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.3em', color: '#FF3B3B', textTransform: 'uppercase' }}>
+                <span style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.3em', color: '#FF3B3B', textTransform: 'uppercase', textShadow: '0 0 12px rgba(255,59,59,0.5), 0 2px 8px rgba(0,0,0,0.8)' }}>
                   Now Recruiting
                 </span>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF3B3B', display: 'inline-block', boxShadow: '0 0 8px rgba(255,59,59,0.5)' }} />
@@ -85,7 +109,7 @@ export default function CreatorsProgramPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                 className="text-[48px] md:text-[72px] lg:text-[96px]"
-                style={{ ...FONTS.oswald, fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#fff', marginBottom: '20px' }}
+                style={{ ...FONTS.oswald, fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#fff', marginBottom: '20px', textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}
               >
                 Creators <span style={{ color: TOKENS.CYAN }}>Program</span>
               </motion.h1>
@@ -94,7 +118,7 @@ export default function CreatorsProgramPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
                 className="md:text-[14px] max-w-md"
-                style={{ ...FONTS.mono, fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, marginBottom: '28px' }}
+                style={{ ...FONTS.mono, fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, marginBottom: '28px', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}
               >
                 We&apos;re building a crew of fitness creators who rep <span style={{ color: TOKENS.CYAN, fontWeight: 700 }}>Aviera</span>. Free product, your own link, and <span style={{ color: TOKENS.CYAN, fontWeight: 700 }}>15% commission</span> on every sale. No follower minimum.
               </motion.p>
@@ -115,9 +139,9 @@ export default function CreatorsProgramPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.8 }}
               className="hidden md:flex flex-col items-center justify-center text-center p-10"
-              style={{ background: 'rgba(0,229,255,0.06)', borderRadius: '20px', border: `1px solid rgba(0,229,255,0.15)` }}
+              style={{ background: 'rgba(0,229,255,0.08)', borderRadius: '20px', border: '1px solid rgba(0,229,255,0.2)', backdropFilter: 'blur(8px)' }}
             >
-              <div style={{ ...FONTS.oswald, fontSize: '96px', fontWeight: 700, color: TOKENS.CYAN, lineHeight: 1 }}>15%</div>
+              <div style={{ ...FONTS.oswald, fontSize: '96px', fontWeight: 700, color: TOKENS.CYAN, lineHeight: 1, textShadow: '0 0 30px rgba(0,229,255,0.4)' }}>15%</div>
               <div style={{ ...FONTS.mono, fontSize: '11px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.2em', marginTop: '8px' }}>Commission Per Sale</div>
             </motion.div>
           </div>
