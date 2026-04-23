@@ -1112,12 +1112,12 @@ function QuestionRenderer({ question, value, onChange }) {
           {question.microcopy && (
             <p className="mb-4" style={{ color: '#4a4a4a', fontFamily: SPACE_MONO, fontSize: '12px' }}>{question.microcopy}</p>
           )}
-          <div className="flex gap-2">
+          <div className="grid grid-cols-5 gap-1">
             {[1, 2, 3, 4, 5].map((num) => (
               <button
                 key={num}
                 onClick={() => onChange(num)}
-                className="flex-1 py-4 font-bold transition-all flex flex-col items-center gap-1"
+                className="py-3 font-bold transition-all flex flex-col items-center gap-1 min-w-0"
                 style={{
                   ...(value === num ? selectedStyle : unselectedStyle),
                   fontFamily: OSWALD,
@@ -1412,13 +1412,6 @@ function ResultsPage({
           {/* Score Hero */}
           <FadeInSection>
             <div className="text-center mb-10">
-              <p
-                className="text-xs uppercase mb-4"
-                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em' }}
-              >
-                YOUR O.S. IS IN
-              </p>
-
               {/* Circular Score Display */}
               <div className="relative w-52 h-52 mx-auto mb-4">
                 <svg className="w-full h-full transform -rotate-90">
@@ -1513,8 +1506,165 @@ function ResultsPage({
             </div>
           </FadeInSection>
 
-          {/* Fastest Performance Win Section */}
+          {/* Share Your Score */}
+          <FadeInSection delay={0.05}>
+            <div className="mb-8 p-5 text-center" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, borderRadius: '12px' }}>
+              <p className="text-xs uppercase mb-3" style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.3em', fontSize: '10px' }}>
+                Challenge a friend
+              </p>
+              <h3 className="text-lg font-bold uppercase mb-4" style={{ fontFamily: OSWALD, color: '#000' }}>
+                Share Your <span style={{ color: ACCENT }}>Score</span>
+              </h3>
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  onClick={() => {
+                    const url = `https://www.avierafit.com/supplement-optimization-score`;
+                    const text = `I just scored ${displayScore}/10 on the Aviera Fit Optimization Quiz. Think you can beat it? Take yours:`;
+                    navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+                      const btn = document.getElementById('share-copy-btn');
+                      if (btn) { btn.textContent = 'COPIED!'; setTimeout(() => { btn.textContent = 'COPY LINK'; }, 2000); }
+                    }).catch(() => {});
+                  }}
+                  id="share-copy-btn"
+                  className="px-4 py-2.5 font-bold uppercase transition-all border-none cursor-pointer"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    background: `rgba(${ACCENT_RGB}, 0.12)`,
+                    color: ACCENT,
+                    border: `1px solid rgba(${ACCENT_RGB}, 0.25)`,
+                    borderRadius: '8px',
+                  }}
+                >
+                  Copy Link
+                </button>
+                <a
+                  href={`sms:?body=${encodeURIComponent(`I just scored ${displayScore}/10 on the Aviera Fit Optimization Quiz. Think you can beat it? Take yours: https://www.avierafit.com/supplement-optimization-score`)}`}
+                  className="px-4 py-2.5 font-bold uppercase no-underline transition-all"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    background: `rgba(${ACCENT_RGB}, 0.12)`,
+                    color: ACCENT,
+                    border: `1px solid rgba(${ACCENT_RGB}, 0.25)`,
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Text It
+                </a>
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Aviera Fit — Optimization Score',
+                        text: `I scored ${displayScore}/10 on the Aviera Fit Optimization Quiz. Think you can beat it?`,
+                        url: 'https://www.avierafit.com/supplement-optimization-score',
+                      }).catch(() => {});
+                    }
+                  }}
+                  className="px-4 py-2.5 font-bold uppercase transition-all border-none cursor-pointer"
+                  style={{
+                    fontFamily: OSWALD,
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    background: ACCENT,
+                    color: '#000',
+                    borderRadius: '8px',
+                  }}
+                >
+                  Share
+                </button>
+              </div>
+            </div>
+          </FadeInSection>
+
+          {/* Performance Breakdown with Population Comparisons — moved to top */}
           <FadeInSection delay={0.1}>
+            <section className="mb-10 p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
+              <p
+                className="text-xs uppercase mb-3"
+                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
+              >
+                BREAKDOWN
+              </p>
+              <h3 className="text-2xl font-bold uppercase mb-6" style={{ fontFamily: OSWALD, color: '#000' }}>
+                PERFORMANCE <span style={{ color: ACCENT }}>METRICS</span>
+              </h3>
+
+              <div className="space-y-5">
+                {[
+                  { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep, iconColor: ACCENT },
+                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy, iconColor: ACCENT },
+                  { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress, iconColor: ACCENT },
+                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment, iconColor: ACCENT },
+                  { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad, iconColor: ACCENT },
+                ].map(({ icon: Icon, label, score, max, avg, iconColor }) => {
+                  const userPercent = (score / max) * 100;
+                  const avgPercent = (avg / max) * 100;
+                  const status = getComparisonStatus(score, avg, max * 0.15);
+                  const StatusIcon = status.icon;
+
+                  return (
+                    <div key={label}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Icon size={16} style={{ color: iconColor }} />
+                          <span style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span style={{ color: INK, fontFamily: OSWALD, fontSize: '14px', fontWeight: 700 }}>{score}/{max}</span>
+                          <span
+                            className="flex items-center gap-1 px-2 py-0.5"
+                            style={{
+                              color: status.color,
+                              background: `${status.color}20`,
+                              fontFamily: SPACE_MONO,
+                              fontSize: '9px',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                            }}
+                          >
+                            <StatusIcon size={10} />
+                            {status.text}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="relative h-2 overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${userPercent}%` }}
+                          transition={{ duration: 0.8, delay: 0.4 }}
+                          className="absolute h-full"
+                          style={{
+                            background: ACCENT,
+                            boxShadow: `0 0 10px rgba(${ACCENT_RGB}, 0.5)`,
+                          }}
+                        />
+                        <div
+                          className="absolute top-0 bottom-0 w-0.5"
+                          style={{
+                            left: `${avgPercent}%`,
+                            background: '#10b981',
+                            boxShadow: '0 0 4px #10b981',
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span style={{ fontSize: '9px', color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Your score</span>
+                        <span style={{ fontSize: '9px', color: '#10b981', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Avg: {avg}/{max}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          </FadeInSection>
+
+          {/* Fastest Performance Win Section */}
+          <FadeInSection delay={0.15}>
             <section className="mb-10" style={{ borderTop: `1px solid ${CARD_BORDER}`, paddingTop: '32px' }}>
               <p
                 className="text-xs uppercase mb-3"
@@ -1524,7 +1674,7 @@ function ResultsPage({
               </p>
               <h2
                 className="text-3xl font-bold uppercase mb-8"
-                style={{ fontFamily: OSWALD }}
+                style={{ fontFamily: OSWALD, color: '#000' }}
               >
                 PERFORMANCE <span style={{ color: URGENCY }}>UNLOCK</span>
               </h2>
@@ -1663,90 +1813,6 @@ function ResultsPage({
             </section>
           </FadeInSection>
 
-          {/* Performance Breakdown with Population Comparisons */}
-          <FadeInSection delay={0.2}>
-            <section className="mb-10 p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
-              <p
-                className="text-xs uppercase mb-3"
-                style={{ color: ACCENT, fontFamily: SPACE_MONO, letterSpacing: '0.4em', fontSize: '11px' }}
-              >
-                BREAKDOWN
-              </p>
-              <h3 className="text-2xl font-bold uppercase mb-6" style={{ fontFamily: OSWALD }}>
-                PERFORMANCE <span style={{ color: ACCENT }}>METRICS</span>
-              </h3>
-
-              <div className="space-y-5">
-                {[
-                  { icon: BedDouble, label: 'Sleep & Recovery', score: scores.sleep, max: 25, avg: POPULATION_AVERAGES.sleep, iconColor: ACCENT },
-                  { icon: Battery, label: 'Energy Output', score: scores.energy, max: 20, avg: POPULATION_AVERAGES.energy, iconColor: ACCENT },
-                  { icon: Heart, label: 'Stress Management', score: scores.stress, max: 20, avg: POPULATION_AVERAGES.stress, iconColor: ACCENT },
-                  { icon: Target, label: 'Goal Alignment', score: scores.goalAlignment, max: 20, avg: POPULATION_AVERAGES.goalAlignment, iconColor: ACCENT },
-                  { icon: Calendar, label: 'Training Load', score: scores.trainingLoad, max: 15, avg: POPULATION_AVERAGES.trainingLoad, iconColor: ACCENT },
-                ].map(({ icon: Icon, label, score, max, avg, iconColor }) => {
-                  const userPercent = (score / max) * 100;
-                  const avgPercent = (avg / max) * 100;
-                  const status = getComparisonStatus(score, avg, max * 0.15);
-                  const StatusIcon = status.icon;
-
-                  return (
-                    <div key={label}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Icon size={16} style={{ color: iconColor }} />
-                          <span style={{ color: 'rgba(0,0,0,0.5)', fontFamily: SPACE_MONO, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span style={{ color: INK, fontFamily: OSWALD, fontSize: '14px', fontWeight: 700 }}>{score}/{max}</span>
-                          <span
-                            className="flex items-center gap-1 px-2 py-0.5"
-                            style={{
-                              color: status.color,
-                              background: `${status.color}20`,
-                              fontFamily: SPACE_MONO,
-                              fontSize: '9px',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.05em',
-                            }}
-                          >
-                            <StatusIcon size={10} />
-                            {status.text}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="relative h-2 overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
-                        {/* User score bar */}
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${userPercent}%` }}
-                          transition={{ duration: 0.8, delay: 0.4 }}
-                          className="absolute h-full"
-                          style={{
-                            background: ACCENT,
-                            boxShadow: `0 0 10px rgba(${ACCENT_RGB}, 0.5)`,
-                          }}
-                        />
-                        {/* Population average marker */}
-                        <div
-                          className="absolute top-0 bottom-0 w-0.5"
-                          style={{
-                            left: `${avgPercent}%`,
-                            background: '#10b981',
-                            boxShadow: '0 0 4px #10b981',
-                          }}
-                        />
-                      </div>
-                      <div className="flex justify-between mt-1">
-                        <span style={{ fontSize: '9px', color: 'rgba(0,0,0,0.55)', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Your score</span>
-                        <span style={{ fontSize: '9px', color: '#10b981', fontFamily: SPACE_MONO, textTransform: 'uppercase' }}>Avg: {avg}/{max}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          </FadeInSection>
-
           {/* Track Your Progress (Signed Out Only) */}
           {!isSignedIn && (
             <FadeInSection delay={0.3}>
@@ -1815,7 +1881,7 @@ function ResultsPage({
               <section className="mb-10 p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
                 <div className="flex items-center gap-3 mb-4">
                   <Mail size={18} style={{ color: ACCENT }} />
-                  <h3 className="font-bold uppercase" style={{ fontFamily: OSWALD, fontSize: '16px' }}>
+                  <h3 className="font-bold uppercase" style={{ fontFamily: OSWALD, fontSize: '16px', color: '#000' }}>
                     Complete Performance Report
                   </h3>
                 </div>
@@ -2078,7 +2144,7 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
     <div className="p-5" style={{ background: '#ffffff', border: `1.5px solid ${CARD_BORDER}`, borderRadius: '12px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
       <div className="flex items-start gap-4">
         {product.image ? (
-          <div className="w-20 h-20 overflow-hidden flex-shrink-0 rounded-lg" style={{ background: CREAM }}>
+          <div className="w-20 h-20 overflow-hidden flex-shrink-0 rounded-lg cursor-pointer" style={{ background: CREAM }} onClick={() => onViewDetails && onViewDetails()}>
             <Image
               src={product.image}
               alt={product.title}
@@ -2089,14 +2155,14 @@ function ProductCard({ product, onAddToCart, isAdded, onViewDetails }) {
             />
           </div>
         ) : (
-          <div className="w-20 h-20 flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <div className="w-20 h-20 flex items-center justify-center flex-shrink-0 cursor-pointer" style={{ background: 'rgba(255,255,255,0.03)' }} onClick={() => onViewDetails && onViewDetails()}>
             <span className="text-4xl opacity-30">&#128138;</span>
           </div>
         )}
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h4 className="font-bold uppercase truncate" style={{ fontFamily: OSWALD, fontSize: '16px' }}>{product.title}</h4>
+            <h4 className="font-bold uppercase truncate cursor-pointer hover:text-[#00b8d4] transition-colors" style={{ fontFamily: OSWALD, fontSize: '16px' }} onClick={() => onViewDetails && onViewDetails()}>{product.title}</h4>
             <span className="whitespace-nowrap font-bold" style={{ color: ACCENT, fontFamily: OSWALD, fontSize: '20px' }}>${product.price?.toFixed(2)}</span>
           </div>
 
@@ -2283,7 +2349,7 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
 
         <div className="flex items-start gap-4">
           {product.image ? (
-            <div className="w-24 h-24 overflow-hidden flex-shrink-0" style={{ background: '#ffffff' }}>
+            <div className="w-24 h-24 overflow-hidden flex-shrink-0 cursor-pointer" style={{ background: '#ffffff' }} onClick={() => onViewDetails && onViewDetails()}>
               <Image
                 src={product.image}
                 alt={product.title}
@@ -2294,14 +2360,14 @@ function SpecialAIPickCard({ product, onAddToCart, isAdded, onViewDetails }) {
               />
             </div>
           ) : (
-            <div className="w-24 h-24 flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.03)' }}>
+            <div className="w-24 h-24 flex items-center justify-center flex-shrink-0 cursor-pointer" style={{ background: 'rgba(255,255,255,0.03)' }} onClick={() => onViewDetails && onViewDetails()}>
               <span className="text-5xl opacity-30">&#128138;</span>
             </div>
           )}
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
-              <h4 className="font-bold uppercase text-lg" style={{ fontFamily: OSWALD }}>{product.title}</h4>
+              <h4 className="font-bold uppercase text-lg cursor-pointer hover:text-[#00b8d4] transition-colors" style={{ fontFamily: OSWALD }} onClick={() => onViewDetails && onViewDetails()}>{product.title}</h4>
               <span className="whitespace-nowrap font-bold" style={{ color: ACCENT, fontFamily: OSWALD, fontSize: '22px' }}>${product.price?.toFixed(2)}</span>
             </div>
 

@@ -685,7 +685,7 @@ export default function DashboardPage() {
       }}
     >
       {/* Main content */}
-      <main className="relative z-10 pt-[60px] pb-24 px-5">
+      <main className="relative z-10 pt-[85px] pb-24 px-5">
         <div className="max-w-[430px] md:max-w-3xl mx-auto">
 
           {/* Show skeleton while data is loading */}
@@ -922,18 +922,19 @@ export default function DashboardPage() {
                 {/* Personalized Recommendations */}
                 {(recommendedProducts.length > 0 || shopifyProducts.length > 0) && (
                   <div className="mb-5">
-                    <p
-                      className="mb-3"
+                    <h2
+                      className="mb-4 text-center"
                       style={{
-                        fontFamily: 'var(--font-space-mono), Space Mono, monospace',
-                        fontSize: '8px',
-                        color: '#a855f7',
-                        letterSpacing: '2px',
+                        fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                        fontSize: '20px',
+                        fontWeight: 700,
+                        color: '#28282A',
+                        letterSpacing: '3px',
                         textTransform: 'uppercase',
                       }}
                     >
-                      PERSONALIZED RECOMMENDATIONS
-                    </p>
+                      Personalized <span style={{ color: '#00b8d4' }}>Recommendations</span>
+                    </h2>
                     <div className="grid grid-cols-2 gap-2">
                       {(() => {
                         // Show quiz recommendations + AI-suggested extras from Shopify catalog
@@ -1729,7 +1730,7 @@ export default function DashboardPage() {
                       textTransform: 'uppercase',
                     }}
                   >
-                    INTAKE TRACKER
+                    YOUR STACK
                   </h2>
                   {/* Log Intake dropdown button */}
                   <div ref={logDropdownRef} className="relative">
