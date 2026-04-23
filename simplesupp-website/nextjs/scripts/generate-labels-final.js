@@ -49,7 +49,7 @@ const SIZE_OVERRIDES = {
   'Plant Protein (Vanilla)': { w: 4500, h: 1350 },                         // 15" x 4.5"
   'BCAA Shock Powder (Fruit Punch)': { w: 2700, h: 1200 },                 // 9" x 4"
   'BCAA Post Workout Powder (Honeydew/Watermelon)': { w: 2700, h: 1200 }, // 9" x 4" (matches BCAA Shock)
-  'Creatine + Electrolyte Powder': { w: 3300, h: 900 },                   // 11" x 3"
+  'Creatine + Electrolyte': { w: 3300, h: 900 },                           // 11" x 3"
   'L-Glutamine Powder': { w: 1800, h: 750 },                               // 6" x 2.5"
   'Beetroot Powder': { w: 3225, h: 495 },                                  // 10.75" x 1.65"
   "Lion's Mane Mushroom": { w: 1650, h: 525 },                             // 5.5" x 1.75"
@@ -253,6 +253,11 @@ function buildLabelHTML(productName, data) {
   const tagline = getTagline(productName, cat);
   const benefits = getBenefits(productName, cat);
   const isCosmetic = data.isCosmetic || false;
+
+  // Dual-color split for hybrid products (e.g. Creatine + Electrolyte)
+  const isDual = /creatine.*electrolyte|electrolyte.*creatine/i.test(productName);
+  const color2 = isDual ? '#FFD700' : null;  // gold for hydration side
+  const light2 = color2 ? lightenHex(color2, 0.4) : null;
   const isPowder = data.type === 'powder';
   const isLarge = (w >= 2700 || h >= 1200);
 
@@ -412,10 +417,17 @@ function buildLabelHTML(productName, data) {
   .bg-base {
     position: absolute; inset: 0;
     background:
+      ${isDual ? `
+      radial-gradient(ellipse at 30% 45%, ${hexToRgba(color, 0.26)} 0%, transparent 35%),
+      radial-gradient(ellipse at 70% 45%, ${hexToRgba(color2, 0.22)} 0%, transparent 35%),
+      radial-gradient(ellipse at 0% 50%, ${hexToRgba(color, 0.08)} 0%, transparent 30%),
+      radial-gradient(ellipse at 100% 50%, ${hexToRgba(color2, 0.08)} 0%, transparent 30%),
+      ` : `
       radial-gradient(ellipse at 50% 45%, ${hexToRgba(color, 0.24)} 0%, transparent 35%),
       radial-gradient(ellipse at 50% 55%, ${hexToRgba(color, 0.10)} 0%, transparent 40%),
       radial-gradient(ellipse at 0% 50%, ${hexToRgba(color, 0.06)} 0%, transparent 30%),
       radial-gradient(ellipse at 100% 50%, ${hexToRgba(color, 0.06)} 0%, transparent 30%),
+      `}
       linear-gradient(180deg, #030308 0%, #020206 50%, #030308 100%);
     z-index: 0;
   }
@@ -455,7 +467,9 @@ function buildLabelHTML(productName, data) {
 
   .top-bar, .bottom-bar {
     position: absolute; left: 0; right: 0; height: 5px; z-index: 10;
-    background: linear-gradient(90deg, ${color}, ${light} 15%, ${color} 30%, #fff 50%, ${color} 70%, ${light} 85%, ${color});
+    background: ${isDual
+      ? `linear-gradient(90deg, ${color}, ${light} 20%, ${color} 40%, #fff 50%, ${color2} 60%, ${light2} 80%, ${color2})`
+      : `linear-gradient(90deg, ${color}, ${light} 15%, ${color} 30%, #fff 50%, ${color} 70%, ${light} 85%, ${color})`};
   }
   .top-bar { top: 0; box-shadow: 0 0 30px ${hexToRgba(color, 0.6)}, 0 4px 40px ${hexToRgba(color, 0.25)}; }
   .bottom-bar { bottom: 0; box-shadow: 0 0 30px ${hexToRgba(color, 0.6)}, 0 -4px 40px ${hexToRgba(color, 0.25)}; }
@@ -616,15 +630,20 @@ function buildLabelHTML(productName, data) {
 
   .product-label-top {
     font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700;
-    color: ${color}; letter-spacing: 5px; text-transform: uppercase;
-    text-shadow: 0 0 15px ${hexToRgba(color, 0.5)};
+    ${isDual
+      ? `background: linear-gradient(90deg, ${color}, ${color2}); -webkit-background-clip: text; -webkit-text-fill-color: transparent;`
+      : `color: ${color};`}
+    letter-spacing: 5px; text-transform: uppercase;
+    text-shadow: ${isDual ? 'none' : `0 0 15px ${hexToRgba(color, 0.5)}`};
     margin-bottom: 0;
   }
 
   .product-name-line1 {
     font-family: 'Bebas Neue', sans-serif; font-size: ${nameFontSize};
     line-height: 0.85; letter-spacing: 6px; text-align: center;
-    background: linear-gradient(180deg, #ffffff 0%, ${lightenHex(color, 0.85)} 25%, ${light} 55%, ${color} 80%, ${dark} 100%);
+    background: ${isDual
+      ? `linear-gradient(135deg, #ffffff 0%, ${lightenHex(color, 0.85)} 15%, ${color} 40%, #ffffff 50%, ${color2} 60%, ${lightenHex(color2, 0.85)} 85%, #ffffff 100%)`
+      : `linear-gradient(180deg, #ffffff 0%, ${lightenHex(color, 0.85)} 25%, ${light} 55%, ${color} 80%, ${dark} 100%)`};
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 30px ${hexToRgba(color, 0.4)}) drop-shadow(0 0 60px ${hexToRgba(color, 0.15)});
   }
@@ -812,7 +831,7 @@ function buildLabelHTML(productName, data) {
       </div>
       <div class="tagline-text">Stop Guessing &middot; Start Progressing</div>
       <div class="hero-line"></div>
-      <div class="product-label-top">${esc(cat)}</div>
+      <div class="product-label-top">${isDual ? 'Performance + Hydration' : esc(cat)}</div>
       <div class="product-name-line1">${esc(line1.toUpperCase())}</div>
       ${flavor ? `<div class="product-name-flavor">${esc(flavor.toUpperCase())}</div>` : ''}
       <div class="product-subtitle">${esc(formType)}</div>

@@ -262,17 +262,41 @@ export default function ShopPage() {
 
   return (
     <PageLayout>
-      {/* HERO */}
+      {/* HERO with background image */}
       <section
-        className="relative"
+        className="relative overflow-hidden"
         style={{
-          background: '#000',
-          paddingTop: '120px',
-          paddingBottom: '60px',
+          minHeight: '50vh',
           zIndex: 10,
         }}
       >
-        <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center">
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/shop-background.jpg"
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: 'grayscale(20%) contrast(1.06)' }}
+          />
+          {/* Dark gradient overlay */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,1) 100%)',
+            }}
+          />
+          {/* Cyan vignette accent */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 70%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center flex flex-col justify-end" style={{ paddingTop: '140px', paddingBottom: '60px', minHeight: '50vh' }}>
           <p style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.32em', color: TOKENS.CYAN, textTransform: 'uppercase', marginBottom: '14px' }}>
             The full catalog
           </p>
