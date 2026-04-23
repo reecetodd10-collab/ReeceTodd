@@ -89,16 +89,39 @@ export default function LatestPage() {
 
   return (
     <PageLayout>
-      {/* ═══ HERO ═══ */}
-      <section className="relative" style={{ background: '#000', paddingTop: '120px', paddingBottom: '60px', zIndex: 10 }}>
-        <div className="max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center">
+      {/* ═══ HERO with background image ═══ */}
+      <section className="relative overflow-hidden" style={{ minHeight: '50vh', zIndex: 10 }}>
+        <div className="absolute inset-0">
+          <img
+            src="/news-background.jpg"
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: 'grayscale(15%) contrast(1.06)' }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,1) 100%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 70%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center flex flex-col justify-end" style={{ paddingTop: '140px', paddingBottom: '60px', minHeight: '50vh' }}>
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             className="flex items-center justify-center gap-3 mb-5"
           >
-            <span style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase' }}>
+            <span style={{ ...FONTS.mono, fontSize: '11px', letterSpacing: '0.3em', color: TOKENS.CYAN, textTransform: 'uppercase', textShadow: '0 0 20px rgba(0,229,255,0.6), 0 2px 8px rgba(0,0,0,0.8)' }}>
               Every Sunday
             </span>
             <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: TOKENS.CYAN, boxShadow: '0 0 8px rgba(0,229,255,0.5)' }} />
@@ -108,7 +131,7 @@ export default function LatestPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="text-[44px] md:text-[80px] lg:text-[104px]"
-            style={{ ...FONTS.oswald, fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#fff', marginBottom: '18px' }}
+            style={{ ...FONTS.oswald, fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#fff', marginBottom: '18px', textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}
           >
             The <span style={{ color: TOKENS.CYAN }}>Latest</span><br />from Aviera
           </motion.h1>
@@ -117,7 +140,7 @@ export default function LatestPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.45 }}
             className="md:text-[14px]"
-            style={{ ...FONTS.mono, fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '520px', margin: '0 auto' }}
+            style={{ ...FONTS.mono, fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, maxWidth: '520px', margin: '0 auto', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}
           >
             Supplements, fitness, and the creators running the game.{' '}
             <span style={{ color: TOKENS.CYAN }}>No fluff.</span>
