@@ -715,6 +715,7 @@ export default function DashboardPage() {
 
               {/* O.S. Score Section */}
               <FadeInSection>
+              <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '16px', padding: '20px 16px', marginBottom: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <p
                   className="text-center mb-4"
                   style={{
@@ -847,6 +848,7 @@ export default function DashboardPage() {
                     TAKE THE QUIZ &rarr;
                   </Link>
                 )}
+              </div>
               </FadeInSection>
 
               {/* Streak Banner */}
@@ -930,6 +932,7 @@ export default function DashboardPage() {
 
               {/* Your Stack (existing supplement tracker) */}
               <FadeInSection delay={0.1}>
+              <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '16px', padding: '20px 16px', marginBottom: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <h2
                   className="text-center mb-4"
                   style={{
@@ -1261,12 +1264,13 @@ export default function DashboardPage() {
                     </div>
                   ))}
                 </div>
+              </div>
               </FadeInSection>
 
-              
-{/* Personalized Recommendations — visually below Your Stack via order */}
+
+{/* Personalized Recommendations */}
                 {(recommendedProducts.length > 0 || shopifyProducts.length > 0) && (
-                  <div className="mb-5">
+                  <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '16px', padding: '20px 16px', marginBottom: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
                     <h2
                       className="mb-4 text-center"
                       style={{
@@ -1296,6 +1300,8 @@ export default function DashboardPage() {
                         const catColor = getCategoryColor(rec.title || '');
                         const catLabel = getCategoryLabel(rec.title || '');
                         const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
+                        const recShopify = findShopifyProduct(rec.title);
+                        const recImg = recShopify?.images?.[0] || recShopify?.image || null;
                         const alreadyAdded = stackItems.some(
                           (s) => s.name.toLowerCase() === (rec.title || '').toLowerCase()
                         );
@@ -1305,7 +1311,7 @@ export default function DashboardPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: idx * 0.08 }}
-                            className="rounded-lg relative overflow-hidden"
+                            className="rounded-lg relative overflow-hidden cursor-pointer"
                             style={{
                               background: '#ffffff',
                               border: `1px solid rgba(${catRgb}, 0.25)`,
@@ -1314,6 +1320,18 @@ export default function DashboardPage() {
                               display: 'flex',
                               flexDirection: 'column',
                               justifyContent: 'space-between',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                            }}
+                            onClick={() => {
+                              if (recShopify) setDetailProduct({ ...recShopify, price: rec.price || recShopify.price });
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.boxShadow = `0 4px 16px rgba(${catRgb}, 0.15)`;
+                              e.currentTarget.style.borderColor = catColor;
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)';
+                              e.currentTarget.style.borderColor = `rgba(${catRgb}, 0.25)`;
                             }}
                           >
                             {/* Top glow line */}
@@ -1327,6 +1345,13 @@ export default function DashboardPage() {
                             }} />
 
                             <div>
+                              {/* Product image */}
+                              {recImg && (
+                                <div className="w-full flex items-center justify-center mb-2" style={{ height: '60px', background: '#f8f8f8', borderRadius: '6px', overflow: 'hidden' }}>
+                                  <img src={recImg} alt={rec.title} className="h-full object-contain" style={{ maxWidth: '100%', padding: '4px' }} />
+                                </div>
+                              )}
+
                               {/* Category badge */}
                               <span
                                 style={{
