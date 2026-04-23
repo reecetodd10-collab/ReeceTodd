@@ -297,7 +297,7 @@ export default function ShopPage() {
         </div>
 
         <div className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 text-center flex flex-col justify-end" style={{ paddingTop: '140px', paddingBottom: '60px', minHeight: '50vh' }}>
-          <p style={{ ...FONTS.mono, fontSize: '10px', letterSpacing: '0.32em', color: TOKENS.CYAN, textTransform: 'uppercase', marginBottom: '14px' }}>
+          <p style={{ ...FONTS.mono, fontSize: '11px', letterSpacing: '0.32em', color: TOKENS.CYAN, textTransform: 'uppercase', marginBottom: '14px', textShadow: '0 0 20px rgba(0,229,255,0.6), 0 2px 8px rgba(0,0,0,0.8)' }}>
             The full catalog
           </p>
           <h1
