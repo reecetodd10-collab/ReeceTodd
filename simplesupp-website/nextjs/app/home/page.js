@@ -229,22 +229,6 @@ export default function HomePage() {
           className="relative max-w-[430px] md:max-w-5xl lg:max-w-6xl mx-auto px-5 md:px-8 flex flex-col"
           style={{ minHeight: '100vh', paddingTop: '100px', paddingBottom: '60px', y: heroTextY, opacity: heroOpacity }}
         >
-          {/* Top label */}
-          <motion.p
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            style={{
-              ...mono,
-              fontSize: '10px',
-              color: 'rgba(255,255,255,0.6)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.32em',
-            }}
-          >
-            Aviera — Issue 01 / Spring 26
-          </motion.p>
-
           <div className="flex-1" />
 
           <div className="md:max-w-2xl">
