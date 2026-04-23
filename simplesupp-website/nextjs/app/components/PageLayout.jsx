@@ -110,18 +110,17 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
         <div className={`${CONTAINER_CLASSES} flex items-center justify-between px-5 md:px-8 py-4`}>
           <Link
             href="/home"
-            className="no-underline"
-            style={{
-              ...FONTS.oswald,
-              fontSize: '12px',
-              fontWeight: 700,
-              letterSpacing: '0.4em',
-              color: TOKENS.CYAN,
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
+            className="no-underline flex items-center gap-2"
+            style={{ textDecoration: 'none' }}
           >
-            ◉ Aviera
+            <svg width="22" height="22" viewBox="0 0 42 42" fill="none">
+              <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
+              <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.35em', color: '#fff', textTransform: 'uppercase' }}>
+              AVIERA
+            </span>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -220,17 +219,15 @@ export function StickyNav({ menuOpen, setMenuOpen, cartOpen, setCartOpen }) {
             >
               {/* Header row */}
               <div className="flex items-center justify-between px-6 pt-6 pb-4">
-                <span
-                  style={{
-                    ...FONTS.oswald,
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    letterSpacing: '0.4em',
-                    color: TOKENS.CYAN,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  ◉ Aviera
+                <span className="flex items-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 42 42" fill="none">
+                    <circle cx="21" cy="21" r="19" stroke={TOKENS.CYAN} strokeWidth="2"/>
+                    <path d="M21 12 L21 30" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M15 18 L21 12 L27 18" stroke={TOKENS.CYAN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span style={{ fontFamily: "'Orbitron', var(--font-oswald), sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.35em', color: TOKENS.CYAN, textTransform: 'uppercase' }}>
+                    AVIERA
+                  </span>
                 </span>
                 <motion.button
                   whileHover={{ rotate: 90 }}
