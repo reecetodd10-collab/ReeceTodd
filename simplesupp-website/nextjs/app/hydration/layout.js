@@ -26,7 +26,7 @@ const productJsonLd = {
     "@type": "Offer",
     "url": "https://www.avierafit.com/hydration",
     "priceCurrency": "USD",
-    "price": "21.99",
+    "price": "19.99",
     "availability": "https://schema.org/InStock",
   },
   "aggregateRating": {

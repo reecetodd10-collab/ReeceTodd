@@ -102,7 +102,7 @@ export const products = [
     name: 'Electrolyte Formula (Lemonade)',
     suplifulName: 'Hydration Powder (Lemonade)',
     category: PRODUCT_CATEGORIES.PERFORMANCE,
-    price: 21.99,
+    price: 19.99,
     costPrice: 13.55,
     description: 'Essential electrolytes for hydration, endurance, and recovery.',
     benefits: ['Improves hydration', 'Prevents cramping', 'Supports endurance', 'Replenishes minerals'],

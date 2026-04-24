@@ -14,7 +14,7 @@ const config = {
       'Full-spectrum electrolyte replenishment for athletes who sweat like they mean it. Zero sugar. Real lemonade flavor.',
     badge: 'NEW FLAVOR',
   },
-  price: { display: '$21.99', value: 21.99 },
+  price: { display: '$19.99', value: 19.99 },
   servingsText: '30 SERVINGS',
   colors: {
     primary: '#ffd200',
