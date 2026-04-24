@@ -2715,13 +2715,14 @@ export default function SupplementAdvisor() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm"
+            style={{ background: 'rgba(255,255,255,0.97)' }}
             onClick={() => setLightboxImage(null)}
           >
             <button
               onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center text-white"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(0,0,0,0.08)', color: '#333' }}
             >
               <X size={22} />
             </button>
@@ -2731,6 +2732,7 @@ export default function SupplementAdvisor() {
               exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="relative max-w-[90vw] max-h-[85vh]"
+              style={{ background: '#fff', borderRadius: '8px', padding: '8px' }}
               onClick={(e) => e.stopPropagation()}
             >
               <Image

@@ -421,10 +421,10 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
         {zoomedImage && (
           <div
             onClick={() => setZoomedImage(null)}
-            style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: '20px' }}
+            style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(255,255,255,0.97)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: '20px' }}
           >
-            <img src={zoomedImage} alt="Zoomed" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-            <button onClick={() => setZoomedImage(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={zoomedImage} alt="Zoomed" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', background: '#fff', borderRadius: '8px', padding: '8px' }} />
+            <button onClick={() => setZoomedImage(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: '#333', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X size={20} />
             </button>
           </div>
