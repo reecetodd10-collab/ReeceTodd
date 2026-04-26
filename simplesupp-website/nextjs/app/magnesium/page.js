@@ -14,7 +14,7 @@ const config = {
       'The most absorbable form of magnesium. Deeper sleep, fewer cramps, calmer nervous system. The mineral 75% of people are deficient in.',
     badge: 'BESTSELLER',
   },
-  price: { display: '$23.15', value: 23.15 },
+  price: { display: '$19.99', value: 19.99 },
   servingsText: '60 CAPSULES',
   colors: {
     primary: '#a855f7',      // purple

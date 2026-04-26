@@ -336,6 +336,8 @@ function getCategoryForProduct(name = '') {
   if (/pre.?workout|alpha energy|nitric shock|energy powder|coq10|ubiquinone/i.test(n)) return 'Pre-Workout';
   // Protein
   if (/whey|plant protein|protein isolate/i.test(n)) return 'Protein';
+  // Performance — catch creatine before hydration/electrolyte
+  if (/creatine/i.test(n)) return 'Performance';
   // Recovery & Hydration
   if (/hydration|electrolyte|bcaa/i.test(n)) return 'Recovery';
   // Sleep

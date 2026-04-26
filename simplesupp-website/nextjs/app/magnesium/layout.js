@@ -26,7 +26,7 @@ const productJsonLd = {
     "@type": "Offer",
     "url": "https://www.avierafit.com/magnesium",
     "priceCurrency": "USD",
-    "price": "23.15",
+    "price": "19.99",
     "availability": "https://schema.org/InStock",
   },
   "aggregateRating": {

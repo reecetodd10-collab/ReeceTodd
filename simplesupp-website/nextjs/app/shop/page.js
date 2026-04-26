@@ -193,7 +193,7 @@ export default function ShopPage() {
       // Dual-category: Creatine + Electrolyte appears in both Performance and Recovery & Hydration
       const tl = (p.title || '').toLowerCase();
       if (tl.includes('creatine') && tl.includes('electrolyte') && groups['Recovery & Hydration']) {
-        groups['Recovery & Hydration'].grid.push({ ...item, category: 'Recovery & Hydration', accent: CAT_COLORS['Recovery & Hydration'] });
+        groups['Recovery & Hydration'].grid.push({ ...item, category: 'Performance', accent: CAT_COLORS['Performance'] });
         groups['Recovery & Hydration'].raw.push(p);
       }
     }
