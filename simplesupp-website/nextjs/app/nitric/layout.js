@@ -1,26 +1,27 @@
 export const metadata = {
   title: 'Nitric Oxide Supplement for Pumps | Aviera',
-  description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
+  description: 'Shop Aviera Pump (Nitric Oxide), a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
   alternates: { canonical: '/nitric' },
   openGraph: {
     title: 'Nitric Oxide Supplement for Pumps | Aviera',
-    description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
+    description: 'Shop Aviera Pump (Nitric Oxide), a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
     url: '/nitric',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Nitric Oxide Supplement for Pumps | Aviera',
-    description: 'Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
+    description: 'Shop Aviera Pump (Nitric Oxide), a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.',
   },
 };
 
 const productJsonLd = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "Aviera Flow State X",
+  "name": "Aviera Pump (Nitric Oxide)",
+  "alternateName": "Flow State X",
   "brand": { "@type": "Brand", "name": "Aviera Fit" },
   "category": "Nitric Oxide Supplement",
-  "description": "Shop Aviera Flow State X, a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.",
+  "description": "Shop Aviera Pump (Nitric Oxide), a stimulant-free nitric oxide supplement for pumps, blood flow, and performance support.",
   "image": ["https://www.avierafit.com/icon.png"],
   "sku": "AVIERA-FSX",
   "offers": {
@@ -48,8 +49,8 @@ const faqJsonLd = {
     },
     {
       "@type": "Question",
-      "name": "Is Flow State X stimulant-free?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Flow State X contains no caffeine or stimulants. It is designed for pumps and blood flow without affecting sleep or causing jitters." },
+      "name": "Is Pump (Nitric Oxide) stimulant-free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pump (Nitric Oxide) contains no caffeine or stimulants. It is designed for pumps and blood flow without affecting sleep or causing jitters." },
     },
     {
       "@type": "Question",
@@ -58,8 +59,8 @@ const faqJsonLd = {
     },
     {
       "@type": "Question",
-      "name": "Can I stack Flow State X with pre-workout?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Because it is stimulant-free, Flow State X pairs well with a caffeinated pre-workout for combined energy and pump support." },
+      "name": "Can I stack Pump (Nitric Oxide) with pre-workout?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Because it is stimulant-free, Pump (Nitric Oxide) pairs well with a caffeinated pre-workout for combined energy and pump support." },
     },
     {
       "@type": "Question",
@@ -75,7 +76,7 @@ const breadcrumbJsonLd = {
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.avierafit.com/" },
     { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.avierafit.com/shop" },
-    { "@type": "ListItem", "position": 3, "name": "Flow State X", "item": "https://www.avierafit.com/nitric" },
+    { "@type": "ListItem", "position": 3, "name": "Pump (Nitric Oxide)", "item": "https://www.avierafit.com/nitric" },
   ],
 };
 

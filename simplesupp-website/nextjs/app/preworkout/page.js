@@ -102,8 +102,8 @@ const config = {
       a: 'Take it 20-30 minutes before training for best results. Start with one scoop to assess tolerance, and avoid stacking other caffeine sources on top of it.',
     },
     {
-      q: 'Can I stack pre-workout with Flow State X?',
-      a: 'Yes. Flow State X provides stimulant-free pump support that complements the energy and focus from Aviera Pre-Workout. Check the citrulline doses to avoid unnecessary overlap.',
+      q: 'Can I stack pre-workout with Pump (Nitric Oxide)?',
+      a: 'Yes. Pump (Nitric Oxide) provides stimulant-free pump support that complements the energy and focus from Aviera Pre-Workout. Check the citrulline doses to avoid unnecessary overlap.',
     },
     {
       q: 'Is this pre-workout good for cardio?',

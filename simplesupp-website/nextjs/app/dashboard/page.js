@@ -54,7 +54,7 @@ const CATEGORY_COLOR_RGB = {
 function getCategoryForProduct(name = '') {
   const n = name.toLowerCase();
   // Performance (cyan) — nitric oxide, creatine, bcaa, beetroot, glutamine
-  if (/nitric|flow state x(?!.*nootropic)|creatine|bcaa(?!.*post)|beetroot|glutamine/i.test(n)) return 'Performance';
+  if (/nitric|pump|flow state x(?!.*nootropic)|creatine|bcaa(?!.*post)|beetroot|glutamine/i.test(n)) return 'Performance';
   // Pre-Workout & Energy (red) — pre-workout, alpha energy
   if (/pre.?workout|alpha energy|nitric shock/i.test(n)) return 'Pre-Workout';
   // Protein (purple) — whey, plant protein
@@ -150,6 +150,8 @@ export default function DashboardPage() {
   const [supplements, setSupplements] = useState([]);
   const [intakeLogs, setIntakeLogs] = useState([]);
   const [loggingIntake, setLoggingIntake] = useState(false);
+  const [purchases, setPurchases] = useState([]);
+  const [loggedToday, setLoggedToday] = useState(new Set());
 
   // Stack builder state
   const [stackItems, setStackItems] = useState([]);
@@ -308,10 +310,11 @@ export default function DashboardPage() {
     setDataLoading(true);
 
     try {
-      const [intakeRes, stacksRes, optimizationRes] = await Promise.allSettled([
+      const [intakeRes, stacksRes, optimizationRes, purchasesRes] = await Promise.allSettled([
         fetch('/api/intake?days=30', { headers }),
         fetch('/api/stacks', { headers }),
         fetch('/api/optimization-results?history=true', { headers }),
+        fetch('/api/purchases', { headers }),
       ]);
 
       // Process intake data
@@ -320,6 +323,16 @@ export default function DashboardPage() {
         setCurrentStreak(intakeData.streak || 0);
         setLongestStreak(intakeData.longest_streak || 0);
         setIntakeLogs(intakeData.logs || []);
+
+        // Build set of supplements logged today
+        const todayStr = new Date().toDateString();
+        const todaySet = new Set();
+        (intakeData.logs || []).forEach(log => {
+          if (new Date(log.taken_at).toDateString() === todayStr) {
+            todaySet.add(log.supplement_name.toLowerCase());
+          }
+        });
+        setLoggedToday(todaySet);
       }
 
       // Process stacks data
@@ -370,6 +383,11 @@ export default function DashboardPage() {
           const recs = latestResult.recommended_products || [];
           setRecommendedProducts(Array.isArray(recs) ? recs : []);
         }
+      }
+      // Process purchase history
+      if (purchasesRes.status === 'fulfilled' && purchasesRes.value.ok) {
+        const purchasesData = await purchasesRes.value.json();
+        setPurchases(purchasesData.purchases || []);
       }
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
@@ -432,6 +450,9 @@ export default function DashboardPage() {
           setTimeout(() => setShowCooldown(false), 4000);
           return;
         }
+
+        // Mark this supplement as logged today
+        setLoggedToday(prev => new Set([...prev, supplementName.toLowerCase()]));
 
         // Update streak immediately from response
         if (data.streak != null) setCurrentStreak(data.streak);
@@ -942,6 +963,41 @@ export default function DashboardPage() {
                     </span>
                   )}
                 </h2>
+
+                {/* Today's progress bar */}
+                {supplements.length > 0 && (() => {
+                  const todayCount = supplements.filter(s => loggedToday.has(s.name.toLowerCase())).length;
+                  const total = supplements.length;
+                  const allDone = todayCount === total;
+                  const pct = total > 0 ? Math.round((todayCount / total) * 100) : 0;
+                  return (
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span style={{ fontFamily: 'var(--font-space-mono), Space Mono, monospace', fontSize: '9px', color: allDone ? '#10b981' : 'rgba(0,0,0,0.45)', letterSpacing: '0.5px' }}>
+                          {allDone ? '✓ ALL LOGGED TODAY' : `TODAY: ${todayCount}/${total} LOGGED`}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-oswald), Oswald, sans-serif', fontSize: '11px', color: allDone ? '#10b981' : '#00b8d4', letterSpacing: '1px' }}>
+                          {currentStreak > 0 && `🔥 ${currentStreak} DAY STREAK`}
+                        </span>
+                      </div>
+                      <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                          style={{
+                            height: '100%',
+                            borderRadius: '3px',
+                            background: allDone
+                              ? 'linear-gradient(90deg, #10b981, #34d399)'
+                              : 'linear-gradient(90deg, #00b8d4, #00e5ff)',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="flex justify-end items-baseline mb-3">
                   {/* Log Intake dropdown button */}
                   <div ref={logDropdownRef} className="relative">
@@ -973,39 +1029,43 @@ export default function DashboardPage() {
                           style={{
                             top: 'calc(100% + 4px)',
                             width: '200px',
-                            background: '#0f0f0f',
+                            background: '#ffffff',
                             border: '1px solid rgba(0,0,0,0.1)',
                           }}
                         >
                           {(supplements.length > 0 ? supplements : stackItems).map((item, idx) => {
                             const dCatColor = getCategoryColor(item.name);
                             const dCatRgb = CATEGORY_COLOR_RGB[dCatColor] || '168, 85, 247';
+                            const dIsLogged = loggedToday.has(item.name.toLowerCase());
                             return (
                               <button
                                 key={`log-${idx}`}
                                 onClick={() => {
-                                  handleLogIntake(item.name);
-                                  setShowLogDropdown(false);
+                                  if (!dIsLogged) {
+                                    handleLogIntake(item.name);
+                                    setShowLogDropdown(false);
+                                  }
                                 }}
-                                disabled={loggingIntake}
-                                className="w-full text-left cursor-pointer"
+                                disabled={loggingIntake || dIsLogged}
+                                className="w-full text-left"
                                 style={{
                                   padding: '10px 12px',
-                                  background: 'transparent',
+                                  background: dIsLogged ? 'rgba(16,185,129,0.04)' : 'transparent',
                                   border: 'none',
                                   borderBottom: '1px solid rgba(0,0,0,0.05)',
-                                  borderLeft: `3px solid ${dCatColor}`,
+                                  borderLeft: `3px solid ${dIsLogged ? '#10b981' : dCatColor}`,
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'space-between',
+                                  cursor: dIsLogged ? 'default' : 'pointer',
                                 }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = `rgba(${dCatRgb},0.05)`)}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                                onMouseEnter={(e) => { if (!dIsLogged) e.currentTarget.style.background = `rgba(${dCatRgb},0.05)`; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = dIsLogged ? 'rgba(16,185,129,0.04)' : 'transparent'; }}
                               >
                                 <span style={{
                                   fontFamily: 'var(--font-oswald), Oswald, sans-serif',
                                   fontSize: '11px',
-                                  color: '#28282A',
+                                  color: dIsLogged ? 'rgba(0,0,0,0.35)' : '#28282A',
                                   letterSpacing: '0.5px',
                                   textTransform: 'uppercase',
                                 }}>
@@ -1014,9 +1074,9 @@ export default function DashboardPage() {
                                 <span style={{
                                   fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                   fontSize: '8px',
-                                  color: '#00e5ff',
+                                  color: dIsLogged ? '#10b981' : '#00e5ff',
                                 }}>
-                                  LOG
+                                  {dIsLogged ? 'DONE ✓' : 'LOG'}
                                 </span>
                               </button>
                             );
@@ -1049,16 +1109,17 @@ export default function DashboardPage() {
                     const catRgb = CATEGORY_COLOR_RGB[catColor] || '168, 85, 247';
                     const shopifyMatch = findShopifyProduct(supp.name);
                     const productImg = shopifyMatch?.images?.[0] || shopifyMatch?.image || null;
+                    const isLogged = loggedToday.has(supp.name.toLowerCase());
                     return (
                       <div
                         key={supp.id}
                         className="rounded-xl cursor-pointer transition-all relative overflow-hidden"
                         style={{
-                          background: '#ffffff',
-                          border: `1px solid rgba(${catRgb}, 0.15)`,
+                          background: isLogged ? `rgba(16,185,129,0.04)` : '#ffffff',
+                          border: `1px solid ${isLogged ? 'rgba(16,185,129,0.3)' : `rgba(${catRgb}, 0.15)`}`,
                           padding: '14px',
                           minHeight: '110px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                          boxShadow: isLogged ? '0 2px 12px rgba(16,185,129,0.1)' : '0 2px 8px rgba(0,0,0,0.04)',
                         }}
                         onClick={() => {
                           if (shopifyMatch) {
@@ -1082,9 +1143,31 @@ export default function DashboardPage() {
                           top: 0,
                           left: 0,
                           right: 0,
-                          height: '2px',
-                          background: catColor,
+                          height: '3px',
+                          background: isLogged ? '#10b981' : catColor,
                         }} />
+
+                        {/* Logged checkmark badge */}
+                        {isLogged && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            background: '#10b981',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 6px rgba(16,185,129,0.3)',
+                            zIndex: 2,
+                          }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </div>
+                        )}
 
                         {/* Product image */}
                         {productImg && (
@@ -1142,7 +1225,7 @@ export default function DashboardPage() {
                           className="mb-1 overflow-hidden"
                           style={{
                             height: '4px',
-                            background: '#1a1a1a',
+                            background: 'rgba(0,0,0,0.08)',
                             borderRadius: '4px',
                           }}
                         >
@@ -1185,22 +1268,24 @@ export default function DashboardPage() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleLogIntake(supp.name);
+                                if (!isLogged) handleLogIntake(supp.name);
                               }}
-                              disabled={loggingIntake}
+                              disabled={loggingIntake || isLogged}
                               className="bg-transparent border-none cursor-pointer"
                               style={{
                                 fontFamily: 'var(--font-space-mono), Space Mono, monospace',
                                 fontSize: '8px',
-                                color: catColor,
+                                color: isLogged ? '#10b981' : catColor,
                                 padding: '2px 6px',
-                                border: `1px solid rgba(${catRgb}, 0.3)`,
+                                border: `1px solid ${isLogged ? 'rgba(16,185,129,0.4)' : `rgba(${catRgb}, 0.3)`}`,
                                 borderRadius: '3px',
+                                background: isLogged ? 'rgba(16,185,129,0.08)' : 'transparent',
                                 opacity: loggingIntake ? 0.5 : 1,
+                                cursor: isLogged ? 'default' : 'pointer',
                               }}
-                              title="Log intake"
+                              title={isLogged ? 'Logged today' : 'Log intake'}
                             >
-                              LOG
+                              {isLogged ? 'DONE ✓' : 'LOG'}
                             </button>
                           </div>
                         </div>
@@ -1430,7 +1515,7 @@ export default function DashboardPage() {
                                   letterSpacing: '1.5px',
                                   color: alreadyAdded ? '#333' : catColor,
                                   background: alreadyAdded ? 'transparent' : `rgba(${catRgb}, 0.06)`,
-                                  border: `1px solid ${alreadyAdded ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
+                                  border: `1px solid ${alreadyAdded ? 'rgba(0,0,0,0.2)' : `rgba(${catRgb}, 0.3)`}`,
                                   padding: '6px 8px',
                                   textTransform: 'uppercase',
                                 }}
@@ -1623,7 +1708,7 @@ export default function DashboardPage() {
                         className="absolute left-0 right-0 z-10 rounded-lg overflow-hidden"
                         style={{
                           top: 'calc(100% + 4px)',
-                          background: '#0f0f0f',
+                          background: '#ffffff',
                           border: '1px solid rgba(0,0,0,0.1)',
                         }}
                       >
@@ -1824,7 +1909,7 @@ export default function DashboardPage() {
                                                   letterSpacing: '1px',
                                                   color: alreadyIn ? '#333' : catColor,
                                                   background: 'transparent',
-                                                  border: `1px solid ${alreadyIn ? '#1a1a1a' : `rgba(${catRgb}, 0.3)`}`,
+                                                  border: `1px solid ${alreadyIn ? 'rgba(0,0,0,0.2)' : `rgba(${catRgb}, 0.3)`}`,
                                                   borderRadius: '3px',
                                                   padding: '3px 8px',
                                                   cursor: alreadyIn ? 'default' : 'pointer',
@@ -2076,6 +2161,119 @@ export default function DashboardPage() {
                       START QUIZ &rarr;
                     </span>
                   </Link>
+                </FadeInSection>
+              )}
+
+              {/* ═══ PURCHASE HISTORY ═══ */}
+              {purchases.length > 0 && (
+                <FadeInSection delay={0.3}>
+                  <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '16px', padding: '20px 16px', marginTop: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                    <h2 style={{
+                      fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                      fontSize: '20px',
+                      color: '#28282A',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                      marginBottom: '16px',
+                    }}>
+                      Purchase <span style={{ color: '#00e5ff' }}>History</span>
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {purchases.map((p) => {
+                        const catColor = getCategoryColor(p.product_name);
+                        const catRgb = CATEGORY_COLOR_RGB[catColor] || '0, 229, 255';
+                        const date = new Date(p.purchased_at);
+                        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        const shopifyProduct = shopifyProducts.find(sp => {
+                          const title = (sp.title || sp.node?.title || '').toLowerCase();
+                          return title.includes(p.product_name.toLowerCase()) || p.product_name.toLowerCase().includes(title);
+                        });
+                        const imgSrc = shopifyProduct?.images?.[0]?.src || shopifyProduct?.node?.images?.edges?.[0]?.node?.src;
+
+                        return (
+                          <div
+                            key={p.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px',
+                              padding: '12px',
+                              background: '#ffffff',
+                              borderRadius: '10px',
+                              border: `1px solid rgba(${catRgb}, 0.15)`,
+                              borderLeft: `3px solid ${catColor}`,
+                              cursor: shopifyProduct ? 'pointer' : 'default',
+                              transition: 'box-shadow 0.2s',
+                            }}
+                            onClick={() => {
+                              if (shopifyProduct) {
+                                const prod = shopifyProduct.node || shopifyProduct;
+                                setDetailProduct({
+                                  title: prod.title,
+                                  images: (prod.images?.edges || prod.images || []).map(i => ({ src: i.node?.src || i.src })),
+                                  description: prod.descriptionHtml || prod.description || '',
+                                  price: prod.priceRange?.minVariantPrice?.amount || '',
+                                  variantId: prod.variants?.edges?.[0]?.node?.id || prod.variants?.[0]?.id,
+                                });
+                              }
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 2px 12px rgba(${catRgb}, 0.15)`; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+                          >
+                            {/* Product image */}
+                            <div style={{ width: '40px', height: '40px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: '#f8f8f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {imgSrc ? (
+                                <img src={imgSrc} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <span style={{ fontSize: '16px', color: catColor }}>●</span>
+                              )}
+                            </div>
+
+                            {/* Info */}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{
+                                fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                                fontSize: '13px',
+                                color: '#28282A',
+                                letterSpacing: '0.5px',
+                                textTransform: 'uppercase',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}>
+                                {p.product_name}
+                              </div>
+                              <div style={{
+                                fontFamily: 'var(--font-space-mono), Space Mono, monospace',
+                                fontSize: '9px',
+                                color: 'rgba(0,0,0,0.4)',
+                                marginTop: '2px',
+                              }}>
+                                {dateStr} · Qty: {p.quantity || 1}
+                              </div>
+                            </div>
+
+                            {/* Category badge */}
+                            <span style={{
+                              fontFamily: 'var(--font-oswald), Oswald, sans-serif',
+                              fontSize: '8px',
+                              fontWeight: 700,
+                              letterSpacing: '0.5px',
+                              color: catColor,
+                              padding: '2px 6px',
+                              border: `1px solid rgba(${catRgb}, 0.3)`,
+                              borderRadius: '2px',
+                              textTransform: 'uppercase',
+                              flexShrink: 0,
+                            }}>
+                              {getCategoryLabel(p.product_name)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </FadeInSection>
               )}
             </motion.div>
@@ -2664,7 +2862,7 @@ export default function DashboardPage() {
               style={{
                 margin: '0 20px',
                 padding: '14px 16px',
-                background: '#1a1a1a',
+                background: 'rgba(0,0,0,0.2)',
                 border: '1px solid rgba(255, 45, 85, 0.3)',
               }}
             >

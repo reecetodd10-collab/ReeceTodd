@@ -61,6 +61,7 @@ function categorize(title = '') {
     return 'Protein';
 
   if (
+    t.includes('pump') ||
     t.includes('flow state') ||
     t.includes('creatine') ||
     t.includes('beetroot') ||
@@ -83,7 +84,7 @@ function categorize(title = '') {
 
 function productHref(title = '') {
   const t = title.toLowerCase();
-  if (t.includes('flow state') && !t.includes('nootropic')) return '/nitric';
+  if ((t.includes('pump') || t.includes('flow state')) && !t.includes('nootropic')) return '/nitric';
   if (t.includes('hydration') && t.includes('lemonade')) return '/hydration';
   if (t.includes('magnesium')) return '/magnesium';
   if (t.includes('creatine') && t.includes('electrolyte')) return '/creatine-electrolyte';

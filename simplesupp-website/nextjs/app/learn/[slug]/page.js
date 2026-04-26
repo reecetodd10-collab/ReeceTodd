@@ -18,7 +18,7 @@ const articles = {
     published: '2026-04-15',
     modified: '2026-04-15',
     relatedProducts: [
-      { name: 'Flow State X', href: '/nitric', description: 'Nitric oxide pump formula with clinical-dose L-citrulline' },
+      { name: 'Pump (Nitric Oxide)', href: '/nitric', description: 'Nitric oxide pump formula with clinical-dose L-citrulline' },
       { name: 'Pre-Workout (Fruit Punch)', href: '/preworkout', description: 'Performance pre-workout with nitric oxide support' },
       { name: 'Creatine Monohydrate', href: '/creatine', description: 'Pairs with nitric oxide for strength and volume' },
     ],
@@ -87,7 +87,7 @@ Third layer: a polyphenol or antioxidant source (grape seed extract, pine bark e
 
 Optional: 50 mg S7 blend for additional plant-based NO support.
 
-Aviera's [Flow State X](/nitric) formula was designed around this multi-pathway approach — clinical-dose citrulline paired with complementary NO supporters. If you are looking for a single product that covers the foundation and second layer, it is worth checking the label against these benchmarks.
+Aviera's [Pump (Nitric Oxide)](/nitric) formula was designed around this multi-pathway approach — clinical-dose citrulline paired with complementary NO supporters. If you are looking for a single product that covers the foundation and second layer, it is worth checking the label against these benchmarks.
 
 Pair your NO stack with [creatine monohydrate](/creatine) for the strength and volume side of the equation. If you are using a caffeinated [pre-workout](/preworkout), check whether it already contains citrulline to avoid doubling up unnecessarily.`,
       },
@@ -271,7 +271,7 @@ Creatine + protein: taking creatine with a protein-containing meal enhances abso
 
 Creatine + beta-alanine: both improve performance through different mechanisms (creatine through ATP regeneration, beta-alanine through muscle pH buffering). They can be taken together and the benefits stack additively.
 
-Creatine + nitric oxide supplements: creatine fuels the energy side, NO supplements fuel the blood flow side. Combining [creatine](/creatine) with a nitric oxide formula like [Flow State X](/nitric) addresses two distinct performance bottlenecks simultaneously.
+Creatine + nitric oxide supplements: creatine fuels the energy side, NO supplements fuel the blood flow side. Combining [creatine](/creatine) with a nitric oxide formula like [Pump (Nitric Oxide)](/nitric) addresses two distinct performance bottlenecks simultaneously.
 
 The minimal effective creatine stack for most strength athletes is simple: 5g creatine monohydrate daily + adequate hydration. Everything else is optimization on top of a solid foundation.`,
       },
@@ -379,7 +379,7 @@ If you want to see where magnesium fits alongside your other supplements, Aviera
     modified: '2026-04-15',
     relatedProducts: [
       { name: 'Pre-Workout (Fruit Punch)', href: '/preworkout', description: 'Clean energy pre-workout without the crash' },
-      { name: 'Flow State X', href: '/nitric', description: 'Stimulant-free pump and performance formula' },
+      { name: 'Pump (Nitric Oxide)', href: '/nitric', description: 'Stimulant-free pump and performance formula' },
       { name: 'Optimization Quiz', href: '/supplement-optimization-score', description: 'Find the right pre-workout approach for you' },
     ],
     sections: [
@@ -441,7 +441,7 @@ Alpha-GPC at 300-600 mg delivers focus and mind-muscle connection without any st
 
 Taurine at 1-2 grams supports cell volumization and has mild calming effects on the nervous system, which is beneficial for focused evening training.
 
-[Flow State X](/nitric) is designed as a stimulant-free performance formula — it covers the citrulline, nitrates, and blood flow support without any caffeine, making it ideal for PM sessions or stacking with a low-caffeine source for AM training.
+[Pump (Nitric Oxide)](/nitric) is designed as a stimulant-free performance formula — it covers the citrulline, nitrates, and blood flow support without any caffeine, making it ideal for PM sessions or stacking with a low-caffeine source for AM training.
 
 For those who want some energy support without caffeine, the Aviera [Pre-Workout](/preworkout) uses a measured caffeine dose combined with L-theanine for smooth, jitter-free performance.`,
       },
@@ -453,7 +453,7 @@ For most pre-workouts, 20-30 minutes before training is optimal. This gives caff
 
 Do not stack multiple pre-workouts or add extra caffeine on top of a pre-workout. This is the most common way people end up with jitters. If your pre-workout feels weak, the solution is to find a better-formulated product, not to add more stimulants on top.
 
-Acceptable pre-workout stacks: a stim-free pump formula plus a moderate-caffeine energy source. For example, [Flow State X](/nitric) for blood flow and pumps plus a cup of coffee for energy. This gives you full control over your stimulant dose while getting clinical levels of performance ingredients.
+Acceptable pre-workout stacks: a stim-free pump formula plus a moderate-caffeine energy source. For example, [Pump (Nitric Oxide)](/nitric) for blood flow and pumps plus a cup of coffee for energy. This gives you full control over your stimulant dose while getting clinical levels of performance ingredients.
 
 For those who use creatine, it can be mixed into your pre-workout shake or taken separately — the timing does not significantly impact creatine's efficacy since it works through saturation, not acute dosing.
 
@@ -557,7 +557,7 @@ To see where you fall on this spectrum, try the [Optimization Quiz](/supplement-
     modified: '2026-04-15',
     relatedProducts: [
       { name: 'Creatine Monohydrate', href: '/creatine', description: 'The foundation of any muscle-building stack' },
-      { name: 'Flow State X', href: '/nitric', description: 'Nitric oxide support for training performance' },
+      { name: 'Pump (Nitric Oxide)', href: '/nitric', description: 'Nitric oxide support for training performance' },
       { name: 'Hydration Formula', href: '/hydration', description: 'Electrolyte support for training volume and recovery' },
     ],
     sections: [
@@ -591,7 +591,7 @@ A quality pre-workout provides the energy and focus to push through demanding se
 
 Nitric oxide supplementation enhances blood flow to working muscles, which improves nutrient delivery, waste removal, and the mind-muscle connection. For hypertrophy training, the enhanced blood flow during high-rep sets creates a stronger "pump" that is not just cosmetic — it increases cell swelling, which is a stimulus for muscle protein synthesis through mechanotransduction pathways.
 
-The key ingredient here is L-citrulline at 6-8 grams. If your pre-workout already contains this dose, you do not need a separate NO supplement. If it does not, adding a standalone pump formula like [Flow State X](/nitric) covers the gap.
+The key ingredient here is L-citrulline at 6-8 grams. If your pre-workout already contains this dose, you do not need a separate NO supplement. If it does not, adding a standalone pump formula like [Pump (Nitric Oxide)](/nitric) covers the gap.
 
 Beta-alanine at 3.2 grams daily supports muscular endurance by buffering hydrogen ions during high-rep sets. The burning sensation that forces you to stop at rep 12 when you could have done 15 is partly caused by acid accumulation. Beta-alanine helps extend those sets, which increases total volume.
 
@@ -619,7 +619,7 @@ Minimal stack: 5g creatine monohydrate daily ($15-20/month) plus protein powder 
 
 The moderate stack adds the performance layer and costs $60-90/month. This is appropriate for intermediate lifters who train 4-5 days per week and want to optimize session quality.
 
-Moderate stack: creatine monohydrate ($15-20), protein powder ($20-30), a quality pre-workout or pump formula like [Flow State X](/nitric) ($30-40), and a proper electrolyte supplement ($15-20). Total: $80-110/month.
+Moderate stack: creatine monohydrate ($15-20), protein powder ($20-30), a quality pre-workout or pump formula like [Pump (Nitric Oxide)](/nitric) ($30-40), and a proper electrolyte supplement ($15-20). Total: $80-110/month.
 
 The full stack adds the recovery layer and costs $100-150/month. This is for advanced lifters who have nutrition, training, and sleep habits dialed in and want to optimize every recoverable angle.
 

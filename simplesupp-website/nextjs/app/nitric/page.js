@@ -3,13 +3,13 @@
 import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
-  displayName: 'Flow State X',
-  productMatchers: ['flow state'],
+  displayName: 'Pump (Nitric Oxide)',
+  productMatchers: ['pump', 'nitric oxide'],
   fallbackEmoji: '💊',
   hero: {
     eyebrow: 'NITRIC OXIDE FORMULA',
-    titleLines: ['FLOW', 'STATE', 'X'],
-    titleAccentLine: 2,
+    titleLines: ['PUMP'],
+    titleAccentLine: 0,
     subtitle:
       'Engineered for athletes who refuse to plateau. Premium nitric oxide for blood flow, pumps, and sustained performance.',
     badge: '50% OFF',
@@ -93,16 +93,16 @@ const config = {
       a: 'A nitric oxide supplement supports vasodilation, which increases blood flow to working muscles during training. This can improve pumps, nutrient delivery, endurance, and the mind-muscle connection.',
     },
     {
-      q: 'Is Flow State X stimulant-free?',
-      a: 'Yes. Flow State X contains no caffeine or stimulants. It is designed for pumps and blood flow without affecting sleep or causing jitters — ideal for evening training or stacking with a pre-workout.',
+      q: 'Is Pump (Nitric Oxide) stimulant-free?',
+      a: 'Yes. Pump (Nitric Oxide) contains no caffeine or stimulants. It is designed for pumps and blood flow without affecting sleep or causing jitters — ideal for evening training or stacking with a pre-workout.',
     },
     {
       q: 'When should I take a nitric oxide supplement?',
       a: 'Take it 20 to 30 minutes before training for best results. L-citrulline reaches peak plasma levels around the 60-minute mark, so a slightly earlier window also works well.',
     },
     {
-      q: 'Can I stack Flow State X with pre-workout?',
-      a: 'Yes. Because it is stimulant-free, Flow State X pairs well with a caffeinated pre-workout for combined energy, focus, and pump support without doubling up on stimulants.',
+      q: 'Can I stack Pump (Nitric Oxide) with pre-workout?',
+      a: 'Yes. Because it is stimulant-free, Pump (Nitric Oxide) pairs well with a caffeinated pre-workout for combined energy, focus, and pump support without doubling up on stimulants.',
     },
     {
       q: 'How long does it take to feel the effects?',

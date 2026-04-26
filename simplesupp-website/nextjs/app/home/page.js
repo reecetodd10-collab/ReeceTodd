@@ -16,11 +16,11 @@ const BORDER_CYAN = '#d4eef2';    // Soft cyan hairline (not used as divider —
 // Curated drop — 5 hero products with category accents
 const dropProducts = [
   { name: 'Creatine + Electrolyte',    category: 'Performance', accent: '#00e5ff', href: '/creatine-electrolyte', match: 'creatine + electrolyte' },
-  { name: 'Flow State X',              category: 'Performance', accent: '#00e5ff', href: '/nitric',    match: 'flow state' },
+  { name: 'Pump (Nitric Oxide)',        category: 'Performance', accent: '#00e5ff', href: '/nitric',    match: 'pump' },
   { name: 'Hydration Powder Lemonade', category: 'Hydration',   accent: '#FFD700', href: '/hydration', match: 'lemonade' },
   { name: 'Magnesium Glycinate',       category: 'Sleep',       accent: '#a855f7', href: '/magnesium', match: 'magnesium' },
   { name: 'Creatine',                  category: 'Performance', accent: '#00e5ff', href: '/creatine',  match: 'creatine monohydrate' },
-  { name: 'Pre-Workout (Fruit Punch)', category: 'Performance', accent: '#FF3B3B', href: '/preworkout', match: 'fruit punch' },
+  { name: 'Pre-Workout (Fruit Punch)', category: 'Pre-Workout & Energy', accent: '#FF3B3B', href: '/preworkout', match: 'fruit punch' },
 ];
 
 function findShopifyMatch(products, matcher) {
@@ -56,7 +56,7 @@ const quizSteps = [
 ];
 
 const reviews = [
-  { quote: 'The quiz recommended Flow State X and it has been a game changer. Pumps are insane. Already told my whole gym.', author: 'Marcus T.' },
+  { quote: 'The quiz recommended Pump and it has been a game changer. Pumps are insane. Already told my whole gym.', author: 'Marcus T.' },
   { quote: 'Finally a brand that doesn\'t hide behind proprietary blends. I can see every ingredient, every dose. Respect.', author: 'Dylan M.' },
   { quote: 'Took the quiz, got my stack, locked in. The personalization is what sold me. This is the future.', author: 'Jake R.' },
 ];
@@ -80,7 +80,7 @@ export default function HomePage() {
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [checkoutUrl, setCheckoutUrl] = useState(null);
-  const FEATURED_ID = '8645601657022'; // Flow State X
+  const FEATURED_ID = '8645601657022'; // Pump (Nitric Oxide)
 
   // Newsletter
   const [email, setEmail] = useState('');

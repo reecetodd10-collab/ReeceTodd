@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
-// Generate a simple discount code
-function generateDiscountCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = 'AVIERA10-';
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
+// Fixed Shopify discount code — matches the code created in Shopify Admin
+const DISCOUNT_CODE = 'AVIERA10';
 
 export async function POST(request) {
   try {
@@ -32,7 +25,6 @@ export async function POST(request) {
     }
 
     const supabase = createSupabaseAdmin();
-    const discountCode = generateDiscountCode();
 
     // Try to insert the email
     const { data, error } = await supabase
@@ -40,7 +32,7 @@ export async function POST(request) {
       .insert({
         email: email.toLowerCase().trim(),
         source,
-        discount_code: discountCode,
+        discount_code: DISCOUNT_CODE,
       })
       .select()
       .single();
@@ -59,7 +51,7 @@ export async function POST(request) {
         return NextResponse.json({
           success: true,
           message: 'You\'re already subscribed!',
-          discountCode: existing?.discount_code || 'AVIERA10',
+          discountCode: DISCOUNT_CODE,
           alreadySubscribed: true,
         });
       }
@@ -76,7 +68,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       message: 'Successfully subscribed!',
-      discountCode: discountCode,
+      discountCode: DISCOUNT_CODE,
     });
   } catch (error) {
     console.error('Promo subscribe error:', error);

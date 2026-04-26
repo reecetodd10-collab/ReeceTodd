@@ -10,14 +10,14 @@ import PageLayout, { SectionBlock, MissionBlock, FadeInSection, CTAButton, TOKEN
 // ─── Data ───
 const howItWorksSteps = [
   { num: '01', title: 'Apply', desc: 'Hit the apply button. Fill out your info, connect your socials. Takes 2 minutes. We review every application personally.' },
-  { num: '02', title: 'Get Free Product', desc: "Once approved, we ship you Flow State X on us. Try it yourself first — you can't sell what you don't believe in." },
+  { num: '02', title: 'Get Free Product', desc: "Once approved, we ship you Pump (Nitric Oxide) on us. Try it yourself first — you can't sell what you don't believe in." },
   { num: '03', title: 'Create & Post', desc: "Make content your way. Gym clips, unboxings, day-in-my-life. Instagram Reels and TikTok are where it hits hardest." },
   { num: '04', title: 'Earn 15% Per Sale', desc: 'Share your unique creator link. Every sale tracked, every commission paid. Real money for real content.' },
 ];
 
 const perks = [
   { icon: '💰', title: '15% Commission', desc: 'Every sale through your link earns you 15%. No minimums, no limits.' },
-  { icon: '📦', title: 'Free Product', desc: "We send you Flow State X for free. Try it, film it, post it." },
+  { icon: '📦', title: 'Free Product', desc: "We send you Pump (Nitric Oxide) for free. Try it, film it, post it." },
   { icon: '🔗', title: 'Tracked Link', desc: 'Unique affiliate link with full attribution tracking. See clicks, conversions, earnings.' },
   { icon: '⚡', title: 'Fast Approval', desc: "No follower minimums. If you're making fitness content and bring real energy, you're in." },
   { icon: '🤝', title: 'Part of the Brand', desc: "Join the Aviera crew. Early creators get first access to new products and bigger opportunities." },
@@ -42,7 +42,7 @@ const contentIdeas = [
 const faqItems = [
   { q: 'Do I need a minimum follower count?', a: 'No. We care about content quality and energy, not vanity metrics.' },
   { q: 'How do I get paid?', a: 'Commissions tracked and paid out automatically. Every sale through your link is attributed to you.' },
-  { q: 'Is the product actually free?', a: 'Yes. Once approved, we ship you Flow State X at no cost.' },
+  { q: 'Is the product actually free?', a: 'Yes. Once approved, we ship you Pump (Nitric Oxide) at no cost.' },
   { q: 'What kind of content?', a: "Authentic gym content. Workout clips, unboxings, day-in-my-life. No scripts, no templates." },
   { q: 'How fast is approval?', a: "Most applications reviewed within 24-48 hours." },
   { q: 'Other platforms?', a: "Instagram Reels and TikTok are priority, but your link works anywhere." },
@@ -230,7 +230,7 @@ export default function CreatorsProgramPage() {
             {productImage ? (
               <div className="relative mx-auto" style={{ maxWidth: '260px' }}>
                 <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 50% 60%, rgba(0,229,255,0.14) 0%, transparent 65%)` }} />
-                <img src={productImage} alt="Flow State X" className="w-full h-auto object-contain" style={{ filter: `drop-shadow(0 14px 28px rgba(0,229,255,0.2))` }} />
+                <img src={productImage} alt="Pump (Nitric Oxide)" className="w-full h-auto object-contain" style={{ filter: `drop-shadow(0 14px 28px rgba(0,229,255,0.2))` }} />
               </div>
             ) : (
               <div className="w-full aspect-square flex items-center justify-center" style={{ background: '#fff', borderRadius: '12px' }}>
@@ -240,7 +240,7 @@ export default function CreatorsProgramPage() {
           </FadeInSection>
           <FadeInSection delay={0.15}>
             <p style={{ ...FONTS.mono, fontSize: '12px', color: 'rgba(0,0,0,0.6)', lineHeight: 1.75, marginBottom: '20px' }}>
-              This is the product you&apos;ll be repping. <strong style={{ color: TOKENS.INK }}>Flow State X</strong> — clinical-dose nitric oxide for skin-splitting pumps. No caffeine, no crash. Your audience will feel the difference.
+              This is the product you&apos;ll be repping. <strong style={{ color: TOKENS.INK }}>Pump (Nitric Oxide)</strong> — clinical-dose nitric oxide for skin-splitting pumps. No caffeine, no crash. Your audience will feel the difference.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <CTAButton href="/nitric" variant="secondary" size="md">View Product</CTAButton>

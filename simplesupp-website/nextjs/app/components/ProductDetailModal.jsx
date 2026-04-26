@@ -7,7 +7,7 @@ import { products as localProducts } from '../data/products';
 
 // ─── Product catalog data (mirrors shop page) ───
 const PRODUCT_CATALOG = {
-  'flow state x': {
+  'pump (nitric oxide)': {
     cat: 'Performance',
     desc: 'L-Citrulline + dual-form L-Arginine. Skin-splitting pumps, insane vascularity. No stim, no crash.',
     tags: ['Pumps', 'Blood Flow', 'No Caffeine'],
@@ -259,7 +259,7 @@ function FormulaSection({ formulaData, accentColor = '#00ffcc' }) {
   if (!formulaData) return null;
 
   return (
-    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
       <div style={{ fontFamily: OSWALD, fontSize: '12px', letterSpacing: '0.2em', color: accentColor, textTransform: 'uppercase', marginBottom: '8px' }}>
         The Formula
       </div>
@@ -267,13 +267,13 @@ function FormulaSection({ formulaData, accentColor = '#00ffcc' }) {
       {formulaData.type === 'formula' && (
         <>
           {formulaData.rows.map((row, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: '12px' }}>
-              <span style={{ color: '#e0e0e0', flex: 1, paddingRight: '8px' }}>{row.name}</span>
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '12px' }}>
+              <span style={{ color: '#28282A', flex: 1, paddingRight: '8px' }}>{row.name}</span>
               <span style={{ fontFamily: OSWALD, fontWeight: 700, color: accentColor, whiteSpace: 'nowrap' }}>{row.dose}</span>
             </div>
           ))}
           {formulaData.other && (
-            <div style={{ fontSize: '10px', color: '#999', marginTop: '8px', lineHeight: 1.5 }}>{formulaData.other}</div>
+            <div style={{ fontSize: '10px', color: 'rgba(0,0,0,0.45)', marginTop: '8px', lineHeight: 1.5 }}>{formulaData.other}</div>
           )}
         </>
       )}
@@ -281,10 +281,10 @@ function FormulaSection({ formulaData, accentColor = '#00ffcc' }) {
       {formulaData.type === 'ingredients-list' && (
         <>
           {formulaData.servingLine && (
-            <div style={{ fontSize: '10px', color: '#aaa', marginBottom: '6px' }}>{formulaData.servingLine}</div>
+            <div style={{ fontSize: '10px', color: 'rgba(0,0,0,0.5)', marginBottom: '6px' }}>{formulaData.servingLine}</div>
           )}
           {formulaData.ingredients.map((ing, i) => (
-            <div key={i} style={{ padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', fontSize: '12px', color: '#e0e0e0' }}>
+            <div key={i} style={{ padding: '5px 0', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '12px', color: '#28282A' }}>
               {ing}
             </div>
           ))}
@@ -294,12 +294,12 @@ function FormulaSection({ formulaData, accentColor = '#00ffcc' }) {
       {formulaData.type === 'label-image' && formulaData.labelImage && (
         <div style={{ textAlign: 'center', marginTop: '4px' }}>
           <img src={formulaData.labelImage} alt="Supplement Facts" style={{ maxWidth: '100%', borderRadius: '6px', background: '#ffffff', padding: '4px' }} />
-          <div style={{ fontSize: '8px', color: '#666', marginTop: '4px' }}>Supplement Facts Label</div>
+          <div style={{ fontSize: '8px', color: 'rgba(0,0,0,0.4)', marginTop: '4px' }}>Supplement Facts Label</div>
         </div>
       )}
 
       {formulaData.type === 'fallback' && (
-        <div style={{ fontSize: '10px', color: '#666', fontStyle: 'italic' }}>Full formula available on product label</div>
+        <div style={{ fontSize: '10px', color: 'rgba(0,0,0,0.4)', fontStyle: 'italic' }}>Full formula available on product label</div>
       )}
     </div>
   );
@@ -344,8 +344,8 @@ function getCategoryForProduct(name = '') {
   if (/fat.?burn|keto|weight|metabolism|thermogenic/i.test(n)) return 'Weight';
   // Beauty & Skin
   if (/collagen|hyaluronic|vitamin glow|skin|beauty|hair/i.test(n)) return 'Beauty';
-  // Performance — Flow State X, Creatine, Beetroot, L-Glutamine
-  if (/flow state x(?!.*nootropic)|flow state(?!.*nootropic)|creatine|beetroot|glutamine/i.test(n)) return 'Performance';
+  // Performance — Pump (Nitric Oxide), Creatine, Beetroot, L-Glutamine
+  if (/pump|nitric oxide|flow state x(?!.*nootropic)|flow state(?!.*nootropic)|creatine|beetroot|glutamine/i.test(n)) return 'Performance';
   // Health & Wellness default (multivitamin, probiotic, turmeric, omega-3, ACV, gut health)
   return 'Health';
 }
@@ -398,12 +398,12 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
   return (
     <div
       className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
       onClick={onClose}
     >
       <div
         className="w-full max-w-[430px] max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl"
-        style={{ background: '#0a0a0a', border: `1px solid ${theme.border}` }}
+        style={{ background: '#F5F0EB', border: `1px solid ${theme.border}` }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -411,7 +411,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
           <button
             onClick={onClose}
             className="flex items-center gap-1 bg-transparent border-none cursor-pointer"
-            style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+            style={{ fontFamily: SPACE_MONO, fontSize: '9px', color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}
           >
             <X size={14} /> Close
           </button>
@@ -443,15 +443,15 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
               <>
                 <button
                   onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 border-none rounded-full p-1.5 cursor-pointer"
-                  style={{ color: '#fff' }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 border-none rounded-full p-1.5 cursor-pointer"
+                  style={{ color: '#28282A', background: 'rgba(0,0,0,0.06)' }}
                 >
                   <ChevronLeft size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 border-none rounded-full p-1.5 cursor-pointer"
-                  style={{ color: '#fff' }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 border-none rounded-full p-1.5 cursor-pointer"
+                  style={{ color: '#28282A', background: 'rgba(0,0,0,0.06)' }}
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -478,12 +478,12 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
           </div>
 
           {/* Title */}
-          <h3 style={{ fontFamily: OSWALD, fontSize: '22px', fontWeight: 700, textTransform: 'uppercase', margin: '0 0 6px 0', color: '#fff' }}>
+          <h3 style={{ fontFamily: OSWALD, fontSize: '22px', fontWeight: 700, textTransform: 'uppercase', margin: '0 0 6px 0', color: '#28282A' }}>
             {product.title}
           </h3>
 
           {/* Description */}
-          <p style={{ fontSize: '11px', color: '#888', lineHeight: 1.5, marginBottom: '10px' }}>
+          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.55)', lineHeight: 1.5, marginBottom: '10px' }}>
             {displayDesc}
           </p>
 
@@ -504,7 +504,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
           {/* Price */}
           {product.price && (
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px' }}>
-              <span style={{ fontFamily: OSWALD, fontSize: '28px', fontWeight: 700, color: '#fff' }}>
+              <span style={{ fontFamily: OSWALD, fontSize: '28px', fontWeight: 700, color: '#28282A' }}>
                 ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
               </span>
             </div>
@@ -519,7 +519,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
                 display: 'block',
                 width: '100%',
                 padding: '14px',
-                background: added ? '#111' : theme.accent,
+                background: added ? '#ffffff' : theme.accent,
                 border: added ? `1px solid ${theme.accent}` : 'none',
                 borderRadius: '6px',
                 fontFamily: OSWALD,
@@ -540,7 +540,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, addi
           )}
 
           {/* Trust badges */}
-          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: '8px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: '8px', color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '8px' }}>
             <span>{'\u2713'} Free ship $50+</span>
             <span>{'\u2713'} 30-day guarantee</span>
             <span>{'\u2713'} GMP</span>

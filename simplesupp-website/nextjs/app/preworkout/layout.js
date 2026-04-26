@@ -57,8 +57,8 @@ const faqJsonLd = {
     },
     {
       "@type": "Question",
-      "name": "Can I stack pre-workout with Flow State X?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Flow State X provides stimulant-free pump support that complements the energy and focus from Aviera Pre-Workout." },
+      "name": "Can I stack pre-workout with Pump (Nitric Oxide)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pump (Nitric Oxide) provides stimulant-free pump support that complements the energy and focus from Aviera Pre-Workout." },
     },
     {
       "@type": "Question",
