@@ -4,7 +4,7 @@ import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
   displayName: 'Pump (Nitric Oxide)',
-  productMatchers: ['pump', 'nitric oxide'],
+  productMatchers: ['pump', 'flow state', 'nitric oxide'],
   fallbackEmoji: '💊',
   hero: {
     eyebrow: 'NITRIC OXIDE FORMULA',

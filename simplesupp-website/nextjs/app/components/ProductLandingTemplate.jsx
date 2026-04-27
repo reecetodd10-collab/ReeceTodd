@@ -215,7 +215,7 @@ function DotGridCanvas({ primaryHex }) {
 export default function ProductLandingTemplate({ config }) {
   const {
     displayName,
-    productMatchers,            // array of lowercase substrings; product must include all
+    productMatchers,            // array of lowercase substrings; product must include at least one
     fallbackEmoji,
     hero,                       // { eyebrow, titleLines: [str, str, str], titleAccentLine: number, subtitle, badge }
     price,                      // { display: '$24.99', value: 24.99 }
@@ -264,7 +264,7 @@ export default function ProductLandingTemplate({ config }) {
         const all = await fetchShopifyProducts();
         const found = all.find((p) => {
           const t = (p.title || '').toLowerCase();
-          return productMatchers.every((m) => t.includes(m.toLowerCase()));
+          return productMatchers.some((m) => t.includes(m.toLowerCase()));
         });
         if (found) {
           setVariantId(found.variantId);

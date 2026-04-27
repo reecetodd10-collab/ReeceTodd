@@ -4,7 +4,7 @@ import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
   displayName: 'Creatine + Electrolyte',
-  productMatchers: ['creatine', 'electrolyte'],
+  productMatchers: ['creatine + electrolyte', 'creatine electrolyte'],
   fallbackEmoji: '💧',
   hero: {
     eyebrow: 'STRENGTH + HYDRATION',

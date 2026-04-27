@@ -4,7 +4,7 @@ import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
   displayName: 'Creatine Monohydrate',
-  productMatchers: ['creatine'],
+  productMatchers: ['creatine monohydrate'],
   fallbackEmoji: '⚡',
   hero: {
     eyebrow: 'STRENGTH & POWER',

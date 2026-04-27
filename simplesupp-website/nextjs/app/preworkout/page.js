@@ -4,7 +4,7 @@ import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
   displayName: 'Pre-Workout (Fruit Punch)',
-  productMatchers: ['nitric shock', 'fruit punch'],
+  productMatchers: ['pre-workout', 'pre workout', 'fruit punch'],
   fallbackEmoji: '🔥',
   hero: {
     eyebrow: 'PRE-WORKOUT FORMULA',

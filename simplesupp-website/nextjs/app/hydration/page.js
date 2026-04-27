@@ -4,7 +4,7 @@ import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
   displayName: 'Electrolytes Lemonade',
-  productMatchers: ['electrolytes', 'lemonade', 'hydration'],
+  productMatchers: ['lemonade'],
   fallbackEmoji: '💧',
   hero: {
     eyebrow: 'ELECTROLYTE FORMULA',
