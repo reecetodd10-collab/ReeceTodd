@@ -17,7 +17,7 @@ const BORDER_CYAN = '#d4eef2';    // Soft cyan hairline (not used as divider —
 const dropProducts = [
   { name: 'Creatine + Electrolyte',    category: 'Performance', accent: '#00e5ff', href: '/creatine-electrolyte', match: 'creatine + electrolyte' },
   { name: 'Pump (Nitric Oxide)',        category: 'Performance', accent: '#00e5ff', href: '/nitric',    match: 'pump' },
-  { name: 'Hydration Powder Lemonade', category: 'Hydration',   accent: '#FFD700', href: '/hydration', match: 'lemonade' },
+  { name: 'Electrolytes Lemonade',     category: 'Recovery & Hydration', accent: '#FFD700', href: '/hydration', match: 'lemonade' },
   { name: 'Magnesium Glycinate',       category: 'Sleep',       accent: '#a855f7', href: '/magnesium', match: 'magnesium' },
   { name: 'Creatine',                  category: 'Performance', accent: '#00e5ff', href: '/creatine',  match: 'creatine monohydrate' },
   { name: 'Pre-Workout (Fruit Punch)', category: 'Pre-Workout & Energy', accent: '#FF3B3B', href: '/preworkout', match: 'fruit punch' },

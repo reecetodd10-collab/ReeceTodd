@@ -3,13 +3,13 @@
 import ProductLandingTemplate from '../components/ProductLandingTemplate';
 
 const config = {
-  displayName: 'Hydration Powder (Lemonade)',
-  productMatchers: ['hydration', 'lemonade'],
+  displayName: 'Electrolytes Lemonade',
+  productMatchers: ['electrolytes', 'lemonade', 'hydration'],
   fallbackEmoji: '💧',
   hero: {
     eyebrow: 'ELECTROLYTE FORMULA',
-    titleLines: ['HYDRA', 'TION', 'LEMONADE'],
-    titleAccentLine: 2,
+    titleLines: ['ELECTRO', 'LYTES'],
+    titleAccentLine: 1,
     subtitle:
       'Full-spectrum electrolyte replenishment for athletes who sweat like they mean it. Zero sugar. Real lemonade flavor.',
     badge: 'NEW FLAVOR',

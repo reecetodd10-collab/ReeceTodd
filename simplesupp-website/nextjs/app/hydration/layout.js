@@ -17,7 +17,7 @@ export const metadata = {
 const productJsonLd = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "Aviera Hydration Powder Lemonade",
+  "name": "Aviera Electrolytes Lemonade",
   "brand": { "@type": "Brand", "name": "Aviera Fit" },
   "category": "Electrolyte Powder",
   "description": "Rehydrate faster with Aviera electrolyte powder for training, sweat loss, endurance, and daily performance.",
@@ -74,7 +74,7 @@ const breadcrumbJsonLd = {
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.avierafit.com/" },
     { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.avierafit.com/shop" },
-    { "@type": "ListItem", "position": 3, "name": "Hydration Powder", "item": "https://www.avierafit.com/hydration" },
+    { "@type": "ListItem", "position": 3, "name": "Electrolytes Lemonade", "item": "https://www.avierafit.com/hydration" },
   ],
 };
 

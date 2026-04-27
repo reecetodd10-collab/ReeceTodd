@@ -69,7 +69,7 @@ const PRODUCT_CATALOG = {
     cat: 'Recovery', desc: 'Post-workout BCAA recovery with honeydew watermelon flavor.', tags: ['BCAAs', 'Recovery', 'Post-Workout'],
     formula: { rows: [{ name: 'Vitamin B6 (Pyridoxine HCl)', dose: '2.5 mg' }, { name: 'L-Glutamine', dose: '1,000 mg' }, { name: 'BCAA 2:1:1', dose: '4,000 mg' }], other: 'Citric Acid, Honeydew Flavor, Watermelon Flavor, Potassium Citrate, Silicon Dioxide · 6.5g per scoop · 45 servings' },
   },
-  'hydration powder (lemonade)': {
+  'electrolytes lemonade': {
     cat: 'Recovery', desc: 'Full-spectrum electrolyte replenishment. Zero sugar, real lemonade flavor.', tags: ['Hydration', 'Electrolytes', 'Recovery'],
     formula: { rows: [{ name: 'Thiamin (Thiamine HCl)', dose: '0.40 mg' }, { name: 'Riboflavin (Vitamin B2)', dose: '0.43 mg' }, { name: 'Niacin (Vitamin B3)', dose: '5.20 mg NE' }, { name: 'Vitamin B6', dose: '0.56 mg' }, { name: 'Folate', dose: '133 mcg DFE' }, { name: 'Vitamin B12', dose: '0.80 mcg' }, { name: 'Pantothenic Acid', dose: '1.66 mg' }, { name: 'Calcium (Calcium Citrate)', dose: '40 mg' }, { name: 'Magnesium (Mag. Citrate)', dose: '20 mg' }, { name: 'Sodium (Sodium Citrate)', dose: '100 mg' }, { name: 'Potassium (Potassium Citrate)', dose: '200 mg' }], other: 'Polydextrose, Citric Acid, N&A Flavors, Sucralose, Calcium Silicate, Beta Carotene · 1 Scoop (5.4g) · 30 servings' },
   },
