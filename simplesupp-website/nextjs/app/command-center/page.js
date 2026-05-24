@@ -48,17 +48,7 @@ const PRIORITY_TASKS = [
   { id: 5, text: 'Fix EmailCapture.jsx', done: false, priority: 'low' },
 ];
 
-// Seed events keyed by "YYYY-MM-DD"
-const SEED_EVENTS = {
-  '2026-05-24': [{ id: 'e1', time: '11:00 AM', title: 'Work', duration: '1h' }],
-  '2026-05-25': [{ id: 'e2', time: '8:30 AM', title: 'Waffles at Aunt Jacquis', duration: '1h' }],
-  '2026-05-28': [
-    { id: 'e3', time: '10:15 AM', title: 'Talkiatry', duration: '30m' },
-    { id: 'e4', time: '11:00 AM', title: 'Psychologist', duration: '1h' },
-  ],
-  '2026-05-29': [{ id: 'e5', time: '5:00 PM', title: 'Odd Mob at Petco Park', duration: '6h', highlight: true }],
-  '2026-05-30': [{ id: 'e6', time: '10:00 AM', title: 'Rock & Roll Marathon Pop Up', duration: '1h' }],
-};
+// Calendar events are now fetched from Supabase via API
 
 const RECENT_EMAILS = [
   { sender: 'Indeed', subject: 'Junior Business Data Analyst @ Asset Capital Market', time: '4:57 PM', type: 'job' },
@@ -150,13 +140,8 @@ export default function CaptainSeat() {
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
   const [selectedDate, setSelectedDate] = useState(null);
-  const [calEvents, setCalEvents] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('captain-cal-events');
-      return saved ? JSON.parse(saved) : SEED_EVENTS;
-    }
-    return SEED_EVENTS;
-  });
+  const [calEvents, setCalEvents] = useState({});
+  const [calLoading, setCalLoading] = useState(true);
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventTime, setNewEventTime] = useState('12:00 PM');
@@ -179,9 +164,23 @@ export default function CaptainSeat() {
     if (typeof window !== 'undefined') localStorage.setItem('captain-tasks', JSON.stringify(tasks));
   }, [tasks]);
 
+  // Fetch calendar from API on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') localStorage.setItem('captain-cal-events', JSON.stringify(calEvents));
-  }, [calEvents]);
+    fetch('/api/command-center/calendar').then(r => r.json()).then(data => {
+      if (data.events) {
+        // Transform API format to local format
+        const formatted = {};
+        for (const [dateKey, events] of Object.entries(data.events)) {
+          formatted[dateKey] = events.map(ev => ({
+            id: ev.id, time: ev.start_time, title: ev.title,
+            duration: ev.duration, highlight: ev.highlight, location: ev.location, source: ev.source,
+          }));
+        }
+        setCalEvents(formatted);
+      }
+      setCalLoading(false);
+    }).catch(() => setCalLoading(false));
+  }, []);
 
   useEffect(() => {
     if (historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight;
@@ -221,20 +220,36 @@ export default function CaptainSeat() {
   const prevMonth = () => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); setSelectedDate(null); };
   const nextMonth = () => { if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); } else setCalMonth(m => m + 1); setSelectedDate(null); };
 
-  const addCalEvent = () => {
+  const addCalEvent = async () => {
     if (!newEventTitle.trim() || !selectedDate) return;
     const key = selectedDate;
-    const ev = { id: 'ev_' + Date.now(), time: newEventTime, title: newEventTitle, duration: '1h' };
+    const ev = { id: 'temp_' + Date.now(), time: newEventTime, title: newEventTitle, duration: '1h' };
     setCalEvents(prev => ({ ...prev, [key]: [...(prev[key] || []), ev] }));
     setNewEventTitle(''); setNewEventTime('12:00 PM'); setShowAddEvent(false);
+    // Save to API
+    const res = await fetch('/api/command-center/calendar', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date_key: key, title: ev.title, start_time: ev.time, duration: '1h' }),
+    }).then(r => r.json());
+    if (res.id) {
+      setCalEvents(prev => {
+        const updated = { ...prev };
+        updated[key] = (updated[key] || []).map(e => e.id === ev.id ? { ...e, id: res.id } : e);
+        return updated;
+      });
+    }
   };
 
-  const deleteCalEvent = (dateKey, eventId) => {
+  const deleteCalEvent = async (dateKey, eventId) => {
     setCalEvents(prev => {
       const updated = { ...prev };
       updated[dateKey] = (updated[dateKey] || []).filter(e => e.id !== eventId);
       if (updated[dateKey].length === 0) delete updated[dateKey];
       return updated;
+    });
+    await fetch('/api/command-center/calendar', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: eventId }),
     });
   };
 
@@ -425,7 +440,8 @@ export default function CaptainSeat() {
                 </div>
               )}
 
-              {(!calEvents[selectedDate] || calEvents[selectedDate].length === 0) && (
+              {calLoading && <div style={{ ...s.card, color: '#52525b', fontSize: 14 }}>Loading events...</div>}
+              {!calLoading && (!calEvents[selectedDate] || calEvents[selectedDate].length === 0) && (
                 <div style={{ ...s.card, color: '#52525b', fontSize: 14 }}>No events this day</div>
               )}
               {(calEvents[selectedDate] || []).map(ev => (
@@ -433,7 +449,11 @@ export default function CaptainSeat() {
                   <div style={{ width: 4, height: 36, borderRadius: 2, background: ev.highlight ? '#00d9ff' : '#27272a', flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: ev.highlight ? 600 : 400, color: ev.highlight ? '#00d9ff' : '#fafafa' }}>{ev.title}</div>
-                    <div style={{ fontSize: 12, color: '#71717a' }}>{ev.time} · {ev.duration}</div>
+                    <div style={{ fontSize: 12, color: '#71717a' }}>
+                      {ev.time} · {ev.duration}
+                      {ev.source === 'google' && <span style={{ marginLeft: 6, color: '#0ea5e9', fontSize: 10, fontWeight: 600 }}>GOOGLE</span>}
+                      {ev.location && <span style={{ marginLeft: 6, color: '#52525b' }}>📍 {ev.location}</span>}
+                    </div>
                   </div>
                   <button onClick={() => deleteCalEvent(selectedDate, ev.id)} style={{ background: 'none', border: 'none', color: '#52525b', fontSize: 18, cursor: 'pointer', padding: '4px 8px' }}>×</button>
                 </div>
@@ -510,39 +530,80 @@ export default function CaptainSeat() {
         </div>
       )}
 
-      {/* ======================== COMS TAB — Claude Code Session ======================== */}
+      {/* ======================== COMS TAB — Command Center ======================== */}
       {activeTab === 'coms' && (
-        <div style={{ padding: '0', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 130px)' }}>
-          {/* Session embed */}
-          <iframe
-            src="https://claude.ai/code"
-            style={{
-              flex: 1, width: '100%', border: 'none',
-              borderRadius: 0, background: '#09090b',
-            }}
-            allow="clipboard-read; clipboard-write"
-            title="Claude Code Session"
-          />
-          {/* Quick command bar below iframe */}
-          <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.08)', background: '#09090b' }}>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-              {[
-                { label: '📧 Email', cmd: 'Check my latest unread emails and summarize them' },
-                { label: '📅 Calendar', cmd: "What's on my calendar today?" },
-                { label: '🚀 Deploy', cmd: 'Deploy the Aviera site to Vercel' },
-                { label: '🔔 Test Notif', cmd: 'Send me a test push notification' },
-                { label: '💼 Jobs', cmd: 'Check my latest job alert emails and summarize the best ones' },
-              ].map((qc, i) => (
-                <button key={i} onClick={() => { navigator.clipboard?.writeText(qc.cmd); }}
-                  style={{
-                    flexShrink: 0, background: '#0f0f12', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 20, padding: '8px 14px', color: '#d4d4d8', fontSize: 12,
-                    fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
-                  }}>
-                  {qc.label}
-                </button>
-              ))}
-            </div>
+        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)' }}>
+          {/* Open Session Link */}
+          <a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer" style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: 'rgba(0,217,255,0.1)', border: '1px solid rgba(0,217,255,0.25)',
+            borderRadius: 14, padding: '14px 16px', marginBottom: 10, textDecoration: 'none',
+            color: '#00d9ff', fontSize: 14, fontWeight: 700,
+          }}>
+            <CaptainWheel size={18} color="#00d9ff" /> Open Claude Code Session
+          </a>
+
+          {/* Quick command chips */}
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 12, paddingBottom: 4 }}>
+            {[
+              { label: '📧 Email', cmd: 'Check my latest unread emails and summarize them' },
+              { label: '📅 Today', cmd: "What's on my calendar today?" },
+              { label: '🚀 Deploy', cmd: 'Deploy the Aviera site to Vercel' },
+              { label: '🔔 Notif', cmd: 'Send me a test push notification' },
+              { label: '💼 Jobs', cmd: 'Check my latest job alert emails and summarize the best ones' },
+              { label: '🔄 Sync Cal', cmd: 'Sync my Google Calendar to the Captain Seat' },
+            ].map((qc, i) => (
+              <button key={i} onClick={() => {
+                navigator.clipboard?.writeText(qc.cmd);
+                setHistory(prev => [...prev, { type: 'sent', text: qc.cmd, time: new Date() }, { type: 'response', text: 'Copied!', time: new Date() }]);
+              }} style={{
+                flexShrink: 0, background: '#0f0f12', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 20, padding: '8px 14px', color: '#d4d4d8', fontSize: 12,
+                fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>
+                {qc.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Message history */}
+          <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {history.length === 0 && (
+              <div style={{ textAlign: 'center', color: '#52525b', fontSize: 14, padding: '30px 20px', lineHeight: 1.6 }}>
+                <CaptainWheel size={48} color="#27272a" />
+                <div style={{ marginTop: 12 }}>
+                  Type a command below or tap a chip above.
+                  <br />Commands copy to clipboard — paste in your Claude session.
+                  <br /><br />
+                  <span style={{ color: '#00d9ff', fontSize: 12 }}>Tap "Open Claude Code Session" to connect.</span>
+                </div>
+              </div>
+            )}
+            {history.map((msg, i) => (
+              <div key={i} style={{
+                alignSelf: msg.type === 'sent' ? 'flex-end' : 'flex-start', maxWidth: '85%',
+                background: msg.type === 'sent' ? 'rgba(0,217,255,0.15)' : '#0f0f12',
+                border: `1px solid ${msg.type === 'sent' ? 'rgba(0,217,255,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                borderRadius: 14, padding: '10px 14px', fontSize: 14, lineHeight: 1.5,
+                whiteSpace: 'pre-wrap', color: msg.type === 'sent' ? '#00d9ff' : '#d4d4d8',
+              }}>
+                {msg.text}
+              </div>
+            ))}
+          </div>
+
+          {/* Input */}
+          <div style={{ display: 'flex', gap: 8, padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <input ref={inputRef} value={command} onChange={e => setCommand(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && sendCommand()}
+              placeholder="Type a command..." style={{
+                flex: 1, background: '#0f0f12', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 14, padding: '14px 16px', color: '#fafafa', fontSize: 16, outline: 'none',
+              }} />
+            <button onClick={sendCommand} style={{
+              background: '#00d9ff', border: 'none', borderRadius: 14, padding: '14px 20px',
+              color: '#09090b', fontWeight: 700, fontSize: 15, cursor: 'pointer', flexShrink: 0,
+            }}>Send</button>
           </div>
         </div>
       )}
