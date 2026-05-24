@@ -81,26 +81,36 @@ function urlBase64ToUint8Array(base64String) {
 async function ensurePushSubscription() {
   if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
   try {
-    const reg = await navigator.serviceWorker.register('/captain-sw.js');
+    // Force update service worker
+    const reg = await navigator.serviceWorker.register('/captain-sw.js', { updateViaCache: 'none' });
+    await reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (Notification.permission !== 'granted') return;
 
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
-      });
+    if (Notification.permission !== 'granted') {
+      console.log('[Captain Seat] Notification permission:', Notification.permission);
+      return;
     }
-    // Always upsert to backend
+
+    // Unsubscribe old and create fresh subscription
+    const existingSub = await reg.pushManager.getSubscription();
+    if (existingSub) await existingSub.unsubscribe();
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
+    });
+
     const subJSON = sub.toJSON();
+    console.log('[Captain Seat] Subscribing with keys:', !!subJSON.keys?.p256dh, !!subJSON.keys?.auth);
+
     const res = await fetch('/api/command-center/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subscription: subJSON }),
     });
     const data = await res.json();
-    console.log('[Captain Seat] Push subscription synced:', data);
+    console.log('[Captain Seat] Push subscription result:', data);
+    return data;
   } catch (err) {
     console.error('[Captain Seat] Push setup error:', err);
   }
@@ -196,7 +206,7 @@ export default function CaptainSeat() {
     navigator.clipboard?.writeText(cmd);
     setHistory(prev => [...prev, { type: 'sent', text: cmd, time: new Date() }]);
     setHistory(prev => [...prev, { type: 'response', text: 'Copied to clipboard!', time: new Date() }]);
-    setActiveTab('command');
+    setActiveTab('coms');
   };
 
   const toggleTask = (id) => setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
@@ -500,28 +510,39 @@ export default function CaptainSeat() {
         </div>
       )}
 
-      {/* ======================== COMMAND TAB ======================== */}
-      {activeTab === 'command' && (
-        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)' }}>
-          <a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer" style={{ display: 'block', background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.2)', borderRadius: 14, padding: '12px 16px', marginBottom: 12, textDecoration: 'none', textAlign: 'center', color: '#00d9ff', fontSize: 13, fontWeight: 600 }}>
-            Open Claude Code Session ↗
-          </a>
-          <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {history.length === 0 && (
-              <div style={{ textAlign: 'center', color: '#52525b', fontSize: 14, padding: '40px 20px', lineHeight: 1.6 }}>
-                <CaptainWheel size={48} color="#27272a" />
-                <div style={{ marginTop: 16 }}>Type a command or tap a Quick Action.<br />Commands copy to clipboard for your Claude session.</div>
-              </div>
-            )}
-            {history.map((msg, i) => (
-              <div key={i} style={{ alignSelf: msg.type === 'sent' ? 'flex-end' : 'flex-start', maxWidth: '85%', background: msg.type === 'sent' ? 'rgba(0,217,255,0.15)' : '#0f0f12', border: `1px solid ${msg.type === 'sent' ? 'rgba(0,217,255,0.3)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 14, padding: '10px 14px', fontSize: 14, lineHeight: 1.5, whiteSpace: 'pre-wrap', color: msg.type === 'sent' ? '#00d9ff' : '#d4d4d8' }}>
-                {msg.text}
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 8, padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <input ref={inputRef} value={command} onChange={e => setCommand(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendCommand()} placeholder="Type a command..." style={{ flex: 1, background: '#0f0f12', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '14px 16px', color: '#fafafa', fontSize: 16, outline: 'none' }} />
-            <button onClick={sendCommand} style={{ background: '#00d9ff', border: 'none', borderRadius: 14, padding: '14px 20px', color: '#09090b', fontWeight: 700, fontSize: 15, cursor: 'pointer', flexShrink: 0 }}>Send</button>
+      {/* ======================== COMS TAB — Claude Code Session ======================== */}
+      {activeTab === 'coms' && (
+        <div style={{ padding: '0', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 130px)' }}>
+          {/* Session embed */}
+          <iframe
+            src="https://claude.ai/code"
+            style={{
+              flex: 1, width: '100%', border: 'none',
+              borderRadius: 0, background: '#09090b',
+            }}
+            allow="clipboard-read; clipboard-write"
+            title="Claude Code Session"
+          />
+          {/* Quick command bar below iframe */}
+          <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.08)', background: '#09090b' }}>
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+              {[
+                { label: '📧 Email', cmd: 'Check my latest unread emails and summarize them' },
+                { label: '📅 Calendar', cmd: "What's on my calendar today?" },
+                { label: '🚀 Deploy', cmd: 'Deploy the Aviera site to Vercel' },
+                { label: '🔔 Test Notif', cmd: 'Send me a test push notification' },
+                { label: '💼 Jobs', cmd: 'Check my latest job alert emails and summarize the best ones' },
+              ].map((qc, i) => (
+                <button key={i} onClick={() => { navigator.clipboard?.writeText(qc.cmd); }}
+                  style={{
+                    flexShrink: 0, background: '#0f0f12', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 20, padding: '8px 14px', color: '#d4d4d8', fontSize: 12,
+                    fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}>
+                  {qc.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -533,7 +554,7 @@ export default function CaptainSeat() {
           { id: 'calendar', icon: '📅', label: 'Calendar' },
           { id: 'email', icon: '📧', label: 'Email' },
           { id: 'tasks', icon: '✓', label: 'Tasks' },
-          { id: 'command', icon: '⌘', label: 'Command' },
+          { id: 'coms', icon: '⌘', label: 'Coms' },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ background: 'none', border: 'none', color: activeTab === tab.id ? '#00d9ff' : '#52525b', fontSize: 11, fontWeight: activeTab === tab.id ? 700 : 400, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 12px', transition: 'color 0.2s' }}>
             <span style={{ fontSize: 22 }}>{tab.icon}</span>
