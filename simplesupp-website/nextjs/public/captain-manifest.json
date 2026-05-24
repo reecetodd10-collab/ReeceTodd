@@ -1,0 +1,19 @@
+{
+  "name": "Reece's Captain Seat",
+  "short_name": "Captain Seat",
+  "description": "Your personal command center — email, calendar, tasks, and AI from anywhere.",
+  "start_url": "/command-center",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/captain-wheel.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}
