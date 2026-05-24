@@ -3,22 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request) {
   try {
-    // Dynamic import to avoid ESM/CJS issues
     const webpush = (await import('web-push')).default;
 
     const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
 
     if (!vapidPublic || !vapidPrivate) {
-      console.error('Missing VAPID keys:', { vapidPublic: !!vapidPublic, vapidPrivate: !!vapidPrivate });
       return NextResponse.json({ error: 'VAPID keys not configured' }, { status: 500 });
     }
 
-    webpush.setVapidDetails(
-      'mailto:reecetodd10@gmail.com',
-      vapidPublic,
-      vapidPrivate
-    );
+    webpush.setVapidDetails('mailto:reecetodd10@gmail.com', vapidPublic, vapidPrivate);
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,15 +23,14 @@ export async function POST(request) {
 
     const { data: subscriptions, error } = await supabase
       .from('push_subscriptions')
-      .select('*');
+      .select('endpoint, keys_p256dh, keys_auth');
 
     if (error) {
-      console.error('Supabase error:', error);
       return NextResponse.json({ error: 'Database error', details: error.message }, { status: 500 });
     }
 
     if (!subscriptions?.length) {
-      return NextResponse.json({ error: 'No subscriptions found. Enable notifications in Captain Seat first.' }, { status: 404 });
+      return NextResponse.json({ error: 'No subscriptions found. Open Captain Seat and enable notifications first.' }, { status: 404 });
     }
 
     const payload = JSON.stringify({
@@ -52,7 +45,10 @@ export async function POST(request) {
       subscriptions.map(sub =>
         webpush.sendNotification({
           endpoint: sub.endpoint,
-          keys: typeof sub.keys === 'string' ? JSON.parse(sub.keys) : sub.keys,
+          keys: {
+            p256dh: sub.keys_p256dh,
+            auth: sub.keys_auth,
+          },
         }, payload).catch(async (err) => {
           if (err.statusCode === 410 || err.statusCode === 404) {
             await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
